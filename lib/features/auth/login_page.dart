@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -73,6 +74,20 @@ class LoginPage extends StatelessWidget {
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterPage(),
+                        ),
+                      );
+                    },
+                    child: const Text("Don't have an account? Create one"),
                   ),
                 ],
               ),
