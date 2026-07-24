@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/login_page.dart';
 import '../features/home/home_page.dart';
+import '../features/navigation/main_navigation_page.dart';
 import '../features/splash/splash_page.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -22,7 +23,7 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomePage(),
+      builder: (context, state) => const MainNavigationPage(),
     ),
 
   ],
