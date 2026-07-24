@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../home/home_page.dart';
+
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
 
@@ -11,7 +13,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    _HomeTab(),
+    HomePage(),
     _TripsTab(),
     _SavedTab(),
     _ProfileTab(),
@@ -50,20 +52,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Profile',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _HomeTab extends StatelessWidget {
-  const _HomeTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        '🏠 Home',
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
       ),
     );
   }
