@@ -60,6 +60,11 @@ class HomePage extends StatelessWidget {
                   onTap: () {},
                 ),
                 FeatureCard(
+                  title: 'Cars',
+                  icon: Icons.directions_car,
+                  onTap: () {},
+                ),
+                FeatureCard(
                   title: 'Maps',
                   icon: Icons.map,
                   onTap: () {},
@@ -74,12 +79,44 @@ class HomePage extends StatelessWidget {
                   icon: Icons.smart_toy,
                   onTap: () {},
                 ),
-                FeatureCard(
-                  title: 'Budget',
-                  icon: Icons.account_balance_wallet,
-                  onTap: () {},
-                ),
               ],
+            ),
+
+            const SizedBox(height: 40),
+
+            const Text(
+              '⭐ Popular Destinations',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                final destinations = [
+                  'Paris',
+                  'Rome',
+                  'Tokyo',
+                  'New York',
+                  'Barcelona',
+                  'Dubai'
+                ];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: const Icon(Icons.location_on),
+                    title: Text(destinations[index]),
+                    trailing: const Icon(Icons.arrow_forward),
+                    onTap: () {},
+                  ),
+                );
+              },
             ),
           ],
         ),
