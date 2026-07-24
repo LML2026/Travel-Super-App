@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../core/theme/app_theme.dart';
 import 'router.dart';
 
@@ -11,7 +13,7 @@ class TravelSuperApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Travel Super App',
       theme: AppTheme.lightTheme,
-      routerConfig: AppRouter.router,
+      routerConfig: appRouter,
     );
   }
 }

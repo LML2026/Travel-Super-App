@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../app/router.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -19,7 +18,7 @@ class _SplashPageState extends State<SplashPage> {
       if (!mounted) {
         return;
       }
-      context.go(AppRouter.loginPath);
+      context.go('/login');
     });
   }
 

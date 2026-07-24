@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../app/router.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -65,7 +64,7 @@ class LoginPage extends StatelessWidget {
 
                   ElevatedButton(
                     onPressed: () {
-                      context.go(AppRouter.homePath);
+                      context.go('/home');
                     },
                     child: const Padding(
                       padding: EdgeInsets.all(16),
