@@ -1,9 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/services/auth_service.dart';
 import 'register_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _auth = AuthService();
+  bool _loading = false;
+
+  Future<void> _login() async {
+    setState(() => _loading = true);
+
+    try {
+      await _auth.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (mounted) {
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +75,8 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   TextField(
+                    controller: _emailController,
+                    enabled: !_loading,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       prefixIcon: const Icon(Icons.email),
@@ -51,6 +89,8 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   TextField(
+                    controller: _passwordController,
+                    enabled: !_loading,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -64,29 +104,37 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   ElevatedButton(
-                    onPressed: () {
-                      context.go('/home');
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                    onPressed: _loading ? null : _login,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: _loading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(fontSize: 18),
+                            ),
                     ),
                   ),
 
                   const SizedBox(height: 16),
 
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterPage(),
-                        ),
-                      );
-                    },
+                    onPressed: _loading
+                        ? null
+                        : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterPage(),
+                              ),
+                            );
+                          },
                     child: const Text("Don't have an account? Create one"),
                   ),
                 ],

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/services/auth_service.dart';
+
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
@@ -10,6 +12,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  final _auth = AuthService();
+
   @override
   void initState() {
     super.initState();
@@ -18,7 +22,13 @@ class _SplashPageState extends State<SplashPage> {
       if (!mounted) {
         return;
       }
-      context.go('/login');
+
+      // Check if user is already signed in
+      if (_auth.currentUser != null) {
+        context.go('/home');
+      } else {
+        context.go('/login');
+      }
     });
   }
 
