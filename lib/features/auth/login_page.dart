@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/services/auth_service.dart';
+import '../../core/validators/auth_validators.dart';
+import '../../shared/widgets/app_button.dart';
+import '../../shared/widgets/app_text_field.dart';
+import '../../shared/widgets/loading_overlay.dart';
+import 'forgot_password_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,10 +19,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final _auth = AuthService();
   bool _loading = false;
 
   Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() => _loading = true);
 
     try {
@@ -43,9 +52,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
+    return LoadingOverlay(
+      isLoading: _loading,
+      child: Scaffold(
+        body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
@@ -58,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                     size: 80,
                     color: Colors.blue,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   const Text(
                     'Travel Super App',
                     textAlign: TextAlign.center,
@@ -68,62 +78,79 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Sign in to continue',
+                  Text(
+                    'Sign in to your account',
                     textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                   const SizedBox(height: 40),
-
-                  TextField(
-                    controller: _emailController,
-                    enabled: !_loading,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        AppTextField(
+                          label: 'Email',
+                          hintText: 'your@email.com',
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          prefixIcon: Icons.email,
+                          validator: AuthValidators.validateEmail,
+                          enabled: !_loading,
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Password',
+                          hintText: 'Enter your password',
+                          controller: _passwordController,
+                          obscureText: true,
+                          prefixIcon: Icons.lock,
+                          validator: AuthValidators.validatePassword,
+                          enabled: !_loading,
+                        ),
+                      ],
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  TextField(
-                    controller: _passwordController,
-                    enabled: !_loading,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _loading
+                          ? null
+                          : () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordPage(),
+                                ),
+                              );
+                            },
+                      child: const Text('Forgot Password?'),
                     ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  ElevatedButton(
+                  const SizedBox(height: 24),
+                  AppButton(
+                    label: 'Sign In',
+                    isLoading: _loading,
                     onPressed: _loading ? null : _login,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: _loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                    ),
                   ),
-
                   const SizedBox(height: 16),
-
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'or',
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   TextButton(
                     onPressed: _loading
                         ? null
@@ -135,7 +162,10 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           },
-                    child: const Text("Don't have an account? Create one"),
+                    child: const Text(
+                      'Don\'t have an account? Create one',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ],
               ),
@@ -144,5 +174,12 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
