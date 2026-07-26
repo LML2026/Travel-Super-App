@@ -106,6 +106,8 @@ Trip _toPresentationTrip(domain.Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
+    selectedFlightId: trip.selectedFlightId,
+    selectedHotelId: trip.selectedHotelId,
     createdAt: trip.createdAt,
     updatedAt: trip.updatedAt,
   );
@@ -121,6 +123,8 @@ domain.Trip _toDomainTrip(Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
+    selectedFlightId: trip.selectedFlightId,
+    selectedHotelId: trip.selectedHotelId,
     createdAt: trip.createdAt,
     updatedAt: trip.updatedAt,
   );

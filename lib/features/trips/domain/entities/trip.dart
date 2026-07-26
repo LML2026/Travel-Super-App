@@ -7,6 +7,8 @@ class Trip {
 	final String currency;
 	final int travellers;
 	final String notes;
+	final String? selectedFlightId;
+	final String? selectedHotelId;
 	final DateTime createdAt;
 	final DateTime updatedAt;
 
@@ -19,6 +21,8 @@ class Trip {
 		required this.currency,
 		required this.travellers,
 		required this.notes,
+		this.selectedFlightId,
+		this.selectedHotelId,
 		required this.createdAt,
 		required this.updatedAt,
 	});
@@ -32,6 +36,8 @@ class Trip {
 		String? currency,
 		int? travellers,
 		String? notes,
+		String? selectedFlightId,
+		String? selectedHotelId,
 		DateTime? createdAt,
 		DateTime? updatedAt,
 	}) {
@@ -44,6 +50,8 @@ class Trip {
 			currency: currency ?? this.currency,
 			travellers: travellers ?? this.travellers,
 			notes: notes ?? this.notes,
+			selectedFlightId: selectedFlightId ?? this.selectedFlightId,
+			selectedHotelId: selectedHotelId ?? this.selectedHotelId,
 			createdAt: createdAt ?? this.createdAt,
 			updatedAt: updatedAt ?? this.updatedAt,
 		);

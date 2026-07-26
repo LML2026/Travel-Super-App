@@ -93,11 +93,11 @@ class TripDetailsPage extends ConsumerWidget {
 
         final linkedFlight = _findLinkedFlight(
           flightsAsync.valueOrNull ?? const <SavedFlight>[],
-          trip.destination,
+          trip.selectedFlightId,
         );
         final linkedHotel = _findLinkedHotel(
           hotelsAsync.valueOrNull ?? const <SavedHotel>[],
-          trip.destination,
+          trip.selectedHotelId,
         );
 
         final spent = (linkedFlight?.amount ?? 0) + (linkedHotel?.totalPrice ?? 0);
@@ -269,28 +269,30 @@ class TripDetailsPage extends ConsumerWidget {
     );
   }
 
-  SavedFlight? _findLinkedFlight(List<SavedFlight> flights, String destination) {
+  SavedFlight? _findLinkedFlight(List<SavedFlight> flights, String? flightId) {
+    if (flightId == null || flightId.isEmpty) {
+      return null;
+    }
+
     for (final flight in flights) {
-      if (_sameLocation(flight.destination, destination)) {
+      if (flight.flightId == flightId) {
         return flight;
       }
     }
     return null;
   }
 
-  SavedHotel? _findLinkedHotel(List<SavedHotel> hotels, String destination) {
+  SavedHotel? _findLinkedHotel(List<SavedHotel> hotels, String? hotelId) {
+    if (hotelId == null || hotelId.isEmpty) {
+      return null;
+    }
+
     for (final hotel in hotels) {
-      if (_sameLocation(hotel.city, destination) || _sameLocation(hotel.address, destination)) {
+      if (hotel.hotelId == hotelId) {
         return hotel;
       }
     }
     return null;
-  }
-
-  bool _sameLocation(String a, String b) {
-    final left = a.trim().toLowerCase();
-    final right = b.trim().toLowerCase();
-    return left == right || left.contains(right) || right.contains(left);
   }
 
   int _tripDays(Trip trip) {

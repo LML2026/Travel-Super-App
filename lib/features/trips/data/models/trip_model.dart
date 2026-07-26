@@ -12,6 +12,8 @@ class TripModel extends Trip {
     required super.currency,
     required super.travellers,
     required super.notes,
+    super.selectedFlightId,
+    super.selectedHotelId,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -32,6 +34,8 @@ class TripModel extends Trip {
       currency: data['currency'] as String,
       travellers: data['travellers'] as int,
       notes: data['notes'] as String? ?? '',
+        selectedFlightId: data['selectedFlightId'] as String?,
+        selectedHotelId: data['selectedHotelId'] as String?,
       createdAt:
           (data['createdAt'] as Timestamp).toDate(),
       updatedAt:
@@ -49,6 +53,8 @@ class TripModel extends Trip {
       currency: trip.currency,
       travellers: trip.travellers,
       notes: trip.notes,
+      selectedFlightId: trip.selectedFlightId,
+      selectedHotelId: trip.selectedHotelId,
       createdAt: trip.createdAt,
       updatedAt: trip.updatedAt,
     );
@@ -63,6 +69,8 @@ class TripModel extends Trip {
       'currency': currency,
       'travellers': travellers,
       'notes': notes,
+      'selectedFlightId': selectedFlightId,
+      'selectedHotelId': selectedHotelId,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
