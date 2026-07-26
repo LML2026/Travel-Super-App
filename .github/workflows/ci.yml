@@ -52,6 +52,7 @@ jobs:
       - name: Flutter tests
         run: |
           set -o pipefail
+          set +e
           flutter test --concurrency=1 2>&1 | tee flutter_test.log
           status=${PIPESTATUS[0]}
           if [ $status -ne 0 ]; then
