@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'create_trip_page.dart';
+import 'trip_details_page.dart';
 
 class TripListPage extends ConsumerWidget {
   const TripListPage({super.key});
@@ -107,7 +108,14 @@ class TripCard extends StatelessWidget {
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          // Trip Details page (next step)
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TripDetailsPage(
+                tripId: trip.id,
+              ),
+            ),
+          );
         },
       ),
     );
