@@ -7,12 +7,8 @@ class Trip {
 	final String currency;
 	final int travellers;
 	final String notes;
-	final String? selectedFlightId;
-	final String? selectedHotelId;
-	final Map<String, dynamic>? weatherSnapshot;
-	final DateTime? weatherSnapshotCapturedAt;
-	final DateTime? createdAt;
-	final String status;
+	final DateTime createdAt;
+	final DateTime updatedAt;
 
 	const Trip({
 		required this.id,
@@ -23,11 +19,53 @@ class Trip {
 		required this.currency,
 		required this.travellers,
 		required this.notes,
-		this.selectedFlightId,
-		this.selectedHotelId,
-		this.weatherSnapshot,
-		this.weatherSnapshotCapturedAt,
-		this.createdAt,
-		this.status = 'planned',
+		required this.createdAt,
+		required this.updatedAt,
 	});
+
+	Trip copyWith({
+		String? id,
+		String? destination,
+		DateTime? departureDate,
+		DateTime? returnDate,
+		double? budget,
+		String? currency,
+		int? travellers,
+		String? notes,
+		DateTime? createdAt,
+		DateTime? updatedAt,
+	}) {
+		return Trip(
+			id: id ?? this.id,
+			destination: destination ?? this.destination,
+			departureDate: departureDate ?? this.departureDate,
+			returnDate: returnDate ?? this.returnDate,
+			budget: budget ?? this.budget,
+			currency: currency ?? this.currency,
+			travellers: travellers ?? this.travellers,
+			notes: notes ?? this.notes,
+			createdAt: createdAt ?? this.createdAt,
+			updatedAt: updatedAt ?? this.updatedAt,
+		);
+	}
+
+	@override
+	String toString() {
+		return 'Trip('
+				'id: $id, '
+				'destination: $destination, '
+				'departure: $departureDate, '
+				'return: $returnDate'
+				')';
+	}
+
+	@override
+	bool operator ==(Object other) =>
+			identical(this, other) ||
+			other is Trip &&
+				runtimeType == other.runtimeType &&
+				id == other.id;
+
+	@override
+	int get hashCode => id.hashCode;
 }
