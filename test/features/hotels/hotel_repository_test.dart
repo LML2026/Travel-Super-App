@@ -1,12 +1,38 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:travel_super_app/core/utils/result.dart';
 import 'package:travel_super_app/features/hotels/models/hotel.dart';
 import 'package:travel_super_app/features/hotels/models/hotel_search_request.dart';
 import 'package:travel_super_app/features/hotels/repositories/hotel_repository.dart';
-import 'package:travel_super_app/features/hotels/services/hotel_service.dart';
-import 'package:travel_super_app/core/utils/result.dart';
+import 'package:travel_super_app/features/hotels/services/hotel_api_service.dart';
 
-class MockHotelService extends Mock implements HotelService {}
+class MockHotelService extends Mock implements HotelApiService {}
+
+Hotel _hotel({
+  required String id,
+  required String name,
+  required String city,
+  required double rating,
+  required double price,
+  required double totalPrice,
+  required int beds,
+  required int nights,
+}) {
+  return Hotel(
+    id: id,
+    name: name,
+    image: 'https://example.com/hotel.jpg',
+    city: city,
+    rating: rating,
+    address: '$city City Center',
+    price: price,
+    currency: 'GBP',
+    amenities: const ['Free Wi-Fi', 'Breakfast Included'],
+    totalPrice: totalPrice,
+    beds: beds,
+    nights: nights,
+  );
+}
 
 void main() {
   late MockHotelService mockHotelService;
@@ -29,26 +55,24 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Luxury Hotel',
           city: 'Paris',
           rating: 4.8,
-          pricePerNight: 145.00,
+          price: 145.00,
           totalPrice: 435.00,
           beds: 2,
-          image: '🏨',
           nights: 3,
         ),
-        Hotel(
+        _hotel(
           id: 'h2',
           name: 'Budget Hotel',
           city: 'Paris',
           rating: 4.0,
-          pricePerNight: 85.00,
+          price: 85.00,
           totalPrice: 255.00,
           beds: 1,
-          image: '🏨',
           nights: 3,
         ),
       ];
@@ -62,7 +86,7 @@ void main() {
       // Assert
       expect(result, isA<Success>());
       
-      if (result is Success) {
+      if (result is Success<List<Hotel>>) {
         expect(result.data, mockHotels);
         expect(result.data.length, 2);
         expect(result.data[0].name, 'Luxury Hotel');
@@ -91,7 +115,7 @@ void main() {
       // Assert
       expect(result, isA<Failure>());
       
-      if (result is Failure) {
+      if (result is Failure<List<Hotel>>) {
         expect(result.message, contains('Network error'));
       }
 
@@ -148,7 +172,7 @@ void main() {
       // Assert
       expect(result, isA<Success>());
       
-      if (result is Success) {
+      if (result is Success<List<Hotel>>) {
         expect(result.data, isEmpty);
       }
     });
@@ -164,15 +188,14 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Large Group Hotel',
           city: 'Paris',
           rating: 4.5,
-          pricePerNight: 300.00,
+          price: 300.00,
           totalPrice: 900.00,
           beds: 2,
-          image: '🏨',
           nights: 3,
         ),
       ];
@@ -186,7 +209,7 @@ void main() {
       // Assert
       expect(result, isA<Success>());
       
-      if (result is Success) {
+      if (result is Success<List<Hotel>>) {
         expect(result.data, mockHotels);
       }
 
@@ -204,15 +227,14 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Week Stay Hotel',
           city: 'London',
           rating: 4.6,
-          pricePerNight: 120.00,
-          totalPrice: 840.00, // 120 * 7 nights
+          price: 120.00,
+          totalPrice: 840.00,
           beds: 2,
-          image: '🏨',
           nights: 7,
         ),
       ];
@@ -226,7 +248,7 @@ void main() {
       // Assert
       expect(result, isA<Success>());
       
-      if (result is Success) {
+      if (result is Success<List<Hotel>>) {
         expect(result.data[0].nights, 7);
       }
 
