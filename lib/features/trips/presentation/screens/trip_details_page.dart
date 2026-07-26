@@ -30,7 +30,131 @@ class TripDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
+  late Trip _trip;
   bool _isDeleting = false;
+  bool _isUpdatingFlight = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _trip = widget.trip;
+  }
+
+  Future<void> _attachFlight(BuildContext context, SavedFlight flight) async {
+    if (_isUpdatingFlight) {
+      return;
+    }
+
+    setState(() {
+      _isUpdatingFlight = true;
+    });
+
+    try {
+      final updatedTrip = _trip.copyWith(
+        selectedFlightId: flight.flightId,
+        updatedAt: DateTime.now(),
+      );
+
+      await updateTrip(ref, updatedTrip);
+      ref.invalidate(tripsProvider);
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _trip = updatedTrip;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Attached flight ${flight.flightNumber}.')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to attach flight: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingFlight = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _removeFlight(BuildContext context) async {
+    if (_isUpdatingFlight || _trip.selectedFlightId == null) {
+      return;
+    }
+
+    setState(() {
+      _isUpdatingFlight = true;
+    });
+
+    try {
+      final updatedTrip = _trip.copyWith(
+        selectedFlightId: null,
+        updatedAt: DateTime.now(),
+      );
+
+      await updateTrip(ref, updatedTrip);
+      ref.invalidate(tripsProvider);
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _trip = updatedTrip;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Removed linked flight.')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to remove flight: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingFlight = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickSavedFlight(BuildContext context, List<SavedFlight> flights) async {
+    final selected = await showModalBottomSheet<SavedFlight>(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: flights.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final flight = flights[index];
+              return ListTile(
+                title: Text('${flight.airline} ${flight.flightNumber}'),
+                subtitle: Text('${flight.origin} -> ${flight.destination}'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(sheetContext, flight),
+              );
+            },
+          ),
+        );
+      },
+    );
+
+    if (selected != null && mounted) {
+      await _attachFlight(context, selected);
+    }
+  }
 
   Future<void> _deleteTrip(BuildContext context) async {
     if (_isDeleting) {
@@ -68,11 +192,11 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
     });
 
     try {
-      await deleteTrip(ref, widget.trip.id);
+      await deleteTrip(ref, _trip.id);
       ref.invalidate(tripsProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Deleted trip to ${widget.trip.destination}.')),
+          SnackBar(content: Text('Deleted trip to ${_trip.destination}.')),
         );
         Navigator.pop(context);
       }
@@ -93,7 +217,7 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final trip = widget.trip;
+    final trip = _trip;
     final flightsAsync = ref.watch(savedFlightsProvider);
     final hotelsAsync = ref.watch(savedHotelsProvider);
     final weatherAsync = ref.watch(weatherProvider(trip.destination));
@@ -179,31 +303,81 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
             const SizedBox(height: AppSpacing.md),
             _Section(
               title: 'Flight',
-              child: linkedFlight == null
-                  ? const Text('No flight linked')
-                  : InkWell(
-                      onTap: () {
-                        context.pushSavedFlightDetails(linkedFlight);
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(linkedFlight.flightNumber, style: Theme.of(context).textTheme.titleMedium),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text('${linkedFlight.departureAt} → ${linkedFlight.arrivalAt}'),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(linkedFlight.airline),
-                          const SizedBox(height: AppSpacing.sm),
-                          const Text(
-                            'Open flight details →',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w700,
+              child: flightsAsync.when(
+                loading: () => const Text('Loading saved flights...'),
+                error: (error, _) => Text('Flights unavailable: $error'),
+                data: (savedFlights) {
+                  if (linkedFlight == null) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('No flight linked'),
+                        const SizedBox(height: AppSpacing.sm),
+                        FilledButton.icon(
+                          onPressed: _isUpdatingFlight || savedFlights.isEmpty
+                              ? null
+                              : () => _pickSavedFlight(context, savedFlights),
+                          icon: const Icon(Icons.add_link),
+                          label: Text(
+                            savedFlights.isEmpty
+                                ? 'No saved flights available'
+                                : 'Attach saved flight',
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          context.pushSavedFlightDetails(linkedFlight);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(linkedFlight.flightNumber, style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text('${linkedFlight.departureAt} → ${linkedFlight.arrivalAt}'),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(linkedFlight.airline),
+                            const SizedBox(height: AppSpacing.sm),
+                            const Text(
+                              'Open flight details →',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _isUpdatingFlight || savedFlights.isEmpty
+                                ? null
+                                : () => _pickSavedFlight(context, savedFlights),
+                            icon: const Icon(Icons.swap_horiz),
+                            label: const Text('Change flight'),
+                          ),
+                          TextButton.icon(
+                            onPressed: _isUpdatingFlight
+                                ? null
+                                : () => _removeFlight(context),
+                            icon: const Icon(Icons.link_off),
+                            label: const Text('Remove link'),
                           ),
                         ],
                       ),
-                    ),
+                    ],
+                  );
+                },
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             _Section(
@@ -369,7 +543,7 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
   }
 
   String _currencyTarget() {
-    switch (widget.trip.currency.toUpperCase()) {
+    switch (_trip.currency.toUpperCase()) {
       case 'EUR':
         return 'EUR';
       case 'USD':

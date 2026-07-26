@@ -12,6 +12,12 @@ class TripModel {
 		required this.currency,
 		required this.travellers,
 		required this.notes,
+		this.selectedFlightId,
+		this.selectedHotelId,
+		this.weatherSnapshot,
+		this.weatherSnapshotCapturedAt,
+		this.createdAt,
+		this.status = 'planned',
 	});
 
 	final String id;
@@ -22,6 +28,12 @@ class TripModel {
 	final String currency;
 	final int travellers;
 	final String notes;
+	final String? selectedFlightId;
+	final String? selectedHotelId;
+	final Map<String, dynamic>? weatherSnapshot;
+	final DateTime? weatherSnapshotCapturedAt;
+	final DateTime? createdAt;
+	final String status;
 
 	factory TripModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
 		final data = doc.data() ?? const <String, dynamic>{};
@@ -48,7 +60,31 @@ class TripModel {
 			currency: (data['currency'] ?? 'GBP').toString(),
 			travellers: (data['travellers'] as num?)?.toInt() ?? 1,
 			notes: (data['notes'] ?? '').toString(),
+			selectedFlightId: data['selectedFlightId']?.toString(),
+			selectedHotelId: data['selectedHotelId']?.toString(),
+			weatherSnapshot: data['weatherSnapshot'] is Map<String, dynamic>
+				? data['weatherSnapshot'] as Map<String, dynamic>
+				: null,
+			weatherSnapshotCapturedAt: readNullableDate(data['weatherSnapshotCapturedAt']),
+			createdAt: readNullableDate(data['createdAt']),
+			status: (data['status'] ?? 'planned').toString(),
 		);
+	}
+
+	static DateTime? readNullableDate(dynamic raw) {
+		if (raw == null) {
+			return null;
+		}
+		if (raw is Timestamp) {
+			return raw.toDate();
+		}
+		if (raw is DateTime) {
+			return raw;
+		}
+		if (raw is String) {
+			return DateTime.tryParse(raw);
+		}
+		return null;
 	}
 
 	factory TripModel.fromEntity(Trip entity) {
@@ -61,6 +97,12 @@ class TripModel {
 			currency: entity.currency,
 			travellers: entity.travellers,
 			notes: entity.notes,
+			selectedFlightId: entity.selectedFlightId,
+			selectedHotelId: entity.selectedHotelId,
+			weatherSnapshot: entity.weatherSnapshot,
+			weatherSnapshotCapturedAt: entity.weatherSnapshotCapturedAt,
+			createdAt: entity.createdAt,
+			status: entity.status,
 		);
 	}
 
@@ -74,6 +116,12 @@ class TripModel {
 			currency: currency,
 			travellers: travellers,
 			notes: notes,
+			selectedFlightId: selectedFlightId,
+			selectedHotelId: selectedHotelId,
+			weatherSnapshot: weatherSnapshot,
+			weatherSnapshotCapturedAt: weatherSnapshotCapturedAt,
+			createdAt: createdAt,
+			status: status,
 		);
 	}
 
@@ -86,6 +134,13 @@ class TripModel {
 			'currency': currency,
 			'travellers': travellers,
 			'notes': notes,
+			'selectedFlightId': selectedFlightId,
+			'selectedHotelId': selectedHotelId,
+			'weatherSnapshot': weatherSnapshot,
+			'weatherSnapshotCapturedAt': weatherSnapshotCapturedAt == null
+				? null
+				: Timestamp.fromDate(weatherSnapshotCapturedAt!),
+			'status': status,
 			'createdAt': FieldValue.serverTimestamp(),
 			'updatedAt': FieldValue.serverTimestamp(),
 		};
@@ -100,6 +155,13 @@ class TripModel {
 			'currency': currency,
 			'travellers': travellers,
 			'notes': notes,
+			'selectedFlightId': selectedFlightId,
+			'selectedHotelId': selectedHotelId,
+			'weatherSnapshot': weatherSnapshot,
+			'weatherSnapshotCapturedAt': weatherSnapshotCapturedAt == null
+				? null
+				: Timestamp.fromDate(weatherSnapshotCapturedAt!),
+			'status': status,
 			'updatedAt': FieldValue.serverTimestamp(),
 		};
 	}

@@ -7,6 +7,12 @@ class Trip {
 	final String currency;
 	final int travellers;
 	final String notes;
+	final String? selectedFlightId;
+	final String? selectedHotelId;
+	final Map<String, dynamic>? weatherSnapshot;
+	final DateTime? weatherSnapshotCapturedAt;
+	final DateTime? createdAt;
+	final String status;
 
 	const Trip({
 		required this.id,
@@ -17,5 +23,11 @@ class Trip {
 		required this.currency,
 		required this.travellers,
 		required this.notes,
+		this.selectedFlightId,
+		this.selectedHotelId,
+		this.weatherSnapshot,
+		this.weatherSnapshotCapturedAt,
+		this.createdAt,
+		this.status = 'planned',
 	});
 }

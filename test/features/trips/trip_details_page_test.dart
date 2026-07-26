@@ -9,12 +9,42 @@ import 'package:travel_super_app/features/hotels/models/nearby_place.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_experience_provider.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
 import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
 
+class _FakeTripRepository implements TripRepository {
+  final List<domain.Trip> updatedTrips = <domain.Trip>[];
+
+  @override
+  Future<void> create(domain.Trip trip) async {}
+
+  @override
+  Future<void> delete(String id) async {}
+
+  @override
+  Future<domain.Trip?> get(String id) async {
+    return null;
+  }
+
+  @override
+  Future<void> update(domain.Trip trip) async {
+    updatedTrips.add(trip);
+  }
+
+  @override
+  Stream<List<domain.Trip>> watchAll() {
+    return const Stream<List<domain.Trip>>.empty();
+  }
+}
+
 void main() {
   testWidgets('TripDetailsPage shows saved snapshot label when live weather fails', (tester) async {
+    final fakeTripRepository = _FakeTripRepository();
+
     final trip = Trip(
       id: 'trip-1',
       destination: 'Paris',
@@ -81,6 +111,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          tripRepositoryProvider.overrideWithValue(fakeTripRepository),
           savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
           weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
@@ -114,5 +145,97 @@ void main() {
     expect(find.textContaining('Source: Saved weather snapshot'), findsOneWidget);
     expect(find.text('Open flight details →'), findsOneWidget);
     expect(find.text('Open hotel details →'), findsOneWidget);
+  });
+
+  testWidgets('TripDetailsPage can attach a saved flight when none is linked', (tester) async {
+    final fakeTripRepository = _FakeTripRepository();
+
+    final trip = Trip(
+      id: 'trip-2',
+      destination: 'Paris',
+      startDate: DateTime(2026, 9, 20),
+      endDate: DateTime(2026, 9, 24),
+      budget: 980,
+      currency: 'GBP',
+      selectedHotelId: 'hotel-1',
+      createdAt: DateTime(2026, 7, 26),
+    );
+
+    final savedFlight = SavedFlight(
+      id: 'doc-3',
+      flightId: 'flight-attach-1',
+      airline: 'Air France',
+      airlineLogo: '',
+      flightNumber: 'AF188',
+      origin: 'London',
+      destination: 'Paris',
+      departureAt: '2026-09-20T09:00:00',
+      arrivalAt: '2026-09-20T11:00:00',
+      duration: 'PT2H',
+      stops: 0,
+      amount: 210,
+      currency: 'GBP',
+      cabinClass: 'economy',
+      savedAt: DateTime(2026, 7, 26),
+    );
+
+    final savedHotel = SavedHotel(
+      id: 'doc-4',
+      hotelId: 'hotel-1',
+      name: 'Hilton Paris Opera',
+      city: 'Paris',
+      country: 'France',
+      address: 'Paris, France',
+      currency: 'GBP',
+      rating: 4.6,
+      pricePerNight: 185,
+      totalPrice: 740,
+      beds: 1,
+      roomType: 'Deluxe Room',
+      amenities: const ['Free Wi-Fi'],
+      freeCancellation: true,
+      description: 'Central stay',
+      image: 'https://example.com/hotel.jpg',
+      nights: 4,
+      savedAt: DateTime(2026, 7, 26),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          tripRepositoryProvider.overrideWithValue(fakeTripRepository),
+          savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
+          savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
+          weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
+          nearbyBundleProvider('Paris').overrideWith(
+            (ref) async => const NearbyBundle(
+              city: 'Paris',
+              attractions: [NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')],
+              restaurants: [],
+              transport: [],
+            ),
+          ),
+          currencyRateProvider('EUR').overrideWith(
+            (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+          ),
+        ],
+        child: MaterialApp(
+          home: TripDetailsPage(trip: trip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('No flight linked'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Attach saved flight'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Air France AF188'));
+    await tester.pumpAndSettle();
+
+    expect(fakeTripRepository.updatedTrips, hasLength(1));
+    expect(fakeTripRepository.updatedTrips.first.selectedFlightId, 'flight-attach-1');
+    expect(find.text('Open flight details →'), findsOneWidget);
   });
 }
