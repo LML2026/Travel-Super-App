@@ -50,4 +50,12 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Flutter tests
-        run: flutter test --concurrency=1
+        run: |
+          set -o pipefail
+          flutter test --concurrency=1 2>&1 | tee flutter_test.log
+          status=${PIPESTATUS[0]}
+          if [ $status -ne 0 ]; then
+            summary=$(tail -n 120 flutter_test.log | sed 's/%/%25/g; s/\r/%0D/g; :a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=Flutter tests failed::$summary"
+            exit $status
+          fi
