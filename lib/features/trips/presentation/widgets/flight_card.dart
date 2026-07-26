@@ -8,11 +8,17 @@ class FlightCard extends StatelessWidget {
     this.flightNumber,
     this.route,
     this.timeRange,
+    this.onOpenFlights,
+    this.onLinkFlight,
+    this.onUnlinkFlight,
   });
 
   final String? flightNumber;
   final String? route;
   final String? timeRange;
+  final VoidCallback? onOpenFlights;
+  final VoidCallback? onLinkFlight;
+  final VoidCallback? onUnlinkFlight;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +27,11 @@ class FlightCard extends StatelessWidget {
     return DashboardSection(
       icon: Icons.flight_takeoff,
       title: 'Flights',
-      child: hasFlight
-          ? Column(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasFlight)
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -34,7 +43,30 @@ class FlightCard extends StatelessWidget {
                 if (timeRange != null) Text(timeRange!),
               ],
             )
-          : const Text('No linked flight yet.'),
+          else
+            const Text('No linked flight yet.'),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: onOpenFlights,
+                child: const Text('Open Flights'),
+              ),
+              if (hasFlight)
+                OutlinedButton(
+                  onPressed: onUnlinkFlight,
+                  child: const Text('Unlink'),
+                )
+              else
+                FilledButton(
+                  onPressed: onLinkFlight,
+                  child: const Text('Link Flight'),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

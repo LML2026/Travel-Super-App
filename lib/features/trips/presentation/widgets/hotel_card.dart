@@ -7,19 +7,29 @@ class HotelCard extends StatelessWidget {
     super.key,
     this.name,
     this.address,
+    this.onOpenHotels,
+    this.onLinkHotel,
+    this.onUnlinkHotel,
   });
 
   final String? name;
   final String? address;
+  final VoidCallback? onOpenHotels;
+  final VoidCallback? onLinkHotel;
+  final VoidCallback? onUnlinkHotel;
 
   @override
   Widget build(BuildContext context) {
     return DashboardSection(
       icon: Icons.hotel,
       title: 'Hotel',
-      child: name == null
-          ? const Text('No linked hotel yet.')
-          : Column(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (name == null)
+            const Text('No linked hotel yet.')
+          else
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -32,6 +42,28 @@ class HotelCard extends StatelessWidget {
                 ],
               ],
             ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: onOpenHotels,
+                child: const Text('Open Hotels'),
+              ),
+              if (name == null)
+                FilledButton(
+                  onPressed: onLinkHotel,
+                  child: const Text('Link Hotel'),
+                )
+              else
+                OutlinedButton(
+                  onPressed: onUnlinkHotel,
+                  child: const Text('Unlink'),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

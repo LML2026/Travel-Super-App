@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
@@ -20,7 +21,7 @@ import '../widgets/translator_card.dart';
 import '../widgets/weather_card.dart';
 import 'edit_trip_page.dart';
 
-class TripDashboardPage extends ConsumerWidget {
+class TripDashboardPage extends ConsumerStatefulWidget {
   const TripDashboardPage({
     super.key,
     required this.tripId,
@@ -29,11 +30,16 @@ class TripDashboardPage extends ConsumerWidget {
   final String tripId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TripDashboardPage> createState() => _TripDashboardPageState();
+}
+
+class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
+  @override
+  Widget build(BuildContext context) {
     final repository = ref.watch(tripRepositoryProvider);
 
     return FutureBuilder<Trip?>(
-      future: repository.getTrip(tripId),
+      future: repository.getTrip(widget.tripId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
@@ -85,7 +91,10 @@ class TripDashboardPage extends ConsumerWidget {
                     MaterialPageRoute(
                       builder: (_) => EditTripPage(trip: trip),
                     ),
-                  );
+                  ).then((_) {
+                    if (!mounted) return;
+                    setState(() {});
+                  });
                 },
               ),
             ],
@@ -112,12 +121,18 @@ class TripDashboardPage extends ConsumerWidget {
                     timeRange: linkedFlight == null
                         ? null
                         : '${_formatFlightTime(linkedFlight.departureAt)} → ${_formatFlightTime(linkedFlight.arrivalAt)}',
+                    onOpenFlights: () => context.pushFlights(),
+                    onLinkFlight: () => _selectAndLinkFlight(trip),
+                    onUnlinkFlight: () => _unlinkFlight(trip),
                   ),
                   HotelCard(
                     name: linkedHotel?.name,
                     address: linkedHotel == null
                         ? null
                         : _hotelAddress(linkedHotel),
+                    onOpenHotels: () => context.pushHotels(),
+                    onLinkHotel: () => _selectAndLinkHotel(trip),
+                    onUnlinkHotel: () => _unlinkHotel(trip),
                   ),
                   BudgetCard(
                     currency: trip.currency,
@@ -150,6 +165,130 @@ class TripDashboardPage extends ConsumerWidget {
     }
 
     return null;
+  }
+
+  Future<void> _selectAndLinkFlight(Trip trip) async {
+    final flights = ref.read(savedFlightsProvider).valueOrNull ?? const <SavedFlight>[];
+    if (flights.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No saved flights available.')),
+      );
+      return;
+    }
+
+    final selected = await showModalBottomSheet<SavedFlight>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ListView.builder(
+          itemCount: flights.length,
+          itemBuilder: (context, index) {
+            final flight = flights[index];
+            return ListTile(
+              title: Text('${flight.airline} ${flight.flightNumber}'),
+              subtitle: Text('${flight.origin} → ${flight.destination}'),
+              onTap: () => Navigator.pop(sheetContext, flight),
+            );
+          },
+        ),
+      ),
+    );
+
+    if (selected == null) {
+      return;
+    }
+
+    final updatedTrip = trip.copyWith(
+      selectedFlightId: selected.flightId,
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  Future<void> _unlinkFlight(Trip trip) async {
+    final updatedTrip = Trip(
+      id: trip.id,
+      destination: trip.destination,
+      departureDate: trip.departureDate,
+      returnDate: trip.returnDate,
+      budget: trip.budget,
+      currency: trip.currency,
+      travellers: trip.travellers,
+      notes: trip.notes,
+      selectedFlightId: null,
+      selectedHotelId: trip.selectedHotelId,
+      createdAt: trip.createdAt,
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  Future<void> _selectAndLinkHotel(Trip trip) async {
+    final hotels = ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
+    if (hotels.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No saved hotels available.')),
+      );
+      return;
+    }
+
+    final selected = await showModalBottomSheet<SavedHotel>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ListView.builder(
+          itemCount: hotels.length,
+          itemBuilder: (context, index) {
+            final hotel = hotels[index];
+            return ListTile(
+              title: Text(hotel.name),
+              subtitle: Text(_hotelAddress(hotel)),
+              onTap: () => Navigator.pop(sheetContext, hotel),
+            );
+          },
+        ),
+      ),
+    );
+
+    if (selected == null) {
+      return;
+    }
+
+    final updatedTrip = trip.copyWith(
+      selectedHotelId: selected.hotelId,
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  Future<void> _unlinkHotel(Trip trip) async {
+    final updatedTrip = Trip(
+      id: trip.id,
+      destination: trip.destination,
+      departureDate: trip.departureDate,
+      returnDate: trip.returnDate,
+      budget: trip.budget,
+      currency: trip.currency,
+      travellers: trip.travellers,
+      notes: trip.notes,
+      selectedFlightId: trip.selectedFlightId,
+      selectedHotelId: null,
+      createdAt: trip.createdAt,
+      updatedAt: DateTime.now(),
+    );
+
+    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    if (!mounted) return;
+    setState(() {});
   }
 
   SavedHotel? _findLinkedHotel(List<SavedHotel> hotels, String? hotelId) {
