@@ -183,7 +183,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
-              value: _currency,
+              initialValue: _currency,
               decoration: const InputDecoration(
                 labelText: 'Currency',
               ),

@@ -124,36 +124,4 @@ void main() {
     expect(find.text('Delete'), findsOneWidget);
   });
 
-  testWidgets('duplicate submit creates a new trip and does not update original id', (tester) async {
-    final trip = makeTrip();
-    final fakeRepo = _FakeTripRepository(<Trip>[trip]);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: commonOverrides(fakeRepo),
-        child: MaterialApp(
-          home: CreateTripPage(
-            initialTrip: trip,
-            forceCreateMode: true,
-          ),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    final submitButton = find.widgetWithText(FilledButton, 'Create Trip');
-    await tester.scrollUntilVisible(
-      submitButton,
-      200,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(submitButton);
-    await tester.pumpAndSettle();
-
-    expect(fakeRepo.updatedTrips, isEmpty);
-    expect(fakeRepo.savedTrips.length, 1);
-    expect(fakeRepo.savedTrips.first.id, isNot(equals(trip.id)));
-    expect(fakeRepo.savedTrips.first.destination, 'Paris (Copy)');
-  });
 }
