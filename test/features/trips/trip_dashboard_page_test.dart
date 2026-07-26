@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:travel_super_app/features/expenses/domain/entities/expense.dart';
+import 'package:travel_super_app/features/expenses/presentation/providers/expense_provider.dart';
 import 'package:travel_super_app/features/flights/models/saved_flight.dart';
 import 'package:travel_super_app/features/flights/providers/flight_provider.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
@@ -108,6 +110,25 @@ SavedHotel _makeSavedHotel({String hotelId = 'hotel-1'}) {
   );
 }
 
+Expense _makeExpense({
+  required String id,
+  required String tripId,
+  required double amount,
+}) {
+  return Expense(
+    id: id,
+    tripId: tripId,
+    title: 'Expense $id',
+    amount: amount,
+    currency: 'GBP',
+    category: 'Other',
+    spentAt: DateTime(2026, 9, 2),
+    notes: '',
+    createdAt: DateTime(2026, 7, 26),
+    updatedAt: DateTime(2026, 7, 26),
+  );
+}
+
 void main() {
   const weather = WeatherData(
     city: 'Paris',
@@ -132,6 +153,9 @@ void main() {
           tripRepositoryProvider.overrideWithValue(repo),
           savedFlightsProvider.overrideWith((ref) => Stream.value(<SavedFlight>[savedFlight])),
           savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripExpensesProvider('trip-link-flight').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
         child: MaterialApp(
@@ -168,6 +192,9 @@ void main() {
           tripRepositoryProvider.overrideWithValue(repo),
           savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
           savedHotelsProvider.overrideWith((ref) => Stream.value(<SavedHotel>[savedHotel])),
+          tripExpensesProvider('trip-unlink-hotel').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
         child: MaterialApp(
@@ -226,6 +253,9 @@ void main() {
           savedHotelsProvider.overrideWith(
             (ref) => Stream.value(<SavedHotel>[_makeSavedHotel(hotelId: 'hotel-linked-2')]),
           ),
+          tripExpensesProvider('trip-view-details').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
         child: MaterialApp(
@@ -257,6 +287,12 @@ void main() {
           savedHotelsProvider.overrideWith(
             (ref) => Stream.value(<SavedHotel>[_makeSavedHotel(hotelId: 'hotel-budget-1')]),
           ),
+          tripExpensesProvider('trip-budget-check').overrideWith(
+            (ref) => Stream.value(<Expense>[
+              _makeExpense(id: 'expense-1', tripId: 'trip-budget-check', amount: 420),
+              _makeExpense(id: 'expense-2', tripId: 'trip-budget-check', amount: 80),
+            ]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
         child: MaterialApp(
@@ -276,8 +312,8 @@ void main() {
     expect(find.textContaining('Air France AF188'), findsOneWidget);
     expect(find.textContaining('Rating: 4.6'), findsOneWidget);
     expect(find.text('Trip Budget: GBP 1000.00'), findsOneWidget);
-    expect(find.text('Spent: GBP 950.00'), findsOneWidget);
-    expect(find.text('Remaining: GBP 50.00'), findsOneWidget);
+    expect(find.text('Spent: GBP 500.00'), findsOneWidget);
+    expect(find.text('Remaining: GBP 500.00'), findsOneWidget);
   });
 
   testWidgets('TripDashboardPage weather follows selected trip destination', (tester) async {
@@ -293,6 +329,12 @@ void main() {
           tripRepositoryProvider.overrideWithValue(_FakeTripRepository(parisTrip)),
           savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
           savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripExpensesProvider('trip-weather-paris').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
+          tripExpensesProvider('trip-weather-london').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
           weatherProvider('London').overrideWith(
             (ref) async => const WeatherData(
@@ -323,6 +365,12 @@ void main() {
           tripRepositoryProvider.overrideWithValue(_FakeTripRepository(londonTrip)),
           savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
           savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripExpensesProvider('trip-weather-paris').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
+          tripExpensesProvider('trip-weather-london').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
           weatherProvider('London').overrideWith(
             (ref) async => const WeatherData(
@@ -357,6 +405,9 @@ void main() {
           tripRepositoryProvider.overrideWithValue(_FakeTripRepository(initialTrip)),
           savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
           savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripExpensesProvider('trip-empty-state').overrideWith(
+            (ref) => Stream.value(const <Expense>[]),
+          ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
         child: MaterialApp(

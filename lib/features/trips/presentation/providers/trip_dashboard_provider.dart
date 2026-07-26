@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
@@ -111,8 +112,7 @@ final tripHotelProvider = Provider.family<AsyncValue<SavedHotel?>, String>((ref,
 
 final tripBudgetProvider = Provider.family<AsyncValue<TripBudgetSummary>, String>((ref, tripId) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
-  final flightAsync = ref.watch(tripFlightsProvider(tripId));
-  final hotelAsync = ref.watch(tripHotelProvider(tripId));
+  final expensesAsync = ref.watch(tripExpensesProvider(tripId));
 
   if (tripAsync.hasError) {
     return AsyncValue<TripBudgetSummary>.error(
@@ -121,21 +121,14 @@ final tripBudgetProvider = Provider.family<AsyncValue<TripBudgetSummary>, String
     );
   }
 
-  if (flightAsync.hasError) {
+  if (expensesAsync.hasError) {
     return AsyncValue<TripBudgetSummary>.error(
-      flightAsync.error!,
-      flightAsync.stackTrace ?? StackTrace.current,
+      expensesAsync.error!,
+      expensesAsync.stackTrace ?? StackTrace.current,
     );
   }
 
-  if (hotelAsync.hasError) {
-    return AsyncValue<TripBudgetSummary>.error(
-      hotelAsync.error!,
-      hotelAsync.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  if (tripAsync.isLoading || flightAsync.isLoading || hotelAsync.isLoading) {
+  if (tripAsync.isLoading || expensesAsync.isLoading) {
     return const AsyncValue<TripBudgetSummary>.loading();
   }
 
@@ -147,8 +140,11 @@ final tripBudgetProvider = Provider.family<AsyncValue<TripBudgetSummary>, String
     );
   }
 
-  final spent = (flightAsync.valueOrNull?.amount ?? 0) +
-      (hotelAsync.valueOrNull?.totalPrice ?? 0);
+  final expenses = expensesAsync.valueOrNull ?? const [];
+  var spent = 0.0;
+  for (final expense in expenses) {
+    spent += expense.amount;
+  }
 
   return AsyncValue<TripBudgetSummary>.data(
     TripBudgetSummary(
