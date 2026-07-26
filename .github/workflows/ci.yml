@@ -50,4 +50,4 @@ jobs:
         run: flutter analyze
 
       - name: Flutter trips tests
-        run: flutter test test/features/trips
+        run: flutter test test/features/trips --concurrency=1
