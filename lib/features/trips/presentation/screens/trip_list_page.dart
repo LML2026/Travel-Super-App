@@ -44,9 +44,9 @@ class _TripListPageState extends ConsumerState<TripListPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const AppEmptyState(
-                          icon: Icons.map_outlined,
+                          icon: Icons.luggage_outlined,
                           title: 'No trips yet',
-                          message: 'Create your first trip to build a full itinerary.',
+                          message: 'Create your first trip.',
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         PrimaryButton(

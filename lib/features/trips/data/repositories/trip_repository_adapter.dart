@@ -14,21 +14,21 @@ class TripRepositoryAdapter implements TripRepositoryContract {
 
   @override
   Stream<List<TripEntity>> watchTrips() {
-    return _repository.watchAll();
+    return _repository.watchTrips();
   }
 
   @override
   Future<void> saveTrip(TripEntity trip) {
-    return _repository.create(trip);
+    return _repository.saveTrip(trip);
   }
 
   @override
   Future<void> updateTrip(TripEntity trip) {
-    return _repository.update(trip);
+    return _repository.updateTrip(trip);
   }
 
   @override
   Future<void> deleteTrip(String tripId) {
-    return _repository.delete(tripId);
+    return _repository.deleteTrip(tripId);
   }
 }
