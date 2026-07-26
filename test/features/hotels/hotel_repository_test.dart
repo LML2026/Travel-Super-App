@@ -85,12 +85,14 @@ void main() {
 
       // Assert
       expect(result, isA<Success>());
-      
-      if (result is Success<List<Hotel>>) {
-        expect(result.data, mockHotels);
-        expect(result.data.length, 2);
-        expect(result.data[0].name, 'Luxury Hotel');
-        expect(result.data[1].name, 'Budget Hotel');
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, mockHotels);
+          expect(data.length, 2);
+          expect(data[0].name, 'Luxury Hotel');
+          expect(data[1].name, 'Budget Hotel');
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
       }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
@@ -114,9 +116,11 @@ void main() {
 
       // Assert
       expect(result, isA<Failure>());
-      
-      if (result is Failure<List<Hotel>>) {
-        expect(result.message, contains('Network error'));
+      switch (result) {
+        case Failure<List<Hotel>>(:final message):
+          expect(message, contains('Network error'));
+        case Success<List<Hotel>>(:final data):
+          fail('Expected Failure but got Success with ${data.length} hotels');
       }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
@@ -171,9 +175,11 @@ void main() {
 
       // Assert
       expect(result, isA<Success>());
-      
-      if (result is Success<List<Hotel>>) {
-        expect(result.data, isEmpty);
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, isEmpty);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
       }
     });
 
@@ -208,9 +214,11 @@ void main() {
 
       // Assert
       expect(result, isA<Success>());
-      
-      if (result is Success<List<Hotel>>) {
-        expect(result.data, mockHotels);
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, mockHotels);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
       }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
@@ -247,9 +255,11 @@ void main() {
 
       // Assert
       expect(result, isA<Success>());
-      
-      if (result is Success<List<Hotel>>) {
-        expect(result.data[0].nights, 7);
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data[0].nights, 7);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
       }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);

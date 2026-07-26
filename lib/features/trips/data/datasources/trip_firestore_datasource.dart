@@ -23,25 +23,25 @@ class TripFirestoreDatasource {
     return _firestore.collection('users').doc(_uid).collection('trips');
   }
 
-  Future<void> create(TripModel trip) {
+  Future<void> createTrip(TripModel trip) {
     return _trips.doc(trip.id).set(trip.toFirestore());
   }
 
-  Future<void> update(TripModel trip) {
+  Future<void> updateTrip(TripModel trip) {
     return _trips.doc(trip.id).set(trip.toFirestore(), SetOptions(merge: true));
   }
 
-  Future<void> delete(String id) {
+  Future<void> deleteTrip(String id) {
     return _trips.doc(id).delete();
   }
 
-  Stream<List<TripModel>> watchAll() {
+  Stream<List<TripModel>> watchTrips() {
     return _trips.orderBy('departureDate').snapshots().map(
           (snapshot) => snapshot.docs.map(TripModel.fromFirestore).toList(),
         );
   }
 
-  Future<TripModel?> get(String id) async {
+  Future<TripModel?> getTrip(String id) async {
     final doc = await _trips.doc(id).get();
     if (!doc.exists) {
       return null;

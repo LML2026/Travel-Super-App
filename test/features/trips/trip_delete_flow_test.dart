@@ -7,9 +7,10 @@ import 'package:travel_super_app/features/hotels/models/nearby_bundle.dart';
 import 'package:travel_super_app/features/hotels/models/nearby_place.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_experience_provider.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
@@ -90,14 +91,16 @@ void main() {
         (ref) async => const NearbyBundle(
           city: 'Paris',
           attractions: <NearbyPlace>[
-            NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
+            NearbyPlace(
+                name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
           ],
           restaurants: <NearbyPlace>[],
           transport: <NearbyPlace>[],
         ),
       ),
       currencyRateProvider('EUR').overrideWith(
-        (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+        (ref) async =>
+            const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
       ),
     ];
   }
@@ -128,7 +131,8 @@ void main() {
     expect(fakeRepo.deletedTripIds, isEmpty);
   });
 
-  testWidgets('Trip list delete confirm calls delete and shows feedback', (tester) async {
+  testWidgets('Trip list delete confirm calls delete and shows feedback',
+      (tester) async {
     final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
 
     await tester.pumpWidget(
@@ -152,7 +156,8 @@ void main() {
     expect(find.text('Deleted trip to Paris.'), findsOneWidget);
   });
 
-  testWidgets('Trip details delete confirm deletes and pops to previous page', (tester) async {
+  testWidgets('Trip details delete confirm deletes and pops to previous page',
+      (tester) async {
     final trip = makeTrip();
     final fakeRepo = _FakeTripRepository(<Trip>[trip]);
 

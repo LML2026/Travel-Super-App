@@ -7,7 +7,8 @@ import 'package:travel_super_app/features/flights/models/saved_flight.dart';
 import 'package:travel_super_app/features/flights/providers/flight_provider.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_dashboard_page.dart';
@@ -140,7 +141,9 @@ void main() {
     condition: 'clear',
   );
 
-  testWidgets('TripDashboardPage links selected saved flight and persists update', (tester) async {
+  testWidgets(
+      'TripDashboardPage links selected saved flight and persists update',
+      (tester) async {
     final initialTrip = _makeTrip(id: 'trip-link-flight');
     final repo = _FakeTripRepository(initialTrip);
     final savedFlight = _makeSavedFlight(flightId: 'flight-link-1');
@@ -149,8 +152,10 @@ void main() {
       ProviderScope(
         overrides: <Override>[
           tripRepositoryProvider.overrideWithValue(repo),
-          savedFlightsProvider.overrideWith((ref) => Stream.value(<SavedFlight>[savedFlight])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value(<SavedFlight>[savedFlight])),
+          savedHotelsProvider
+              .overrideWith((ref) => Stream.value(const <SavedHotel>[])),
           tripExpensesProvider('trip-link-flight').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
           ),
@@ -174,7 +179,8 @@ void main() {
     expect(repo.updatedTrips.single.selectedFlightId, 'flight-link-1');
   });
 
-  testWidgets('TripDashboardPage asks confirmation before unlinking hotel', (tester) async {
+  testWidgets('TripDashboardPage asks confirmation before unlinking hotel',
+      (tester) async {
     final initialTrip = _makeTrip(
       id: 'trip-unlink-hotel',
       selectedHotelId: 'hotel-linked-1',
@@ -188,8 +194,10 @@ void main() {
       ProviderScope(
         overrides: <Override>[
           tripRepositoryProvider.overrideWithValue(repo),
-          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value(<SavedHotel>[savedHotel])),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider
+              .overrideWith((ref) => Stream.value(<SavedHotel>[savedHotel])),
           tripExpensesProvider('trip-unlink-hotel').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
           ),
@@ -231,7 +239,9 @@ void main() {
     expect(repo.updatedTrips.single.selectedHotelId, isNull);
   });
 
-  testWidgets('TripDashboardPage shows view-details actions for linked flight and hotel', (tester) async {
+  testWidgets(
+      'TripDashboardPage shows view-details actions for linked flight and hotel',
+      (tester) async {
     final initialTrip = _makeTrip(
       id: 'trip-view-details',
       selectedFlightId: 'flight-linked-2',
@@ -246,10 +256,12 @@ void main() {
         overrides: <Override>[
           tripRepositoryProvider.overrideWithValue(repo),
           savedFlightsProvider.overrideWith(
-            (ref) => Stream.value(<SavedFlight>[_makeSavedFlight(flightId: 'flight-linked-2')]),
+            (ref) => Stream.value(
+                <SavedFlight>[_makeSavedFlight(flightId: 'flight-linked-2')]),
           ),
           savedHotelsProvider.overrideWith(
-            (ref) => Stream.value(<SavedHotel>[_makeSavedHotel(hotelId: 'hotel-linked-2')]),
+            (ref) => Stream.value(
+                <SavedHotel>[_makeSavedHotel(hotelId: 'hotel-linked-2')]),
           ),
           tripExpensesProvider('trip-view-details').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
@@ -267,7 +279,9 @@ void main() {
     expect(find.text('View Details'), findsNWidgets(2));
   });
 
-  testWidgets('TripDashboardPage displays linked flight, hotel, and calculated budget values', (tester) async {
+  testWidgets(
+      'TripDashboardPage displays linked flight, hotel, and calculated budget values',
+      (tester) async {
     final initialTrip = _makeTrip(
       id: 'trip-budget-check',
       selectedFlightId: 'flight-budget-1',
@@ -280,15 +294,19 @@ void main() {
         overrides: <Override>[
           tripRepositoryProvider.overrideWithValue(repo),
           savedFlightsProvider.overrideWith(
-            (ref) => Stream.value(<SavedFlight>[_makeSavedFlight(flightId: 'flight-budget-1')]),
+            (ref) => Stream.value(
+                <SavedFlight>[_makeSavedFlight(flightId: 'flight-budget-1')]),
           ),
           savedHotelsProvider.overrideWith(
-            (ref) => Stream.value(<SavedHotel>[_makeSavedHotel(hotelId: 'hotel-budget-1')]),
+            (ref) => Stream.value(
+                <SavedHotel>[_makeSavedHotel(hotelId: 'hotel-budget-1')]),
           ),
           tripExpensesProvider('trip-budget-check').overrideWith(
             (ref) => Stream.value(<Expense>[
-              _makeExpense(id: 'expense-1', tripId: 'trip-budget-check', amount: 420),
-              _makeExpense(id: 'expense-2', tripId: 'trip-budget-check', amount: 80),
+              _makeExpense(
+                  id: 'expense-1', tripId: 'trip-budget-check', amount: 420),
+              _makeExpense(
+                  id: 'expense-2', tripId: 'trip-budget-check', amount: 80),
             ]),
           ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
@@ -314,7 +332,8 @@ void main() {
     expect(find.text('Remaining: GBP 500.00'), findsOneWidget);
   });
 
-  testWidgets('TripDashboardPage weather follows selected trip destination', (tester) async {
+  testWidgets('TripDashboardPage weather follows selected trip destination',
+      (tester) async {
     final parisTrip = _makeTrip(id: 'trip-weather-paris');
     final londonTrip = parisTrip.copyWith(
       id: 'trip-weather-london',
@@ -324,9 +343,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: <Override>[
-          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(parisTrip)),
-          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripRepositoryProvider
+              .overrideWithValue(_FakeTripRepository(parisTrip)),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider
+              .overrideWith((ref) => Stream.value(const <SavedHotel>[])),
           tripExpensesProvider('trip-weather-paris').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
           ),
@@ -360,9 +382,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: <Override>[
-          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(londonTrip)),
-          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripRepositoryProvider
+              .overrideWithValue(_FakeTripRepository(londonTrip)),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider
+              .overrideWith((ref) => Stream.value(const <SavedHotel>[])),
           tripExpensesProvider('trip-weather-paris').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
           ),
@@ -394,15 +419,19 @@ void main() {
     expect(find.text('14°C • Cloudy'), findsOneWidget);
   });
 
-  testWidgets('TripDashboardPage cards handle empty linked data gracefully', (tester) async {
+  testWidgets('TripDashboardPage cards handle empty linked data gracefully',
+      (tester) async {
     final initialTrip = _makeTrip(id: 'trip-empty-state');
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: <Override>[
-          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(initialTrip)),
-          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          tripRepositoryProvider
+              .overrideWithValue(_FakeTripRepository(initialTrip)),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider
+              .overrideWith((ref) => Stream.value(const <SavedHotel>[])),
           tripExpensesProvider('trip-empty-state').overrideWith(
             (ref) => Stream.value(const <Expense>[]),
           ),

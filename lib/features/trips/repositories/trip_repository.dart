@@ -1,4 +1,4 @@
-import '../models/trip.dart';
+import '../domain/entities/trip.dart';
 import '../services/trip_service.dart';
 
 class TripRepository {

@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 
 class _OkRepo extends TripRepository {
@@ -98,7 +99,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.create(trip);
+    await notifier.saveTrip(trip);
 
     expect(repo.created, isTrue);
 
@@ -117,7 +118,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.create(trip);
+    await notifier.saveTrip(trip);
 
     final state = container.read(createTripProvider);
     expect(state.hasError, isTrue);

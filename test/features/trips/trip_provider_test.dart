@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart' as model;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as model;
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 
 class _FakeTripRepository extends TripRepository {
@@ -89,7 +91,7 @@ void main() {
     expect(trips.first.destination, 'Paris');
   });
 
-  test('createTrip provider delegates to repository create', () async {
+  test('saveTrip provider delegates to repository create', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
@@ -99,13 +101,13 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.createTrip(makeModelTrip(id: 'new-trip'));
+    await notifier.saveTrip(makeModelTrip(id: 'new-trip'));
 
     expect(fakeRepo.createdTrips, hasLength(1));
     expect(fakeRepo.createdTrips.single.id, 'new-trip');
   });
 
-  test('updateTrip provider delegates to repository update', () async {
+  test('editTrip provider delegates to repository update', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
@@ -115,13 +117,13 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.updateTrip(makeModelTrip(id: 'edit-trip'));
+    await notifier.editTrip(makeModelTrip(id: 'edit-trip'));
 
     expect(fakeRepo.updatedTrips, hasLength(1));
     expect(fakeRepo.updatedTrips.single.id, 'edit-trip');
   });
 
-  test('deleteTrip provider delegates to repository delete', () async {
+  test('removeTrip provider delegates to repository delete', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
@@ -131,7 +133,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.deleteTrip('trip-delete');
+    await notifier.removeTrip('trip-delete');
 
     expect(fakeRepo.deletedTripIds, <String>['trip-delete']);
   });

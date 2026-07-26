@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../flights/providers/flight_provider.dart';
 import '../../hotels/providers/hotel_experience_provider.dart';
 import '../../hotels/providers/hotel_provider.dart';
-import '../../trips/models/trip.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../../trips/providers/trip_provider.dart';
 import '../../weather/models/weather_data.dart';
 import '../../weather/providers/weather_provider.dart';
@@ -22,7 +22,8 @@ final aiAssistantRepositoryProvider = Provider<AiAssistantRepository>(
 
 final aiAssistantLoadingProvider = StateProvider<bool>((ref) => false);
 
-final aiAssistantMessagesProvider = StateNotifierProvider<AiAssistantNotifier, List<AssistantMessage>>(
+final aiAssistantMessagesProvider =
+    StateNotifierProvider<AiAssistantNotifier, List<AssistantMessage>>(
   (ref) => AiAssistantNotifier(ref),
 );
 
@@ -31,7 +32,8 @@ class AiAssistantNotifier extends StateNotifier<List<AssistantMessage>> {
       : super([
           AssistantMessage(
             id: const Uuid().v4(),
-            text: 'Ask me about destination ideas, budgets, or how to structure a trip.',
+            text:
+                'Ask me about destination ideas, budgets, or how to structure a trip.',
             isUser: false,
             createdAt: DateTime.now(),
           ),
@@ -70,28 +72,32 @@ class AiAssistantNotifier extends StateNotifier<List<AssistantMessage>> {
           weather = WeatherData.fromJson(relevantTrip.weatherSnapshot!);
         } else {
           try {
-            weather = await _ref.read(weatherProvider(relevantTrip.destination).future);
+            weather = await _ref
+                .read(weatherProvider(relevantTrip.destination).future);
           } catch (_) {
             weather = null;
           }
         }
 
         try {
-          final nearby = await _ref.read(nearbyBundleProvider(relevantTrip.destination).future);
-          nearbyAttractions = nearby.attractions.map((place) => place.name).toList();
+          final nearby = await _ref
+              .read(nearbyBundleProvider(relevantTrip.destination).future);
+          nearbyAttractions =
+              nearby.attractions.map((place) => place.name).toList();
         } catch (_) {
           nearbyAttractions = const [];
         }
       }
 
-      final response = await _ref.read(aiAssistantRepositoryProvider).generateResponse(
-        trimmed,
-        trips: trips,
-        flights: flights,
-        hotels: hotels,
-        weather: weather,
-        nearbyAttractions: nearbyAttractions,
-      );
+      final response =
+          await _ref.read(aiAssistantRepositoryProvider).generateResponse(
+                trimmed,
+                trips: trips,
+                flights: flights,
+                hotels: hotels,
+                weather: weather,
+                nearbyAttractions: nearbyAttractions,
+              );
       state = [
         ...state,
         AssistantMessage(
@@ -111,7 +117,8 @@ class AiAssistantNotifier extends StateNotifier<List<AssistantMessage>> {
       return null;
     }
 
-    final match = RegExp(r'to\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)').firstMatch(prompt);
+    final match = RegExp(r'to\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*)')
+        .firstMatch(prompt);
     final destination = match?.group(1)?.toLowerCase();
 
     if (destination == null) {

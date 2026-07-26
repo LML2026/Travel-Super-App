@@ -1,6 +1,6 @@
 import '../../flights/models/saved_flight.dart';
 import '../../hotels/models/saved_hotel.dart';
-import '../../trips/models/trip.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../../weather/models/weather_data.dart';
 
 class DashboardSummary {

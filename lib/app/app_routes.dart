@@ -6,7 +6,7 @@ import '../features/flights/models/flight.dart';
 import '../features/flights/models/saved_flight.dart';
 import '../features/hotels/models/hotel.dart';
 import '../features/hotels/models/saved_hotel.dart';
-import '../features/trips/models/trip.dart';
+import '../features/trips/domain/entities/trip.dart';
 
 class TripCreateRouteArgs {
   const TripCreateRouteArgs({
@@ -125,23 +125,24 @@ extension AppNavigation on BuildContext {
   Future<T?> pushSavedFlights<T>() =>
       pushNamed<T>(AppRoute.flightSaved.routeName);
 
-    Future<T?> pushFlightDetails<T>(Flight flight) =>
+  Future<T?> pushFlightDetails<T>(Flight flight) =>
       pushNamed<T>(AppRoute.flightDetails.routeName, extra: flight);
 
-    Future<T?> pushSavedFlightDetails<T>(SavedFlight flight) =>
+  Future<T?> pushSavedFlightDetails<T>(SavedFlight flight) =>
       pushNamed<T>(AppRoute.savedFlightDetails.routeName, extra: flight);
 
   Future<T?> pushHotels<T>() => pushNamed<T>(AppRoute.hotels.routeName);
 
-    Future<T?> pushRecentHotelSearches<T>() =>
+  Future<T?> pushRecentHotelSearches<T>() =>
       pushNamed<T>(AppRoute.hotelRecent.routeName);
 
-    Future<T?> pushSavedHotels<T>() => pushNamed<T>(AppRoute.hotelSaved.routeName);
+  Future<T?> pushSavedHotels<T>() =>
+      pushNamed<T>(AppRoute.hotelSaved.routeName);
 
-    Future<T?> pushHotelDetails<T>(Hotel hotel) =>
+  Future<T?> pushHotelDetails<T>(Hotel hotel) =>
       pushNamed<T>(AppRoute.hotelDetails.routeName, extra: hotel);
 
-    Future<T?> pushSavedHotelDetails<T>(SavedHotel hotel) =>
+  Future<T?> pushSavedHotelDetails<T>(SavedHotel hotel) =>
       pushNamed<T>(AppRoute.savedHotelDetails.routeName, extra: hotel);
 
   Future<T?> pushWeather<T>() => pushNamed<T>(AppRoute.weather.routeName);
@@ -163,8 +164,7 @@ extension AppNavigation on BuildContext {
         ),
       );
 
-  Future<T?> pushTripDetails<T>(Trip trip) =>
-      pushNamed<T>(
+  Future<T?> pushTripDetails<T>(Trip trip) => pushNamed<T>(
         AppRoute.tripDetails.routeName,
         pathParameters: {'id': trip.id},
         extra: trip,

@@ -2,11 +2,12 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../flights/models/saved_flight.dart';
 import '../../hotels/models/saved_hotel.dart';
-import '../../trips/models/trip.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../../weather/models/weather_data.dart';
 
 class AiAssistantService {
-  AiAssistantService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  AiAssistantService({ApiClient? apiClient})
+      : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
@@ -114,16 +115,20 @@ class AiAssistantService {
     }
 
     if (destination != null) {
-      advice.add('For $destination, start by locking in flights early and booking a central hotel to reduce daily transport costs.');
-      advice.add('Prioritise 2-3 major attractions and keep one lighter day for local neighbourhoods and restaurants.');
+      advice.add(
+          'For $destination, start by locking in flights early and booking a central hotel to reduce daily transport costs.');
+      advice.add(
+          'Prioritise 2-3 major attractions and keep one lighter day for local neighbourhoods and restaurants.');
     }
 
     if (budget != null) {
-      advice.add('With a budget of £${budget.toStringAsFixed(0)}, aim to keep about 40% for hotel, 30% for flights, and reserve the rest for food, transport, and attractions.');
+      advice.add(
+          'With a budget of £${budget.toStringAsFixed(0)}, aim to keep about 40% for hotel, 30% for flights, and reserve the rest for food, transport, and attractions.');
     }
 
     if (nights != null) {
-      advice.add('For a ${nights}-day trip, plan one anchor activity per day and group nearby sights together to avoid wasted travel time.');
+      advice.add(
+          'For a ${nights}-day trip, plan one anchor activity per day and group nearby sights together to avoid wasted travel time.');
     }
 
     if (linkedTrip != null && linkedHotel != null) {
@@ -133,10 +138,12 @@ class AiAssistantService {
     }
 
     if (advice.isEmpty) {
-      advice.add('Tell me your destination, trip length, and budget, and I can suggest flights, hotels, daily pacing, and likely spending.');
+      advice.add(
+          'Tell me your destination, trip length, and budget, and I can suggest flights, hotels, daily pacing, and likely spending.');
     }
 
-    advice.add('Next step: open Flights, Hotels, and Trips to turn this plan into a saved itinerary.');
+    advice.add(
+        'Next step: open Flights, Hotels, and Trips to turn this plan into a saved itinerary.');
     return advice.join('\n\n');
   }
 
@@ -151,11 +158,13 @@ class AiAssistantService {
     return trips.isEmpty ? null : trips.first;
   }
 
-  SavedFlight? _findRelevantFlight(String? destination, List<SavedFlight> flights) {
+  SavedFlight? _findRelevantFlight(
+      String? destination, List<SavedFlight> flights) {
     if (destination == null) return flights.isEmpty ? null : flights.first;
     final lower = destination.toLowerCase();
     for (final flight in flights) {
-      if (flight.destination.toLowerCase().contains(lower) || flight.origin.toLowerCase().contains(lower)) {
+      if (flight.destination.toLowerCase().contains(lower) ||
+          flight.origin.toLowerCase().contains(lower)) {
         return flight;
       }
     }
@@ -166,7 +175,8 @@ class AiAssistantService {
     if (destination == null) return hotels.isEmpty ? null : hotels.first;
     final lower = destination.toLowerCase();
     for (final hotel in hotels) {
-      if (hotel.city.toLowerCase().contains(lower) || hotel.name.toLowerCase().contains(lower)) {
+      if (hotel.city.toLowerCase().contains(lower) ||
+          hotel.name.toLowerCase().contains(lower)) {
         return hotel;
       }
     }

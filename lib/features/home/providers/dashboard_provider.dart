@@ -5,7 +5,7 @@ import '../../flights/models/saved_flight.dart';
 import '../../flights/providers/flight_provider.dart';
 import '../../hotels/models/saved_hotel.dart';
 import '../../hotels/providers/hotel_provider.dart';
-import '../../trips/models/trip.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../../trips/providers/trip_provider.dart';
 import '../../weather/models/weather_data.dart';
 import '../../weather/providers/weather_provider.dart';
@@ -35,7 +35,7 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
     weather = null;
   }
 
-    final budget = upcomingTrip.budget > 0
+  final budget = upcomingTrip.budget > 0
       ? upcomingTrip.budget
       : _estimatedBudget(upcomingTrip, linkedFlight, linkedHotel);
 

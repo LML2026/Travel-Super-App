@@ -1,3 +1,3 @@
-import '../../models/trip.dart';
+import 'trip.dart';
 
 typedef TripEntity = Trip;

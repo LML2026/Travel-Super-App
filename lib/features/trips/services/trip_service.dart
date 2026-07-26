@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/trip.dart';
+import '../domain/entities/trip.dart';
 
 class TripService {
   TripService({FirebaseFirestore? firestore, FirebaseAuth? auth})
@@ -50,9 +50,8 @@ class TripService {
         .collection('trips')
         .orderBy('departureDate')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Trip.fromFirestore(doc))
-            .toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Trip.fromFirestore(doc)).toList());
   }
 
   Future<void> saveTrip(Trip trip) async {

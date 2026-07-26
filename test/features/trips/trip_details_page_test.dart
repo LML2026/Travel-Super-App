@@ -9,9 +9,10 @@ import 'package:travel_super_app/features/hotels/models/nearby_place.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_experience_provider.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
@@ -42,7 +43,9 @@ class _FakeTripRepository implements TripRepository {
 }
 
 void main() {
-  testWidgets('TripDetailsPage shows saved snapshot label when live weather fails', (tester) async {
+  testWidgets(
+      'TripDetailsPage shows saved snapshot label when live weather fails',
+      (tester) async {
     final fakeTripRepository = _FakeTripRepository();
 
     final trip = Trip(
@@ -112,19 +115,25 @@ void main() {
       ProviderScope(
         overrides: [
           tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value([savedFlight])),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
+          weatherProvider('Paris')
+              .overrideWith((ref) async => throw Exception('offline')),
           nearbyBundleProvider('Paris').overrideWith(
             (ref) async => const NearbyBundle(
               city: 'Paris',
-              attractions: [NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')],
+              attractions: [
+                NearbyPlace(
+                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
+              ],
               restaurants: [],
               transport: [],
             ),
           ),
           currencyRateProvider('EUR').overrideWith(
-            (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+            (ref) async =>
+                const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
           ),
         ],
         child: MaterialApp(
@@ -142,12 +151,14 @@ void main() {
     expect(find.text('Status: planned'), findsOneWidget);
     expect(find.text('No notes added yet.'), findsOneWidget);
 
-    expect(find.textContaining('Source: Saved weather snapshot'), findsOneWidget);
+    expect(
+        find.textContaining('Source: Saved weather snapshot'), findsOneWidget);
     expect(find.text('Open flight details →'), findsOneWidget);
     expect(find.text('Open hotel details →'), findsOneWidget);
   });
 
-  testWidgets('TripDetailsPage can attach a saved flight when none is linked', (tester) async {
+  testWidgets('TripDetailsPage can attach a saved flight when none is linked',
+      (tester) async {
     final fakeTripRepository = _FakeTripRepository();
 
     final trip = Trip(
@@ -204,19 +215,25 @@ void main() {
       ProviderScope(
         overrides: [
           tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value([savedFlight])),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
+          weatherProvider('Paris')
+              .overrideWith((ref) async => throw Exception('offline')),
           nearbyBundleProvider('Paris').overrideWith(
             (ref) async => const NearbyBundle(
               city: 'Paris',
-              attractions: [NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')],
+              attractions: [
+                NearbyPlace(
+                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
+              ],
               restaurants: [],
               transport: [],
             ),
           ),
           currencyRateProvider('EUR').overrideWith(
-            (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+            (ref) async =>
+                const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
           ),
         ],
         child: MaterialApp(
@@ -228,7 +245,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No flight linked'), findsOneWidget);
-    final attachFlightButton = find.widgetWithText(FilledButton, 'Attach saved flight');
+    final attachFlightButton =
+        find.widgetWithText(FilledButton, 'Attach saved flight');
     await tester.ensureVisible(attachFlightButton);
     await tester.tap(attachFlightButton);
     await tester.pumpAndSettle();
@@ -238,11 +256,15 @@ void main() {
 
     expect(fakeTripRepository.updatedTrips, hasLength(1));
     expect(fakeTripRepository.updatedTrips.first.id, 'trip-2');
-    expect(fakeTripRepository.updatedTrips.first.updatedAt.isAfter(fakeTripRepository.updatedTrips.first.createdAt), isTrue);
+    expect(
+        fakeTripRepository.updatedTrips.first.updatedAt
+            .isAfter(fakeTripRepository.updatedTrips.first.createdAt),
+        isTrue);
     expect(find.text('Open flight details →'), findsOneWidget);
   });
 
-  testWidgets('TripDetailsPage can attach a saved hotel when none is linked', (tester) async {
+  testWidgets('TripDetailsPage can attach a saved hotel when none is linked',
+      (tester) async {
     final fakeTripRepository = _FakeTripRepository();
 
     final trip = Trip(
@@ -299,19 +321,25 @@ void main() {
       ProviderScope(
         overrides: [
           tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
+          savedFlightsProvider
+              .overrideWith((ref) => Stream.value([savedFlight])),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
+          weatherProvider('Paris')
+              .overrideWith((ref) async => throw Exception('offline')),
           nearbyBundleProvider('Paris').overrideWith(
             (ref) async => const NearbyBundle(
               city: 'Paris',
-              attractions: [NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')],
+              attractions: [
+                NearbyPlace(
+                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
+              ],
               restaurants: [],
               transport: [],
             ),
           ),
           currencyRateProvider('EUR').overrideWith(
-            (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+            (ref) async =>
+                const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
           ),
         ],
         child: MaterialApp(
@@ -323,7 +351,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No hotel linked'), findsOneWidget);
-    final attachHotelButton = find.widgetWithText(FilledButton, 'Attach saved hotel');
+    final attachHotelButton =
+        find.widgetWithText(FilledButton, 'Attach saved hotel');
     await tester.ensureVisible(attachHotelButton);
     await tester.tap(attachHotelButton);
     await tester.pumpAndSettle();
@@ -333,7 +362,10 @@ void main() {
 
     expect(fakeTripRepository.updatedTrips, hasLength(1));
     expect(fakeTripRepository.updatedTrips.first.id, 'trip-3');
-    expect(fakeTripRepository.updatedTrips.first.updatedAt.isAfter(fakeTripRepository.updatedTrips.first.createdAt), isTrue);
+    expect(
+        fakeTripRepository.updatedTrips.first.updatedAt
+            .isAfter(fakeTripRepository.updatedTrips.first.createdAt),
+        isTrue);
     expect(find.text('Open hotel details →'), findsOneWidget);
   });
 }

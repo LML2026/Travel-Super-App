@@ -2,51 +2,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../data/repositories/firestore_trip_repository.dart';
-import '../../domain/entities/trip.dart' as domain;
+import '../../domain/entities/trip.dart';
 import '../../domain/repositories/trip_repository.dart';
-import '../../models/trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
   return FirestoreTripRepository();
 });
 
 final tripListProvider = StreamProvider<List<Trip>>((ref) {
-  return ref.watch(tripRepositoryProvider).watchTrips().map(
-        (trips) => trips.map(_toPresentationTrip).toList(),
-      );
+  return ref.watch(tripRepositoryProvider).watchTrips();
 });
 
-final selectedTripProvider = FutureProvider.family<Trip?, String>((ref, tripId) async {
-  final trip = await ref.watch(tripRepositoryProvider).getTrip(tripId);
-  if (trip == null) {
-    return null;
-  }
-  return _toPresentationTrip(trip);
+final selectedTripProvider =
+    FutureProvider.family<Trip?, String>((ref, tripId) async {
+  return ref.watch(tripRepositoryProvider).getTrip(tripId);
 });
 
 class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> create(Trip trip) async {
-    await createTrip(trip);
-  }
-
-  Future<void> createTrip(Trip trip) async {
+  /// Preferred mutation name for creating a new trip.
+  Future<void> saveTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).createTrip(_toDomainTrip(trip)),
+      () => ref.read(tripRepositoryProvider).createTrip(trip),
     );
   }
 
-  Future<void> updateTrip(Trip trip) async {
+  /// Preferred mutation name for editing an existing trip.
+  Future<void> editTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).updateTrip(_toDomainTrip(trip)),
+      () => ref.read(tripRepositoryProvider).updateTrip(trip),
     );
   }
 
-  Future<void> deleteTrip(String id) async {
+  /// Preferred mutation name for deleting an existing trip.
+  Future<void> removeTrip(String id) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(tripRepositoryProvider).deleteTrip(id),
@@ -65,16 +58,16 @@ final CreateTripProvider = createTripProvider;
 // Backward-compatible provider name used by existing screens/tests.
 final tripsProvider = tripListProvider;
 
-Future<void> createTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).createTrip(trip);
+Future<void> saveTrip(WidgetRef ref, Trip trip) async {
+  await ref.read(createTripProvider.notifier).saveTrip(trip);
 }
 
-Future<void> updateTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).updateTrip(trip);
+Future<void> editTrip(WidgetRef ref, Trip trip) async {
+  await ref.read(createTripProvider.notifier).editTrip(trip);
 }
 
-Future<void> deleteTrip(WidgetRef ref, String tripId) async {
-  await ref.read(createTripProvider.notifier).deleteTrip(tripId);
+Future<void> removeTrip(WidgetRef ref, String tripId) async {
+  await ref.read(createTripProvider.notifier).removeTrip(tripId);
 }
 
 Trip duplicateTrip(Trip source) {
@@ -93,39 +86,5 @@ Trip duplicateTrip(Trip source) {
     weatherSnapshot: source.weatherSnapshot,
     weatherSnapshotCapturedAt: source.weatherSnapshotCapturedAt,
     status: source.status,
-  );
-}
-
-Trip _toPresentationTrip(domain.Trip trip) {
-  return Trip(
-    id: trip.id,
-    destination: trip.destination,
-    departureDate: trip.departureDate,
-    returnDate: trip.returnDate,
-    budget: trip.budget,
-    currency: trip.currency,
-    travellers: trip.travellers,
-    notes: trip.notes,
-    selectedFlightId: trip.selectedFlightId,
-    selectedHotelId: trip.selectedHotelId,
-    createdAt: trip.createdAt,
-    updatedAt: trip.updatedAt,
-  );
-}
-
-domain.Trip _toDomainTrip(Trip trip) {
-  return domain.Trip(
-    id: trip.id,
-    destination: trip.destination,
-    departureDate: trip.departureDate,
-    returnDate: trip.returnDate,
-    budget: trip.budget,
-    currency: trip.currency,
-    travellers: trip.travellers,
-    notes: trip.notes,
-    selectedFlightId: trip.selectedFlightId,
-    selectedHotelId: trip.selectedHotelId,
-    createdAt: trip.createdAt,
-    updatedAt: trip.updatedAt,
   );
 }
