@@ -1,26 +1,22 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
-import '../../../core/constants/api_config.dart';
+import '../../../core/api/api_client.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../../../core/utils/app_logger.dart';
 
 class HotelService {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: apiBaseUrl,
-    contentType: 'application/json',
-  ));
+  HotelService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+
+  final ApiClient _apiClient;
 
   Future<List<Hotel>> searchHotels(HotelSearchRequest request) async {
     try {
       appLogger.i('🔍 Searching hotels for ${request.city}...');
 
-      final response = await _dio.post(
-        '/api/hotels/search',
+      final response = await _apiClient.post(
+        ApiEndpoints.hotelsSearch,
         data: jsonEncode(request.toJson()),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
       ).timeout(
         const Duration(seconds: 15),
         onTimeout: () {
@@ -41,20 +37,13 @@ class HotelService {
       }
 
       throw Exception('Unexpected status code: ${response.statusCode}');
-    } on DioException catch (e) {
+    } catch (e, st) {
       appLogger.e(
         '❌ Hotel search failed',
         error: e,
-        stackTrace: e.stackTrace,
-      );
-      throw Exception('Hotel search failed: ${e.message}');
-    } catch (e, st) {
-      appLogger.e(
-        '❌ Unexpected error during hotel search',
-        error: e,
         stackTrace: st,
       );
-      rethrow;
+      throw Exception('Hotel search failed: $e');
     }
   }
 }

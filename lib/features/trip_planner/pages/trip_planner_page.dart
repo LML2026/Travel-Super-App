@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/trip_provider.dart';
+import '../../flights/models/saved_flight.dart';
+import '../../flights/providers/flight_provider.dart';
+import '../../hotels/models/saved_hotel.dart';
+import '../../hotels/providers/hotel_experience_provider.dart';
+import '../../hotels/providers/hotel_provider.dart';
+import '../../weather/providers/weather_provider.dart';
 import '../models/saved_trip.dart';
+import '../providers/trip_provider.dart';
 
 class TripPlannerPage extends ConsumerStatefulWidget {
   const TripPlannerPage({super.key});
@@ -80,13 +86,22 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
       return;
     }
 
+    final destination = _destinationController.text.trim();
+    final savedFlights = ref.read(savedFlightsProvider).valueOrNull ?? const <SavedFlight>[];
+    final savedHotels = ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
+
+    final linkedFlight = _pickFlightForDestination(savedFlights, destination);
+    final linkedHotel = _pickHotelForDestination(savedHotels, destination);
+
     await addTrip(
       ref,
-      destination: _destinationController.text.trim(),
+      destination: destination,
       departureDate: _departureDate!,
       returnDate: _returnDate!,
       travelers: _travelers,
       totalBudget: double.tryParse(_budgetController.text),
+      flightIds: linkedFlight == null ? const [] : [linkedFlight.flightId],
+      hotelIds: linkedHotel == null ? const [] : [linkedHotel.hotelId],
     );
 
     _destinationController.clear();
@@ -99,7 +114,13 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Trip saved successfully!')),
+        SnackBar(
+          content: Text(
+            linkedFlight != null || linkedHotel != null
+                ? 'Trip saved and linked to existing bookings.'
+                : 'Trip saved. You can link flights and hotels anytime.',
+          ),
+        ),
       );
     }
   }
@@ -107,22 +128,23 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
   @override
   Widget build(BuildContext context) {
     final tripsAsync = ref.watch(savedTripsProvider);
+    final flightsAsync = ref.watch(savedFlightsProvider);
+    final hotelsAsync = ref.watch(savedHotelsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Trips'),
+        title: const Text('Trip Builder'),
       ),
       body: Column(
         children: [
-          // Add Trip Form
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.blue.shade50,
+            color: const Color(0xFFEFF6FF),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  '✈️ Plan Your Next Trip',
+                  'Build Complete Trips',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
@@ -149,10 +171,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: _pickDepartureDate,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 14,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                             child: Row(
                               children: [
                                 const Icon(Icons.calendar_month),
@@ -161,7 +180,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                                   child: Text(
                                     _departureDate == null
                                         ? 'Departure'
-                                        : '${_departureDate!.day}/${_departureDate!.month}',
+                                        : '${_departureDate!.day}/${_departureDate!.month}/${_departureDate!.year}',
                                   ),
                                 ),
                               ],
@@ -182,10 +201,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: _pickReturnDate,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 14,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                             child: Row(
                               children: [
                                 const Icon(Icons.calendar_month),
@@ -194,7 +210,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                                   child: Text(
                                     _returnDate == null
                                         ? 'Return'
-                                        : '${_returnDate!.day}/${_returnDate!.month}',
+                                        : '${_returnDate!.day}/${_returnDate!.month}/${_returnDate!.year}',
                                   ),
                                 ),
                               ],
@@ -215,7 +231,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                         decoration: const InputDecoration(
                           labelText: 'Budget (optional)',
                           border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.attach_money),
+                          prefixIcon: Icon(Icons.currency_pound),
                         ),
                       ),
                     ),
@@ -231,9 +247,7 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.remove),
-                              onPressed: _travelers > 1
-                                  ? () => setState(() => _travelers--)
-                                  : null,
+                              onPressed: _travelers > 1 ? () => setState(() => _travelers--) : null,
                             ),
                             Text('$_travelers'),
                             IconButton(
@@ -258,17 +272,14 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
               ],
             ),
           ),
-
-          // Saved Trips List
           Expanded(
             child: tripsAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (error, stack) => Center(
-                child: Text('Error: $error'),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, _) => Center(child: Text('Error: $error')),
               data: (trips) {
+                final flights = flightsAsync.valueOrNull ?? const <SavedFlight>[];
+                final hotels = hotelsAsync.valueOrNull ?? const <SavedHotel>[];
+
                 if (trips.isEmpty) {
                   return Center(
                     child: Column(
@@ -290,11 +301,11 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
                   itemCount: trips.length,
                   itemBuilder: (context, index) {
                     final trip = trips[index];
-                    return _TripCard(
+                    return _TripBuilderCard(
                       trip: trip,
-                      onDelete: () async {
-                        await deleteTrip(ref, trip.id);
-                      },
+                      linkedFlight: _findTripFlight(trip, flights),
+                      linkedHotel: _findTripHotel(trip, hotels),
+                      onDelete: () => deleteTrip(ref, trip.id),
                     );
                   },
                 );
@@ -305,19 +316,70 @@ class _TripPlannerPageState extends ConsumerState<TripPlannerPage> {
       ),
     );
   }
+
+  SavedFlight? _pickFlightForDestination(List<SavedFlight> flights, String destination) {
+    final lower = destination.toLowerCase();
+    for (final flight in flights) {
+      if (flight.destination.toLowerCase().contains(lower) || flight.origin.toLowerCase().contains(lower)) {
+        return flight;
+      }
+    }
+    return flights.isEmpty ? null : flights.first;
+  }
+
+  SavedHotel? _pickHotelForDestination(List<SavedHotel> hotels, String destination) {
+    final lower = destination.toLowerCase();
+    for (final hotel in hotels) {
+      if (hotel.city.toLowerCase().contains(lower) || hotel.name.toLowerCase().contains(lower)) {
+        return hotel;
+      }
+    }
+    return hotels.isEmpty ? null : hotels.first;
+  }
+
+  SavedFlight? _findTripFlight(SavedTrip trip, List<SavedFlight> flights) {
+    for (final id in trip.flightIds) {
+      for (final f in flights) {
+        if (f.flightId == id) {
+          return f;
+        }
+      }
+    }
+    return null;
+  }
+
+  SavedHotel? _findTripHotel(SavedTrip trip, List<SavedHotel> hotels) {
+    for (final id in trip.hotelIds) {
+      for (final h in hotels) {
+        if (h.hotelId == id) {
+          return h;
+        }
+      }
+    }
+    return null;
+  }
 }
 
-class _TripCard extends StatelessWidget {
-  final SavedTrip trip;
-  final VoidCallback onDelete;
-
-  const _TripCard({
+class _TripBuilderCard extends ConsumerWidget {
+  const _TripBuilderCard({
     required this.trip,
+    required this.linkedFlight,
+    required this.linkedHotel,
     required this.onDelete,
   });
 
+  final SavedTrip trip;
+  final SavedFlight? linkedFlight;
+  final SavedHotel? linkedHotel;
+  final VoidCallback onDelete;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weatherAsync = ref.watch(weatherProvider(trip.destination));
+    final nearbyAsync = ref.watch(nearbyBundleProvider(trip.destination));
+    final target = _currencyTarget(linkedHotel?.country ?? '');
+    final currencyAsync = ref.watch(currencyRateProvider(target));
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -326,88 +388,159 @@ class _TripCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      trip.destination,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${trip.nights} night${trip.nights > 1 ? 's' : ''} • ${trip.travelers} traveler${trip.travelers > 1 ? 's' : ''}',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
+                Expanded(
+                  child: Text(
+                    'Trip to ${trip.destination}',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
                   onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Departure',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      Text(
-                        '${trip.departureDate.day}/${trip.departureDate.month}/${trip.departureDate.year}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Return',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      Text(
-                        '${trip.returnDate.day}/${trip.returnDate.month}/${trip.returnDate.year}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                if (trip.totalBudget > 0)
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Budget',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                        ),
-                        Text(
-                          '\$${trip.totalBudget.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+            const SizedBox(height: 6),
+            Text(
+              '${trip.departureDate.day}/${trip.departureDate.month}/${trip.departureDate.year} - ${trip.returnDate.day}/${trip.returnDate.month}/${trip.returnDate.year}',
             ),
+            const SizedBox(height: 10),
+            _Line(icon: Icons.flight_outlined, title: 'Flight', value: _flightLine(linkedFlight)),
+            const SizedBox(height: 6),
+            _Line(icon: Icons.hotel_outlined, title: 'Hotel', value: _hotelLine(linkedHotel)),
+            const SizedBox(height: 6),
+            weatherAsync.when(
+              loading: () => const _Line(icon: Icons.wb_sunny_outlined, title: 'Weather', value: 'Loading...'),
+              error: (_, __) => const _Line(icon: Icons.wb_sunny_outlined, title: 'Weather', value: 'Unavailable'),
+              data: (weather) => _Line(
+                icon: Icons.wb_sunny_outlined,
+                title: 'Weather',
+                value: '${weather.tempC.toStringAsFixed(0)}°C ${weather.description}',
+              ),
+            ),
+            const SizedBox(height: 6),
+            currencyAsync.when(
+              loading: () => const _Line(icon: Icons.currency_exchange, title: 'Currency', value: 'Loading...'),
+              error: (_, __) => const _Line(icon: Icons.currency_exchange, title: 'Currency', value: 'Unavailable'),
+              data: (rate) => _Line(
+                icon: Icons.currency_exchange,
+                title: 'Currency',
+                value: '1 GBP = ${rate.rate.toStringAsFixed(2)} ${rate.target}',
+              ),
+            ),
+            const SizedBox(height: 6),
+            nearbyAsync.when(
+              loading: () => const _Line(icon: Icons.place_outlined, title: 'Attractions', value: 'Loading...'),
+              error: (_, __) => const _Line(icon: Icons.place_outlined, title: 'Attractions', value: 'Unavailable'),
+              data: (nearby) {
+                final names = nearby.attractions.take(2).map((e) => e.name).join(', ');
+                return _Line(icon: Icons.place_outlined, title: 'Attractions', value: names.isEmpty ? 'None' : names);
+              },
+            ),
+            const SizedBox(height: 6),
+            _Line(
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Budget',
+              value: trip.totalBudget > 0
+                  ? '£${trip.totalBudget.toStringAsFixed(0)}'
+                  : (linkedFlight != null || linkedHotel != null
+                      ? '£${_estimatedBudget(trip, linkedFlight, linkedHotel).toStringAsFixed(0)} (estimated)'
+                      : 'Not set'),
+            ),
+            const SizedBox(height: 10),
+            _UpcomingReminder(trip: trip),
           ],
         ),
       ),
+    );
+  }
+
+  static String _flightLine(SavedFlight? f) {
+    if (f == null) {
+      return 'No linked flight';
+    }
+    return '${f.airline} ${f.flightNumber}';
+  }
+
+  static String _hotelLine(SavedHotel? h) {
+    if (h == null) {
+      return 'No linked hotel';
+    }
+    return '${h.name} (${h.city})';
+  }
+
+  static String _currencyTarget(String country) {
+    switch (country.toLowerCase()) {
+      case 'france':
+      case 'spain':
+        return 'EUR';
+      case 'united states':
+        return 'USD';
+      case 'japan':
+        return 'JPY';
+      default:
+        return 'EUR';
+    }
+  }
+
+  static double _estimatedBudget(SavedTrip trip, SavedFlight? flight, SavedHotel? hotel) {
+    final flightCost = flight?.amount ?? 0;
+    final hotelCost = hotel?.pricePerNight ?? 0;
+    return flightCost + (hotelCost * trip.nights * trip.travelers);
+  }
+}
+
+class _Line extends StatelessWidget {
+  const _Line({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: const Color(0xFF2F5EAA)),
+        const SizedBox(width: 8),
+        Expanded(child: Text('$title: $value')),
+      ],
+    );
+  }
+}
+
+class _UpcomingReminder extends StatelessWidget {
+  const _UpcomingReminder({required this.trip});
+
+  final SavedTrip trip;
+
+  @override
+  Widget build(BuildContext context) {
+    final days = trip.departureDate.difference(DateTime.now()).inDays;
+
+    if (days < 0) {
+      return const Chip(
+        avatar: Icon(Icons.check_circle_outline),
+        label: Text('Trip dates have passed'),
+      );
+    }
+
+    if (days <= 3) {
+      return Chip(
+        avatar: const Icon(Icons.notifications_active_outlined),
+        label: Text('Reminder: Your trip starts in $days day${days == 1 ? '' : 's'}'),
+      );
+    }
+
+    return Chip(
+      avatar: const Icon(Icons.schedule_outlined),
+      label: Text('Upcoming in $days days'),
     );
   }
 }

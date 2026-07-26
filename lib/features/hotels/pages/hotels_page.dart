@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
 import '../providers/hotel_provider.dart';
+import '../screens/saved_hotels_page.dart';
 import '../widgets/hotel_card.dart';
 
 class HotelsPage extends ConsumerStatefulWidget {
@@ -62,7 +62,7 @@ class _HotelsPageState extends ConsumerState<HotelsPage> {
     });
 
     // Invalidate cache to trigger refetch
-    ref.refresh(hotelSearchProvider(request));
+    ref.invalidate(hotelSearchProvider(request));
   }
 
   Future<void> _selectCheckInDate() async {
@@ -101,7 +101,21 @@ class _HotelsPageState extends ConsumerState<HotelsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Hotels')),
+      appBar: AppBar(
+        title: const Text('Search Hotels'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SavedHotelsPage()),
+              );
+            },
+            icon: const Icon(Icons.favorite_outline),
+            tooltip: 'Saved Hotels',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

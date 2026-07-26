@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class SavedTrip {
   final String id;
   final String destination;

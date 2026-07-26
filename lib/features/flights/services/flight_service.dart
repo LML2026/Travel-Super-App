@@ -1,11 +1,13 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../core/utils/app_logger.dart';
-import '../../../core/constants/api_config.dart';
+import '../../../core/api/api_client.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../models/flight.dart';
 
 class FlightService {
-  static const String backendUrl = '$apiBaseUrl/api/flights/search';
+  FlightService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+
+  final ApiClient _apiClient;
 
   Future<List<Flight>> searchFlights({
     required String from,
@@ -18,23 +20,22 @@ class FlightService {
     try {
       appLogger.i('FlightService: $from → $to on $departureDate');
 
-      final response = await http.post(
-        Uri.parse(backendUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
+      final response = await _apiClient.post(
+        ApiEndpoints.flightsSearch,
+        data: {
           'origin': from.trim().toUpperCase(),
           'destination': to.trim().toUpperCase(),
           'departureDate': departureDate,
           'returnDate': returnDate,
           'passengers': passengers,
           'cabinClass': cabinClass.toLowerCase(),
-        }),
+        },
       );
 
       appLogger.d('FlightService: response ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
+        final decoded = response.data;
 
         if (decoded is! Map<String, dynamic>) {
           throw const FormatException('Unexpected server response.');
@@ -54,7 +55,7 @@ class FlightService {
         appLogger.i('FlightService: parsed ${flightList.length} flights');
         return flightList;
       } else {
-        throw Exception('API Error ${response.statusCode}: ${response.body}');
+        throw Exception('API Error ${response.statusCode}: ${jsonEncode(response.data)}');
       }
     } catch (e, st) {
       appLogger.e('FlightService: error', error: e, stackTrace: st);

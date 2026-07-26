@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/hotel_search_request.dart';
 import '../pages/hotels_page.dart';
 import '../providers/hotel_provider.dart';
 
@@ -119,15 +118,6 @@ class RecentHotelSearchesPage extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    // Reconstruct the search request and navigate to search page
-                    final request = HotelSearchRequest(
-                      city: search.city,
-                      checkInDate: DateTime.parse(search.checkInDate),
-                      checkOutDate: DateTime.parse(search.checkOutDate),
-                      guests: search.guests,
-                      rooms: search.rooms,
-                    );
-
                     // Navigate to hotel search page
                     Navigator.push(
                       context,

@@ -22,6 +22,8 @@ Future<void> addTrip(
   required DateTime returnDate,
   required int travelers,
   double? totalBudget,
+  List<String> flightIds = const [],
+  List<String> hotelIds = const [],
 }) async {
   final storage = ref.read(localStorageServiceProvider);
   
@@ -32,8 +34,8 @@ Future<void> addTrip(
     departureDate: departureDate,
     returnDate: returnDate,
     travelers: travelers,
-    flightIds: [],
-    hotelIds: [],
+    flightIds: flightIds,
+    hotelIds: hotelIds,
     totalBudget: totalBudget ?? 0.0,
     createdAt: DateTime.now(),
   );
@@ -41,7 +43,7 @@ Future<void> addTrip(
   await storage.addTrip(trip);
   
   // Refresh the trips list
-  ref.refresh(savedTripsProvider);
+  ref.invalidate(savedTripsProvider);
 }
 
 // Function to delete a trip
@@ -50,7 +52,7 @@ Future<void> deleteTrip(WidgetRef ref, String tripId) async {
   await storage.deleteTrip(tripId);
   
   // Refresh the trips list
-  ref.refresh(savedTripsProvider);
+  ref.invalidate(savedTripsProvider);
 }
 
 // Function to update a trip
@@ -59,5 +61,5 @@ Future<void> updateTrip(WidgetRef ref, SavedTrip trip) async {
   await storage.updateTrip(trip);
   
   // Refresh the trips list
-  ref.refresh(savedTripsProvider);
+  ref.invalidate(savedTripsProvider);
 }

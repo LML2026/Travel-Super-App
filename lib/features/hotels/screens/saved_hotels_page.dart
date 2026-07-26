@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/saved_hotel.dart';
 import '../models/hotel.dart';
 import '../pages/hotel_details_page.dart';
 import '../providers/hotel_provider.dart';
@@ -67,10 +66,16 @@ class SavedHotelsPage extends ConsumerWidget {
                 id: saved.hotelId,
                 name: saved.name,
                 city: saved.city,
+                country: saved.country,
+                address: saved.address,
                 rating: saved.rating,
                 pricePerNight: saved.pricePerNight,
                 totalPrice: saved.totalPrice,
                 beds: saved.beds,
+                roomType: saved.roomType,
+                amenities: saved.amenities,
+                freeCancellation: saved.freeCancellation,
+                description: saved.description,
                 image: saved.image,
                 nights: saved.nights,
               );
@@ -126,10 +131,17 @@ class SavedHotelsPage extends ConsumerWidget {
                                       const Icon(Icons.location_on, size: 14, color: Colors.grey),
                                       const SizedBox(width: 4),
                                       Text(
-                                        saved.city,
+                                        saved.address.isEmpty
+                                            ? '${saved.city}${saved.country.isEmpty ? '' : ', ${saved.country}'}'
+                                            : saved.address,
                                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                                       ),
                                     ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    saved.roomType,
+                                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
@@ -161,7 +173,7 @@ class SavedHotelsPage extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '\$${saved.totalPrice.toStringAsFixed(0)}',
+                                  '£${saved.totalPrice.toStringAsFixed(0)}',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -169,7 +181,7 @@ class SavedHotelsPage extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  '\$${saved.pricePerNight.toStringAsFixed(0)}/night',
+                                  '£${saved.pricePerNight.toStringAsFixed(0)} / night',
                                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                 ),
                               ],

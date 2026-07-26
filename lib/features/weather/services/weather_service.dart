@@ -1,21 +1,23 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../core/constants/api_config.dart';
+import '../../../core/api/api_client.dart';
+import '../../../core/api/api_endpoints.dart';
 import '../models/weather_data.dart';
 
 class WeatherService {
-  static const String _backendUrl = '$apiBaseUrl/api/weather';
+  WeatherService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+
+  final ApiClient _apiClient;
 
   Future<WeatherData> getWeather(String city) async {
-    final response = await http.get(
-      Uri.parse('$_backendUrl?city=${Uri.encodeComponent(city)}'),
+    final response = await _apiClient.get(
+      ApiEndpoints.weather,
+      queryParameters: {'city': city},
     );
 
     if (response.statusCode == 200) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final json = response.data as Map<String, dynamic>;
       return WeatherData.fromJson(json);
     } else {
-      throw Exception('Failed to load weather: ${response.body}');
+      throw Exception('Failed to load weather: ${response.data}');
     }
   }
 }
