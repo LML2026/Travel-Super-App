@@ -21,11 +21,11 @@ class TripFirestoreService {
   }
 
   Future<void> createTrip(TripModel trip) async {
-    await _tripCollection.doc(trip.id).set(trip.toFirestore());
+    await _tripCollection.doc(trip.id).set(_toFirestoreMap(trip));
   }
 
   Future<void> updateTrip(TripModel trip) async {
-    await _tripCollection.doc(trip.id).update(trip.toFirestore());
+    await _tripCollection.doc(trip.id).update(_toFirestoreMap(trip));
   }
 
   Future<void> deleteTrip(String id) async {
@@ -38,18 +38,101 @@ class TripFirestoreService {
       return null;
     }
 
-    return TripModel.fromFirestore(doc);
+    return TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data() ?? const {}));
   }
 
   Future<List<TripModel>> getAllTrips() async {
-    final snapshot = await _tripCollection.orderBy('departureDate').get();
-    return snapshot.docs.map(TripModel.fromFirestore).toList();
+    final snapshot = await _tripCollection.orderBy('startDate').get();
+    return snapshot.docs
+        .map((doc) => TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())))
+        .toList();
   }
 
   Stream<List<TripModel>> watchTrips() {
     return _tripCollection
-        .orderBy('departureDate')
+        .orderBy('startDate')
         .snapshots()
-        .map((snapshot) => snapshot.docs.map(TripModel.fromFirestore).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())))
+              .toList(),
+        );
+  }
+
+  Map<String, dynamic> _fromFirestoreMap(
+    String id,
+    Map<String, dynamic> source,
+  ) {
+    DateTime? toDate(dynamic value) {
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      if (value is DateTime) {
+        return value;
+      }
+      if (value == null) {
+        return null;
+      }
+      return DateTime.tryParse(value.toString());
+    }
+
+    return {
+      'id': id,
+      'title': source['title'],
+      'destination': source['destination'],
+      'startDate': toDate(source['startDate']) ?? toDate(source['departureDate']),
+      'endDate': toDate(source['endDate']) ?? toDate(source['returnDate']),
+      'budget': source['budget'],
+      'currency': source['currency'],
+      'travellers': source['travellers'],
+      'notes': source['notes'],
+      'selectedFlightId': source['selectedFlightId'] ?? source['flightId'],
+      'selectedHotelId': source['selectedHotelId'] ?? source['hotelId'],
+      'weatherSnapshot': source['weatherSnapshot'] ?? source['weather'],
+      'weatherSnapshotCapturedAt': toDate(source['weatherSnapshotCapturedAt']),
+      'createdAt': toDate(source['createdAt']),
+      'updatedAt': toDate(source['updatedAt']),
+      'status': source['status'],
+    };
+  }
+
+  Map<String, dynamic> _toFirestoreMap(TripModel trip) {
+    final json = trip.toJson();
+    DateTime? parse(dynamic value) {
+      if (value == null) {
+        return null;
+      }
+      if (value is DateTime) {
+        return value;
+      }
+      return DateTime.tryParse(value.toString());
+    }
+
+    final createdAt = parse(json['createdAt']) ?? DateTime.now();
+    final updatedAt = parse(json['updatedAt']) ?? createdAt;
+
+    return {
+      'title': json['title'],
+      'destination': json['destination'],
+      'startDate': Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
+      'endDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
+      // Keep legacy keys during migration.
+      'departureDate': Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
+      'returnDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
+      'budget': json['budget'],
+      'currency': json['currency'],
+      'travellers': json['travellers'],
+      'notes': json['notes'],
+      'selectedFlightId': json['selectedFlightId'],
+      'selectedHotelId': json['selectedHotelId'],
+      'weatherSnapshot': json['weatherSnapshot'],
+      'weather': json['weather'],
+      'weatherSnapshotCapturedAt': parse(json['weatherSnapshotCapturedAt']) == null
+          ? null
+          : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+      'status': json['status'],
+    };
   }
 }

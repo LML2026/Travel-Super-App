@@ -74,7 +74,7 @@ class _TripDashboardResolverPage extends ConsumerWidget {
     final repository = ref.watch(tripRepositoryProvider);
 
     return FutureBuilder<domain.Trip?>(
-      future: repository.getTrip(tripId),
+      future: repository.get(tripId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
@@ -119,7 +119,7 @@ class _TripEditResolverPage extends ConsumerWidget {
     final repository = ref.watch(tripRepositoryProvider);
 
     return FutureBuilder<domain.Trip?>(
-      future: repository.getTrip(tripId),
+      future: repository.get(tripId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(

@@ -79,6 +79,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
 
     final trip = Trip(
       id: const Uuid().v4(),
+      title: _destinationController.text.trim(),
       destination: _destinationController.text.trim(),
       departureDate: _departureDate!,
       returnDate: _returnDate!,

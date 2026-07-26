@@ -104,9 +104,10 @@ Future<void> removeTrip(WidgetRef ref, String tripId) async {
 Trip duplicateTrip(Trip source) {
   return Trip(
     id: const Uuid().v4(),
+    title: '${source.title} (Copy)',
     destination: '${source.destination} (Copy)',
-    departureDate: source.departureDate,
-    returnDate: source.returnDate,
+    startDate: source.startDate,
+    endDate: source.endDate,
     budget: source.budget,
     currency: source.currency,
     travellers: source.travellers,

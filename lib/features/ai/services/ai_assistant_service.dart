@@ -24,7 +24,19 @@ class AiAssistantService {
         ApiEndpoints.aiTravelPlan,
         data: {
           'prompt': prompt,
-          'trips': trips.map((trip) => trip.toJson()).toList(),
+          'trips': trips
+              .map(
+                (trip) => {
+                  'id': trip.id,
+                  'title': trip.title,
+                  'destination': trip.destination,
+                  'startDate': trip.startDate.toIso8601String(),
+                  'endDate': trip.endDate.toIso8601String(),
+                  'budget': trip.budget,
+                  'currency': trip.currency,
+                },
+              )
+              .toList(),
           'flights': flights
               .map(
                 (flight) => {

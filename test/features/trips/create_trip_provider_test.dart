@@ -29,8 +29,13 @@ class _OkRepo extends TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     return tripId == _trip.id ? _trip : null;
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return <domain.Trip>[_trip];
   }
 }
 
@@ -52,8 +57,13 @@ class _FailingRepo extends TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     return null;
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return const <domain.Trip>[];
   }
 }
 
@@ -61,6 +71,7 @@ void main() {
   Trip makeTrip() {
     return Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -75,9 +86,10 @@ void main() {
   domain.Trip toDomain(Trip trip) {
     return domain.Trip(
       id: trip.id,
+      title: trip.title,
       destination: trip.destination,
-      departureDate: trip.departureDate,
-      returnDate: trip.returnDate,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
       budget: trip.budget,
       currency: trip.currency,
       travellers: trip.travellers,

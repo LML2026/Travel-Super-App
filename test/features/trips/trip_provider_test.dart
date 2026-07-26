@@ -36,7 +36,7 @@ class _FakeTripRepository extends TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     for (final trip in _trips) {
       if (trip.id == tripId) {
         return trip;
@@ -44,12 +44,18 @@ class _FakeTripRepository extends TripRepository {
     }
     return null;
   }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return _trips;
+  }
 }
 
 void main() {
   model.Trip makeModelTrip({String id = 'trip-1'}) {
     return model.Trip(
       id: id,
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -64,9 +70,10 @@ void main() {
   domain.Trip makeDomainTrip({String id = 'trip-1'}) {
     return domain.Trip(
       id: id,
+      title: 'Paris Getaway',
       destination: 'Paris',
-      departureDate: DateTime(2026, 9, 14),
-      returnDate: DateTime(2026, 9, 18),
+      startDate: DateTime(2026, 9, 14),
+      endDate: DateTime(2026, 9, 18),
       budget: 1500,
       currency: 'GBP',
       travellers: 2,

@@ -23,13 +23,8 @@ class _EmptyTripRepository implements TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     return null;
-  }
-
-  @override
-  Future<domain.Trip?> get(String id) {
-    return getTrip(id);
   }
 
   @override
@@ -54,13 +49,8 @@ class _ErrorTripRepository implements TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     return null;
-  }
-
-  @override
-  Future<domain.Trip?> get(String id) {
-    return getTrip(id);
   }
 
   @override
@@ -89,13 +79,8 @@ class _SingleTripRepository implements TripRepository {
   }
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     return tripId == trip.id ? _toDomainTrip(trip) : null;
-  }
-
-  @override
-  Future<domain.Trip?> get(String id) {
-    return getTrip(id);
   }
 
   @override
@@ -107,9 +92,10 @@ class _SingleTripRepository implements TripRepository {
 domain.Trip _toDomainTrip(domain.Trip trip) {
   return domain.Trip(
     id: trip.id,
+    title: trip.title,
     destination: trip.destination,
-    departureDate: trip.departureDate,
-    returnDate: trip.returnDate,
+    startDate: trip.startDate,
+    endDate: trip.endDate,
     budget: trip.budget,
     currency: trip.currency,
     travellers: trip.travellers,
@@ -139,6 +125,7 @@ void main() {
   testWidgets('shows list item when repository returns trips', (tester) async {
     final trip = domain.Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),

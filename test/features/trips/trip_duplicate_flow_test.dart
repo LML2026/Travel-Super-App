@@ -6,6 +6,7 @@ void main() {
   test('duplicateTrip creates a new id and keeps key fields', () {
     final source = Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),

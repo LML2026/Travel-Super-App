@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
+import 'package:travel_super_app/features/trips/data/models/trip_model.dart';
 
 void main() {
-  test('toCreateMap and toUpdateMap include status field', () {
-    final trip = Trip(
+  test('TripModel serialization includes status and title fields', () {
+    final trip = TripModel(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 8, 20),
       endDate: DateTime(2026, 8, 25),
@@ -13,13 +14,13 @@ void main() {
       travellers: 2,
       notes: 'Anniversary trip',
       createdAt: DateTime(2026, 7, 26),
+      updatedAt: DateTime(2026, 7, 26),
       status: 'planned',
     );
 
-    final createMap = trip.toCreateMap();
-    final updateMap = trip.toUpdateMap();
+    final json = trip.toJson();
 
-    expect(createMap['status'], 'planned');
-    expect(updateMap['status'], 'planned');
+    expect(json['status'], 'planned');
+    expect(json['title'], 'Paris Getaway');
   });
 }

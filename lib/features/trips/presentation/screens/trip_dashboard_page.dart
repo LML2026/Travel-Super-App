@@ -178,6 +178,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   Future<void> _unlinkFlight() async {
     final updatedTrip = Trip(
       id: _trip.id,
+      title: _trip.title,
       destination: _trip.destination,
       departureDate: _trip.departureDate,
       returnDate: _trip.returnDate,
@@ -256,6 +257,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   Future<void> _unlinkHotel() async {
     final updatedTrip = Trip(
       id: _trip.id,
+      title: _trip.title,
       destination: _trip.destination,
       departureDate: _trip.departureDate,
       returnDate: _trip.returnDate,

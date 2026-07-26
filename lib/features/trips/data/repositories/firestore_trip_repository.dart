@@ -40,9 +40,4 @@ class FirestoreTripRepository implements TripRepository {
   Future<void> deleteTrip(String id) async {
     await _service.deleteTrip(id);
   }
-
-  @override
-  Future<Trip?> getTrip(String tripId) {
-    return get(tripId);
-  }
 }

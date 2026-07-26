@@ -28,16 +28,11 @@ class _FakeTripRepository implements TripRepository {
   Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Future<domain.Trip?> getTrip(String tripId) async {
+  Future<domain.Trip?> get(String tripId) async {
     if (currentTrip.id == tripId) {
       return currentTrip;
     }
     return null;
-  }
-
-  @override
-  Future<domain.Trip?> get(String id) {
-    return getTrip(id);
   }
 
   @override
@@ -64,6 +59,7 @@ domain.Trip _makeTrip({
 }) {
   return domain.Trip(
     id: id,
+    title: 'Paris Getaway',
     destination: 'Paris',
     departureDate: DateTime(2026, 9, 1),
     returnDate: DateTime(2026, 9, 5),
