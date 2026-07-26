@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/hotel.dart';
-import 'hotel_details_page.dart';
+
+import '../../../app/app_routes.dart';
 import '../providers/hotel_provider.dart';
 
 class SavedHotelsPage extends ConsumerWidget {
@@ -63,35 +63,11 @@ class SavedHotelsPage extends ConsumerWidget {
             itemCount: savedHotels.length,
             itemBuilder: (context, index) {
               final saved = savedHotels[index];
-              final hotel = Hotel(
-                id: saved.hotelId,
-                name: saved.name,
-                city: saved.city,
-                country: saved.country,
-                address: saved.address,
-                currency: saved.currency,
-                rating: saved.rating,
-                pricePerNight: saved.pricePerNight,
-                totalPrice: saved.totalPrice,
-                beds: saved.beds,
-                roomType: saved.roomType,
-                amenities: saved.amenities,
-                freeCancellation: saved.freeCancellation,
-                description: saved.description,
-                image: saved.image,
-                nights: saved.nights,
-              );
-
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HotelDetailsPage(hotel: hotel),
-                      ),
-                    );
+                    context.pushSavedHotelDetails(saved);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(16),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:travel_super_app/features/trip_planner/pages/trip_planner_page.dart';
+import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
 import '../flights/pages/flights_page.dart';
-import '../hotels/screens/hotel_search_page.dart';
-import '../weather/pages/weather_page.dart';
 import '../home/home_page.dart';
+import '../profile/profile_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -18,9 +17,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final List<Widget> _pages = const [
     HomePage(),
     FlightsPage(),
-    HotelSearchPage(),
-    WeatherPage(),
-    TripPlannerPage(),
+    TripListPage(),
+    ProfilePage(),
   ];
 
   @override
@@ -46,19 +44,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Flights',
           ),
           NavigationDestination(
-            icon: Icon(Icons.hotel_outlined),
-            selectedIcon: Icon(Icons.hotel),
-            label: 'Hotels',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.wb_sunny_outlined),
-            selectedIcon: Icon(Icons.wb_sunny),
-            label: 'Weather',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.luggage_outlined),
             selectedIcon: Icon(Icons.luggage),
             label: 'Trips',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),

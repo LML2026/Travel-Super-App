@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../app/app_routes.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/validators/auth_validators.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
-import 'forgot_password_page.dart';
-import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (mounted) {
-        context.go('/home');
+        context.goHome();
       }
     } catch (e) {
       if (mounted) {
@@ -120,12 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: _loading
                           ? null
                           : () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ForgotPasswordPage(),
-                                ),
-                              );
+                              context.pushForgotPassword();
                             },
                       child: const Text('Forgot Password?'),
                     ),
@@ -155,12 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: _loading
                         ? null
                         : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterPage(),
-                              ),
-                            );
+                            context.pushRegister();
                           },
                     child: const Text(
                       'Don\'t have an account? Create one',

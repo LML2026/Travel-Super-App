@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "check:architecture": "node ../tools/check-architecture.mjs",
+    "check:foundation": "npm run check:architecture"
   },
   "dependencies": {
     "compression": "^1.8.1",

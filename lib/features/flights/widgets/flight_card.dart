@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../app/app_routes.dart';
 import '../models/flight.dart';
 import '../models/saved_flight.dart';
-import '../pages/flight_details_page.dart';
 import '../providers/flight_provider.dart';
 import '../../../core/utils/flight_formatter.dart';
 
@@ -38,12 +38,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
   }
 
   void _navigateToDetails() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FlightDetailsPage(flight: widget.flight),
-      ),
-    );
+    context.pushFlightDetails(widget.flight);
   }
 
   Future<void> _saveFlight(BuildContext context) async {

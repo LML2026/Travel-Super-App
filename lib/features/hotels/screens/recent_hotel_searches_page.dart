@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'hotel_search_page.dart';
+
+import '../../../app/app_routes.dart';
 import '../providers/hotel_provider.dart';
 
 class RecentHotelSearchesPage extends ConsumerWidget {
@@ -118,13 +119,7 @@ class RecentHotelSearchesPage extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    // Navigate to hotel search page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HotelSearchPage(),
-                      ),
-                    );
+                    context.pushHotels();
                   },
                 ),
               );

@@ -35,6 +35,20 @@ class WeatherData {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'city': city,
+      'country': country,
+      'tempC': tempC,
+      'tempF': tempF,
+      'description': description,
+      'iconCode': iconCode,
+      'humidity': humidity,
+      'windKph': windKph,
+      'condition': condition,
+    };
+  }
+
   String get emoji {
     final c = condition.toLowerCase();
     if (c.contains('sun') || c.contains('clear')) return '☀️';

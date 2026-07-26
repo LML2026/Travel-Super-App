@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../app/app_routes.dart';
 import '../models/flight.dart';
-import '../pages/flight_details_page.dart';
 import '../../../core/utils/flight_formatter.dart';
+import '../models/saved_flight.dart';
 
 class SavedFlightsPage extends StatelessWidget {
   const SavedFlightsPage({super.key});
@@ -117,6 +118,7 @@ class SavedFlightsPage extends StatelessWidget {
                 amount: double.tryParse(data['amount']?.toString() ?? '') ?? 0.0,
                 currency: data['currency']?.toString() ?? 'EUR',
               );
+              final savedFlight = SavedFlight.fromJson({...data, 'id': document.id});
 
               final departureTime = _getTimeOnly(flight.departureAt);
               final arrivalTime = _getTimeOnly(flight.arrivalAt);
@@ -125,12 +127,7 @@ class SavedFlightsPage extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FlightDetailsPage(flight: flight),
-                    ),
-                  );
+                  context.pushSavedFlightDetails(savedFlight);
                 },
                 child: Card(
                   margin: EdgeInsets.zero,

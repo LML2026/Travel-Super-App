@@ -1,103 +1,112 @@
 class Hotel {
   final String id;
   final String name;
-  final String city;
-  final String country;
-  final String address;
-  final String currency;
+  final String image;
   final double rating;
-  final double pricePerNight;
+  final String address;
+  final String city;
+  final double price;
+  final String currency;
+  final List<String> amenities;
+
+  // Backward-compatible fields used by existing hotel details and save flows.
+  final String country;
   final double totalPrice;
   final int beds;
   final String roomType;
-  final List<String> amenities;
   final bool freeCancellation;
   final String description;
   final List<String> imageGallery;
   final double latitude;
   final double longitude;
-  final String image;
   final int nights;
 
   const Hotel({
     required this.id,
     required this.name,
-    required this.city,
-    this.country = '',
-    this.address = '',
-    this.currency = 'GBP',
+    required this.image,
     required this.rating,
-    required this.pricePerNight,
-    required this.totalPrice,
-    required this.beds,
+    required this.address,
+    required this.city,
+    required this.price,
+    required this.currency,
+    required this.amenities,
+    this.country = '',
+    double? totalPrice,
+    this.beds = 1,
     this.roomType = 'Standard Room',
-    this.amenities = const ['Free Wi-Fi', 'Breakfast Included'],
     this.freeCancellation = true,
     this.description =
         'Comfortable stay in a central location with curated amenities for modern travelers.',
     this.imageGallery = const ['🏨', '🛏️', '🌇'],
     this.latitude = 0,
     this.longitude = 0,
-    required this.image,
-    required this.nights,
-  });
+    this.nights = 1,
+  }) : totalPrice = totalPrice ?? price;
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
-    final city = json['city']?.toString() ?? '';
-    final country = json['country']?.toString() ?? _defaultCountry(city);
-    final address = json['address']?.toString() ?? _defaultAddress(city, country);
-    final coordinates = _defaultCoordinates(city);
-    final amenities = (json['amenities'] is List)
+    final parsedCity = json['city']?.toString() ?? '';
+    final parsedCountry = json['country']?.toString() ?? _defaultCountry(parsedCity);
+    final parsedAddress = json['address']?.toString() ?? _defaultAddress(parsedCity, parsedCountry);
+    final parsedPrice =
+        (json['price'] as num?)?.toDouble() ??
+        (json['pricePerNight'] as num?)?.toDouble() ??
+        0.0;
+    final parsedAmenities = (json['amenities'] is List)
         ? List<String>.from((json['amenities'] as List).map((e) => e.toString()))
-        : _defaultAmenities(city);
+        : _defaultAmenities(parsedCity);
+    final coordinates = _defaultCoordinates(parsedCity);
 
     return Hotel(
       id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      city: city,
-      country: country,
-      address: address,
+      name: json['name']?.toString() ?? 'Unknown Hotel',
+      image: json['image']?.toString() ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      address: parsedAddress,
+      city: parsedCity,
+      price: parsedPrice,
       currency: json['currency']?.toString() ?? 'GBP',
-      rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
-      pricePerNight: double.tryParse(json['pricePerNight']?.toString() ?? '') ?? 0.0,
-      totalPrice: double.tryParse(json['totalPrice']?.toString() ?? '') ?? 0.0,
+      amenities: parsedAmenities,
+      country: parsedCountry,
+      totalPrice: (json['totalPrice'] as num?)?.toDouble(),
       beds: int.tryParse(json['beds']?.toString() ?? '') ?? 1,
-      roomType: json['roomType']?.toString() ?? _defaultRoomType(city),
-      amenities: amenities,
+      roomType: json['roomType']?.toString() ?? _defaultRoomType(parsedCity),
       freeCancellation: json['freeCancellation'] == null
           ? true
           : json['freeCancellation'] == true,
-      description: json['description']?.toString() ?? _defaultDescription(city),
+      description: json['description']?.toString() ?? _defaultDescription(parsedCity),
       imageGallery: (json['imageGallery'] is List)
           ? List<String>.from((json['imageGallery'] as List).map((e) => e.toString()))
           : const ['🏨', '🛏️', '🌇'],
       latitude: double.tryParse(json['latitude']?.toString() ?? '') ?? coordinates.$1,
       longitude: double.tryParse(json['longitude']?.toString() ?? '') ?? coordinates.$2,
-      image: json['image']?.toString() ?? '🏨',
       nights: int.tryParse(json['nights']?.toString() ?? '') ?? 1,
     );
   }
+
+  double get pricePerNight => price;
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'city': city,
-      'country': country,
-      'address': address,
-      'currency': currency,
+      'image': image,
       'rating': rating,
+      'address': address,
+      'city': city,
+      'price': price,
+      'currency': currency,
+      'amenities': amenities,
+      'country': country,
       'pricePerNight': pricePerNight,
       'totalPrice': totalPrice,
       'beds': beds,
       'roomType': roomType,
-      'amenities': amenities,
       'freeCancellation': freeCancellation,
       'description': description,
       'imageGallery': imageGallery,
       'latitude': latitude,
       'longitude': longitude,
-      'image': image,
       'nights': nights,
     };
   }

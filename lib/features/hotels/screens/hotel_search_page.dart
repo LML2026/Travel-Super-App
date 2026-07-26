@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/app_routes.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/widgets.dart';
 import '../models/hotel_search_request.dart';
 import '../providers/hotel_provider.dart';
 import '../widgets/hotel_card.dart';
-import 'saved_hotels_page.dart';
 
 class HotelSearchPage extends ConsumerStatefulWidget {
   const HotelSearchPage({super.key});
@@ -106,10 +108,7 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SavedHotelsPage()),
-              );
+              context.pushSavedHotels();
             },
             icon: const Icon(Icons.favorite_outline),
             tooltip: 'Saved Hotels',
@@ -117,86 +116,74 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
+            AppCard(
               elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _cityController,
-                      decoration: const InputDecoration(
-                        labelText: 'Destination',
-                        hintText: 'e.g. Paris, London, Tokyo',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.location_city),
+              child: Column(
+                children: [
+                  AppInputField(
+                    controller: _cityController,
+                    label: 'Destination',
+                    hint: 'e.g. Paris, London, Tokyo',
+                    prefixIcon: Icons.location_city,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DateField(
+                          label: 'Check-in',
+                          value: _checkInDate,
+                          onTap: _selectCheckInDate,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _DateField(
-                            label: 'Check-in',
-                            value: _checkInDate,
-                            onTap: _selectCheckInDate,
-                          ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: _DateField(
+                          label: 'Check-out',
+                          value: _checkOutDate,
+                          onTap: _selectCheckOutDate,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _DateField(
-                            label: 'Check-out',
-                            value: _checkOutDate,
-                            onTap: _selectCheckOutDate,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _Counter(
-                            label: 'Guests',
-                            value: _guests,
-                            onDecrement:
-                                _guests > 1 ? () => setState(() => _guests--) : null,
-                            onIncrement: () => setState(() => _guests++),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _Counter(
-                            label: 'Rooms',
-                            value: _rooms,
-                            onDecrement:
-                                _rooms > 1 ? () => setState(() => _rooms--) : null,
-                            onIncrement: () => setState(() => _rooms++),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: _triggerSearch,
-                        icon: const Icon(Icons.search),
-                        label: const Text('Search Hotels'),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _Counter(
+                          label: 'Guests',
+                          value: _guests,
+                          onDecrement:
+                              _guests > 1 ? () => setState(() => _guests--) : null,
+                          onIncrement: () => setState(() => _guests++),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: _Counter(
+                          label: 'Rooms',
+                          value: _rooms,
+                          onDecrement:
+                              _rooms > 1 ? () => setState(() => _rooms--) : null,
+                          onIncrement: () => setState(() => _rooms++),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppPrimaryButton(
+                    onPressed: _triggerSearch,
+                    icon: Icons.search,
+                    label: 'Search Hotels',
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             if (_currentSearch != null) _HotelResults(request: _currentSearch!),
           ],
         ),
@@ -216,15 +203,16 @@ class _HotelResults extends ConsumerWidget {
 
     return hotelsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => _ResultMessage(
+      error: (_, __) => AppEmptyState(
         icon: Icons.error_outline,
         title: 'Search failed',
-        subtitle: 'We could not load hotels right now. Please try again.',
+        message: 'We could not load hotels right now. Please try again.',
         iconColor: Colors.red,
-        action: FilledButton.icon(
+        action: AppPrimaryButton(
           onPressed: () => ref.invalidate(hotelSearchProvider(request)),
-          icon: const Icon(Icons.refresh),
-          label: const Text('Try Again'),
+          icon: Icons.refresh,
+          label: 'Try Again',
+          expand: false,
         ),
       ),
       data: (hotels) {
@@ -239,10 +227,10 @@ class _HotelResults extends ConsumerWidget {
         }
 
         if (hotels.isEmpty) {
-          return const _ResultMessage(
+          return const AppEmptyState(
             icon: Icons.hotel,
             title: 'No hotels found',
-            subtitle: 'Try another destination\nor different dates.',
+            message: 'Try another destination\nor different dates.',
           );
         }
 
@@ -253,7 +241,7 @@ class _HotelResults extends ConsumerWidget {
               '${hotels.length} hotels found',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -322,7 +310,7 @@ class _Counter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade400),
         borderRadius: BorderRadius.circular(8),
@@ -353,48 +341,6 @@ class _Counter extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ResultMessage extends StatelessWidget {
-  const _ResultMessage({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.iconColor,
-    this.action,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color? iconColor;
-  final Widget? action;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 28),
-        child: Column(
-          children: [
-            Icon(icon, size: 64, color: iconColor ?? Colors.grey[350]),
-            const SizedBox(height: 14),
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            if (action != null) ...[
-              const SizedBox(height: 14),
-              action!,
-            ],
-          ],
-        ),
       ),
     );
   }

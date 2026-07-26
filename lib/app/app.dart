@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_theme.dart';
-import 'router.dart';
+import 'providers.dart';
 
-class TravelSuperApp extends StatelessWidget {
+class TravelSuperApp extends ConsumerWidget {
   const TravelSuperApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appRouter = ref.watch(appRouterProvider);
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Travel Super App',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.light(),
       routerConfig: appRouter,
     );
   }

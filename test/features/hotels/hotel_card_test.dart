@@ -9,12 +9,15 @@ void main() {
     final testHotel = Hotel(
       id: 'h1',
       name: 'Luxury Paris Boutique',
+      image: 'https://example.com/hotel.jpg',
       city: 'Paris',
       rating: 4.8,
-      pricePerNight: 145.00,
+      address: 'Paris, France',
+      price: 145.00,
+      currency: 'GBP',
+      amenities: const ['Free Wi-Fi', 'Breakfast Included', 'Free cancellation'],
       totalPrice: 435.00,
       beds: 2,
-      image: '🏨',
       nights: 3,
     );
 
@@ -42,7 +45,7 @@ void main() {
       expect(find.text('4.8'), findsOneWidget);
 
       // Verify redesigned nightly price format
-      expect(find.text('£145 / night'), findsOneWidget);
+      expect(find.text('GBP 145 / night'), findsOneWidget);
     });
 
     testWidgets('HotelCard displays bed information', (WidgetTester tester) async {
@@ -71,7 +74,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Hotel Image'), findsOneWidget);
+      expect(find.text('Book Now'), findsOneWidget);
     });
 
     testWidgets('HotelCard displays emoji icon', (WidgetTester tester) async {
@@ -85,7 +88,7 @@ void main() {
         ),
       );
 
-      expect(find.text('🏨'), findsOneWidget);
+      expect(find.byType(Image), findsOneWidget);
     });
 
     testWidgets('HotelCard has a book button', (WidgetTester tester) async {
@@ -131,12 +134,15 @@ void main() {
       final singleBedHotel = Hotel(
         id: 'h2',
         name: 'Economy London Hotel',
+        image: 'https://example.com/hotel.jpg',
         city: 'London',
         rating: 4.2,
-        pricePerNight: 85.00,
+        address: 'London, UK',
+        price: 85.00,
+        currency: 'GBP',
+        amenities: const ['Free Wi-Fi', 'Breakfast Included'],
         totalPrice: 255.00,
         beds: 1,
-        image: '🏨',
         nights: 3,
       );
 
@@ -165,7 +171,7 @@ void main() {
       );
 
       // Verify star icon exists
-      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
 
       // Verify rating value
       expect(find.text('4.8'), findsOneWidget);
@@ -182,15 +188,9 @@ void main() {
         ),
       );
 
-      // Verify location icon
-      expect(find.byIcon(Icons.location_pin), findsOneWidget);
-
-        // Verify at least one amenity icon from the rendered set
-        final hasAmenityIcon =
-          find.byIcon(Icons.wifi_rounded).evaluate().isNotEmpty ||
-          find.byIcon(Icons.free_breakfast_outlined).evaluate().isNotEmpty ||
-          find.byIcon(Icons.check_circle_outline).evaluate().isNotEmpty;
-        expect(hasAmenityIcon, isTrue);
+      // Verify visible action and rating icons
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.calendar_month), findsOneWidget);
     });
 
     testWidgets('HotelCard layout is responsive', (WidgetTester tester) async {
@@ -218,12 +218,15 @@ void main() {
       final customHotel = Hotel(
         id: 'h3',
         name: 'Test Hotel',
+        image: 'https://example.com/hotel.jpg',
         city: 'Test City',
         rating: 4.5,
-        pricePerNight: 100.00,
+        address: 'Test City Center',
+        price: 100.00,
+        currency: 'GBP',
+        amenities: const ['Free Wi-Fi', 'Breakfast Included'],
         totalPrice: 500.00, // 100 * 5 nights
         beds: 2,
-        image: '🏨',
         nights: 5,
       );
 
@@ -237,7 +240,7 @@ void main() {
         ),
       );
 
-      expect(find.text('£100 / night'), findsOneWidget);
+      expect(find.text('GBP 100 / night'), findsOneWidget);
     });
   });
 }

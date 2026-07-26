@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'flight_search_page.dart';
-import '../screens/recent_flight_searches_page.dart';
-import '../screens/saved_flights_page.dart';
+
+import '../../../app/app_routes.dart';
 
 class FlightsPage extends StatelessWidget {
   const FlightsPage({super.key});
@@ -31,11 +30,7 @@ class FlightsPage extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const FlightSearchPage(),
-                  ),
-                );
+                context.pushFlightSearch();
               },
               child: const Padding(
                 padding: EdgeInsets.all(24),
@@ -83,11 +78,7 @@ class FlightsPage extends StatelessWidget {
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const RecentFlightSearchesPage(),
-                  ),
-                );
+                context.pushRecentFlights();
               },
             ),
           ),
@@ -101,11 +92,7 @@ class FlightsPage extends StatelessWidget {
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const SavedFlightsPage(),
-                  ),
-                );
+                context.pushSavedFlights();
               },
             ),
           ),

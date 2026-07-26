@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../app/app_routes.dart';
 import '../../core/services/auth_service.dart';
 
 class SplashPage extends StatefulWidget {
@@ -25,9 +25,9 @@ class _SplashPageState extends State<SplashPage> {
 
       // Check if user is already signed in
       if (_auth.currentUser != null) {
-        context.go('/home');
+        context.goHome();
       } else {
-        context.go('/login');
+        context.goLogin();
       }
     });
   }

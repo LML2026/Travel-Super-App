@@ -1,0 +1,14 @@
+const express = require('express');
+
+const { getRoot, getHealth } = require('../controllers/systemController');
+
+const createSystemRoutes = () => {
+  const router = express.Router();
+
+  router.get('/', getRoot);
+  router.get('/health', getHealth);
+
+  return router;
+};
+
+module.exports = createSystemRoutes;

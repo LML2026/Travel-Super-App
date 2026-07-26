@@ -1,0 +1,420 @@
+openapi: 3.1.0
+info:
+  title: Travel Super App Backend API
+  version: 0.1.0
+  description: >-
+    Initial OpenAPI skeleton generated from current backend routes.
+servers:
+  - url: http://localhost:5000
+    description: Local backend
+paths:
+  /api/flights/search:
+    post:
+      summary: Search flight offers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightSearchRequest'
+      responses:
+        '200':
+          description: Flight results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightSearchResponse'
+        '422':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Provider or internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/weather:
+    get:
+      summary: Get weather by city
+      parameters:
+        - in: query
+          name: city
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Weather payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherResponse'
+        '400':
+          description: Missing city
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: City not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/hotels/search:
+    get:
+      summary: Search hotels
+      parameters:
+        - in: query
+          name: destination
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: checkIn
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: checkOut
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: guests
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: rooms
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: Hotel search response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HotelSearchResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/places/nearby:
+    get:
+      summary: Get nearby places by city
+      parameters:
+        - in: query
+          name: city
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: category
+          required: false
+          schema:
+            type: string
+            enum: [attractions, restaurants, transport]
+      responses:
+        '200':
+          description: Nearby places response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/NearbyPlacesResponse'
+                  - $ref: '#/components/schemas/NearbyCategoryResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/currency/rate:
+    get:
+      summary: Get exchange rate
+      parameters:
+        - in: query
+          name: base
+          required: false
+          schema:
+            type: string
+            default: GBP
+        - in: query
+          name: target
+          required: false
+          schema:
+            type: string
+            default: EUR
+      responses:
+        '200':
+          description: Exchange rate response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyRateResponse'
+        '404':
+          description: Rate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/ai/travel-plan:
+    post:
+      summary: Generate travel planning response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AITravelPlanRequest'
+      responses:
+        '200':
+          description: AI planning response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AITravelPlanResponse'
+        '400':
+          description: Missing or invalid prompt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          oneOf:
+            - type: string
+            - type: object
+      required: [error]
+    FlightSearchRequest:
+      type: object
+      properties:
+        origin:
+          type: string
+        destination:
+          type: string
+        departureDate:
+          type: string
+          format: date
+        returnDate:
+          type: string
+          format: date
+        passengers:
+          type: integer
+          minimum: 1
+          default: 1
+        cabinClass:
+          type: string
+          default: economy
+      required: [origin, destination, departureDate]
+    FlightOffer:
+      type: object
+      properties:
+        id:
+          type: string
+        airline:
+          type: string
+        airlineLogo:
+          type: string
+        flightNumber:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureAt:
+          type: string
+        arrivalAt:
+          type: string
+        duration:
+          type: string
+        stops:
+          type: integer
+        amount:
+          oneOf:
+            - type: string
+            - type: number
+        currency:
+          type: string
+    FlightSearchResponse:
+      type: object
+      properties:
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightOffer'
+        totalFound:
+          type: integer
+        cached:
+          type: boolean
+      required: [flights, totalFound, cached]
+    WeatherResponse:
+      type: object
+      properties:
+        city:
+          type: string
+        country:
+          type: string
+        tempC:
+          type: number
+        tempF:
+          type: number
+        description:
+          type: string
+        iconCode:
+          type: string
+        humidity:
+          type: number
+        windKph:
+          type: number
+        condition:
+          type: string
+      required: [city, tempC, description]
+    Hotel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        rating:
+          type: number
+        pricePerNight:
+          type: number
+        totalPrice:
+          type: number
+        beds:
+          type: integer
+        image:
+          type: string
+        nights:
+          type: integer
+    HotelSearchResponse:
+      type: object
+      properties:
+        city:
+          type: string
+        checkInDate:
+          type: string
+        checkOutDate:
+          type: string
+        guests:
+          type: integer
+        rooms:
+          type: integer
+        hotels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hotel'
+        count:
+          type: integer
+      required: [city, hotels, count]
+    NearbyPlace:
+      type: object
+      properties:
+        name:
+          type: string
+        distanceKm:
+          type: number
+        type:
+          type: string
+    NearbyPlacesResponse:
+      type: object
+      properties:
+        city:
+          type: string
+        attractions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NearbyPlace'
+        restaurants:
+          type: array
+          items:
+            $ref: '#/components/schemas/NearbyPlace'
+        transport:
+          type: array
+          items:
+            $ref: '#/components/schemas/NearbyPlace'
+      required: [city]
+    NearbyCategoryResponse:
+      type: object
+      properties:
+        city:
+          type: string
+        category:
+          type: string
+        places:
+          type: array
+          items:
+            $ref: '#/components/schemas/NearbyPlace'
+      required: [city, category, places]
+    CurrencyRateResponse:
+      type: object
+      properties:
+        base:
+          type: string
+        target:
+          type: string
+        rate:
+          type: number
+      required: [base, target, rate]
+    AITravelPlanRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+        trips:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        flights:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        hotels:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        weather:
+          type: object
+          additionalProperties: true
+        nearbyAttractions:
+          type: array
+          items:
+            type: string
+      required: [prompt]
+    AITravelPlanResponse:
+      type: object
+      properties:
+        prompt:
+          type: string
+        response:
+          type: string
+        source:
+          type: string
+          enum: [llm, fallback]
+      required: [prompt, response, source]

@@ -6,4 +6,5 @@ class ApiEndpoints {
   static const String weather = '/api/weather';
   static const String nearbyPlaces = '/api/places/nearby';
   static const String currencyRate = '/api/currency/rate';
+  static const String aiTravelPlan = '/api/ai/travel-plan';
 }
