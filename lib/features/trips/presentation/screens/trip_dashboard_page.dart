@@ -122,7 +122,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   }
 
   Future<void> _reloadTrip() async {
-    final latest = await ref.read(tripRepositoryProvider).getTrip(_trip.id);
+    final latest = await ref.read(tripRepositoryProvider).get(_trip.id);
     if (!mounted || latest == null) {
       return;
     }

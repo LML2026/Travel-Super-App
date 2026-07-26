@@ -36,6 +36,16 @@ class _FakeTripRepository implements TripRepository {
   }
 
   @override
+  Future<domain.Trip?> get(String id) {
+    return getTrip(id);
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return watchTrips().first;
+  }
+
+  @override
   Future<void> updateTrip(domain.Trip trip) async {
     updatedTrips.add(trip);
     currentTrip = trip;

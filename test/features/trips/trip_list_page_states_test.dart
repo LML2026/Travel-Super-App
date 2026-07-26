@@ -26,6 +26,16 @@ class _EmptyTripRepository implements TripRepository {
   Future<domain.Trip?> getTrip(String tripId) async {
     return null;
   }
+
+  @override
+  Future<domain.Trip?> get(String id) {
+    return getTrip(id);
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return watchTrips().first;
+  }
 }
 
 class _ErrorTripRepository implements TripRepository {
@@ -46,6 +56,16 @@ class _ErrorTripRepository implements TripRepository {
   @override
   Future<domain.Trip?> getTrip(String tripId) async {
     return null;
+  }
+
+  @override
+  Future<domain.Trip?> get(String id) {
+    return getTrip(id);
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return watchTrips().first;
   }
 }
 
@@ -71,6 +91,16 @@ class _SingleTripRepository implements TripRepository {
   @override
   Future<domain.Trip?> getTrip(String tripId) async {
     return tripId == trip.id ? _toDomainTrip(trip) : null;
+  }
+
+  @override
+  Future<domain.Trip?> get(String id) {
+    return getTrip(id);
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return watchTrips().first;
   }
 }
 

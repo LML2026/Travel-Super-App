@@ -57,7 +57,7 @@ class TripDetailsPage extends ConsumerWidget {
     final repository = ref.watch(tripRepositoryProvider);
 
     return FutureBuilder<Trip?>(
-      future: repository.getTrip(tripId),
+      future: repository.get(tripId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(

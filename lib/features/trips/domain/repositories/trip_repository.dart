@@ -1,6 +1,17 @@
 import '../entities/trip.dart';
 
 abstract class TripRepository {
+  /// Watch all trips in real time.
+  Stream<List<Trip>> watchTrips();
+
+  /// Get all trips once.
+  Future<List<Trip>> getAll() async {
+    return watchTrips().first;
+  }
+
+  /// Get a single trip by id.
+  Future<Trip?> get(String id) => getTrip(id);
+
   /// Create a new trip
   Future<void> createTrip(Trip trip);
 
@@ -8,11 +19,8 @@ abstract class TripRepository {
   Future<void> updateTrip(Trip trip);
 
   /// Delete a trip
-  Future<void> deleteTrip(String tripId);
+  Future<void> deleteTrip(String id);
 
-  /// Get a single trip
+  /// Backward-compatible legacy read method.
   Future<Trip?> getTrip(String tripId);
-
-  /// Watch all trips in real time
-  Stream<List<Trip>> watchTrips();
 }
