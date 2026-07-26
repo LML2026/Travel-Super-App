@@ -6,6 +6,7 @@ import '../../features/trips/domain/entities/trip.dart' as domain;
 import '../../features/trips/presentation/providers/trip_provider.dart';
 import '../../features/trips/presentation/screens/create_trip_page.dart';
 import '../../features/trips/presentation/screens/edit_trip_page.dart';
+import '../../features/trips/presentation/screens/trip_dashboard_page.dart';
 import '../../features/trips/presentation/screens/trip_details_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
 import '../app_routes.dart';
@@ -34,7 +35,7 @@ List<RouteBase> buildTripRoutes() {
           );
         }
 
-        return TripDetailsPage(tripId: tripId);
+        return TripDashboardPage(tripId: tripId);
       },
     ),
     GoRoute(

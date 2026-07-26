@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'create_trip_page.dart';
-import 'trip_details_page.dart';
+import 'trip_dashboard_page.dart';
 
 class TripListPage extends ConsumerWidget {
   const TripListPage({super.key});
@@ -111,7 +111,7 @@ class TripCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => TripDetailsPage(
+              builder: (_) => TripDashboardPage(
                 tripId: trip.id,
               ),
             ),
