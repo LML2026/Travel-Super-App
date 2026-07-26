@@ -27,13 +27,13 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Stream<List<Trip>> watchAll() {
     return _datasource.watchAll().map(
-          (models) => models.map((model) => model.toEntity()).toList(),
+          (models) => models.cast<Trip>(),
         );
   }
 
   @override
   Future<Trip?> get(String id) async {
     final model = await _datasource.get(id);
-    return model?.toEntity();
+    return model;
   }
 }

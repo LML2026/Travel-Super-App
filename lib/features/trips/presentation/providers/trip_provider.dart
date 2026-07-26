@@ -113,12 +113,8 @@ Trip _toPresentationTrip(domain.Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
-    selectedFlightId: trip.selectedFlightId,
-    selectedHotelId: trip.selectedHotelId,
-    weatherSnapshot: trip.weatherSnapshot,
-    weatherSnapshotCapturedAt: trip.weatherSnapshotCapturedAt,
-    createdAt: trip.createdAt ?? DateTime.now(),
-    status: trip.status,
+    createdAt: trip.createdAt,
+    updatedAt: trip.updatedAt,
   );
 }
 
@@ -132,11 +128,7 @@ domain.Trip _toDomainTrip(Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
-    selectedFlightId: trip.selectedFlightId,
-    selectedHotelId: trip.selectedHotelId,
-    weatherSnapshot: trip.weatherSnapshot,
-    weatherSnapshotCapturedAt: trip.weatherSnapshotCapturedAt,
     createdAt: trip.createdAt,
-    status: trip.status,
+    updatedAt: trip.updatedAt,
   );
 }

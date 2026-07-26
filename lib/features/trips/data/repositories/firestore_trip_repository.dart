@@ -23,6 +23,19 @@ class FirestoreTripRepository implements TripRepository {
         .collection('trips');
   }
 
+  DateTime _readDate(dynamic raw) {
+    if (raw is Timestamp) {
+      return raw.toDate();
+    }
+    if (raw is DateTime) {
+      return raw;
+    }
+    if (raw is String) {
+      return DateTime.tryParse(raw) ?? DateTime.now();
+    }
+    return DateTime.now();
+  }
+
   Future<void> createTrip(Trip trip) async {
     await _tripCollection.doc(trip.id).set({
       'destination': trip.destination,
@@ -73,6 +86,8 @@ class FirestoreTripRepository implements TripRepository {
           currency: data['currency'] ?? 'GBP',
           travellers: data['travellers'] ?? 1,
           notes: data['notes'] ?? '',
+          createdAt: _readDate(data['createdAt']),
+          updatedAt: _readDate(data['updatedAt']),
         );
       }).toList();
     });
@@ -96,6 +111,8 @@ class FirestoreTripRepository implements TripRepository {
       currency: data['currency'] ?? 'GBP',
       travellers: data['travellers'] ?? 1,
       notes: data['notes'] ?? '',
+      createdAt: _readDate(data['createdAt']),
+      updatedAt: _readDate(data['updatedAt']),
     );
   }
 

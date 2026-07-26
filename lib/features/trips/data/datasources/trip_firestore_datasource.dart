@@ -24,11 +24,11 @@ class TripFirestoreDatasource {
   }
 
   Future<void> create(TripModel trip) {
-    return _trips.doc(trip.id).set(trip.toCreateMap());
+    return _trips.doc(trip.id).set(trip.toFirestore());
   }
 
   Future<void> update(TripModel trip) {
-    return _trips.doc(trip.id).set(trip.toUpdateMap(), SetOptions(merge: true));
+    return _trips.doc(trip.id).set(trip.toFirestore(), SetOptions(merge: true));
   }
 
   Future<void> delete(String id) {
