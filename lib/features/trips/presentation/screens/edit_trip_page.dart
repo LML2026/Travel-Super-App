@@ -30,12 +30,28 @@ class EditTripPage extends ConsumerWidget {
       ),
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Edit Trip')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              'Failed to load trip: $error',
-              textAlign: TextAlign.center,
+        body: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Failed to load trip: $error',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => ref.invalidate(selectedTripProvider(tripId)),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Back to trips'),
+                ),
+              ],
             ),
           ),
         ),
@@ -44,7 +60,19 @@ class EditTripPage extends ConsumerWidget {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Edit Trip')),
-            body: const Center(child: Text('Trip not found.')),
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Trip not found.'),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Back to trips'),
+                  ),
+                ],
+              ),
+            ),
           );
         }
 

@@ -17,7 +17,7 @@ import '../widgets/trip_timeline.dart';
 
 enum TripDetailsAction { edit, duplicate }
 
-class TripDetailsPage extends ConsumerWidget {
+class TripDetailsPage extends ConsumerStatefulWidget {
   const TripDetailsPage({
     super.key,
     required this.trip,
@@ -26,7 +26,74 @@ class TripDetailsPage extends ConsumerWidget {
   final Trip trip;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TripDetailsPage> createState() => _TripDetailsPageState();
+}
+
+class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
+  bool _isDeleting = false;
+
+  Future<void> _deleteTrip(BuildContext context) async {
+    if (_isDeleting) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Delete trip?'),
+          content: Text(
+            'Remove your trip to ${widget.trip.destination}? This cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      await deleteTrip(ref, widget.trip.id);
+      ref.invalidate(tripsProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Deleted trip to ${widget.trip.destination}.')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to delete trip: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final trip = widget.trip;
     final flightsAsync = ref.watch(savedFlightsProvider);
     final hotelsAsync = ref.watch(savedHotelsProvider);
     final weatherAsync = ref.watch(weatherProvider(trip.destination));
@@ -56,45 +123,7 @@ class TripDetailsPage extends ConsumerWidget {
               }
 
               if (value == 'delete') {
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (dialogContext) {
-                    return AlertDialog(
-                      title: const Text('Delete trip?'),
-                      content: Text(
-                        'Remove your trip to ${trip.destination}? This cannot be undone.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dialogContext, false),
-                          child: const Text('Cancel'),
-                        ),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(dialogContext, true),
-                          child: const Text('Delete'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-                if (confirmed == true) {
-                  try {
-                    await deleteTrip(ref, trip.id);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Deleted trip to ${trip.destination}.')),
-                      );
-                      Navigator.pop(context);
-                    }
-                  } catch (error) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Unable to delete trip: $error')),
-                      );
-                    }
-                  }
-                }
+                await _deleteTrip(context);
               }
             },
             itemBuilder: (context) => const [
@@ -340,7 +369,7 @@ class TripDetailsPage extends ConsumerWidget {
   }
 
   String _currencyTarget() {
-    switch (trip.currency.toUpperCase()) {
+    switch (widget.trip.currency.toUpperCase()) {
       case 'EUR':
         return 'EUR';
       case 'USD':

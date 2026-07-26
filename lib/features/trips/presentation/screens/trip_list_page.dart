@@ -17,6 +17,8 @@ class TripListPage extends ConsumerStatefulWidget {
 }
 
 class _TripListPageState extends ConsumerState<TripListPage> {
+  final Set<String> _deletingTripIds = <String>{};
+
   @override
   Widget build(BuildContext context) {
     final tripsAsync = ref.watch(tripsProvider);
@@ -148,6 +150,15 @@ class _TripListPageState extends ConsumerState<TripListPage> {
   }
 
   Future<void> _confirmDelete(Trip trip) async {
+    if (_deletingTripIds.contains(trip.id)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Delete already in progress...')),
+        );
+      }
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -175,6 +186,9 @@ class _TripListPageState extends ConsumerState<TripListPage> {
     }
 
     try {
+      setState(() {
+        _deletingTripIds.add(trip.id);
+      });
       await deleteTrip(ref, trip.id);
       ref.invalidate(tripsProvider);
       if (mounted) {
@@ -187,6 +201,14 @@ class _TripListPageState extends ConsumerState<TripListPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Unable to delete trip: $error')),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _deletingTripIds.remove(trip.id);
+        });
+      } else {
+        _deletingTripIds.remove(trip.id);
       }
     }
   }
