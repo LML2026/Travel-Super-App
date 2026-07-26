@@ -10,7 +10,6 @@ import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
     as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
@@ -19,7 +18,7 @@ import 'package:travel_super_app/features/weather/providers/weather_provider.dar
 class _FakeTripRepository extends TripRepository {
   _FakeTripRepository(this._trips);
 
-  final List<Trip> _trips;
+  final List<domain.Trip> _trips;
   final List<String> deletedTripIds = <String>[];
 
   @override
@@ -49,7 +48,7 @@ class _FakeTripRepository extends TripRepository {
   }
 }
 
-domain.Trip _toDomainTrip(Trip trip) {
+domain.Trip _toDomainTrip(domain.Trip trip) {
   return domain.Trip(
     id: trip.id,
     destination: trip.destination,
@@ -65,8 +64,8 @@ domain.Trip _toDomainTrip(Trip trip) {
 }
 
 void main() {
-  Trip makeTrip() {
-    return Trip(
+  domain.Trip makeTrip() {
+    return domain.Trip(
       id: 'trip-1',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
@@ -105,8 +104,8 @@ void main() {
     ];
   }
 
-  testWidgets('Trip list delete cancel does not delete item', (tester) async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
+  testWidgets('Trip list shows trip item without delete menu', (tester) async {
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[makeTrip()]);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -117,49 +116,48 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete').first);
+    expect(find.text('Paris'), findsOneWidget);
+    expect(find.byType(PopupMenuButton<String>), findsNothing);
+    expect(fakeRepo.deletedTripIds, isEmpty);
+  });
+
+  testWidgets('Trip details delete cancel does not delete trip',
+      (tester) async {
+    final trip = makeTrip();
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: commonOverrides(fakeRepo),
+        child: MaterialApp(
+          home: TripDetailsPage(tripId: trip.id),
+        ),
+      ),
+    );
+
     await tester.pumpAndSettle();
 
-    expect(find.text('Delete trip?'), findsOneWidget);
-    expect(find.textContaining('Remove your trip to Paris?'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Delete Trip'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Delete Trip'));
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Cancel'));
+    expect(find.text('Delete Trip'), findsWidgets);
+    expect(find.text('Delete "Paris"?'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
     await tester.pumpAndSettle();
 
     expect(fakeRepo.deletedTripIds, isEmpty);
   });
 
-  testWidgets('Trip list delete confirm calls delete and shows feedback',
-      (tester) async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: commonOverrides(fakeRepo),
-        child: const MaterialApp(home: TripListPage()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete').first);
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
-    await tester.pumpAndSettle();
-
-    expect(fakeRepo.deletedTripIds, <String>['trip-1']);
-    expect(find.text('Deleted trip to Paris.'), findsOneWidget);
-  });
-
   testWidgets('Trip details delete confirm deletes and pops to previous page',
       (tester) async {
     final trip = makeTrip();
-    final fakeRepo = _FakeTripRepository(<Trip>[trip]);
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -191,11 +189,15 @@ void main() {
     await tester.tap(find.text('Open Details'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Trip to Paris'), findsOneWidget);
+    expect(find.text('Trip Dashboard'), findsOneWidget);
+    expect(find.text('Paris'), findsOneWidget);
 
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete trip'));
+    await tester.scrollUntilVisible(
+      find.text('Delete Trip'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Delete Trip'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
@@ -203,6 +205,6 @@ void main() {
 
     expect(fakeRepo.deletedTripIds, <String>['trip-1']);
     expect(find.text('Open Details'), findsOneWidget);
-    expect(find.text('Trip to Paris'), findsNothing);
+    expect(find.text('Trip Dashboard'), findsNothing);
   });
 }

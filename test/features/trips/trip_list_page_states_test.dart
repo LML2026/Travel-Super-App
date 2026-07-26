@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
     as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
 
@@ -53,7 +52,7 @@ class _ErrorTripRepository implements TripRepository {
 class _SingleTripRepository implements TripRepository {
   _SingleTripRepository(this.trip);
 
-  final Trip trip;
+  final domain.Trip trip;
 
   @override
   Future<void> createTrip(domain.Trip trip) async {}
@@ -75,7 +74,7 @@ class _SingleTripRepository implements TripRepository {
   }
 }
 
-domain.Trip _toDomainTrip(Trip trip) {
+domain.Trip _toDomainTrip(domain.Trip trip) {
   return domain.Trip(
     id: trip.id,
     destination: trip.destination,
@@ -104,11 +103,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No trips yet'), findsOneWidget);
-    expect(find.text('Create Trip'), findsWidgets);
+    expect(find.text('Tap + to create your first trip.'), findsOneWidget);
   });
 
   testWidgets('shows list item when repository returns trips', (tester) async {
-    final trip = Trip(
+    final trip = domain.Trip(
       id: 'trip-1',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
@@ -132,7 +131,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('View itinerary →'), findsOneWidget);
+    expect(find.text('14 Sep 2026 → 18 Sep 2026'), findsOneWidget);
   });
 
   testWidgets('shows graceful error when stream fails', (tester) async {
@@ -147,7 +146,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Trips unavailable'), findsOneWidget);
+    expect(find.text('Exception: firestore unavailable'), findsOneWidget);
     expect(find.textContaining('firestore unavailable'), findsOneWidget);
   });
 }

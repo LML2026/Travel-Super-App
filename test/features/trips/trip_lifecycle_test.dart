@@ -107,7 +107,7 @@ void main() {
     ];
   }
 
-  testWidgets('trip list action menu renders expected actions', (tester) async {
+  testWidgets('trip list opens trip dashboard on tap', (tester) async {
     final fakeRepo = _FakeTripRepository(<domain.Trip>[makeTrip()]);
 
     await tester.pumpWidget(
@@ -119,11 +119,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
+    await tester.tap(find.text('Paris'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Edit'), findsOneWidget);
-    expect(find.text('Duplicate'), findsOneWidget);
-    expect(find.text('Delete'), findsOneWidget);
+    expect(find.text('Trip Dashboard'), findsOneWidget);
+    expect(find.text('Flights'), findsOneWidget);
+    expect(find.text('Hotel'), findsOneWidget);
   });
 }

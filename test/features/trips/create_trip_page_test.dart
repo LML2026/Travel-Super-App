@@ -18,6 +18,6 @@ void main() {
     expect(find.text('Budget'), findsOneWidget);
     expect(find.text('Currency'), findsOneWidget);
     expect(find.text('Travellers'), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Create Trip'), findsOneWidget);
+    expect(find.text('Create Trip'), findsWidgets);
   });
 }

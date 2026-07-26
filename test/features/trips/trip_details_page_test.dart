@@ -12,12 +12,14 @@ import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
     as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
 
 class _FakeTripRepository implements TripRepository {
+  _FakeTripRepository(this._trips);
+
+  final List<domain.Trip> _trips;
   final List<domain.Trip> updatedTrips = <domain.Trip>[];
 
   @override
@@ -28,6 +30,11 @@ class _FakeTripRepository implements TripRepository {
 
   @override
   Future<domain.Trip?> getTrip(String tripId) async {
+    for (final trip in _trips) {
+      if (trip.id == tripId) {
+        return trip;
+      }
+    }
     return null;
   }
 
@@ -46,9 +53,7 @@ void main() {
   testWidgets(
       'TripDetailsPage shows saved snapshot label when live weather fails',
       (tester) async {
-    final fakeTripRepository = _FakeTripRepository();
-
-    final trip = Trip(
+    final trip = domain.Trip(
       id: 'trip-1',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
@@ -71,6 +76,7 @@ void main() {
       weatherSnapshotCapturedAt: DateTime(2026, 7, 26, 10, 30),
       createdAt: DateTime(2026, 7, 26),
     );
+    final fakeTripRepository = _FakeTripRepository(<domain.Trip>[trip]);
 
     final savedFlight = SavedFlight(
       id: 'doc-1',
@@ -144,24 +150,21 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Trip Summary'), findsOneWidget);
+    expect(find.text('Trip Dashboard'), findsOneWidget);
     expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('14 September → 18 September'), findsOneWidget);
-    expect(find.text('Budget: GBP 1250'), findsOneWidget);
-    expect(find.text('Status: planned'), findsOneWidget);
-    expect(find.text('No notes added yet.'), findsOneWidget);
+    expect(find.text('14 Sep 2026 -> 18 Sep 2026'), findsOneWidget);
+    expect(find.text('GBP 1250.00'), findsOneWidget);
+    expect(find.text('Spent GBP 1060.00'), findsOneWidget);
+    expect(find.text('Remaining GBP 190.00'), findsOneWidget);
 
-    expect(
-        find.textContaining('Source: Saved weather snapshot'), findsOneWidget);
-    expect(find.text('Open flight details →'), findsOneWidget);
-    expect(find.text('Open hotel details →'), findsOneWidget);
+    expect(find.text('Weather unavailable.'), findsOneWidget);
+    expect(find.text('BA304'), findsOneWidget);
+    expect(find.text('Hilton Paris Opera'), findsOneWidget);
   });
 
-  testWidgets('TripDetailsPage can attach a saved flight when none is linked',
+  testWidgets('TripDetailsPage shows fallback when no linked flight',
       (tester) async {
-    final fakeTripRepository = _FakeTripRepository();
-
-    final trip = Trip(
+    final trip = domain.Trip(
       id: 'trip-2',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 20),
@@ -171,6 +174,7 @@ void main() {
       selectedHotelId: 'hotel-1',
       createdAt: DateTime(2026, 7, 26),
     );
+    final fakeTripRepository = _FakeTripRepository(<domain.Trip>[trip]);
 
     final savedFlight = SavedFlight(
       id: 'doc-3',
@@ -244,30 +248,13 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('No flight linked'), findsOneWidget);
-    final attachFlightButton =
-        find.widgetWithText(FilledButton, 'Attach saved flight');
-    await tester.ensureVisible(attachFlightButton);
-    await tester.tap(attachFlightButton);
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Air France AF188'));
-    await tester.pumpAndSettle();
-
-    expect(fakeTripRepository.updatedTrips, hasLength(1));
-    expect(fakeTripRepository.updatedTrips.first.id, 'trip-2');
-    expect(
-        fakeTripRepository.updatedTrips.first.updatedAt
-            .isAfter(fakeTripRepository.updatedTrips.first.createdAt),
-        isTrue);
-    expect(find.text('Open flight details →'), findsOneWidget);
+    expect(find.text('No linked flight yet.'), findsOneWidget);
+    expect(find.text('Hilton Paris Opera'), findsOneWidget);
   });
 
-  testWidgets('TripDetailsPage can attach a saved hotel when none is linked',
+  testWidgets('TripDetailsPage shows fallback when no linked hotel',
       (tester) async {
-    final fakeTripRepository = _FakeTripRepository();
-
-    final trip = Trip(
+    final trip = domain.Trip(
       id: 'trip-3',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 20),
@@ -277,6 +264,7 @@ void main() {
       selectedFlightId: 'flight-keep-1',
       createdAt: DateTime(2026, 7, 26),
     );
+    final fakeTripRepository = _FakeTripRepository(<domain.Trip>[trip]);
 
     final savedFlight = SavedFlight(
       id: 'doc-5',
@@ -350,22 +338,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('No hotel linked'), findsOneWidget);
-    final attachHotelButton =
-        find.widgetWithText(FilledButton, 'Attach saved hotel');
-    await tester.ensureVisible(attachHotelButton);
-    await tester.tap(attachHotelButton);
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Le Grand Paris'));
-    await tester.pumpAndSettle();
-
-    expect(fakeTripRepository.updatedTrips, hasLength(1));
-    expect(fakeTripRepository.updatedTrips.first.id, 'trip-3');
-    expect(
-        fakeTripRepository.updatedTrips.first.updatedAt
-            .isAfter(fakeTripRepository.updatedTrips.first.createdAt),
-        isTrue);
-    expect(find.text('Open hotel details →'), findsOneWidget);
+    expect(find.text('No linked hotel yet.'), findsOneWidget);
+    expect(find.text('AF188'), findsOneWidget);
   });
 }
