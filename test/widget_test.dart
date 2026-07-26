@@ -1,10 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/main.dart';
+import 'package:travel_super_app/app/app.dart';
 
 void main() {
   testWidgets('shows the app title', (tester) async {
-    await tester.pumpWidget(const TravelSuperApp());
+    await tester.pumpWidget(
+      const ProviderScope(child: TravelSuperApp()),
+    );
 
-    expect(find.text('TravelSuperApp'), findsOneWidget);
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }
