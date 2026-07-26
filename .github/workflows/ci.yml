@@ -49,7 +49,5 @@ jobs:
       - name: Flutter analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Flutter trips tests
-        run: |
-          flutter test test/features/trips --concurrency=1 || \
-          flutter test
+      - name: Flutter tests
+        run: flutter test --concurrency=1
