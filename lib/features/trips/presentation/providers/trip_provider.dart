@@ -20,6 +20,10 @@ final tripListProvider = StreamProvider<List<Trip>>((ref) {
   return ref.watch(tripRepositoryProvider).watchAll();
 });
 
+final selectedTripProvider = FutureProvider.family<Trip?, String>((ref, tripId) {
+  return ref.watch(tripRepositoryProvider).get(tripId);
+});
+
 class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   Future<void> build() async {}
