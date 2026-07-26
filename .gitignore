@@ -10,6 +10,16 @@
 .svn/
 migrate_working_dir/
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Firebase Cloud Functions
+functions/node_modules/
+functions/.env.local
+functions/.env
+
 # IntelliJ related
 *.iml
 *.ipr

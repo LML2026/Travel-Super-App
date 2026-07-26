@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:travel_super_app/features/trip_planner/pages/trip_planner_page.dart';
+import '../flights/pages/flights_page.dart';
+import '../hotels/pages/hotels_page.dart';
+import '../weather/pages/weather_page.dart';
 import '../home/home_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -14,9 +17,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final List<Widget> _pages = const [
     HomePage(),
-    _TripsTab(),
-    _SavedTab(),
-    _ProfileTab(),
+    FlightsPage(),
+    HotelsPage(),
+    WeatherPage(),
+    TripPlannerPage(),
   ];
 
   @override
@@ -39,61 +43,24 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           NavigationDestination(
             icon: Icon(Icons.flight_outlined),
             selectedIcon: Icon(Icons.flight),
+            label: 'Flights',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.hotel_outlined),
+            selectedIcon: Icon(Icons.hotel),
+            label: 'Hotels',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.wb_sunny_outlined),
+            selectedIcon: Icon(Icons.wb_sunny),
+            label: 'Weather',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.luggage_outlined),
+            selectedIcon: Icon(Icons.luggage),
             label: 'Trips',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.favorite_outline),
-            selectedIcon: Icon(Icons.favorite),
-            label: 'Saved',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
         ],
-      ),
-    );
-  }
-}
-
-class _TripsTab extends StatelessWidget {
-  const _TripsTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        '✈️ Trips',
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class _SavedTab extends StatelessWidget {
-  const _SavedTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        '❤️ Saved',
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class _ProfileTab extends StatelessWidget {
-  const _ProfileTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        '👤 Profile',
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
       ),
     );
   }
