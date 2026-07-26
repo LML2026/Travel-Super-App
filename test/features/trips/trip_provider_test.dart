@@ -131,5 +131,5 @@ void main() {
     await container.read(_deleteTripActionProvider('trip-delete'));
 
     expect(fakeRepo.deletedTripIds, <String>['trip-delete']);
-  }
+  });
 }

@@ -77,6 +77,9 @@ class FirestoreTripRepository implements TripRepository {
           currency: data['currency'] ?? 'GBP',
           travellers: data['travellers'] ?? 1,
           notes: data['notes'] ?? '',
+          createdAt: data['createdAt'] is Timestamp
+              ? (data['createdAt'] as Timestamp).toDate()
+              : DateTime.now(),
         );
       }).toList();
     });
@@ -101,6 +104,9 @@ class FirestoreTripRepository implements TripRepository {
       currency: data['currency'] ?? 'GBP',
       travellers: data['travellers'] ?? 1,
       notes: data['notes'] ?? '',
+      createdAt: data['createdAt'] is Timestamp
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 }

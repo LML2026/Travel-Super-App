@@ -34,7 +34,10 @@ void main() {
           name: 'Luxury Hotel',
           city: 'Paris',
           rating: 4.8,
-          pricePerNight: 145.00,
+          price: 145.00,
+          currency: 'GBP',
+          address: 'Paris, France',
+          amenities: const ['Free Wi-Fi', 'Breakfast Included'],
           totalPrice: 435.00,
           beds: 2,
           image: '🏨',
@@ -45,7 +48,10 @@ void main() {
           name: 'Budget Hotel',
           city: 'Paris',
           rating: 4.0,
-          pricePerNight: 85.00,
+          price: 85.00,
+          currency: 'GBP',
+          address: 'Paris, France',
+          amenities: const ['Free Wi-Fi'],
           totalPrice: 255.00,
           beds: 1,
           image: '🏨',
@@ -60,14 +66,13 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success>());
-      
-      if (result is Success) {
-        expect(result.data, mockHotels);
-        expect(result.data.length, 2);
-        expect(result.data[0].name, 'Luxury Hotel');
-        expect(result.data[1].name, 'Budget Hotel');
-      }
+      expect(result, isA<Success<List<Hotel>>>());
+
+      final success = result as Success<List<Hotel>>;
+      expect(success.data, mockHotels);
+      expect(success.data.length, 2);
+      expect(success.data[0].name, 'Luxury Hotel');
+      expect(success.data[1].name, 'Budget Hotel');
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -89,11 +94,10 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Failure>());
-      
-      if (result is Failure) {
-        expect(result.message, contains('Network error'));
-      }
+      expect(result, isA<Failure<List<Hotel>>>());
+
+      final failure = result as Failure<List<Hotel>>;
+      expect(failure.message, contains('Network error'));
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -146,11 +150,10 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success>());
-      
-      if (result is Success) {
-        expect(result.data, isEmpty);
-      }
+      expect(result, isA<Success<List<Hotel>>>());
+
+      final success = result as Success<List<Hotel>>;
+      expect(success.data, isEmpty);
     });
 
     test('searchHotels with large guest count', () async {
@@ -169,7 +172,10 @@ void main() {
           name: 'Large Group Hotel',
           city: 'Paris',
           rating: 4.5,
-          pricePerNight: 300.00,
+          price: 300.00,
+          currency: 'GBP',
+          address: 'Paris, France',
+          amenities: const ['Free Wi-Fi'],
           totalPrice: 900.00,
           beds: 2,
           image: '🏨',
@@ -184,11 +190,10 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success>());
-      
-      if (result is Success) {
-        expect(result.data, mockHotels);
-      }
+      expect(result, isA<Success<List<Hotel>>>());
+
+      final success = result as Success<List<Hotel>>;
+      expect(success.data, mockHotels);
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -209,8 +214,11 @@ void main() {
           name: 'Week Stay Hotel',
           city: 'London',
           rating: 4.6,
-          pricePerNight: 120.00,
-          totalPrice: 840.00, // 120 * 7 nights
+          price: 120.00,
+          currency: 'GBP',
+          address: 'London, United Kingdom',
+          amenities: const ['Free Wi-Fi', 'Late Check-in'],
+          totalPrice: 840.00,
           beds: 2,
           image: '🏨',
           nights: 7,
@@ -224,11 +232,10 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success>());
-      
-      if (result is Success) {
-        expect(result.data[0].nights, 7);
-      }
+      expect(result, isA<Success<List<Hotel>>>());
+
+      final success = result as Success<List<Hotel>>;
+      expect(success.data[0].nights, 7);
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });

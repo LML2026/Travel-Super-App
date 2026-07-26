@@ -31,7 +31,7 @@ class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
     );
   }
 
-  Future<void> update(Trip trip) async {
+  Future<void> editTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(tripRepositoryProvider).update(trip),
@@ -62,7 +62,7 @@ Future<void> createTrip(WidgetRef ref, Trip trip) async {
 }
 
 Future<void> updateTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).update(trip);
+  await ref.read(createTripProvider.notifier).editTrip(trip);
 }
 
 Future<void> deleteTrip(WidgetRef ref, String tripId) async {
@@ -79,5 +79,6 @@ Trip duplicateTrip(Trip source) {
     currency: source.currency,
     travellers: source.travellers,
     notes: source.notes,
+    createdAt: DateTime.now(),
   );
 }

@@ -74,6 +74,7 @@ class TripModel {
 			currency: currency,
 			travellers: travellers,
 			notes: notes,
+			createdAt: DateTime.now(),
 		);
 	}
 
