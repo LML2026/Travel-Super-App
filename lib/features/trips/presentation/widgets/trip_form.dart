@@ -51,7 +51,8 @@ class TripForm extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
-          initialValue: currency,
+          // ignore: deprecated_member_use
+          value: currency,
           decoration: const InputDecoration(labelText: 'Currency'),
           items: const [
             DropdownMenuItem(value: 'GBP', child: Text('GBP')),
