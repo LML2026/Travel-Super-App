@@ -8,6 +8,7 @@ class HotelCard extends StatelessWidget {
     this.name,
     this.address,
     this.onOpenHotels,
+    this.onViewHotelDetails,
     this.onLinkHotel,
     this.onUnlinkHotel,
   });
@@ -15,6 +16,7 @@ class HotelCard extends StatelessWidget {
   final String? name;
   final String? address;
   final VoidCallback? onOpenHotels;
+  final VoidCallback? onViewHotelDetails;
   final VoidCallback? onLinkHotel;
   final VoidCallback? onUnlinkHotel;
 
@@ -50,6 +52,11 @@ class HotelCard extends StatelessWidget {
                 onPressed: onOpenHotels,
                 child: const Text('Open Hotels'),
               ),
+              if (name != null)
+                OutlinedButton(
+                  onPressed: onViewHotelDetails,
+                  child: const Text('View Details'),
+                ),
               if (name == null)
                 FilledButton(
                   onPressed: onLinkHotel,

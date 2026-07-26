@@ -122,8 +122,11 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                         ? null
                         : '${_formatFlightTime(linkedFlight.departureAt)} → ${_formatFlightTime(linkedFlight.arrivalAt)}',
                     onOpenFlights: () => context.pushFlights(),
+                    onViewFlightDetails: linkedFlight == null
+                        ? null
+                        : () => context.pushSavedFlightDetails(linkedFlight),
                     onLinkFlight: () => _selectAndLinkFlight(trip),
-                    onUnlinkFlight: () => _unlinkFlight(trip),
+                    onUnlinkFlight: () => _confirmAndUnlinkFlight(trip),
                   ),
                   HotelCard(
                     name: linkedHotel?.name,
@@ -131,8 +134,11 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                         ? null
                         : _hotelAddress(linkedHotel),
                     onOpenHotels: () => context.pushHotels(),
+                    onViewHotelDetails: linkedHotel == null
+                        ? null
+                        : () => context.pushSavedHotelDetails(linkedHotel),
                     onLinkHotel: () => _selectAndLinkHotel(trip),
-                    onUnlinkHotel: () => _unlinkHotel(trip),
+                    onUnlinkHotel: () => _confirmAndUnlinkHotel(trip),
                   ),
                   BudgetCard(
                     currency: trip.currency,
@@ -229,6 +235,18 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     setState(() {});
   }
 
+  Future<void> _confirmAndUnlinkFlight(Trip trip) async {
+    final shouldUnlink = await _confirmUnlinkDialog(
+      title: 'Unlink flight?',
+      message: 'This will remove the current flight from this trip dashboard.',
+    );
+    if (!shouldUnlink) {
+      return;
+    }
+
+    await _unlinkFlight(trip);
+  }
+
   Future<void> _selectAndLinkHotel(Trip trip) async {
     final hotels = ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
     if (hotels.isEmpty) {
@@ -289,6 +307,43 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
     if (!mounted) return;
     setState(() {});
+  }
+
+  Future<void> _confirmAndUnlinkHotel(Trip trip) async {
+    final shouldUnlink = await _confirmUnlinkDialog(
+      title: 'Unlink hotel?',
+      message: 'This will remove the current hotel from this trip dashboard.',
+    );
+    if (!shouldUnlink) {
+      return;
+    }
+
+    await _unlinkHotel(trip);
+  }
+
+  Future<bool> _confirmUnlinkDialog({
+    required String title,
+    required String message,
+  }) async {
+    final decision = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Unlink'),
+          ),
+        ],
+      ),
+    );
+
+    return decision == true;
   }
 
   SavedHotel? _findLinkedHotel(List<SavedHotel> hotels, String? hotelId) {

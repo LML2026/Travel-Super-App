@@ -9,6 +9,7 @@ class FlightCard extends StatelessWidget {
     this.route,
     this.timeRange,
     this.onOpenFlights,
+    this.onViewFlightDetails,
     this.onLinkFlight,
     this.onUnlinkFlight,
   });
@@ -17,6 +18,7 @@ class FlightCard extends StatelessWidget {
   final String? route;
   final String? timeRange;
   final VoidCallback? onOpenFlights;
+  final VoidCallback? onViewFlightDetails;
   final VoidCallback? onLinkFlight;
   final VoidCallback? onUnlinkFlight;
 
@@ -53,6 +55,11 @@ class FlightCard extends StatelessWidget {
                 onPressed: onOpenFlights,
                 child: const Text('Open Flights'),
               ),
+              if (hasFlight)
+                OutlinedButton(
+                  onPressed: onViewFlightDetails,
+                  child: const Text('View Details'),
+                ),
               if (hasFlight)
                 OutlinedButton(
                   onPressed: onUnlinkFlight,
