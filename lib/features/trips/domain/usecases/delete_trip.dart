@@ -6,6 +6,6 @@ class DeleteTrip {
   final TripRepository _repository;
 
   Future<void> call(String tripId) {
-    return _repository.delete(tripId);
+    return _repository.deleteTrip(tripId);
   }
 }

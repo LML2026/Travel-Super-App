@@ -36,6 +36,7 @@ class FirestoreTripRepository implements TripRepository {
     return DateTime.now();
   }
 
+  @override
   Future<void> createTrip(Trip trip) async {
     await _tripCollection.doc(trip.id).set({
       'destination': trip.destination,
@@ -50,6 +51,7 @@ class FirestoreTripRepository implements TripRepository {
     });
   }
 
+  @override
   Future<void> updateTrip(Trip trip) async {
     await _tripCollection.doc(trip.id).update({
       'destination': trip.destination,
@@ -63,10 +65,12 @@ class FirestoreTripRepository implements TripRepository {
     });
   }
 
-  Future<void> deleteTrip(String id) async {
-    await _tripCollection.doc(id).delete();
+  @override
+  Future<void> deleteTrip(String tripId) async {
+    await _tripCollection.doc(tripId).delete();
   }
 
+  @override
   Stream<List<Trip>> watchTrips() {
     return _tripCollection
         .orderBy('departureDate')
@@ -93,8 +97,9 @@ class FirestoreTripRepository implements TripRepository {
     });
   }
 
-  Future<Trip?> getTrip(String id) async {
-    final doc = await _tripCollection.doc(id).get();
+  @override
+  Future<Trip?> getTrip(String tripId) async {
+    final doc = await _tripCollection.doc(tripId).get();
 
     if (!doc.exists) return null;
 
@@ -116,28 +121,4 @@ class FirestoreTripRepository implements TripRepository {
     );
   }
 
-  @override
-  Future<void> create(Trip trip) async {
-    await createTrip(trip);
-  }
-
-  @override
-  Future<void> update(Trip trip) async {
-    await updateTrip(trip);
-  }
-
-  @override
-  Future<void> delete(String id) async {
-    await deleteTrip(id);
-  }
-
-  @override
-  Stream<List<Trip>> watchAll() {
-    return watchTrips();
-  }
-
-  @override
-  Future<Trip?> get(String id) async {
-    return getTrip(id);
-  }
 }

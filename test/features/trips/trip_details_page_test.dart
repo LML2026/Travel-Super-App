@@ -20,23 +20,23 @@ class _FakeTripRepository implements TripRepository {
   final List<domain.Trip> updatedTrips = <domain.Trip>[];
 
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> getTrip(String tripId) async {
     return null;
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {
+  Future<void> updateTrip(domain.Trip trip) async {
     updatedTrips.add(trip);
   }
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return const Stream<List<domain.Trip>>.empty();
   }
 }
@@ -228,14 +228,112 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No flight linked'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Attach saved flight'));
+    final attachFlightButton = find.widgetWithText(FilledButton, 'Attach saved flight');
+    await tester.ensureVisible(attachFlightButton);
+    await tester.tap(attachFlightButton);
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Air France AF188'));
     await tester.pumpAndSettle();
 
     expect(fakeTripRepository.updatedTrips, hasLength(1));
-    expect(fakeTripRepository.updatedTrips.first.selectedFlightId, 'flight-attach-1');
+    expect(fakeTripRepository.updatedTrips.first.id, 'trip-2');
+    expect(fakeTripRepository.updatedTrips.first.updatedAt.isAfter(fakeTripRepository.updatedTrips.first.createdAt), isTrue);
     expect(find.text('Open flight details →'), findsOneWidget);
+  });
+
+  testWidgets('TripDetailsPage can attach a saved hotel when none is linked', (tester) async {
+    final fakeTripRepository = _FakeTripRepository();
+
+    final trip = Trip(
+      id: 'trip-3',
+      destination: 'Paris',
+      startDate: DateTime(2026, 9, 20),
+      endDate: DateTime(2026, 9, 24),
+      budget: 980,
+      currency: 'GBP',
+      selectedFlightId: 'flight-keep-1',
+      createdAt: DateTime(2026, 7, 26),
+    );
+
+    final savedFlight = SavedFlight(
+      id: 'doc-5',
+      flightId: 'flight-keep-1',
+      airline: 'Air France',
+      airlineLogo: '',
+      flightNumber: 'AF188',
+      origin: 'London',
+      destination: 'Paris',
+      departureAt: '2026-09-20T09:00:00',
+      arrivalAt: '2026-09-20T11:00:00',
+      duration: 'PT2H',
+      stops: 0,
+      amount: 210,
+      currency: 'GBP',
+      cabinClass: 'economy',
+      savedAt: DateTime(2026, 7, 26),
+    );
+
+    final savedHotel = SavedHotel(
+      id: 'doc-6',
+      hotelId: 'hotel-attach-1',
+      name: 'Le Grand Paris',
+      city: 'Paris',
+      country: 'France',
+      address: '1 Rue de Rivoli, Paris',
+      currency: 'GBP',
+      rating: 4.8,
+      pricePerNight: 220,
+      totalPrice: 880,
+      beds: 1,
+      roomType: 'Suite',
+      amenities: const ['Free Wi-Fi'],
+      freeCancellation: true,
+      description: 'Luxury stay',
+      image: 'https://example.com/hotel2.jpg',
+      nights: 4,
+      savedAt: DateTime(2026, 7, 26),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          tripRepositoryProvider.overrideWithValue(fakeTripRepository),
+          savedFlightsProvider.overrideWith((ref) => Stream.value([savedFlight])),
+          savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
+          weatherProvider('Paris').overrideWith((ref) async => throw Exception('offline')),
+          nearbyBundleProvider('Paris').overrideWith(
+            (ref) async => const NearbyBundle(
+              city: 'Paris',
+              attractions: [NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')],
+              restaurants: [],
+              transport: [],
+            ),
+          ),
+          currencyRateProvider('EUR').overrideWith(
+            (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+          ),
+        ],
+        child: MaterialApp(
+          home: TripDetailsPage(trip: trip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('No hotel linked'), findsOneWidget);
+    final attachHotelButton = find.widgetWithText(FilledButton, 'Attach saved hotel');
+    await tester.ensureVisible(attachHotelButton);
+    await tester.tap(attachHotelButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Le Grand Paris'));
+    await tester.pumpAndSettle();
+
+    expect(fakeTripRepository.updatedTrips, hasLength(1));
+    expect(fakeTripRepository.updatedTrips.first.id, 'trip-3');
+    expect(fakeTripRepository.updatedTrips.first.updatedAt.isAfter(fakeTripRepository.updatedTrips.first.createdAt), isTrue);
+    expect(find.text('Open hotel details →'), findsOneWidget);
   });
 }

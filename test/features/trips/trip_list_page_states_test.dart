@@ -9,42 +9,42 @@ import 'package:travel_super_app/features/trips/presentation/screens/trip_list_p
 
 class _EmptyTripRepository implements TripRepository {
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.value(const <domain.Trip>[]);
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> getTrip(String tripId) async {
     return null;
   }
 }
 
 class _ErrorTripRepository implements TripRepository {
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.error(Exception('firestore unavailable'));
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> getTrip(String tripId) async {
     return null;
   }
 }
@@ -55,22 +55,22 @@ class _SingleTripRepository implements TripRepository {
   final Trip trip;
 
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.value(<domain.Trip>[_toDomainTrip(trip)]);
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
-    return id == trip.id ? _toDomainTrip(trip) : null;
+  Future<domain.Trip?> getTrip(String tripId) async {
+    return tripId == trip.id ? _toDomainTrip(trip) : null;
   }
 }
 
@@ -84,6 +84,8 @@ domain.Trip _toDomainTrip(Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
+    createdAt: trip.createdAt,
+    updatedAt: trip.updatedAt,
   );
 }
 

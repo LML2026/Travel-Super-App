@@ -1,18 +1,18 @@
 import '../entities/trip.dart';
 
 abstract class TripRepository {
-  /// Create a trip.
-  Future<void> create(Trip trip);
+  /// Create a new trip
+  Future<void> createTrip(Trip trip);
 
-  /// Fetch a trip by id. Returns null when not found.
-  Future<Trip?> get(String id);
+  /// Update an existing trip
+  Future<void> updateTrip(Trip trip);
 
-  /// Update an existing trip.
-  Future<void> update(Trip trip);
+  /// Delete a trip
+  Future<void> deleteTrip(String tripId);
 
-  /// Delete a trip by id.
-  Future<void> delete(String id);
+  /// Get a single trip
+  Future<Trip?> getTrip(String tripId);
 
-  /// Stream all trips for the current user.
-  Stream<List<Trip>> watchAll();
+  /// Watch all trips in real time
+  Stream<List<Trip>> watchTrips();
 }

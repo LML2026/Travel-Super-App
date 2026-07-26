@@ -33,6 +33,7 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
   late Trip _trip;
   bool _isDeleting = false;
   bool _isUpdatingFlight = false;
+  bool _isUpdatingHotel = false;
 
   @override
   void initState() {
@@ -153,6 +154,124 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
 
     if (selected != null && mounted) {
       await _attachFlight(context, selected);
+    }
+  }
+
+  Future<void> _attachHotel(BuildContext context, SavedHotel hotel) async {
+    if (_isUpdatingHotel) {
+      return;
+    }
+
+    setState(() {
+      _isUpdatingHotel = true;
+    });
+
+    try {
+      final updatedTrip = _trip.copyWith(
+        selectedHotelId: hotel.hotelId,
+        updatedAt: DateTime.now(),
+      );
+
+      await updateTrip(ref, updatedTrip);
+      ref.invalidate(tripsProvider);
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _trip = updatedTrip;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Attached hotel ${hotel.name}.')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to attach hotel: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingHotel = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _removeHotel(BuildContext context) async {
+    if (_isUpdatingHotel || _trip.selectedHotelId == null) {
+      return;
+    }
+
+    setState(() {
+      _isUpdatingHotel = true;
+    });
+
+    try {
+      final updatedTrip = _trip.copyWith(
+        selectedHotelId: null,
+        updatedAt: DateTime.now(),
+      );
+
+      await updateTrip(ref, updatedTrip);
+      ref.invalidate(tripsProvider);
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _trip = updatedTrip;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Removed linked hotel.')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to remove hotel: $error')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingHotel = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickSavedHotel(BuildContext context, List<SavedHotel> hotels) async {
+    final selected = await showModalBottomSheet<SavedHotel>(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: hotels.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final hotel = hotels[index];
+              return ListTile(
+                title: Text(hotel.name),
+                subtitle: Text(hotel.address.isEmpty
+                    ? '${hotel.city}${hotel.country.isEmpty ? '' : ', ${hotel.country}'}'
+                    : hotel.address),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(sheetContext, hotel),
+              );
+            },
+          ),
+        );
+      },
+    );
+
+    if (selected != null && mounted) {
+      await _attachHotel(context, selected);
     }
   }
 
@@ -382,31 +501,81 @@ class _TripDetailsPageState extends ConsumerState<TripDetailsPage> {
             const SizedBox(height: AppSpacing.md),
             _Section(
               title: 'Hotel',
-              child: linkedHotel == null
-                  ? const Text('No hotel linked')
-                  : InkWell(
-                      onTap: () {
-                        context.pushSavedHotelDetails(linkedHotel);
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(linkedHotel.name, style: Theme.of(context).textTheme.titleMedium),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text('Check-in: ${_formatDate(trip.startDate)}'),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text('Check-out: ${_formatDate(trip.endDate)}'),
-                          const SizedBox(height: AppSpacing.sm),
-                          const Text(
-                            'Open hotel details →',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w700,
+              child: hotelsAsync.when(
+                loading: () => const Text('Loading saved hotels...'),
+                error: (error, _) => Text('Hotels unavailable: $error'),
+                data: (savedHotels) {
+                  if (linkedHotel == null) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('No hotel linked'),
+                        const SizedBox(height: AppSpacing.sm),
+                        FilledButton.icon(
+                          onPressed: _isUpdatingHotel || savedHotels.isEmpty
+                              ? null
+                              : () => _pickSavedHotel(context, savedHotels),
+                          icon: const Icon(Icons.add_link),
+                          label: Text(
+                            savedHotels.isEmpty
+                                ? 'No saved hotels available'
+                                : 'Attach saved hotel',
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          context.pushSavedHotelDetails(linkedHotel);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(linkedHotel.name, style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text('Check-in: ${_formatDate(trip.startDate)}'),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text('Check-out: ${_formatDate(trip.endDate)}'),
+                            const SizedBox(height: AppSpacing.sm),
+                            const Text(
+                              'Open hotel details →',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _isUpdatingHotel || savedHotels.isEmpty
+                                ? null
+                                : () => _pickSavedHotel(context, savedHotels),
+                            icon: const Icon(Icons.swap_horiz),
+                            label: const Text('Change hotel'),
+                          ),
+                          TextButton.icon(
+                            onPressed: _isUpdatingHotel
+                                ? null
+                                : () => _removeHotel(context),
+                            icon: const Icon(Icons.link_off),
+                            label: const Text('Remove link'),
                           ),
                         ],
                       ),
-                    ),
+                    ],
+                  );
+                },
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             _Section(

@@ -18,13 +18,13 @@ final tripRepositoryProvider = Provider<TripRepository>((ref) {
 });
 
 final tripListProvider = StreamProvider<List<Trip>>((ref) {
-  return ref.watch(tripRepositoryProvider).watchAll().map(
+  return ref.watch(tripRepositoryProvider).watchTrips().map(
         (trips) => trips.map(_toPresentationTrip).toList(),
       );
 });
 
 final selectedTripProvider = FutureProvider.family<Trip?, String>((ref, tripId) async {
-  final trip = await ref.watch(tripRepositoryProvider).get(tripId);
+  final trip = await ref.watch(tripRepositoryProvider).getTrip(tripId);
   if (trip == null) {
     return null;
   }
@@ -42,21 +42,21 @@ class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
   Future<void> createTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).create(_toDomainTrip(trip)),
+      () => ref.read(tripRepositoryProvider).createTrip(_toDomainTrip(trip)),
     );
   }
 
   Future<void> updateTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).update(_toDomainTrip(trip)),
+      () => ref.read(tripRepositoryProvider).updateTrip(_toDomainTrip(trip)),
     );
   }
 
   Future<void> deleteTrip(String id) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).delete(id),
+      () => ref.read(tripRepositoryProvider).deleteTrip(id),
     );
   }
 }

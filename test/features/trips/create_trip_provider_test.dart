@@ -12,46 +12,46 @@ class _OkRepo extends TripRepository {
   bool created = false;
 
   @override
-  Future<void> create(domain.Trip trip) async {
+  Future<void> createTrip(domain.Trip trip) async {
     created = true;
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.value(<domain.Trip>[_trip]);
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
-    return id == _trip.id ? _trip : null;
+  Future<domain.Trip?> getTrip(String tripId) async {
+    return tripId == _trip.id ? _trip : null;
   }
 }
 
 class _FailingRepo extends TripRepository {
   @override
-  Future<void> create(domain.Trip trip) async {
+  Future<void> createTrip(domain.Trip trip) async {
     throw Exception('firestore unavailable');
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return const Stream.empty();
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> getTrip(String tripId) async {
     return null;
   }
 }
@@ -81,6 +81,8 @@ void main() {
       currency: trip.currency,
       travellers: trip.travellers,
       notes: trip.notes,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
     );
   }
 

@@ -10,30 +10,30 @@ class TripRepositoryImpl implements TripRepository {
   final TripFirestoreDatasource _datasource;
 
   @override
-  Future<void> create(Trip trip) {
+  Future<void> createTrip(Trip trip) {
     return _datasource.create(TripModel.fromEntity(trip));
   }
 
   @override
-  Future<void> update(Trip trip) {
+  Future<void> updateTrip(Trip trip) {
     return _datasource.update(TripModel.fromEntity(trip));
   }
 
   @override
-  Future<void> delete(String id) {
-    return _datasource.delete(id);
+  Future<void> deleteTrip(String tripId) {
+    return _datasource.delete(tripId);
   }
 
   @override
-  Stream<List<Trip>> watchAll() {
+  Stream<List<Trip>> watchTrips() {
     return _datasource.watchAll().map(
           (models) => models.cast<Trip>(),
         );
   }
 
   @override
-  Future<Trip?> get(String id) async {
-    final model = await _datasource.get(id);
+  Future<Trip?> getTrip(String tripId) async {
+    final model = await _datasource.get(tripId);
     return model;
   }
 }

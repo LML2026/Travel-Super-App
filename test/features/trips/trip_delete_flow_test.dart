@@ -22,25 +22,25 @@ class _FakeTripRepository extends TripRepository {
   final List<String> deletedTripIds = <String>[];
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.value(_trips.map(_toDomainTrip).toList());
   }
 
   @override
-  Future<void> delete(String id) async {
-    deletedTripIds.add(id);
+  Future<void> deleteTrip(String tripId) async {
+    deletedTripIds.add(tripId);
   }
 
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> getTrip(String tripId) async {
     for (final trip in _trips) {
-      if (trip.id == id) {
+      if (trip.id == tripId) {
         return _toDomainTrip(trip);
       }
     }
@@ -58,6 +58,8 @@ domain.Trip _toDomainTrip(Trip trip) {
     currency: trip.currency,
     travellers: trip.travellers,
     notes: trip.notes,
+    createdAt: trip.createdAt,
+    updatedAt: trip.updatedAt,
   );
 }
 
