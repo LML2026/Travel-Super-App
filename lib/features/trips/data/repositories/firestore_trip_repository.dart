@@ -1,39 +1,45 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../models/trip_model.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/repositories/trip_repository.dart';
+import '../models/trip_model.dart';
 
 class FirestoreTripRepository implements TripRepository {
-  final FirebaseFirestore firestore;
-  final FirebaseAuth auth;
-
   FirestoreTripRepository({
     FirebaseFirestore? firestore,
     FirebaseAuth? auth,
-  })  : firestore = firestore ?? FirebaseFirestore.instance,
-        auth = auth ?? FirebaseAuth.instance;
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _auth = auth ?? FirebaseAuth.instance;
+
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
   CollectionReference<Map<String, dynamic>> get _tripCollection {
-    final uid = auth.currentUser!.uid;
+    final user = _auth.currentUser;
 
-    return firestore
+    if (user == null) {
+      throw Exception('User is not signed in.');
+    }
+
+    return _firestore
         .collection('users')
-        .doc(uid)
+        .doc(user.uid)
         .collection('trips');
   }
 
   @override
   Future<void> createTrip(Trip trip) async {
     final model = TripModel.fromEntity(trip);
+
     await _tripCollection.doc(trip.id).set(model.toFirestore());
   }
 
   @override
   Future<void> updateTrip(Trip trip) async {
     final model = TripModel.fromEntity(trip);
-    await _tripCollection.doc(trip.id).set(model.toFirestore(), SetOptions(merge: true));
+
+    await _tripCollection.doc(trip.id).update(model.toFirestore());
   }
 
   @override
@@ -42,20 +48,25 @@ class FirestoreTripRepository implements TripRepository {
   }
 
   @override
-  Stream<List<Trip>> watchTrips() {
-    return _tripCollection
-        .orderBy('departureDate')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map(TripModel.fromFirestore).toList());
-  }
-
-  @override
   Future<Trip?> getTrip(String tripId) async {
     final doc = await _tripCollection.doc(tripId).get();
 
-    if (!doc.exists) return null;
+    if (!doc.exists) {
+      return null;
+    }
 
     return TripModel.fromFirestore(doc);
   }
 
+  @override
+  Stream<List<Trip>> watchTrips() {
+    return _tripCollection
+        .orderBy('departureDate')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => TripModel.fromFirestore(doc))
+          .toList();
+    });
+  }
 }
