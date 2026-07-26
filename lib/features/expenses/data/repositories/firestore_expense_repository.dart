@@ -39,7 +39,7 @@ class FirestoreExpenseRepository implements ExpenseRepository {
     }
 
     return _expenseCollection(tripId)
-        .orderBy('spentAt', descending: true)
+      .orderBy('date')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => ExpenseModel.fromFirestore(doc))

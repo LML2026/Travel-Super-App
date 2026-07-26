@@ -23,10 +23,9 @@ class ExpenseMutationNotifier extends AutoDisposeAsyncNotifier<void> {
     required double amount,
     required String currency,
     required String category,
-    required DateTime spentAt,
+    required DateTime date,
     String notes = '',
   }) async {
-    final now = DateTime.now();
     final expense = Expense(
       id: const Uuid().v4(),
       tripId: tripId,
@@ -34,10 +33,8 @@ class ExpenseMutationNotifier extends AutoDisposeAsyncNotifier<void> {
       amount: amount,
       currency: currency,
       category: category,
-      spentAt: spentAt,
+      date: date,
       notes: notes,
-      createdAt: now,
-      updatedAt: now,
     );
 
     state = const AsyncLoading();
@@ -47,11 +44,9 @@ class ExpenseMutationNotifier extends AutoDisposeAsyncNotifier<void> {
   }
 
   Future<void> updateExpense(Expense expense) async {
-    final updated = expense.copyWith(updatedAt: DateTime.now());
-
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(expenseRepositoryProvider).updateExpense(updated),
+      () => ref.read(expenseRepositoryProvider).updateExpense(expense),
     );
   }
 

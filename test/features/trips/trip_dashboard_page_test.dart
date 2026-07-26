@@ -122,10 +122,8 @@ Expense _makeExpense({
     amount: amount,
     currency: 'GBP',
     category: 'Other',
-    spentAt: DateTime(2026, 9, 2),
+    date: DateTime(2026, 9, 2),
     notes: '',
-    createdAt: DateTime(2026, 7, 26),
-    updatedAt: DateTime(2026, 7, 26),
   );
 }
 

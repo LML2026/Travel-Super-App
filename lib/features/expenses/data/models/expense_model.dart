@@ -10,10 +10,8 @@ class ExpenseModel extends Expense {
     required super.amount,
     required super.currency,
     required super.category,
-    required super.spentAt,
-    super.notes,
-    required super.createdAt,
-    required super.updatedAt,
+    required super.date,
+    required super.notes,
   });
 
   factory ExpenseModel.fromEntity(Expense expense) {
@@ -24,10 +22,8 @@ class ExpenseModel extends Expense {
       amount: expense.amount,
       currency: expense.currency,
       category: expense.category,
-      spentAt: expense.spentAt,
+      date: expense.date,
       notes: expense.notes,
-      createdAt: expense.createdAt,
-      updatedAt: expense.updatedAt,
     );
   }
 
@@ -41,10 +37,8 @@ class ExpenseModel extends Expense {
       amount: (data['amount'] as num).toDouble(),
       currency: data['currency'] as String,
       category: data['category'] as String,
-      spentAt: (data['spentAt'] as Timestamp).toDate(),
+      date: (data['date'] as Timestamp).toDate(),
       notes: data['notes'] as String? ?? '',
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
   }
 
@@ -55,10 +49,8 @@ class ExpenseModel extends Expense {
       'amount': amount,
       'currency': currency,
       'category': category,
-      'spentAt': Timestamp.fromDate(spentAt),
+      'date': Timestamp.fromDate(date),
       'notes': notes,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 }

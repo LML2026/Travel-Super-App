@@ -46,10 +46,8 @@ Expense _expense({String id = 'expense-1', String tripId = 'trip-1'}) {
     amount: 24.5,
     currency: 'GBP',
     category: 'Food',
-    spentAt: DateTime(2026, 7, 26),
+    date: DateTime(2026, 7, 26),
     notes: '',
-    createdAt: DateTime(2026, 7, 26),
-    updatedAt: DateTime(2026, 7, 26),
   );
 }
 
@@ -94,7 +92,7 @@ void main() {
       amount: 30,
       currency: 'GBP',
       category: 'Transport',
-      spentAt: DateTime(2026, 7, 25),
+      date: DateTime(2026, 7, 25),
       notes: 'Airport to hotel',
     );
 
