@@ -3,8 +3,9 @@ import 'package:uuid/uuid.dart';
 
 import '../../data/datasources/trip_firestore_datasource.dart';
 import '../../data/repositories/trip_repository_impl.dart';
-import '../../domain/entities/trip.dart';
+import '../../domain/entities/trip.dart' as domain;
 import '../../domain/repositories/trip_repository.dart';
+import '../../models/trip.dart';
 
 final tripFirestoreDatasourceProvider = Provider<TripFirestoreDatasource>((ref) {
   return TripFirestoreDatasource();
@@ -17,11 +18,17 @@ final tripRepositoryProvider = Provider<TripRepository>((ref) {
 });
 
 final tripListProvider = StreamProvider<List<Trip>>((ref) {
-  return ref.watch(tripRepositoryProvider).watchAll();
+  return ref.watch(tripRepositoryProvider).watchAll().map(
+        (trips) => trips.map(_toPresentationTrip).toList(),
+      );
 });
 
-final selectedTripProvider = FutureProvider.family<Trip?, String>((ref, tripId) {
-  return ref.watch(tripRepositoryProvider).get(tripId);
+final selectedTripProvider = FutureProvider.family<Trip?, String>((ref, tripId) async {
+  final trip = await ref.watch(tripRepositoryProvider).get(tripId);
+  if (trip == null) {
+    return null;
+  }
+  return _toPresentationTrip(trip);
 });
 
 class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
@@ -29,20 +36,24 @@ class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
   Future<void> build() async {}
 
   Future<void> create(Trip trip) async {
+    await createTrip(trip);
+  }
+
+  Future<void> createTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).create(trip),
+      () => ref.read(tripRepositoryProvider).create(_toDomainTrip(trip)),
     );
   }
 
-  Future<void> update(Trip trip) async {
+  Future<void> updateTrip(Trip trip) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(tripRepositoryProvider).update(trip),
+      () => ref.read(tripRepositoryProvider).update(_toDomainTrip(trip)),
     );
   }
 
-  Future<void> delete(String id) async {
+  Future<void> deleteTrip(String id) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(tripRepositoryProvider).delete(id),
@@ -62,15 +73,15 @@ final CreateTripProvider = createTripProvider;
 final tripsProvider = tripListProvider;
 
 Future<void> createTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).create(trip);
+  await ref.read(createTripProvider.notifier).createTrip(trip);
 }
 
 Future<void> updateTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).update(trip);
+  await ref.read(createTripProvider.notifier).updateTrip(trip);
 }
 
 Future<void> deleteTrip(WidgetRef ref, String tripId) async {
-  await ref.read(createTripProvider.notifier).delete(tripId);
+  await ref.read(createTripProvider.notifier).deleteTrip(tripId);
 }
 
 Trip duplicateTrip(Trip source) {
@@ -83,5 +94,38 @@ Trip duplicateTrip(Trip source) {
     currency: source.currency,
     travellers: source.travellers,
     notes: source.notes,
+    createdAt: source.createdAt,
+    selectedFlightId: source.selectedFlightId,
+    selectedHotelId: source.selectedHotelId,
+    weatherSnapshot: source.weatherSnapshot,
+    weatherSnapshotCapturedAt: source.weatherSnapshotCapturedAt,
+    status: source.status,
+  );
+}
+
+Trip _toPresentationTrip(domain.Trip trip) {
+  return Trip(
+    id: trip.id,
+    destination: trip.destination,
+    departureDate: trip.departureDate,
+    returnDate: trip.returnDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
+    createdAt: DateTime.now(),
+  );
+}
+
+domain.Trip _toDomainTrip(Trip trip) {
+  return domain.Trip(
+    id: trip.id,
+    destination: trip.destination,
+    departureDate: trip.departureDate,
+    returnDate: trip.returnDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
   );
 }

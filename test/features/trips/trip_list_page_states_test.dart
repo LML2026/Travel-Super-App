@@ -19,7 +19,7 @@ class _EmptyTripRepository implements TripRepository {
 
   @override
   Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(const <Trip>[]);
+    return Stream.value(const <domain.Trip>[]);
   }
 
   @override
@@ -65,13 +65,26 @@ class _SingleTripRepository implements TripRepository {
 
   @override
   Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(<Trip>[trip]);
+    return Stream.value(<domain.Trip>[_toDomainTrip(trip)]);
   }
 
   @override
   Future<domain.Trip?> get(String id) async {
-    return id == trip.id ? trip : null;
+    return id == trip.id ? _toDomainTrip(trip) : null;
   }
+}
+
+domain.Trip _toDomainTrip(Trip trip) {
+  return domain.Trip(
+    id: trip.id,
+    destination: trip.destination,
+    departureDate: trip.departureDate,
+    returnDate: trip.returnDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
+  );
 }
 
 void main() {

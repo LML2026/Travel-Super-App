@@ -27,7 +27,7 @@ void main() {
     );
 
     expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('Budget £1250'), findsOneWidget);
+    expect(find.text('Budget £1,250'), findsOneWidget);
     expect(find.text('1 Traveller'), findsOneWidget);
     expect(find.text('View itinerary →'), findsOneWidget);
   });

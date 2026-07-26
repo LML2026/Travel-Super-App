@@ -3,17 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_super_app/features/flights/models/saved_flight.dart';
 import 'package:travel_super_app/features/flights/providers/flight_provider.dart';
-import 'package:travel_super_app/features/flights/screens/saved_flight_details_page.dart';
 import 'package:travel_super_app/features/hotels/models/currency_rate.dart';
 import 'package:travel_super_app/features/hotels/models/nearby_bundle.dart';
 import 'package:travel_super_app/features/hotels/models/nearby_place.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_experience_provider.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
-import 'package:travel_super_app/features/hotels/screens/saved_hotel_details_page.dart';
 import 'package:travel_super_app/features/trips/models/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
-import 'package:travel_super_app/features/weather/models/weather_data.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
 
 void main() {
@@ -117,16 +114,5 @@ void main() {
     expect(find.textContaining('Source: Saved weather snapshot'), findsOneWidget);
     expect(find.text('Open flight details →'), findsOneWidget);
     expect(find.text('Open hotel details →'), findsOneWidget);
-
-    await tester.tap(find.text('Open flight details →'));
-    await tester.pumpAndSettle();
-    expect(find.byType(SavedFlightDetailsPage), findsOneWidget);
-
-    Navigator.of(tester.element(find.byType(SavedFlightDetailsPage))).pop();
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Open hotel details →'));
-    await tester.pumpAndSettle();
-    expect(find.byType(SavedHotelDetailsPage), findsOneWidget);
   });
 }

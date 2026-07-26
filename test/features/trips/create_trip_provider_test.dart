@@ -8,7 +8,7 @@ import 'package:travel_super_app/features/trips/presentation/providers/trip_prov
 class _OkRepo extends TripRepository {
   _OkRepo(this._trip);
 
-  final Trip _trip;
+  final domain.Trip _trip;
   bool created = false;
 
   @override
@@ -24,7 +24,7 @@ class _OkRepo extends TripRepository {
 
   @override
   Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(<Trip>[_trip]);
+    return Stream.value(<domain.Trip>[_trip]);
   }
 
   @override
@@ -71,9 +71,22 @@ void main() {
     );
   }
 
+  domain.Trip toDomain(Trip trip) {
+    return domain.Trip(
+      id: trip.id,
+      destination: trip.destination,
+      departureDate: trip.departureDate,
+      returnDate: trip.returnDate,
+      budget: trip.budget,
+      currency: trip.currency,
+      travellers: trip.travellers,
+      notes: trip.notes,
+    );
+  }
+
   test('CreateTripProvider succeeds and trip appears in list stream', () async {
     final trip = makeTrip();
-    final repo = _OkRepo(trip);
+    final repo = _OkRepo(toDomain(trip));
 
     final container = ProviderContainer(
       overrides: [

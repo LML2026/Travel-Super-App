@@ -4,6 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_super_app/features/trips/models/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/create_trip_page.dart';
 
+Future<void> _tapSubmit(WidgetTester tester) async {
+  final submitButton = find.widgetWithText(FilledButton, 'Create Trip');
+  await tester.scrollUntilVisible(
+    submitButton,
+    200,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.tap(submitButton);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   Widget buildTestApp() {
     return const ProviderScope(
@@ -16,8 +27,7 @@ void main() {
   testWidgets('shows destination required validation', (tester) async {
     await tester.pumpWidget(buildTestApp());
 
-    await tester.tap(find.text('Create Trip').last);
-    await tester.pump();
+    await _tapSubmit(tester);
 
     expect(find.text('Destination must not be empty.'), findsOneWidget);
   });
@@ -26,8 +36,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
 
     await tester.enterText(find.byType(TextField).at(0), 'Paris');
-    await tester.tap(find.text('Create Trip').last);
-    await tester.pump();
+    await _tapSubmit(tester);
 
     expect(find.text('Please select departure and return dates.'), findsOneWidget);
   });
@@ -37,19 +46,18 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), 'Paris');
 
-    await tester.tap(find.text('Select Date').at(0));
+    await tester.tap(find.byIcon(Icons.calendar_month).at(0));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Select Date').at(0));
+    await tester.tap(find.byIcon(Icons.calendar_month).at(1));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField).at(1), '0');
-    await tester.tap(find.text('Create Trip').last);
-    await tester.pump();
+    await _tapSubmit(tester);
 
     expect(find.text('Budget must be greater than zero.'), findsOneWidget);
   });

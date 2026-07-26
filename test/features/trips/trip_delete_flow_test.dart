@@ -23,7 +23,7 @@ class _FakeTripRepository extends TripRepository {
 
   @override
   Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(_trips);
+    return Stream.value(_trips.map(_toDomainTrip).toList());
   }
 
   @override
@@ -41,11 +41,24 @@ class _FakeTripRepository extends TripRepository {
   Future<domain.Trip?> get(String id) async {
     for (final trip in _trips) {
       if (trip.id == id) {
-        return trip;
+        return _toDomainTrip(trip);
       }
     }
     return null;
   }
+}
+
+domain.Trip _toDomainTrip(Trip trip) {
+  return domain.Trip(
+    id: trip.id,
+    destination: trip.destination,
+    departureDate: trip.departureDate,
+    returnDate: trip.returnDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
+  );
 }
 
 void main() {

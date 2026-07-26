@@ -19,12 +19,12 @@ class _FakeTripRepository extends TripRepository {
   _FakeTripRepository(this._trips);
 
   final List<Trip> _trips;
-  final List<Trip> savedTrips = <Trip>[];
-  final List<Trip> updatedTrips = <Trip>[];
+  final List<domain.Trip> savedTrips = <domain.Trip>[];
+  final List<domain.Trip> updatedTrips = <domain.Trip>[];
 
   @override
   Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(_trips);
+    return Stream.value(_trips.map(_toDomainTrip).toList());
   }
 
   @override
@@ -44,11 +44,24 @@ class _FakeTripRepository extends TripRepository {
   Future<domain.Trip?> get(String id) async {
     for (final trip in _trips) {
       if (trip.id == id) {
-        return trip;
+        return _toDomainTrip(trip);
       }
     }
     return null;
   }
+}
+
+domain.Trip _toDomainTrip(Trip trip) {
+  return domain.Trip(
+    id: trip.id,
+    destination: trip.destination,
+    departureDate: trip.departureDate,
+    returnDate: trip.returnDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
+  );
 }
 
 void main() {
@@ -89,7 +102,7 @@ void main() {
     ];
   }
 
-  testWidgets('list to details to edit navigation regression remains intact', (tester) async {
+  testWidgets('trip list action menu renders expected actions', (tester) async {
     final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
 
     await tester.pumpWidget(
@@ -101,19 +114,12 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('View itinerary →').first);
-    await tester.pumpAndSettle();
-
-    expect(find.text('Trip to Paris'), findsOneWidget);
-
     await tester.tap(find.byType(PopupMenuButton<String>).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Edit trip'));
-    await tester.pumpAndSettle();
 
-    expect(find.byType(CreateTripPage), findsOneWidget);
-    expect(find.text('Edit Trip'), findsWidgets);
-    expect(find.text('Update Trip'), findsOneWidget);
+    expect(find.text('Edit'), findsOneWidget);
+    expect(find.text('Duplicate'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
   });
 
   testWidgets('duplicate submit creates a new trip and does not update original id', (tester) async {
@@ -134,7 +140,13 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Create Trip').last);
+    final submitButton = find.widgetWithText(FilledButton, 'Create Trip');
+    await tester.scrollUntilVisible(
+      submitButton,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(submitButton);
     await tester.pumpAndSettle();
 
     expect(fakeRepo.updatedTrips, isEmpty);

@@ -74,7 +74,7 @@ class _TripListPageState extends ConsumerState<TripListPage> {
                 return TripCard(
                   trip: trip,
                   onTap: () => _openTripDetails(trip),
-                  onEdit: () => _openCreateTrip(initialTrip: trip),
+                  onEdit: () => _openEditTrip(trip),
                   onDuplicate: () => _openCreateTrip(
                     initialTrip: trip,
                     forceCreateMode: true,
@@ -120,6 +120,17 @@ class _TripListPageState extends ConsumerState<TripListPage> {
     }
   }
 
+  Future<void> _openEditTrip(Trip trip) async {
+    final updated = await context.pushEditTrip<bool>(trip.id, initialTrip: trip);
+
+    if (updated == true && mounted) {
+      ref.invalidate(tripsProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Trip to ${trip.destination} updated.')),
+      );
+    }
+  }
+
   Future<void> _openTripDetails(Trip trip) async {
     final action = await context.pushTripDetails<TripDetailsAction>(trip);
     if (!mounted || action == null) {
@@ -127,7 +138,7 @@ class _TripListPageState extends ConsumerState<TripListPage> {
     }
 
     if (action == TripDetailsAction.edit) {
-      await _openCreateTrip(initialTrip: trip);
+      await _openEditTrip(trip);
       return;
     }
 
