@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/trips/models/trip.dart';
+import '../../features/trips/domain/entities/trip.dart' as domain;
+import '../../features/trips/presentation/providers/trip_provider.dart';
 import '../../features/trips/presentation/screens/create_trip_page.dart';
 import '../../features/trips/presentation/screens/edit_trip_page.dart';
 import '../../features/trips/presentation/screens/trip_details_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
-import '../../features/trips/presentation/providers/trip_provider.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
 
@@ -34,12 +34,7 @@ List<RouteBase> buildTripRoutes() {
           );
         }
 
-        final extra = state.extra;
-        if (extra is Trip) {
-          return TripDetailsPage(trip: extra);
-        }
-
-        return _TripDetailsResolverPage(tripId: tripId);
+        return TripDetailsPage(tripId: tripId);
       },
     ),
     GoRoute(
@@ -54,49 +49,56 @@ List<RouteBase> buildTripRoutes() {
         }
 
         final extra = state.extra;
-        return EditTripPage(
-          tripId: tripId,
-          initialTrip: extra is Trip ? extra : null,
-        );
+        if (extra is domain.Trip) {
+          return EditTripPage(trip: extra);
+        }
+
+        return _TripEditResolverPage(tripId: tripId);
       },
     ),
   ];
 }
 
-class _TripDetailsResolverPage extends StatelessWidget {
-  const _TripDetailsResolverPage({required this.tripId});
+class _TripEditResolverPage extends ConsumerWidget {
+  const _TripEditResolverPage({required this.tripId});
 
   final String tripId;
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final tripAsync = ref.watch(selectedTripProvider(tripId));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final repository = ref.watch(tripRepositoryProvider);
 
-        return tripAsync.when(
-          loading: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
-          error: (error, _) => Scaffold(
-            appBar: AppBar(title: const Text('Trip Details')),
+    return FutureBuilder<domain.Trip?>(
+      future: repository.getTrip(tripId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
             body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text('Failed to load trip: $error', textAlign: TextAlign.center),
-              ),
+              child: CircularProgressIndicator(),
             ),
-          ),
-          data: (trip) {
-            if (trip == null) {
-              return Scaffold(
-                appBar: AppBar(title: const Text('Trip Details')),
-                body: const Center(child: Text('Trip not found.')),
-              );
-            }
-            return TripDetailsPage(trip: trip);
-          },
-        );
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Edit Trip')),
+            body: Center(
+              child: Text('Failed to load trip: ${snapshot.error}'),
+            ),
+          );
+        }
+
+        final trip = snapshot.data;
+        if (trip == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Edit Trip')),
+            body: const Center(
+              child: Text('Trip not found.'),
+            ),
+          );
+        }
+
+        return EditTripPage(trip: trip);
       },
     );
   }

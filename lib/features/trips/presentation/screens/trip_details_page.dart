@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import 'edit_trip_page.dart';
 
 class TripDetailsPage extends ConsumerWidget {
   const TripDetailsPage({
@@ -12,6 +13,42 @@ class TripDetailsPage extends ConsumerWidget {
   });
 
   final String tripId;
+
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+  ) async {
+    final delete = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Trip'),
+        content: Text(
+          'Delete "${trip.destination}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (delete != true) return;
+
+    await ref
+        .read(tripRepositoryProvider)
+        .deleteTrip(trip.id);
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,7 +140,14 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: const Icon(Icons.edit),
                 label: const Text("Edit Trip"),
                 onPressed: () {
-                  // Edit page (next step)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditTripPage(
+                        trip: trip,
+                      ),
+                    ),
+                  );
                 },
               ),
 
@@ -112,9 +156,11 @@ class TripDetailsPage extends ConsumerWidget {
               OutlinedButton.icon(
                 icon: const Icon(Icons.delete),
                 label: const Text("Delete Trip"),
-                onPressed: () {
-                  // Delete confirmation (next step)
-                },
+                onPressed: () => _confirmDelete(
+                  context,
+                  ref,
+                  trip,
+                ),
               ),
             ],
           ),
