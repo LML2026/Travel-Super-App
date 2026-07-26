@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../weather/providers/weather_provider.dart';
 import 'dashboard_section.dart';
 
-class WeatherCard extends StatelessWidget {
+class WeatherCard extends ConsumerWidget {
   const WeatherCard({
     super.key,
-    this.temperatureC,
-    this.condition,
-    this.isLoading = false,
-    this.errorText,
+    required this.destination,
+    this.onTap,
   });
 
-  final double? temperatureC;
-  final String? condition;
-  final bool isLoading;
-  final String? errorText;
+  final String destination;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    Widget content;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weatherAsync = ref.watch(weatherProvider(destination));
 
-    if (isLoading) {
-      content = const Text('Loading weather...');
-    } else if (errorText != null) {
-      content = Text(errorText!);
-    } else if (temperatureC != null && condition != null) {
-      content = Text('${temperatureC!.toStringAsFixed(0)}°C • $condition');
-    } else {
-      content = const Text('No weather data yet.');
-    }
+    final content = weatherAsync.when<Widget>(
+      loading: () => const Text('Loading weather...'),
+      error: (_, __) => const Text('Unable to load weather'),
+      data: (forecast) => Text(
+        '${forecast.tempC.toStringAsFixed(0)}°C • ${forecast.description}',
+      ),
+    );
 
     return DashboardSection(
       icon: Icons.wb_sunny_outlined,
       title: 'Weather',
-      child: content,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: content,
+        ),
+      ),
     );
   }
 }

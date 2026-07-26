@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../expenses/presentation/screens/trip_expenses_page.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
 import '../../../hotels/providers/hotel_provider.dart';
-import '../../../weather/providers/weather_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import '../widgets/ai_assistant_card.dart';
@@ -24,156 +24,115 @@ import 'edit_trip_page.dart';
 class TripDashboardPage extends ConsumerStatefulWidget {
   const TripDashboardPage({
     super.key,
-    required this.tripId,
+    required this.trip,
   });
 
-  final String tripId;
+  final Trip trip;
 
   @override
   ConsumerState<TripDashboardPage> createState() => _TripDashboardPageState();
 }
 
 class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
+  late Trip _trip;
+
+  @override
+  void initState() {
+    super.initState();
+    _trip = widget.trip;
+  }
+
+  @override
+  void didUpdateWidget(covariant TripDashboardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.trip.id != widget.trip.id || oldWidget.trip.updatedAt != widget.trip.updatedAt) {
+      _trip = widget.trip;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final repository = ref.watch(tripRepositoryProvider);
+    final tripDays = _tripDays(_trip);
 
-    return FutureBuilder<Trip?>(
-      future: repository.getTrip(widget.tripId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: Center(child: Text(snapshot.error.toString())),
-          );
-        }
-
-        final trip = snapshot.data;
-        if (trip == null) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: const Center(child: Text('Trip not found')),
-          );
-        }
-
-        final weatherAsync = ref.watch(weatherProvider(trip.destination));
-        final flightsAsync = ref.watch(savedFlightsProvider);
-        final hotelsAsync = ref.watch(savedHotelsProvider);
-
-        final linkedFlight = _findLinkedFlight(
-          flightsAsync.valueOrNull ?? const <SavedFlight>[],
-          trip.selectedFlightId,
-        );
-        final linkedHotel = _findLinkedHotel(
-          hotelsAsync.valueOrNull ?? const <SavedHotel>[],
-          trip.selectedHotelId,
-        );
-
-        final spent = (linkedFlight?.amount ?? 0) + (linkedHotel?.totalPrice ?? 0);
-        final tripDays = _tripDays(trip);
-
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Trip Dashboard'),
-            actions: [
-              IconButton(
-                tooltip: 'Edit Trip',
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditTripPage(trip: trip),
-                    ),
-                  ).then((_) {
-                    if (!mounted) return;
-                    setState(() {});
-                  });
-                },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Trip Dashboard'),
+        actions: [
+          IconButton(
+            tooltip: 'Edit Trip',
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditTripPage(trip: _trip),
+                ),
+              ).then((_) => _reloadTrip());
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _TripHeader(trip: _trip),
+              const SizedBox(height: 12),
+              WeatherCard(
+                destination: _trip.destination,
+                onTap: () => context.pushWeather(),
               ),
+              FlightCard(
+                tripId: _trip.id,
+                onOpenFlights: () => context.pushFlights(),
+                onViewFlightDetails: (flight) => context.pushSavedFlightDetails(flight),
+                onLinkFlight: () => _selectAndLinkFlight(),
+                onUnlinkFlight: () => _confirmAndUnlinkFlight(),
+              ),
+              HotelCard(
+                tripId: _trip.id,
+                checkInDate: _trip.departureDate,
+                checkOutDate: _trip.returnDate,
+                onOpenHotels: () => context.pushHotels(),
+                onViewHotelDetails: (hotel) => context.pushSavedHotelDetails(hotel),
+                onLinkHotel: () => _selectAndLinkHotel(),
+                onUnlinkHotel: () => _confirmAndUnlinkHotel(),
+              ),
+              BudgetCard(
+                tripId: _trip.id,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TripExpensesPage(trip: _trip),
+                  ),
+                ),
+              ),
+              ItineraryCard(days: tripDays),
+              const MapCard(),
+              const DocumentsCard(),
+              const TranslatorCard(),
+              const AiAssistantCard(),
             ],
           ),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _TripHeader(trip: trip),
-                  const SizedBox(height: 12),
-                  WeatherCard(
-                    isLoading: weatherAsync.isLoading,
-                    errorText: weatherAsync.hasError ? 'Weather unavailable.' : null,
-                    temperatureC: weatherAsync.valueOrNull?.tempC,
-                    condition: weatherAsync.valueOrNull?.description,
-                  ),
-                  FlightCard(
-                    flightNumber: linkedFlight?.flightNumber,
-                    route: linkedFlight == null
-                        ? null
-                        : '${linkedFlight.origin} → ${linkedFlight.destination}',
-                    timeRange: linkedFlight == null
-                        ? null
-                        : '${_formatFlightTime(linkedFlight.departureAt)} → ${_formatFlightTime(linkedFlight.arrivalAt)}',
-                    onOpenFlights: () => context.pushFlights(),
-                    onViewFlightDetails: linkedFlight == null
-                        ? null
-                        : () => context.pushSavedFlightDetails(linkedFlight),
-                    onLinkFlight: () => _selectAndLinkFlight(trip),
-                    onUnlinkFlight: () => _confirmAndUnlinkFlight(trip),
-                  ),
-                  HotelCard(
-                    name: linkedHotel?.name,
-                    address: linkedHotel == null
-                        ? null
-                        : _hotelAddress(linkedHotel),
-                    onOpenHotels: () => context.pushHotels(),
-                    onViewHotelDetails: linkedHotel == null
-                        ? null
-                        : () => context.pushSavedHotelDetails(linkedHotel),
-                    onLinkHotel: () => _selectAndLinkHotel(trip),
-                    onUnlinkHotel: () => _confirmAndUnlinkHotel(trip),
-                  ),
-                  BudgetCard(
-                    currency: trip.currency,
-                    budget: trip.budget,
-                    spent: spent,
-                  ),
-                  ItineraryCard(days: tripDays),
-                  const MapCard(),
-                  const DocumentsCard(),
-                  const TranslatorCard(),
-                  const AiAssistantCard(),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  SavedFlight? _findLinkedFlight(List<SavedFlight> flights, String? flightId) {
-    if (flightId == null || flightId.isEmpty) {
-      return null;
+  Future<void> _reloadTrip() async {
+    final latest = await ref.read(tripRepositoryProvider).getTrip(_trip.id);
+    if (!mounted || latest == null) {
+      return;
     }
 
-    for (final flight in flights) {
-      if (flight.flightId == flightId) {
-        return flight;
-      }
-    }
-
-    return null;
+    setState(() {
+      _trip = latest;
+    });
   }
 
-  Future<void> _selectAndLinkFlight(Trip trip) async {
+  Future<void> _selectAndLinkFlight() async {
     final flights = ref.read(savedFlightsProvider).valueOrNull ?? const <SavedFlight>[];
     if (flights.isEmpty) {
       if (!mounted) return;
@@ -204,38 +163,42 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       return;
     }
 
-    final updatedTrip = trip.copyWith(
+    final updatedTrip = _trip.copyWith(
       selectedFlightId: selected.flightId,
       updatedAt: DateTime.now(),
     );
 
     await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _trip = updatedTrip;
+    });
   }
 
-  Future<void> _unlinkFlight(Trip trip) async {
+  Future<void> _unlinkFlight() async {
     final updatedTrip = Trip(
-      id: trip.id,
-      destination: trip.destination,
-      departureDate: trip.departureDate,
-      returnDate: trip.returnDate,
-      budget: trip.budget,
-      currency: trip.currency,
-      travellers: trip.travellers,
-      notes: trip.notes,
+      id: _trip.id,
+      destination: _trip.destination,
+      departureDate: _trip.departureDate,
+      returnDate: _trip.returnDate,
+      budget: _trip.budget,
+      currency: _trip.currency,
+      travellers: _trip.travellers,
+      notes: _trip.notes,
       selectedFlightId: null,
-      selectedHotelId: trip.selectedHotelId,
-      createdAt: trip.createdAt,
+      selectedHotelId: _trip.selectedHotelId,
+      createdAt: _trip.createdAt,
       updatedAt: DateTime.now(),
     );
 
     await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _trip = updatedTrip;
+    });
   }
 
-  Future<void> _confirmAndUnlinkFlight(Trip trip) async {
+  Future<void> _confirmAndUnlinkFlight() async {
     final shouldUnlink = await _confirmUnlinkDialog(
       title: 'Unlink flight?',
       message: 'This will remove the current flight from this trip dashboard.',
@@ -244,10 +207,10 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       return;
     }
 
-    await _unlinkFlight(trip);
+    await _unlinkFlight();
   }
 
-  Future<void> _selectAndLinkHotel(Trip trip) async {
+  Future<void> _selectAndLinkHotel() async {
     final hotels = ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
     if (hotels.isEmpty) {
       if (!mounted) return;
@@ -278,38 +241,42 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       return;
     }
 
-    final updatedTrip = trip.copyWith(
+    final updatedTrip = _trip.copyWith(
       selectedHotelId: selected.hotelId,
       updatedAt: DateTime.now(),
     );
 
     await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _trip = updatedTrip;
+    });
   }
 
-  Future<void> _unlinkHotel(Trip trip) async {
+  Future<void> _unlinkHotel() async {
     final updatedTrip = Trip(
-      id: trip.id,
-      destination: trip.destination,
-      departureDate: trip.departureDate,
-      returnDate: trip.returnDate,
-      budget: trip.budget,
-      currency: trip.currency,
-      travellers: trip.travellers,
-      notes: trip.notes,
-      selectedFlightId: trip.selectedFlightId,
+      id: _trip.id,
+      destination: _trip.destination,
+      departureDate: _trip.departureDate,
+      returnDate: _trip.returnDate,
+      budget: _trip.budget,
+      currency: _trip.currency,
+      travellers: _trip.travellers,
+      notes: _trip.notes,
+      selectedFlightId: _trip.selectedFlightId,
       selectedHotelId: null,
-      createdAt: trip.createdAt,
+      createdAt: _trip.createdAt,
       updatedAt: DateTime.now(),
     );
 
     await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      _trip = updatedTrip;
+    });
   }
 
-  Future<void> _confirmAndUnlinkHotel(Trip trip) async {
+  Future<void> _confirmAndUnlinkHotel() async {
     final shouldUnlink = await _confirmUnlinkDialog(
       title: 'Unlink hotel?',
       message: 'This will remove the current hotel from this trip dashboard.',
@@ -318,7 +285,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       return;
     }
 
-    await _unlinkHotel(trip);
+    await _unlinkHotel();
   }
 
   Future<bool> _confirmUnlinkDialog({
@@ -346,32 +313,9 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     return decision == true;
   }
 
-  SavedHotel? _findLinkedHotel(List<SavedHotel> hotels, String? hotelId) {
-    if (hotelId == null || hotelId.isEmpty) {
-      return null;
-    }
-
-    for (final hotel in hotels) {
-      if (hotel.hotelId == hotelId) {
-        return hotel;
-      }
-    }
-
-    return null;
-  }
-
   int _tripDays(Trip trip) {
     final days = trip.returnDate.difference(trip.departureDate).inDays + 1;
     return days < 1 ? 1 : days;
-  }
-
-  String _formatFlightTime(String dateTime) {
-    final parsed = DateTime.tryParse(dateTime);
-    if (parsed == null) {
-      return dateTime;
-    }
-
-    return DateFormat('HH:mm').format(parsed);
   }
 
   String _hotelAddress(SavedHotel hotel) {

@@ -7,7 +7,6 @@ import '../../features/trips/presentation/providers/trip_provider.dart';
 import '../../features/trips/presentation/screens/create_trip_page.dart';
 import '../../features/trips/presentation/screens/edit_trip_page.dart';
 import '../../features/trips/presentation/screens/trip_dashboard_page.dart';
-import '../../features/trips/presentation/screens/trip_details_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
@@ -35,7 +34,12 @@ List<RouteBase> buildTripRoutes() {
           );
         }
 
-        return TripDashboardPage(tripId: tripId);
+        final extra = state.extra;
+        if (extra is domain.Trip) {
+          return TripDashboardPage(trip: extra);
+        }
+
+        return _TripDashboardResolverPage(tripId: tripId);
       },
     ),
     GoRoute(
@@ -58,6 +62,51 @@ List<RouteBase> buildTripRoutes() {
       },
     ),
   ];
+}
+
+class _TripDashboardResolverPage extends ConsumerWidget {
+  const _TripDashboardResolverPage({required this.tripId});
+
+  final String tripId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final repository = ref.watch(tripRepositoryProvider);
+
+    return FutureBuilder<domain.Trip?>(
+      future: repository.getTrip(tripId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Trip Dashboard')),
+            body: Center(
+              child: Text('Failed to load trip: ${snapshot.error}'),
+            ),
+          );
+        }
+
+        final trip = snapshot.data;
+        if (trip == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Trip Dashboard')),
+            body: const Center(
+              child: Text('Trip not found.'),
+            ),
+          );
+        }
+
+        return TripDashboardPage(trip: trip);
+      },
+    );
+  }
 }
 
 class _TripEditResolverPage extends ConsumerWidget {

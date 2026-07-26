@@ -1,33 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/trip_dashboard_provider.dart';
 import 'dashboard_section.dart';
 
-class BudgetCard extends StatelessWidget {
+class BudgetCard extends ConsumerWidget {
   const BudgetCard({
     super.key,
-    required this.currency,
-    required this.budget,
-    required this.spent,
+    required this.tripId,
+    this.onTap,
   });
 
-  final String currency;
-  final double budget;
-  final double spent;
+  final String tripId;
+  final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final remaining = budget - spent;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final budgetAsync = ref.watch(tripBudgetProvider(tripId));
+
+    final content = budgetAsync.when<Widget>(
+      loading: () => const Text('Loading budget...'),
+      error: (_, __) => const Text('Unable to load budget'),
+      data: (summary) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
+          Text('Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
+          Text('Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
+        ],
+      ),
+    );
 
     return DashboardSection(
       icon: Icons.payments_outlined,
       title: 'Budget',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Budget: $currency ${budget.toStringAsFixed(2)}'),
-          Text('Spent: $currency ${spent.toStringAsFixed(2)}'),
-          Text('Remaining: $currency ${remaining.toStringAsFixed(2)}'),
-        ],
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: content,
+        ),
       ),
     );
   }

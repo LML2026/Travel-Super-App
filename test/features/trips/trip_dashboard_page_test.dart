@@ -122,7 +122,8 @@ void main() {
   );
 
   testWidgets('TripDashboardPage links selected saved flight and persists update', (tester) async {
-    final repo = _FakeTripRepository(_makeTrip(id: 'trip-link-flight'));
+    final initialTrip = _makeTrip(id: 'trip-link-flight');
+    final repo = _FakeTripRepository(initialTrip);
     final savedFlight = _makeSavedFlight(flightId: 'flight-link-1');
 
     await tester.pumpWidget(
@@ -133,8 +134,8 @@ void main() {
           savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
-        child: const MaterialApp(
-          home: TripDashboardPage(tripId: 'trip-link-flight'),
+        child: MaterialApp(
+          home: TripDashboardPage(trip: initialTrip),
         ),
       ),
     );
@@ -152,11 +153,12 @@ void main() {
   });
 
   testWidgets('TripDashboardPage asks confirmation before unlinking hotel', (tester) async {
+    final initialTrip = _makeTrip(
+      id: 'trip-unlink-hotel',
+      selectedHotelId: 'hotel-linked-1',
+    );
     final repo = _FakeTripRepository(
-      _makeTrip(
-        id: 'trip-unlink-hotel',
-        selectedHotelId: 'hotel-linked-1',
-      ),
+      initialTrip,
     );
     final savedHotel = _makeSavedHotel(hotelId: 'hotel-linked-1');
 
@@ -168,15 +170,17 @@ void main() {
           savedHotelsProvider.overrideWith((ref) => Stream.value(<SavedHotel>[savedHotel])),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
-        child: const MaterialApp(
-          home: TripDashboardPage(tripId: 'trip-unlink-hotel'),
+        child: MaterialApp(
+          home: TripDashboardPage(trip: initialTrip),
         ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Unlink').first);
+    final unlinkButton = find.widgetWithText(OutlinedButton, 'Unlink');
+    final firstUnlinkButton = tester.widget<OutlinedButton>(unlinkButton);
+    firstUnlinkButton.onPressed!.call();
     await tester.pumpAndSettle();
 
     expect(find.text('Unlink hotel?'), findsOneWidget);
@@ -186,7 +190,8 @@ void main() {
 
     expect(repo.updatedTrips, isEmpty);
 
-    await tester.tap(find.text('Unlink').first);
+    final secondUnlinkButton = tester.widget<OutlinedButton>(unlinkButton);
+    secondUnlinkButton.onPressed!.call();
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -202,12 +207,13 @@ void main() {
   });
 
   testWidgets('TripDashboardPage shows view-details actions for linked flight and hotel', (tester) async {
+    final initialTrip = _makeTrip(
+      id: 'trip-view-details',
+      selectedFlightId: 'flight-linked-2',
+      selectedHotelId: 'hotel-linked-2',
+    );
     final repo = _FakeTripRepository(
-      _makeTrip(
-        id: 'trip-view-details',
-        selectedFlightId: 'flight-linked-2',
-        selectedHotelId: 'hotel-linked-2',
-      ),
+      initialTrip,
     );
 
     await tester.pumpWidget(
@@ -222,8 +228,8 @@ void main() {
           ),
           weatherProvider('Paris').overrideWith((ref) async => weather),
         ],
-        child: const MaterialApp(
-          home: TripDashboardPage(tripId: 'trip-view-details'),
+        child: MaterialApp(
+          home: TripDashboardPage(trip: initialTrip),
         ),
       ),
     );
@@ -231,5 +237,137 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('View Details'), findsNWidgets(2));
+  });
+
+  testWidgets('TripDashboardPage displays linked flight, hotel, and calculated budget values', (tester) async {
+    final initialTrip = _makeTrip(
+      id: 'trip-budget-check',
+      selectedFlightId: 'flight-budget-1',
+      selectedHotelId: 'hotel-budget-1',
+    );
+    final repo = _FakeTripRepository(initialTrip);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          tripRepositoryProvider.overrideWithValue(repo),
+          savedFlightsProvider.overrideWith(
+            (ref) => Stream.value(<SavedFlight>[_makeSavedFlight(flightId: 'flight-budget-1')]),
+          ),
+          savedHotelsProvider.overrideWith(
+            (ref) => Stream.value(<SavedHotel>[_makeSavedHotel(hotelId: 'hotel-budget-1')]),
+          ),
+          weatherProvider('Paris').overrideWith((ref) async => weather),
+        ],
+        child: MaterialApp(
+          home: TripDashboardPage(trip: initialTrip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.dragUntilVisible(
+      find.text('Trip Budget: GBP 1000.00'),
+      find.byType(ListView),
+      const Offset(0, -200),
+    );
+
+    expect(find.textContaining('Air France AF188'), findsOneWidget);
+    expect(find.textContaining('Rating: 4.6'), findsOneWidget);
+    expect(find.text('Trip Budget: GBP 1000.00'), findsOneWidget);
+    expect(find.text('Spent: GBP 950.00'), findsOneWidget);
+    expect(find.text('Remaining: GBP 50.00'), findsOneWidget);
+  });
+
+  testWidgets('TripDashboardPage weather follows selected trip destination', (tester) async {
+    final parisTrip = _makeTrip(id: 'trip-weather-paris');
+    final londonTrip = parisTrip.copyWith(
+      id: 'trip-weather-london',
+      destination: 'London',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(parisTrip)),
+          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          weatherProvider('Paris').overrideWith((ref) async => weather),
+          weatherProvider('London').overrideWith(
+            (ref) async => const WeatherData(
+              city: 'London',
+              country: 'UK',
+              tempC: 14,
+              tempF: 57.2,
+              description: 'Cloudy',
+              iconCode: '116',
+              humidity: 65,
+              windKph: 12,
+              condition: 'cloud',
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          home: TripDashboardPage(trip: parisTrip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('21°C • Clear'), findsOneWidget);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(londonTrip)),
+          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          weatherProvider('Paris').overrideWith((ref) async => weather),
+          weatherProvider('London').overrideWith(
+            (ref) async => const WeatherData(
+              city: 'London',
+              country: 'UK',
+              tempC: 14,
+              tempF: 57.2,
+              description: 'Cloudy',
+              iconCode: '116',
+              humidity: 65,
+              windKph: 12,
+              condition: 'cloud',
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          home: TripDashboardPage(trip: londonTrip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('14°C • Cloudy'), findsOneWidget);
+  });
+
+  testWidgets('TripDashboardPage cards handle empty linked data gracefully', (tester) async {
+    final initialTrip = _makeTrip(id: 'trip-empty-state');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(initialTrip)),
+          savedFlightsProvider.overrideWith((ref) => Stream.value(const <SavedFlight>[])),
+          savedHotelsProvider.overrideWith((ref) => Stream.value(const <SavedHotel>[])),
+          weatherProvider('Paris').overrideWith((ref) async => weather),
+        ],
+        child: MaterialApp(
+          home: TripDashboardPage(trip: initialTrip),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('No flight added yet.'), findsOneWidget);
+    expect(find.text('No hotel linked yet. Tap to add one.'), findsOneWidget);
   });
 }
