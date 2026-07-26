@@ -1,20 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../data/datasources/trip_firestore_datasource.dart';
-import '../../data/repositories/trip_repository_impl.dart';
+import '../../data/repositories/firestore_trip_repository.dart';
 import '../../domain/entities/trip.dart' as domain;
 import '../../domain/repositories/trip_repository.dart';
 import '../../models/trip.dart';
 
-final tripFirestoreDatasourceProvider = Provider<TripFirestoreDatasource>((ref) {
-  return TripFirestoreDatasource();
-});
-
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return TripRepositoryImpl(
-    datasource: ref.watch(tripFirestoreDatasourceProvider),
-  );
+  return FirestoreTripRepository();
 });
 
 final tripListProvider = StreamProvider<List<Trip>>((ref) {
