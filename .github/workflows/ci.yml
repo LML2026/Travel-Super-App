@@ -43,6 +43,12 @@ jobs:
         with:
           channel: stable
 
+      - name: Create CI .env placeholder
+        run: |
+          if [ ! -f .env ]; then
+            printf "# CI placeholder env file\n" > .env
+          fi
+
       - name: Flutter pub get
         run: flutter pub get
 
