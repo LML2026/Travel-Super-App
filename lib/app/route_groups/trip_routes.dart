@@ -21,23 +21,7 @@ List<RouteBase> buildTripRoutes() {
     GoRoute(
       name: AppRoute.tripCreate.routeName,
       path: AppRoute.tripCreate.path,
-      builder: (context, state) {
-        final extra = state.extra;
-        if (extra != null && extra is! TripCreateRouteArgs) {
-          return const RouteErrorPage(
-            message: 'Create trip route received an invalid payload.',
-          );
-        }
-
-        final args = extra is TripCreateRouteArgs
-            ? extra
-            : const TripCreateRouteArgs();
-
-        return CreateTripPage(
-          initialTrip: args.initialTrip,
-          forceCreateMode: args.forceCreateMode,
-        );
-      },
+      builder: (context, state) => const CreateTripPage(),
     ),
     GoRoute(
       name: AppRoute.tripDetails.routeName,

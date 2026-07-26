@@ -18,7 +18,7 @@ class EditTripPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (initialTrip != null) {
-      return CreateTripPage(initialTrip: initialTrip);
+      return const CreateTripPage();
     }
 
     final tripAsync = ref.watch(selectedTripProvider(tripId));
@@ -76,7 +76,7 @@ class EditTripPage extends ConsumerWidget {
           );
         }
 
-        return CreateTripPage(initialTrip: trip);
+        return const CreateTripPage();
       },
     );
   }
