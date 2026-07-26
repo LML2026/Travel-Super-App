@@ -219,7 +219,7 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _cabinClass,
+                      initialValue: _cabinClass,
                       decoration: const InputDecoration(
                         labelText: 'Cabin Class',
                         border: OutlineInputBorder(),
@@ -441,7 +441,7 @@ class _SkeletonFlightCardState extends State<_SkeletonFlightCard>
           height: height,
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(_anim.value),
+            color: Colors.grey.withValues(alpha: _anim.value),
             borderRadius: BorderRadius.circular(6),
           ),
         ),

@@ -137,7 +137,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
-          home: TripDetailsPage(trip: trip),
+          home: TripDetailsPage(tripId: trip.id),
         ),
       ),
     );
@@ -237,7 +237,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
-          home: TripDetailsPage(trip: trip),
+          home: TripDetailsPage(tripId: trip.id),
         ),
       ),
     );
@@ -343,7 +343,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
-          home: TripDetailsPage(trip: trip),
+          home: TripDetailsPage(tripId: trip.id),
         ),
       ),
     );

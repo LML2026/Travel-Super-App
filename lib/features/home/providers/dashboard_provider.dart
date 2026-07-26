@@ -6,7 +6,7 @@ import '../../flights/providers/flight_provider.dart';
 import '../../hotels/models/saved_hotel.dart';
 import '../../hotels/providers/hotel_provider.dart';
 import '../../trips/domain/entities/trip.dart';
-import '../../trips/providers/trip_provider.dart';
+import '../../trips/presentation/providers/trip_provider.dart';
 import '../../weather/models/weather_data.dart';
 import '../../weather/providers/weather_provider.dart';
 import '../models/dashboard_summary.dart';

@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../app/app_routes.dart';
 import '../models/flight.dart';
-import '../models/saved_flight.dart';
-import '../providers/flight_provider.dart';
 import '../../../core/utils/flight_formatter.dart';
 
 class FlightCard extends ConsumerStatefulWidget {

@@ -10,16 +10,14 @@ import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
     as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
-import 'package:travel_super_app/features/trips/presentation/screens/create_trip_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
 
 class _FakeTripRepository extends TripRepository {
   _FakeTripRepository(this._trips);
 
-  final List<Trip> _trips;
+  final List<domain.Trip> _trips;
   final List<domain.Trip> savedTrips = <domain.Trip>[];
   final List<domain.Trip> updatedTrips = <domain.Trip>[];
 
@@ -52,7 +50,7 @@ class _FakeTripRepository extends TripRepository {
   }
 }
 
-domain.Trip _toDomainTrip(Trip trip) {
+domain.Trip _toDomainTrip(domain.Trip trip) {
   return domain.Trip(
     id: trip.id,
     destination: trip.destination,
@@ -68,8 +66,8 @@ domain.Trip _toDomainTrip(Trip trip) {
 }
 
 void main() {
-  Trip makeTrip() {
-    return Trip(
+  domain.Trip makeTrip() {
+    return domain.Trip(
       id: 'trip-1',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
@@ -110,7 +108,7 @@ void main() {
   }
 
   testWidgets('trip list action menu renders expected actions', (tester) async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[makeTrip()]);
 
     await tester.pumpWidget(
       ProviderScope(

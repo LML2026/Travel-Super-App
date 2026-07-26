@@ -75,7 +75,7 @@ class HotelCard extends ConsumerWidget {
               ),
               if (hasHotel)
                 OutlinedButton(
-                  onPressed: () => onViewHotelDetails?.call(linkedHotel!),
+                  onPressed: () => onViewHotelDetails?.call(linkedHotel),
                   child: const Text('View Details'),
                 ),
               if (!hasHotel)

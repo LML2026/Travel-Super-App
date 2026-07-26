@@ -174,7 +174,7 @@ void main() {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => TripDetailsPage(trip: trip),
+                          builder: (_) => TripDetailsPage(tripId: trip.id),
                         ),
                       );
                     },

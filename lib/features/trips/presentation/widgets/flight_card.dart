@@ -76,7 +76,7 @@ class FlightCard extends ConsumerWidget {
               ),
               if (hasFlight)
                 OutlinedButton(
-                  onPressed: () => onViewFlightDetails?.call(linkedFlight!),
+                  onPressed: () => onViewFlightDetails?.call(linkedFlight),
                   child: const Text('View Details'),
                 ),
               if (hasFlight)

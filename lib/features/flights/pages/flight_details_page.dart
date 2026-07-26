@@ -46,7 +46,7 @@ class FlightDetailsPage extends ConsumerWidget {
           children: [
             // Hero section with airline info
             Container(
-              color: const Color(0xFF1976D2).withOpacity(0.1),
+              color: const Color(0xFF1976D2).withValues(alpha: 0.1),
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [

@@ -150,10 +150,10 @@ void main() {
     });
 
     testWidgets('FlightCard layout is responsive', (WidgetTester tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(1200, 2400);
-      tester.binding.window.devicePixelRatioTestValue = 3.0;
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-      addTearDown(tester.binding.window.clearDevicePixelRatioTestValue);
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
       await tester.pumpWidget(
         MaterialApp(
