@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/hotel.dart';
 import '../models/saved_hotel.dart';
-import '../pages/hotel_details_page.dart';
+import '../screens/hotel_details_page.dart';
 import '../providers/hotel_provider.dart';
 
 class HotelCard extends ConsumerStatefulWidget {
@@ -45,6 +45,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
         city: widget.hotel.city,
         country: widget.hotel.country,
         address: widget.hotel.address,
+        currency: widget.hotel.currency,
         rating: widget.hotel.rating,
         pricePerNight: widget.hotel.pricePerNight,
         totalPrice: widget.hotel.totalPrice,
@@ -83,30 +84,12 @@ class _HotelCardState extends ConsumerState<HotelCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F6FF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.image_outlined, size: 18, color: Color(0xFF335C99)),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Hotel Image',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF335C99),
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      widget.hotel.image,
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ],
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  height: 140,
+                  width: double.infinity,
+                  child: _buildHotelImage(),
                 ),
               ),
               const SizedBox(height: 14),
@@ -194,7 +177,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
               ),
               const SizedBox(height: 14),
               Text(
-                '£${widget.hotel.pricePerNight.toStringAsFixed(0)} / night',
+                '${_currencySymbol(widget.hotel.currency)}${widget.hotel.pricePerNight.toStringAsFixed(0)} / night',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: const Color(0xFF1D4E89),
                   fontWeight: FontWeight.w700,
@@ -222,13 +205,6 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                       onPressed: _toggleSave,
                       icon: const Icon(Icons.favorite_border, size: 18),
                       label: const Text('Save'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _navigateToDetails,
-                      child: const Text('View Details'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -267,6 +243,57 @@ class _HotelCardState extends ConsumerState<HotelCard> {
     }
 
     return Icons.check_circle_outline;
+  }
+
+  Widget _buildHotelImage() {
+    if (widget.hotel.image.startsWith('http')) {
+      return Image.network(
+        widget.hotel.image,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _fallbackImage(),
+      );
+    }
+
+    return _fallbackImage();
+  }
+
+  Widget _fallbackImage() {
+    return Container(
+      color: const Color(0xFFF0F6FF),
+      child: Row(
+        children: [
+          const SizedBox(width: 14),
+          const Icon(Icons.image_outlined, size: 18, color: Color(0xFF335C99)),
+          const SizedBox(width: 8),
+          const Text(
+            'Hotel Image',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF335C99),
+            ),
+          ),
+          const Spacer(),
+          Text(
+            widget.hotel.image,
+            style: const TextStyle(fontSize: 36),
+          ),
+          const SizedBox(width: 14),
+        ],
+      ),
+    );
+  }
+
+  String _currencySymbol(String currency) {
+    switch (currency.toUpperCase()) {
+      case 'EUR':
+        return 'EUR ';
+      case 'USD':
+        return '\$';
+      case 'JPY':
+        return 'JPY ';
+      default:
+        return '£';
+    }
   }
 }
 

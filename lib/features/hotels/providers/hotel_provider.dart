@@ -4,18 +4,18 @@ import '../models/hotel_search_request.dart';
 import '../models/recent_hotel_search.dart';
 import '../models/saved_hotel.dart';
 import '../repositories/hotel_repository.dart';
-import '../services/hotel_service.dart';
+import '../services/hotel_api_service.dart';
 import '../services/hotel_firestore_service.dart';
 import '../../../core/utils/result.dart';
 
-// Hotel Service provider
-final hotelServiceProvider = Provider<HotelService>((ref) {
-  return HotelService();
+// Hotel API Service provider
+final hotelApiServiceProvider = Provider<HotelApiService>((ref) {
+  return HotelApiService();
 });
 
 // Hotel Repository provider
 final hotelRepositoryProvider = Provider<HotelRepository>((ref) {
-  final service = ref.watch(hotelServiceProvider);
+  final service = ref.watch(hotelApiServiceProvider);
   return HotelRepository(service);
 });
 
@@ -81,6 +81,7 @@ final saveHotelProvider = FutureProvider.family<void, SavedHotel>((ref, savedHot
     city: savedHotel.city,
     country: savedHotel.country,
     address: savedHotel.address,
+    currency: savedHotel.currency,
     rating: savedHotel.rating,
     pricePerNight: savedHotel.pricePerNight,
     totalPrice: savedHotel.totalPrice,

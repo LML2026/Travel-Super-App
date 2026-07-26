@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/hotel.dart';
-import '../pages/hotel_details_page.dart';
+import 'hotel_details_page.dart';
 import '../providers/hotel_provider.dart';
 
 class SavedHotelsPage extends ConsumerWidget {
@@ -44,12 +44,13 @@ class SavedHotelsPage extends ConsumerWidget {
                   Icon(Icons.favorite_border, size: 64, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'No saved hotels',
+                    'No saved hotels yet.',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap the heart icon on a hotel to save it',
+                    'Save a hotel from the search results\nto find it here later.',
+                    textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
@@ -68,6 +69,7 @@ class SavedHotelsPage extends ConsumerWidget {
                 city: saved.city,
                 country: saved.country,
                 address: saved.address,
+                currency: saved.currency,
                 rating: saved.rating,
                 pricePerNight: saved.pricePerNight,
                 totalPrice: saved.totalPrice,
@@ -173,7 +175,7 @@ class SavedHotelsPage extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '£${saved.totalPrice.toStringAsFixed(0)}',
+                                  '${_currencySymbol(saved.currency)}${saved.totalPrice.toStringAsFixed(0)}',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -181,7 +183,7 @@ class SavedHotelsPage extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  '£${saved.pricePerNight.toStringAsFixed(0)} / night',
+                                  '${_currencySymbol(saved.currency)}${saved.pricePerNight.toStringAsFixed(0)} / night',
                                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                 ),
                               ],
@@ -230,5 +232,18 @@ class SavedHotelsPage extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  String _currencySymbol(String currency) {
+    switch (currency.toUpperCase()) {
+      case 'EUR':
+        return 'EUR ';
+      case 'USD':
+        return '\$';
+      case 'JPY':
+        return 'JPY ';
+      default:
+        return '£';
+    }
   }
 }

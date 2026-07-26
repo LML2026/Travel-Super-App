@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:travel_super_app/features/trip_planner/pages/trip_planner_page.dart';
 import '../flights/pages/flights_page.dart';
-import '../hotels/pages/hotels_page.dart';
+import '../hotels/screens/hotel_search_page.dart';
 import '../weather/pages/weather_page.dart';
 import '../home/home_page.dart';
 
@@ -18,7 +18,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final List<Widget> _pages = const [
     HomePage(),
     FlightsPage(),
-    HotelsPage(),
+    HotelSearchPage(),
     WeatherPage(),
     TripPlannerPage(),
   ];

@@ -218,6 +218,7 @@ class HotelDetailsPage extends ConsumerWidget {
                           city: hotel.city,
                           country: hotel.country,
                           address: hotel.address,
+                          currency: hotel.currency,
                           rating: hotel.rating,
                           pricePerNight: hotel.pricePerNight,
                           totalPrice: hotel.totalPrice,

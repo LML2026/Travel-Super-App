@@ -1,11 +1,11 @@
 import '../../../core/utils/result.dart';
 import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
-import '../services/hotel_service.dart';
+import '../services/hotel_api_service.dart';
 import '../../../core/utils/app_logger.dart';
 
 class HotelRepository {
-  final HotelService _hotelService;
+  final HotelApiService _hotelService;
 
   HotelRepository(this._hotelService);
 

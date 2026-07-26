@@ -4,6 +4,7 @@ class Hotel {
   final String city;
   final String country;
   final String address;
+  final String currency;
   final double rating;
   final double pricePerNight;
   final double totalPrice;
@@ -24,6 +25,7 @@ class Hotel {
     required this.city,
     this.country = '',
     this.address = '',
+    this.currency = 'GBP',
     required this.rating,
     required this.pricePerNight,
     required this.totalPrice,
@@ -55,6 +57,7 @@ class Hotel {
       city: city,
       country: country,
       address: address,
+      currency: json['currency']?.toString() ?? 'GBP',
       rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
       pricePerNight: double.tryParse(json['pricePerNight']?.toString() ?? '') ?? 0.0,
       totalPrice: double.tryParse(json['totalPrice']?.toString() ?? '') ?? 0.0,
@@ -82,6 +85,7 @@ class Hotel {
       'city': city,
       'country': country,
       'address': address,
+      'currency': currency,
       'rating': rating,
       'pricePerNight': pricePerNight,
       'totalPrice': totalPrice,
