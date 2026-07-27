@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/services/auth_service.dart';
 import '../../core/validators/auth_validators.dart';
+import 'presentation/providers/auth_provider.dart';
+import 'presentation/utils/auth_error_mapper.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  ConsumerState<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _auth = AuthService();
   bool _loading = false;
   bool _emailSent = false;
 
@@ -26,7 +27,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     setState(() => _loading = true);
 
     try {
-      await _auth.sendPasswordReset(email: _emailController.text.trim());
+      await ref.read(authMutationProvider.notifier).sendPasswordReset(
+        email: _emailController.text.trim(),
+      );
 
       if (mounted) {
         setState(() => _emailSent = true);
@@ -37,10 +40,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
         );
       }
-    } catch (e) {
+    } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text(AuthErrorMapper.messageFor(error))),
         );
       }
     }
