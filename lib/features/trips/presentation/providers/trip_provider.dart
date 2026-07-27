@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/presentation/providers/user_profile_provider.dart';
 import '../../data/repositories/firestore_trip_repository.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/repositories/trip_repository.dart';
@@ -12,7 +14,16 @@ import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/update_trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return FirestoreTripRepository(FirebaseFirestore.instance);
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null || userId.isEmpty) {
+    throw StateError('Authentication required to access trips.');
+  }
+  final defaults = ref.watch(profileDefaultsProvider);
+  return FirestoreTripRepository(
+    FirebaseFirestore.instance,
+    userId: userId,
+    defaultCurrency: defaults.preferredCurrencyCode,
+  );
 });
 
 final getTripsUseCaseProvider = Provider<GetTrips>((ref) {
