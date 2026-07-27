@@ -23,6 +23,7 @@ enum AppRoute {
   login,
   register,
   forgotPassword,
+  emailVerification,
   home,
   flights,
   flightSearch,
@@ -58,6 +59,8 @@ extension AppRouteConfig on AppRoute {
         return '/register';
       case AppRoute.forgotPassword:
         return '/forgot-password';
+      case AppRoute.emailVerification:
+        return '/email-verification';
       case AppRoute.home:
         return '/home';
       case AppRoute.flights:
@@ -113,6 +116,11 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushForgotPassword<T>() =>
       pushNamed<T>(AppRoute.forgotPassword.routeName);
+
+  void goEmailVerification() => goNamed(AppRoute.emailVerification.routeName);
+
+  Future<T?> pushEmailVerification<T>() =>
+      pushNamed<T>(AppRoute.emailVerification.routeName);
 
   Future<T?> pushFlights<T>() => pushNamed<T>(AppRoute.flights.routeName);
 

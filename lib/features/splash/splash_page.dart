@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_routes.dart';
-import '../auth/presentation/providers/auth_provider.dart';
+import '../authentication/presentation/providers/auth_providers.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -22,12 +22,18 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         return;
       }
 
-      // Check if user is already signed in
-      if (ref.read(immediateCurrentUserProvider) != null) {
-        context.goHome();
-      } else {
+      final currentUser = ref.read(immediateCurrentUserProvider);
+      if (currentUser == null) {
         context.goLogin();
+        return;
       }
+
+      if (requiresEmailVerification(currentUser)) {
+        context.goEmailVerification();
+        return;
+      }
+
+      context.goHome();
     });
   }
 
