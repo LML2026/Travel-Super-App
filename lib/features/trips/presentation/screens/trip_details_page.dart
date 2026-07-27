@@ -100,7 +100,8 @@ class TripDetailsPage extends ConsumerWidget {
           trip.selectedHotelId,
         );
 
-        final spent = (linkedFlight?.amount ?? 0) + (linkedHotel?.totalPrice ?? 0);
+        final spent =
+            (linkedFlight?.amount ?? 0) + (linkedHotel?.totalPrice ?? 0);
         final remaining = trip.budget - spent;
         final dateFormatter = DateFormat('dd MMM yyyy');
 
@@ -122,9 +123,7 @@ class TripDetailsPage extends ConsumerWidget {
                 '${dateFormatter.format(trip.departureDate)} -> ${dateFormatter.format(trip.returnDate)}',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-
               const _SectionDivider(),
-
               _DashboardSection(
                 icon: Icons.wb_sunny_outlined,
                 title: 'Weather',
@@ -134,9 +133,7 @@ class TripDetailsPage extends ConsumerWidget {
                   data: (weather) => _WeatherLine(weather: weather),
                 ),
               ),
-
               const _SectionDivider(),
-
               _DashboardSection(
                 icon: Icons.flight_takeoff,
                 title: 'Flights',
@@ -150,14 +147,14 @@ class TripDetailsPage extends ConsumerWidget {
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(height: 4),
-                          Text('${linkedFlight.origin} -> ${linkedFlight.destination}'),
-                          Text('Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}'),
+                          Text(
+                              '${linkedFlight.origin} -> ${linkedFlight.destination}'),
+                          Text(
+                              'Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}'),
                         ],
                       ),
               ),
-
               const _SectionDivider(),
-
               _DashboardSection(
                 icon: Icons.hotel,
                 title: 'Hotel',
@@ -176,13 +173,12 @@ class TripDetailsPage extends ConsumerWidget {
                                 ? '${linkedHotel.city}${linkedHotel.country.isEmpty ? '' : ', ${linkedHotel.country}'}'
                                 : linkedHotel.address,
                           ),
-                          Text('Rating: ${linkedHotel.rating.toStringAsFixed(1)}'),
+                          Text(
+                              'Rating: ${linkedHotel.rating.toStringAsFixed(1)}'),
                         ],
                       ),
               ),
-
               const _SectionDivider(),
-
               _DashboardSection(
                 icon: Icons.payments_outlined,
                 title: 'Budget',
@@ -192,13 +188,12 @@ class TripDetailsPage extends ConsumerWidget {
                     Text('${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
                     const SizedBox(height: 4),
                     Text('Spent ${trip.currency} ${spent.toStringAsFixed(2)}'),
-                    Text('Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
+                    Text(
+                        'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
                   ],
                 ),
               ),
-
               const _SectionDivider(),
-
               _DashboardSection(
                 icon: Icons.event_note,
                 title: 'Itinerary',
@@ -207,41 +202,31 @@ class TripDetailsPage extends ConsumerWidget {
                   children: _buildDayItems(_tripDays(trip)),
                 ),
               ),
-
               const _SectionDivider(),
-
               const _DashboardSection(
                 icon: Icons.map_outlined,
                 title: 'Map',
                 child: Text('Map integration coming next.'),
               ),
-
               const _SectionDivider(),
-
               const _DashboardSection(
                 icon: Icons.description_outlined,
                 title: 'Documents',
                 child: Text('Travel documents module coming next.'),
               ),
-
               const _SectionDivider(),
-
               const _DashboardSection(
                 icon: Icons.translate_outlined,
                 title: 'Translator',
                 child: Text('AI translator module coming next.'),
               ),
-
               const _SectionDivider(),
-
               const _DashboardSection(
                 icon: Icons.smart_toy_outlined,
                 title: 'AI Assistant',
                 child: Text('Trip AI assistant coming next.'),
               ),
-
               const SizedBox(height: 24),
-
               ElevatedButton.icon(
                 icon: const Icon(Icons.edit),
                 label: const Text('Edit Trip'),
@@ -254,9 +239,7 @@ class TripDetailsPage extends ConsumerWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 12),
-
               OutlinedButton.icon(
                 icon: const Icon(Icons.delete),
                 label: const Text('Delete Trip'),

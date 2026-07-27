@@ -38,7 +38,8 @@ class TripFirestoreService {
       return null;
     }
 
-    return TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data() ?? const {}));
+    return TripModel.fromJson(
+        _fromFirestoreMap(doc.id, doc.data() ?? const {}));
   }
 
   Future<List<TripModel>> getAllTrips() async {
@@ -49,12 +50,10 @@ class TripFirestoreService {
   }
 
   Stream<List<TripModel>> watchTrips() {
-    return _tripCollection
-        .orderBy('startDate')
-        .snapshots()
-        .map(
+    return _tripCollection.orderBy('startDate').snapshots().map(
           (snapshot) => snapshot.docs
-              .map((doc) => TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())))
+              .map((doc) =>
+                  TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())))
               .toList(),
         );
   }
@@ -80,7 +79,8 @@ class TripFirestoreService {
       'id': id,
       'title': source['title'],
       'destination': source['destination'],
-      'startDate': toDate(source['startDate']) ?? toDate(source['departureDate']),
+      'startDate':
+          toDate(source['startDate']) ?? toDate(source['departureDate']),
       'endDate': toDate(source['endDate']) ?? toDate(source['returnDate']),
       'budget': (source['budget'] as num?)?.toDouble() ?? 0.0,
       'notes': source['notes'],
@@ -112,10 +112,13 @@ class TripFirestoreService {
     return {
       'title': json['title'],
       'destination': json['destination'],
-      'startDate': Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
+      'startDate':
+          Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
       'endDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
-      'departureDate': Timestamp.fromDate(parse(json['departureDate']) ?? trip.startDate),
-      'returnDate': Timestamp.fromDate(parse(json['returnDate']) ?? trip.endDate),
+      'departureDate':
+          Timestamp.fromDate(parse(json['departureDate']) ?? trip.startDate),
+      'returnDate':
+          Timestamp.fromDate(parse(json['returnDate']) ?? trip.endDate),
       'budget': json['budget'],
       'notes': json['notes'],
       'imageUrl': json['imageUrl'],
@@ -124,9 +127,10 @@ class TripFirestoreService {
       'selectedFlightId': json['selectedFlightId'],
       'selectedHotelId': json['selectedHotelId'],
       'weatherSnapshot': json['weatherSnapshot'],
-      'weatherSnapshotCapturedAt': parse(json['weatherSnapshotCapturedAt']) == null
-          ? null
-          : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
+      'weatherSnapshotCapturedAt':
+          parse(json['weatherSnapshotCapturedAt']) == null
+              ? null
+              : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
       'createdAt': parse(json['createdAt']) == null
           ? null
           : Timestamp.fromDate(parse(json['createdAt'])!),

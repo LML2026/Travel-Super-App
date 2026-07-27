@@ -45,7 +45,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   @override
   void didUpdateWidget(covariant TripDashboardPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.trip.id != widget.trip.id || oldWidget.trip.updatedAt != widget.trip.updatedAt) {
+    if (oldWidget.trip.id != widget.trip.id ||
+        oldWidget.trip.updatedAt != widget.trip.updatedAt) {
       _trip = widget.trip;
     }
   }
@@ -87,7 +88,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
               FlightCard(
                 tripId: _trip.id,
                 onOpenFlights: () => context.pushFlights(),
-                onViewFlightDetails: (flight) => context.pushSavedFlightDetails(flight),
+                onViewFlightDetails: (flight) =>
+                    context.pushSavedFlightDetails(flight),
                 onLinkFlight: () => _selectAndLinkFlight(),
                 onUnlinkFlight: () => _confirmAndUnlinkFlight(),
               ),
@@ -96,7 +98,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 checkInDate: _trip.departureDate,
                 checkOutDate: _trip.returnDate,
                 onOpenHotels: () => context.pushHotels(),
-                onViewHotelDetails: (hotel) => context.pushSavedHotelDetails(hotel),
+                onViewHotelDetails: (hotel) =>
+                    context.pushSavedHotelDetails(hotel),
                 onLinkHotel: () => _selectAndLinkHotel(),
                 onUnlinkHotel: () => _confirmAndUnlinkHotel(),
               ),
@@ -133,7 +136,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   }
 
   Future<void> _selectAndLinkFlight() async {
-    final flights = ref.read(savedFlightsProvider).valueOrNull ?? const <SavedFlight>[];
+    final flights =
+        ref.read(savedFlightsProvider).valueOrNull ?? const <SavedFlight>[];
     if (flights.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -212,7 +216,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   }
 
   Future<void> _selectAndLinkHotel() async {
-    final hotels = ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
+    final hotels =
+        ref.read(savedHotelsProvider).valueOrNull ?? const <SavedHotel>[];
     if (hotels.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -356,7 +361,8 @@ class _TripHeader extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 4),
-            Text('${formatter.format(trip.departureDate)} → ${formatter.format(trip.returnDate)}'),
+            Text(
+                '${formatter.format(trip.departureDate)} → ${formatter.format(trip.returnDate)}'),
           ],
         ),
       ),

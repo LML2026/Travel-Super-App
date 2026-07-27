@@ -7,18 +7,22 @@ void main() {
   test('trip routes expose expected names and paths', () {
     final routes = buildTripRoutes().whereType<GoRoute>().toList();
 
-    expect(routes.map((route) => route.path), containsAll(<String>[
-      AppRoute.trips.path,
-      AppRoute.tripCreate.path,
-      AppRoute.tripDetails.path,
-      AppRoute.tripEdit.path,
-    ]));
+    expect(
+        routes.map((route) => route.path),
+        containsAll(<String>[
+          AppRoute.trips.path,
+          AppRoute.tripCreate.path,
+          AppRoute.tripDetails.path,
+          AppRoute.tripEdit.path,
+        ]));
 
-    expect(routes.map((route) => route.name), containsAll(<String?>[
-      AppRoute.trips.routeName,
-      AppRoute.tripCreate.routeName,
-      AppRoute.tripDetails.routeName,
-      AppRoute.tripEdit.routeName,
-    ]));
+    expect(
+        routes.map((route) => route.name),
+        containsAll(<String?>[
+          AppRoute.trips.routeName,
+          AppRoute.tripCreate.routeName,
+          AppRoute.tripDetails.routeName,
+          AppRoute.tripEdit.routeName,
+        ]));
   });
 }

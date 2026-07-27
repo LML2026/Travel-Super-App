@@ -125,20 +125,15 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-
             TextFormField(
               controller: _destinationController,
               decoration: const InputDecoration(
                 labelText: 'Destination',
               ),
               validator: (value) =>
-                  value == null || value.isEmpty
-                      ? 'Enter destination'
-                      : null,
+                  value == null || value.isEmpty ? 'Enter destination' : null,
             ),
-
             const SizedBox(height: 16),
-
             ListTile(
               title: Text(
                 _departureDate == null
@@ -148,7 +143,6 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
               trailing: const Icon(Icons.calendar_today),
               onTap: _pickDepartureDate,
             ),
-
             ListTile(
               title: Text(
                 _returnDate == null
@@ -158,9 +152,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
               trailing: const Icon(Icons.calendar_today),
               onTap: _pickReturnDate,
             ),
-
             const SizedBox(height: 16),
-
             TextFormField(
               controller: _budgetController,
               keyboardType:
@@ -180,9 +172,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                 return null;
               },
             ),
-
             const SizedBox(height: 16),
-
             DropdownButtonFormField<String>(
               initialValue: _currency,
               decoration: const InputDecoration(
@@ -206,19 +196,14 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                 setState(() => _currency = value!);
               },
             ),
-
             const SizedBox(height: 16),
-
             Row(
               children: [
-
                 const Text(
                   'Travellers',
                   style: TextStyle(fontSize: 16),
                 ),
-
                 const Spacer(),
-
                 IconButton(
                   onPressed: () {
                     if (_travellers > 1) {
@@ -227,12 +212,10 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                   },
                   icon: const Icon(Icons.remove_circle_outline),
                 ),
-
                 Text(
                   '$_travellers',
                   style: const TextStyle(fontSize: 18),
                 ),
-
                 IconButton(
                   onPressed: () {
                     setState(() => _travellers++);
@@ -241,9 +224,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             TextFormField(
               controller: _notesController,
               maxLines: 4,
@@ -251,9 +232,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                 labelText: 'Notes',
               ),
             ),
-
             const SizedBox(height: 30),
-
             ElevatedButton(
               onPressed: _saveTrip,
               child: const Text('Create Trip'),

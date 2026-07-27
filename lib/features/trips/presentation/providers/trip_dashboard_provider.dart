@@ -34,7 +34,8 @@ final tripLiveProvider = StreamProvider.family<Trip?, String>((ref, tripId) {
   });
 });
 
-final tripFlightsProvider = Provider.family<AsyncValue<SavedFlight?>, String>((ref, tripId) {
+final tripFlightsProvider =
+    Provider.family<AsyncValue<SavedFlight?>, String>((ref, tripId) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
   final flightsAsync = ref.watch(savedFlightsProvider);
 
@@ -72,7 +73,8 @@ final tripFlightsProvider = Provider.family<AsyncValue<SavedFlight?>, String>((r
   return const AsyncValue<SavedFlight?>.data(null);
 });
 
-final tripHotelProvider = Provider.family<AsyncValue<SavedHotel?>, String>((ref, tripId) {
+final tripHotelProvider =
+    Provider.family<AsyncValue<SavedHotel?>, String>((ref, tripId) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
   final hotelsAsync = ref.watch(savedHotelsProvider);
 
@@ -110,7 +112,8 @@ final tripHotelProvider = Provider.family<AsyncValue<SavedHotel?>, String>((ref,
   return const AsyncValue<SavedHotel?>.data(null);
 });
 
-final tripBudgetProvider = Provider.family<AsyncValue<TripBudgetSummary>, String>((ref, tripId) {
+final tripBudgetProvider =
+    Provider.family<AsyncValue<TripBudgetSummary>, String>((ref, tripId) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
   final expensesAsync = ref.watch(tripExpensesProvider(tripId));
 

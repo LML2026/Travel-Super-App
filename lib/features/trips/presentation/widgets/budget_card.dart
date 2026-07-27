@@ -24,9 +24,12 @@ class BudgetCard extends ConsumerWidget {
       data: (summary) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
-          Text('Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
-          Text('Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
+          Text(
+              'Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
+          Text(
+              'Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
+          Text(
+              'Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
         ],
       ),
     );

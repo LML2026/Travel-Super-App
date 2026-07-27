@@ -15,19 +15,17 @@ class FirestoreTripRepository implements TripRepository {
   @override
   Stream<List<Trip>> watchTrips() {
     return _collection.snapshots().map(
-      (snapshot) => snapshot.docs
-          .map((doc) => TripModel.fromJson(doc.data()))
-          .toList(),
-    );
+          (snapshot) => snapshot.docs
+              .map((doc) => TripModel.fromJson(doc.data()))
+              .toList(),
+        );
   }
 
   @override
   Future<List<Trip>> getAll() async {
     final snapshot = await _collection.get();
 
-    return snapshot.docs
-        .map((doc) => TripModel.fromJson(doc.data()))
-        .toList();
+    return snapshot.docs.map((doc) => TripModel.fromJson(doc.data())).toList();
   }
 
   @override

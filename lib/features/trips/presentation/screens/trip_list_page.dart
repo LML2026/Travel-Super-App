@@ -33,11 +33,9 @@ class TripListPage extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
-
         error: (error, stack) => Center(
           child: Text(error.toString()),
         ),
-
         data: (trips) {
           if (trips.isEmpty) {
             return const _EmptyTripsView();
@@ -86,21 +84,16 @@ class TripCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             const SizedBox(height: 8),
-
             Text(
               "${formatter.format(trip.departureDate)}"
               " → "
               "${formatter.format(trip.returnDate)}",
             ),
-
             const SizedBox(height: 6),
-
             Text(
               "Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}",
             ),
-
             Text(
               "Travellers: ${trip.travellers}",
             ),
@@ -131,15 +124,12 @@ class _EmptyTripsView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           Icon(
             Icons.luggage,
             size: 80,
             color: Colors.grey,
           ),
-
           SizedBox(height: 20),
-
           Text(
             "No trips yet",
             style: TextStyle(
@@ -147,9 +137,7 @@ class _EmptyTripsView extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           SizedBox(height: 8),
-
           Text(
             "Tap + to create your first trip.",
           ),

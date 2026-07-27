@@ -83,8 +83,7 @@ class CreateTripNotifier extends AsyncNotifier<void> {
   }
 }
 
-final createTripProvider =
-    AsyncNotifierProvider<CreateTripNotifier, void>(
+final createTripProvider = AsyncNotifierProvider<CreateTripNotifier, void>(
   CreateTripNotifier.new,
 );
 

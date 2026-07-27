@@ -40,7 +40,8 @@ class Trip extends Equatable {
     this.updatedAt,
     this.status,
   })  : startDate = _resolveStartDate(startDate, departureDate),
-        endDate = _resolveEndDate(endDate, returnDate, startDate, departureDate),
+        endDate =
+            _resolveEndDate(endDate, returnDate, startDate, departureDate),
         currency = currency ?? 'GBP',
         travellers = travellers ?? 1;
 
@@ -108,7 +109,8 @@ class Trip extends Equatable {
   @Deprecated('Use endDate.difference(startDate).inDays instead')
   int get nights => endDate.difference(startDate).inDays;
 
-  static DateTime _resolveStartDate(DateTime? startDate, DateTime? departureDate) {
+  static DateTime _resolveStartDate(
+      DateTime? startDate, DateTime? departureDate) {
     final resolved = startDate ?? departureDate;
     if (resolved != null) {
       return resolved;
