@@ -13,9 +13,10 @@
 
 ### In Progress
 - TSAPP-TRIP-107 | QA-TRIPS-1 | Target: 2026-08-05
-- TSAPP-ID-102 | FE-AUTH-1 | Target: 2026-07-31
+- TSAPP-ID-103 | FE-PROFILE-1 | Target: 2026-08-03
 
 ### In Review
+- TSAPP-ID-102 | FE-AUTH-1 | Target: 2026-07-31
 - TSAPP-TRIP-101 | FE-TRIPS-1 | Target: 2026-07-28
 - TSAPP-TRIP-102 | FE-TRIPS-2 | Target: 2026-07-29
 - TSAPP-TRIP-103 | FE-TRIPS-2 | Target: 2026-07-30
@@ -34,11 +35,11 @@
   - TSAPP-ID-102 baseline blockers isolated and resolved on auth branch
   - TSAPP-ID-102 implemented Google/Apple auth flows plus provider wiring
 - In progress:
-  - TSAPP-ID-102 final verification and integration review
+  - TSAPP-ID-103 kickoff and profile module scope definition
 - Blockers:
-  - None
+  - Flutter web login smoke in shared browser fails with removeChild null runtime error
 - Next day plan:
-  - TSAPP-ID-102 regression pass and PR preparation
+  - Open TSAPP-ID-102 PR and continue TSAPP-ID-103 implementation
 
 ### YYYY-MM-DD
 - Sprint health: On track | At risk | Off track

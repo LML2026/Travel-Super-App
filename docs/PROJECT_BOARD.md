@@ -18,8 +18,8 @@ A traveller can:
 | Epic | Status | Notes |
 |---|---|---|
 | Core Platform | In progress | Platform shell and standards in place, hardening continues |
-| Authentication | In progress | TSAPP-ID-102 active on feature/authentication/tsapp-id-102-auth-module |
-| User Profile | Ready | Preferences and identity defaults |
+| Authentication | In review | TSAPP-ID-102 delivered on feature/authentication/tsapp-id-102-auth-module |
+| User Profile | In progress | TSAPP-ID-103 active on feature/profile/tsapp-id-103-user-profile-module |
 | Currency Engine | Ready | ISO catalog, search, favourites, rates |
 | Wallet | Started | Running in app, align with full finance model |
 | Budget | Planned | Awaiting finance milestone execution |
@@ -70,8 +70,8 @@ Scope:
 
 ## Immediate Next Task
 Authentication and user profiles:
-1. Authentication module
-2. User profile module
-3. Persistence and synchronisation
+1. User profile module
+2. Persistence and synchronisation
+3. Auth PR review and merge
 
 This unlocks every cloud-connected module for Release 1.0.
