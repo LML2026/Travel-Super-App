@@ -45,7 +45,7 @@ class TripDetailsPage extends ConsumerWidget {
 
     if (delete != true) return;
 
-    await ref.read(tripRepositoryProvider).deleteTrip(trip.id);
+    await ref.read(createTripProvider.notifier).deleteTrip(trip.id);
 
     if (context.mounted) {
       Navigator.pop(context);

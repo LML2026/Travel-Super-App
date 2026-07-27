@@ -108,7 +108,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.saveTrip(makeModelTrip(id: 'new-trip'));
+    await notifier.createTrip(makeModelTrip(id: 'new-trip'));
 
     expect(fakeRepo.createdTrips, hasLength(1));
     expect(fakeRepo.createdTrips.single.id, 'new-trip');
@@ -124,7 +124,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.editTrip(makeModelTrip(id: 'edit-trip'));
+    await notifier.updateTrip(makeModelTrip(id: 'edit-trip'));
 
     expect(fakeRepo.updatedTrips, hasLength(1));
     expect(fakeRepo.updatedTrips.single.id, 'edit-trip');
@@ -140,7 +140,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.removeTrip('trip-delete');
+    await notifier.deleteTrip('trip-delete');
 
     expect(fakeRepo.deletedTripIds, <String>['trip-delete']);
   });

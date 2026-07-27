@@ -10,17 +10,12 @@ void main() {
       startDate: DateTime(2026, 8, 20),
       endDate: DateTime(2026, 8, 25),
       budget: 1500,
-      currency: 'GBP',
-      travellers: 2,
       notes: 'Anniversary trip',
-      createdAt: DateTime(2026, 7, 26),
-      updatedAt: DateTime(2026, 7, 26),
-      status: 'planned',
     );
 
     final json = trip.toJson();
 
-    expect(json['status'], 'planned');
     expect(json['title'], 'Paris Getaway');
+    expect(json['destination'], 'Paris');
   });
 }

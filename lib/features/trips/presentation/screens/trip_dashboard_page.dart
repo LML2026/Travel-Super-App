@@ -168,7 +168,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    await ref.read(createTripProvider.notifier).updateTrip(updatedTrip);
     if (!mounted) return;
     setState(() {
       _trip = updatedTrip;
@@ -192,7 +192,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    await ref.read(createTripProvider.notifier).updateTrip(updatedTrip);
     if (!mounted) return;
     setState(() {
       _trip = updatedTrip;
@@ -247,7 +247,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    await ref.read(createTripProvider.notifier).updateTrip(updatedTrip);
     if (!mounted) return;
     setState(() {
       _trip = updatedTrip;
@@ -271,7 +271,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(tripRepositoryProvider).updateTrip(updatedTrip);
+    await ref.read(createTripProvider.notifier).updateTrip(updatedTrip);
     if (!mounted) return;
     setState(() {
       _trip = updatedTrip;

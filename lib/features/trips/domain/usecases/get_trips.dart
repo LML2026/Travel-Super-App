@@ -9,8 +9,4 @@ class GetTrips {
   Stream<List<Trip>> call() {
     return _repository.watchTrips();
   }
-
-  Future<List<Trip>> once() {
-    return _repository.getAll();
-  }
 }

@@ -111,7 +111,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.saveTrip(trip);
+    await notifier.createTrip(trip);
 
     expect(repo.created, isTrue);
 
@@ -130,7 +130,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.saveTrip(trip);
+    await notifier.createTrip(trip);
 
     final state = container.read(createTripProvider);
     expect(state.hasError, isTrue);

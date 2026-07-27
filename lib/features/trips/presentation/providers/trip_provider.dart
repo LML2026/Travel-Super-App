@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,7 +12,7 @@ import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/update_trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return FirestoreTripRepository();
+  return FirestoreTripRepository(FirebaseFirestore.instance);
 });
 
 final getTripsUseCaseProvider = Provider<GetTrips>((ref) {
@@ -65,11 +66,6 @@ class CreateTripNotifier extends AsyncNotifier<void> {
     });
   }
 
-  // Backward-compatible aliases kept for existing tests/call sites.
-  Future<void> saveTrip(Trip trip) {
-    return createTrip(trip);
-  }
-
   Future<void> updateTrip(Trip trip) async {
     state = const AsyncLoading();
 
@@ -78,22 +74,12 @@ class CreateTripNotifier extends AsyncNotifier<void> {
     });
   }
 
-  // Backward-compatible aliases kept for existing tests/call sites.
-  Future<void> editTrip(Trip trip) {
-    return updateTrip(trip);
-  }
-
   Future<void> deleteTrip(String id) async {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
       await _deleteTrip.call(id);
     });
-  }
-
-  // Backward-compatible aliases kept for existing tests/call sites.
-  Future<void> removeTrip(String id) {
-    return deleteTrip(id);
   }
 }
 

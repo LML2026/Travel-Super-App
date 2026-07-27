@@ -1,45 +1,48 @@
-class Trip {
+import 'package:equatable/equatable.dart';
+
+class Trip extends Equatable {
   final String id;
   final String title;
   final String destination;
   final DateTime startDate;
   final DateTime endDate;
   final double budget;
-  final int travellers;
+  final String? notes;
+  final String? imageUrl;
   final String currency;
-  final String notes;
+  final int travellers;
   final String? selectedFlightId;
   final String? selectedHotelId;
   final Map<String, dynamic>? weatherSnapshot;
   final DateTime? weatherSnapshotCapturedAt;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final String? status;
 
   Trip({
     required this.id,
-    required String title,
+    required this.title,
     required this.destination,
     DateTime? startDate,
     DateTime? endDate,
     DateTime? departureDate,
     DateTime? returnDate,
     required this.budget,
-    this.travellers = 1,
-    this.currency = 'GBP',
-    this.notes = '',
+    this.notes,
+    this.imageUrl,
+    String? currency,
+    int? travellers,
     this.selectedFlightId,
     this.selectedHotelId,
     this.weatherSnapshot,
     this.weatherSnapshotCapturedAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    this.status = 'planned',
-  })  : title = title.trim().isEmpty ? destination : title,
-        startDate = startDate ?? departureDate ?? createdAt ?? DateTime.now(),
-        endDate = endDate ?? returnDate ?? startDate ?? departureDate ?? createdAt ?? DateTime.now(),
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? createdAt ?? DateTime.now();
+    this.createdAt,
+    this.updatedAt,
+    this.status,
+  })  : startDate = _resolveStartDate(startDate, departureDate),
+        endDate = _resolveEndDate(endDate, returnDate, startDate, departureDate),
+        currency = currency ?? 'GBP',
+        travellers = travellers ?? 1;
 
   Trip copyWith({
     String? id,
@@ -49,10 +52,11 @@ class Trip {
     DateTime? endDate,
     DateTime? departureDate,
     DateTime? returnDate,
-    int? travellers,
-    String? notes,
     double? budget,
+    String? notes,
+    String? imageUrl,
     String? currency,
+    int? travellers,
     String? selectedFlightId,
     String? selectedHotelId,
     Map<String, dynamic>? weatherSnapshot,
@@ -67,10 +71,11 @@ class Trip {
       destination: destination ?? this.destination,
       startDate: startDate ?? departureDate ?? this.startDate,
       endDate: endDate ?? returnDate ?? this.endDate,
-      travellers: travellers ?? this.travellers,
-      notes: notes ?? this.notes,
       budget: budget ?? this.budget,
+      notes: notes ?? this.notes,
+      imageUrl: imageUrl ?? this.imageUrl,
       currency: currency ?? this.currency,
+      travellers: travellers ?? this.travellers,
       selectedFlightId: selectedFlightId ?? this.selectedFlightId,
       selectedHotelId: selectedHotelId ?? this.selectedHotelId,
       weatherSnapshot: weatherSnapshot ?? this.weatherSnapshot,
@@ -82,32 +87,70 @@ class Trip {
     );
   }
 
-  String? get flightId => selectedFlightId;
-
-  String? get hotelId => selectedHotelId;
-
+  @Deprecated('Use startDate instead')
   DateTime get departureDate => startDate;
 
+  @Deprecated('Use endDate instead')
   DateTime get returnDate => endDate;
 
+  @Deprecated('Use the budget field and format explicitly')
+  String get currencyOrDefault => currency;
+
+  @Deprecated('Use a feature-specific count instead')
+  int get travellerCount => travellers;
+
+  @Deprecated('Use selectedFlightId instead')
+  String? get flightId => selectedFlightId;
+
+  @Deprecated('Use selectedHotelId instead')
+  String? get hotelId => selectedHotelId;
+
+  @Deprecated('Use endDate.difference(startDate).inDays instead')
   int get nights => endDate.difference(startDate).inDays;
 
-  @override
-  String toString() {
-    return 'Trip('
-        'id: $id, '
-        'title: $title, '
-        'destination: $destination, '
-        'start: $startDate, '
-        'end: $endDate'
-        ')';
+  static DateTime _resolveStartDate(DateTime? startDate, DateTime? departureDate) {
+    final resolved = startDate ?? departureDate;
+    if (resolved != null) {
+      return resolved;
+    }
+    throw ArgumentError('Trip requires a startDate or departureDate.');
+  }
+
+  static DateTime _resolveEndDate(
+    DateTime? endDate,
+    DateTime? returnDate,
+    DateTime? startDate,
+    DateTime? departureDate,
+  ) {
+    final resolved = endDate ?? returnDate;
+    if (resolved != null) {
+      return resolved;
+    }
+    final fallback = startDate ?? departureDate;
+    if (fallback != null) {
+      return fallback;
+    }
+    throw ArgumentError('Trip requires an endDate or returnDate.');
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Trip && runtimeType == other.runtimeType && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
+  List<Object?> get props => [
+        id,
+        title,
+        destination,
+        startDate,
+        endDate,
+        budget,
+        notes,
+        imageUrl,
+        currency,
+        travellers,
+        selectedFlightId,
+        selectedHotelId,
+        weatherSnapshot,
+        weatherSnapshotCapturedAt,
+        createdAt,
+        updatedAt,
+        status,
+      ];
 }

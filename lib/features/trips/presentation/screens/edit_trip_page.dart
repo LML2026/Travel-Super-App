@@ -86,7 +86,7 @@ class _EditTripPageState extends ConsumerState<EditTripPage> {
       return;
     }
 
-    final repository = ref.read(tripRepositoryProvider);
+    final notifier = ref.read(createTripProvider.notifier);
 
     final updatedTrip = widget.trip.copyWith(
       destination: _destinationController.text.trim(),
@@ -100,7 +100,7 @@ class _EditTripPageState extends ConsumerState<EditTripPage> {
     );
 
     try {
-      await repository.updateTrip(updatedTrip);
+      await notifier.updateTrip(updatedTrip);
 
       if (mounted) {
         Navigator.pop(context);

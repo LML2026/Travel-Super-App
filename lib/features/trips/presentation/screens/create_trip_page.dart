@@ -73,7 +73,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
       return;
     }
 
-    final repository = ref.read(tripRepositoryProvider);
+    final notifier = ref.read(createTripProvider.notifier);
 
     final now = DateTime.now();
 
@@ -92,7 +92,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
     );
 
     try {
-      await repository.createTrip(trip);
+      await notifier.createTrip(trip);
 
       if (!mounted) return;
 

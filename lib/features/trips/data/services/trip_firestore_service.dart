@@ -82,10 +82,11 @@ class TripFirestoreService {
       'destination': source['destination'],
       'startDate': toDate(source['startDate']) ?? toDate(source['departureDate']),
       'endDate': toDate(source['endDate']) ?? toDate(source['returnDate']),
-      'budget': source['budget'],
-      'currency': source['currency'],
-      'travellers': source['travellers'],
+      'budget': (source['budget'] as num?)?.toDouble() ?? 0.0,
       'notes': source['notes'],
+      'imageUrl': source['imageUrl'],
+      'currency': source['currency'] as String? ?? 'GBP',
+      'travellers': (source['travellers'] as num?)?.toInt() ?? 1,
       'selectedFlightId': source['selectedFlightId'] ?? source['flightId'],
       'selectedHotelId': source['selectedHotelId'] ?? source['hotelId'],
       'weatherSnapshot': source['weatherSnapshot'] ?? source['weather'],
@@ -108,30 +109,30 @@ class TripFirestoreService {
       return DateTime.tryParse(value.toString());
     }
 
-    final createdAt = parse(json['createdAt']) ?? DateTime.now();
-    final updatedAt = parse(json['updatedAt']) ?? createdAt;
-
     return {
       'title': json['title'],
       'destination': json['destination'],
       'startDate': Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
       'endDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
-      // Keep legacy keys during migration.
-      'departureDate': Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
-      'returnDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
+      'departureDate': Timestamp.fromDate(parse(json['departureDate']) ?? trip.startDate),
+      'returnDate': Timestamp.fromDate(parse(json['returnDate']) ?? trip.endDate),
       'budget': json['budget'],
+      'notes': json['notes'],
+      'imageUrl': json['imageUrl'],
       'currency': json['currency'],
       'travellers': json['travellers'],
-      'notes': json['notes'],
       'selectedFlightId': json['selectedFlightId'],
       'selectedHotelId': json['selectedHotelId'],
       'weatherSnapshot': json['weatherSnapshot'],
-      'weather': json['weather'],
       'weatherSnapshotCapturedAt': parse(json['weatherSnapshotCapturedAt']) == null
           ? null
           : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'createdAt': parse(json['createdAt']) == null
+          ? null
+          : Timestamp.fromDate(parse(json['createdAt'])!),
+      'updatedAt': parse(json['updatedAt']) == null
+          ? null
+          : Timestamp.fromDate(parse(json['updatedAt'])!),
       'status': json['status'],
     };
   }

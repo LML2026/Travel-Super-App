@@ -1,62 +1,82 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/trip.dart';
 
 class TripModel extends Trip {
   TripModel({
-    required super.id,
-    required super.title,
-    required super.destination,
-    required super.startDate,
-    required super.endDate,
-    required super.budget,
-    super.currency = 'GBP',
-    super.travellers = 1,
-    super.notes = '',
-    super.selectedFlightId,
-    super.selectedHotelId,
-    super.weatherSnapshot,
-    super.weatherSnapshotCapturedAt,
-    required super.createdAt,
-    required super.updatedAt,
-    super.status = 'planned',
-  });
+    required String id,
+    required String title,
+    required String destination,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? departureDate,
+    DateTime? returnDate,
+    required double budget,
+    String? notes,
+    String? imageUrl,
+    String? currency,
+    int? travellers,
+    String? selectedFlightId,
+    String? selectedHotelId,
+    Map<String, dynamic>? weatherSnapshot,
+    DateTime? weatherSnapshotCapturedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? status,
+  }) : super(
+          id: id,
+          title: title,
+          destination: destination,
+          startDate: startDate,
+          endDate: endDate,
+          departureDate: departureDate,
+          returnDate: returnDate,
+          budget: budget,
+          notes: notes,
+          imageUrl: imageUrl,
+          currency: currency,
+          travellers: travellers,
+          selectedFlightId: selectedFlightId,
+          selectedHotelId: selectedHotelId,
+          weatherSnapshot: weatherSnapshot,
+          weatherSnapshotCapturedAt: weatherSnapshotCapturedAt,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          status: status,
+        );
 
   factory TripModel.fromJson(Map<String, dynamic> json) {
-    final title = (json['title']?.toString().trim().isNotEmpty ?? false)
-        ? json['title'].toString().trim()
-        : (json['destination']?.toString() ?? 'Untitled Trip');
-    final createdAt = _readDate(json['createdAt']) ?? DateTime.now();
-    final startDate =
-        _readDate(json['startDate']) ?? _readDate(json['departureDate']) ?? createdAt;
-    final endDate =
-        _readDate(json['endDate']) ?? _readDate(json['returnDate']) ?? startDate;
+    DateTime? toDate(dynamic value) {
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      if (value is DateTime) {
+        return value;
+      }
+      if (value == null) {
+        return null;
+      }
+      return DateTime.tryParse(value.toString());
+    }
 
     return TripModel(
-      id: json['id']?.toString() ?? '',
-      title: title,
-      destination: json['destination']?.toString() ?? '',
-      startDate: startDate,
-      endDate: endDate,
-      budget: (json['budget'] as num?)?.toDouble() ??
-          double.tryParse(json['budget']?.toString() ?? '') ??
-          0,
-      currency: json['currency']?.toString() ?? 'GBP',
-      travellers: (json['travellers'] as num?)?.toInt() ??
-          int.tryParse(json['travellers']?.toString() ?? '') ??
-          1,
-      notes: json['notes']?.toString() ?? '',
-      selectedFlightId:
-          json['selectedFlightId']?.toString() ?? json['flightId']?.toString(),
-      selectedHotelId:
-          json['selectedHotelId']?.toString() ?? json['hotelId']?.toString(),
-      weatherSnapshot: json['weatherSnapshot'] is Map<String, dynamic>
-          ? json['weatherSnapshot'] as Map<String, dynamic>
-          : (json['weather'] is Map<String, dynamic>
-              ? json['weather'] as Map<String, dynamic>
-              : null),
-      weatherSnapshotCapturedAt: _readDate(json['weatherSnapshotCapturedAt']),
-      createdAt: createdAt,
-      updatedAt: _readDate(json['updatedAt']) ?? createdAt,
-      status: json['status']?.toString() ?? 'planned',
+      id: json['id'] as String,
+      title: json['title'] as String,
+      destination: json['destination'] as String,
+      startDate: toDate(json['startDate']) ?? toDate(json['departureDate']),
+      endDate: toDate(json['endDate']) ?? toDate(json['returnDate']),
+      budget: (json['budget'] as num).toDouble(),
+      notes: json['notes'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      currency: json['currency'] as String?,
+      travellers: (json['travellers'] as num?)?.toInt(),
+      selectedFlightId: json['selectedFlightId'] as String?,
+      selectedHotelId: json['selectedHotelId'] as String?,
+      weatherSnapshot: json['weatherSnapshot'] as Map<String, dynamic>?,
+      weatherSnapshotCapturedAt: toDate(json['weatherSnapshotCapturedAt']),
+      createdAt: toDate(json['createdAt']),
+      updatedAt: toDate(json['updatedAt']),
+      status: json['status'] as String?,
     );
   }
 
@@ -67,10 +87,13 @@ class TripModel extends Trip {
       destination: trip.destination,
       startDate: trip.startDate,
       endDate: trip.endDate,
+      departureDate: trip.departureDate,
+      returnDate: trip.returnDate,
       budget: trip.budget,
+      notes: trip.notes,
+      imageUrl: trip.imageUrl,
       currency: trip.currency,
       travellers: trip.travellers,
-      notes: trip.notes,
       selectedFlightId: trip.selectedFlightId,
       selectedHotelId: trip.selectedHotelId,
       weatherSnapshot: trip.weatherSnapshot,
@@ -86,34 +109,24 @@ class TripModel extends Trip {
       'id': id,
       'title': title,
       'destination': destination,
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
-      'departureDate': startDate.toIso8601String(),
-      'returnDate': endDate.toIso8601String(),
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'departureDate': Timestamp.fromDate(departureDate),
+      'returnDate': Timestamp.fromDate(returnDate),
       'budget': budget,
+      'notes': notes,
+      'imageUrl': imageUrl,
       'currency': currency,
       'travellers': travellers,
-      'notes': notes,
       'selectedFlightId': selectedFlightId,
       'selectedHotelId': selectedHotelId,
-      'flightId': selectedFlightId,
-      'hotelId': selectedHotelId,
       'weatherSnapshot': weatherSnapshot,
-      'weather': weatherSnapshot,
-      'weatherSnapshotCapturedAt': weatherSnapshotCapturedAt?.toIso8601String(),
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'weatherSnapshotCapturedAt': weatherSnapshotCapturedAt == null
+          ? null
+          : Timestamp.fromDate(weatherSnapshotCapturedAt!),
+      'createdAt': createdAt == null ? null : Timestamp.fromDate(createdAt!),
+      'updatedAt': updatedAt == null ? null : Timestamp.fromDate(updatedAt!),
       'status': status,
     };
-  }
-
-  static DateTime? _readDate(dynamic value) {
-    if (value == null) {
-      return null;
-    }
-    if (value is DateTime) {
-      return value;
-    }
-    return DateTime.tryParse(value.toString());
   }
 }
