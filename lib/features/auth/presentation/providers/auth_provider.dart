@@ -7,6 +7,8 @@ import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/register_user.dart';
 import '../../domain/usecases/send_password_reset.dart';
 import '../../domain/usecases/sign_in.dart';
+import '../../domain/usecases/sign_in_with_apple.dart';
+import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/watch_auth_state.dart';
 
@@ -38,8 +40,28 @@ final signOutUseCaseProvider = Provider<SignOut>((ref) {
   return SignOut(ref.watch(authRepositoryProvider));
 });
 
+final signInWithGoogleUseCaseProvider = Provider<SignInWithGoogle>((ref) {
+  return SignInWithGoogle(ref.watch(authRepositoryProvider));
+});
+
+final signInWithAppleUseCaseProvider = Provider<SignInWithApple>((ref) {
+  return SignInWithApple(ref.watch(authRepositoryProvider));
+});
+
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(watchAuthStateProvider).call();
+});
+
+final currentUserProvider = Provider<User?>((ref) {
+  return ref.watch(authStateProvider).valueOrNull;
+});
+
+final currentUserIdProvider = Provider<String?>((ref) {
+  return ref.watch(currentUserProvider)?.uid;
+});
+
+final immediateCurrentUserProvider = Provider<User?>((ref) {
+  return ref.watch(authRepositoryProvider).currentUser;
 });
 
 class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
@@ -52,7 +74,9 @@ class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
-      await ref.read(signInUseCaseProvider).call(email: email, password: password);
+      await ref
+          .read(signInUseCaseProvider)
+          .call(email: email, password: password);
     });
     state = result;
     if (result.hasError) {
@@ -92,6 +116,28 @@ class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
       await ref.read(signOutUseCaseProvider).call();
+    });
+    state = result;
+    if (result.hasError) {
+      throw result.error!;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncLoading();
+    final result = await AsyncValue.guard(() async {
+      await ref.read(signInWithGoogleUseCaseProvider).call();
+    });
+    state = result;
+    if (result.hasError) {
+      throw result.error!;
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    state = const AsyncLoading();
+    final result = await AsyncValue.guard(() async {
+      await ref.read(signInWithAppleUseCaseProvider).call();
     });
     state = result;
     if (result.hasError) {

@@ -6,11 +6,9 @@ import 'package:go_router/go_router.dart';
 
 import 'app_routes.dart';
 import 'route_groups/auth_routes.dart';
-import 'route_groups/document_routes.dart';
 import 'route_groups/core_routes.dart';
 import 'route_groups/flight_routes.dart';
 import 'route_groups/hotel_routes.dart';
-import 'route_groups/wallet_routes.dart';
 import 'route_groups/trip_routes.dart';
 
 class _AuthRefreshListenable extends ChangeNotifier {
@@ -30,8 +28,8 @@ class _AuthRefreshListenable extends ChangeNotifier {
 }
 
 bool _isProtectedPath(String path) {
-  return path.startsWith(AppRoute.wallet.path) ||
-      path.startsWith(AppRoute.documents.path) ||
+  return path.startsWith('/wallet') ||
+      path.startsWith('/documents') ||
       path.startsWith('/trips');
 }
 
@@ -62,10 +60,8 @@ GoRouter createAppRouter() {
     routes: [
       ...buildCoreRoutes(),
       ...buildAuthRoutes(),
-      ...buildDocumentRoutes(),
       ...buildFlightRoutes(),
       ...buildHotelRoutes(),
-      ...buildWalletRoutes(),
       ...buildTripRoutes(),
     ],
   );

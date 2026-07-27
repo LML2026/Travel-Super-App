@@ -1,19 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_routes.dart';
-import '../../core/services/auth_service.dart';
+import '../auth/presentation/providers/auth_provider.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
-  final _auth = AuthService();
-
+class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -24,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
       }
 
       // Check if user is already signed in
-      if (_auth.currentUser != null) {
+      if (ref.read(immediateCurrentUserProvider) != null) {
         context.goHome();
       } else {
         context.goLogin();

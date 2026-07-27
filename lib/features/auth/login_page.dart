@@ -29,9 +29,53 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     try {
       await ref.read(authMutationProvider.notifier).signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      if (mounted) {
+        context.goHome();
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AuthErrorMapper.messageFor(error))),
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+
+    try {
+      await ref.read(authMutationProvider.notifier).signInWithGoogle();
+
+      if (mounted) {
+        context.goHome();
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AuthErrorMapper.messageFor(error))),
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    setState(() => _loading = true);
+
+    try {
+      await ref.read(authMutationProvider.notifier).signInWithApple();
 
       if (mounted) {
         context.goHome();
@@ -143,6 +187,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       Expanded(child: Divider(color: Colors.grey.shade300)),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _loading ? null : _signInWithGoogle,
+                    icon: const Icon(Icons.account_circle_outlined),
+                    label: const Text('Continue with Google'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _loading ? null : _signInWithApple,
+                    icon: const Icon(Icons.apple),
+                    label: const Text('Continue with Apple'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

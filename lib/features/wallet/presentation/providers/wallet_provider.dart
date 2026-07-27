@@ -1,16 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../profile/presentation/providers/user_profile_provider.dart';
 import '../../data/repositories/in_memory_wallet_repository.dart';
 import '../../domain/entities/wallet.dart';
 import '../../domain/entities/wallet_transaction.dart';
 import '../../domain/repositories/wallet_repository.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
-  final defaults = ref.watch(profileDefaultsProvider);
   return InMemoryWalletRepository(
-    defaultBaseCurrency: defaults.preferredCurrencyCode,
+    defaultBaseCurrency: 'GBP',
   );
 });
 
@@ -36,7 +34,9 @@ final walletTransactionsProvider =
     );
   }
 
-  return ref.watch(walletRepositoryProvider).watchTransactions('wallet-$userId');
+  return ref
+      .watch(walletRepositoryProvider)
+      .watchTransactions('wallet-$userId');
 });
 
 final walletCurrenciesProvider = Provider<List<String>>((ref) {

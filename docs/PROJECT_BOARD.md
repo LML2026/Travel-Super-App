@@ -18,7 +18,7 @@ A traveller can:
 | Epic | Status | Notes |
 |---|---|---|
 | Core Platform | In progress | Platform shell and standards in place, hardening continues |
-| Authentication | Ready | Priority implementation stream |
+| Authentication | In progress | TSAPP-ID-102 active on feature/authentication/tsapp-id-102-auth-module |
 | User Profile | Ready | Preferences and identity defaults |
 | Currency Engine | Ready | ISO catalog, search, favourites, rates |
 | Wallet | Started | Running in app, align with full finance model |

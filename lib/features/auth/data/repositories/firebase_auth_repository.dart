@@ -34,6 +34,16 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<UserCredential> signInWithGoogle() {
+    return _authService.signInWithGoogle();
+  }
+
+  @override
+  Future<UserCredential> signInWithApple() {
+    return _authService.signInWithApple();
+  }
+
+  @override
   Future<void> sendPasswordReset({required String email}) {
     return _authService.sendPasswordReset(email: email);
   }
