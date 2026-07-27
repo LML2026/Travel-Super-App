@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,7 +12,9 @@ import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/update_trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return FirestoreTripRepository();
+  return FirestoreTripRepository(
+    FirebaseFirestore.instance,
+  );
 });
 
 final getTripsUseCaseProvider = Provider<GetTrips>((ref) {
@@ -34,7 +37,7 @@ final deleteTripUseCaseProvider = Provider<DeleteTrip>((ref) {
   return DeleteTrip(ref.watch(tripRepositoryProvider));
 });
 
-final tripListProvider = StreamProvider<List<Trip>>((ref) {
+final tripsProvider = StreamProvider<List<Trip>>((ref) {
   return ref.watch(getTripsUseCaseProvider).call();
 });
 
@@ -43,63 +46,49 @@ final selectedTripProvider =
   return ref.watch(getTripUseCaseProvider).call(tripId);
 });
 
-class CreateTripNotifier extends AutoDisposeAsyncNotifier<void> {
-  @override
-  Future<void> build() async {}
+final tripListProvider = tripsProvider;
 
-  /// Preferred mutation name for creating a new trip.
-  Future<void> saveTrip(Trip trip) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(createTripUseCaseProvider).call(trip),
-    );
+class CreateTripNotifier extends AsyncNotifier<void> {
+  late final CreateTrip _createTrip;
+  late final UpdateTrip _updateTrip;
+  late final DeleteTrip _deleteTrip;
+
+  @override
+  Future<void> build() async {
+    _createTrip = ref.read(createTripUseCaseProvider);
+    _updateTrip = ref.read(updateTripUseCaseProvider);
+    _deleteTrip = ref.read(deleteTripUseCaseProvider);
   }
 
-  /// Preferred mutation name for editing an existing trip.
+  Future<void> createTrip(Trip trip) async {
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(() async {
+      await _createTrip.call(trip);
+    });
+  }
+
   Future<void> updateTrip(Trip trip) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(updateTripUseCaseProvider).call(trip),
-    );
+
+    state = await AsyncValue.guard(() async {
+      await _updateTrip.call(trip);
+    });
   }
 
-  /// Preferred mutation name for deleting an existing trip.
   Future<void> deleteTrip(String id) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(deleteTripUseCaseProvider).call(id),
-    );
+
+    state = await AsyncValue.guard(() async {
+      await _deleteTrip.call(id);
+    });
   }
-
-  /// Backward-compatible alias.
-  Future<void> editTrip(Trip trip) => updateTrip(trip);
-
-  /// Backward-compatible alias.
-  Future<void> removeTrip(String id) => deleteTrip(id);
 }
 
 final createTripProvider =
-    AutoDisposeAsyncNotifierProvider<CreateTripNotifier, void>(
+    AsyncNotifierProvider<CreateTripNotifier, void>(
   CreateTripNotifier.new,
 );
-
-// Alias to keep parity with requested naming style.
-final CreateTripProvider = createTripProvider;
-
-// Backward-compatible provider name used by existing screens/tests.
-final tripsProvider = tripListProvider;
-
-Future<void> saveTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).saveTrip(trip);
-}
-
-Future<void> editTrip(WidgetRef ref, Trip trip) async {
-  await ref.read(createTripProvider.notifier).updateTrip(trip);
-}
-
-Future<void> removeTrip(WidgetRef ref, String tripId) async {
-  await ref.read(createTripProvider.notifier).deleteTrip(tripId);
-}
 
 Trip duplicateTrip(Trip source) {
   return Trip(
