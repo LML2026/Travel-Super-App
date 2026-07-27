@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,7 +11,7 @@ import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/update_trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return FirestoreTripRepository(FirebaseFirestore.instance);
+  return FirestoreTripRepository();
 });
 
 final getTripsUseCaseProvider = Provider<GetTrips>((ref) {
