@@ -73,28 +73,26 @@ class _AuthenticationForgotPasswordPageState
               ),
               const SizedBox(height: 24),
               TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    enabled: !_emailSent,
-                    validator: AuthValidators.validateEmail,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _emailSent || _loading ? null : _sendReset,
-                    child: Text(_emailSent ? 'Email Sent' : 'Send Reset Link'),
-                  ),
-                  if (_emailSent)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 12),
-                      child: Text('Check your inbox for reset instructions.'),
-                    ),
-                ],
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                enabled: !_emailSent,
+                validator: AuthValidators.validateEmail,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _emailSent || _loading ? null : _sendReset,
+                child: Text(_emailSent ? 'Email Sent' : 'Send Reset Link'),
+              ),
+              if (_emailSent)
+                const Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: Text('Check your inbox for reset instructions.'),
+                ),
+            ],
           ),
         ),
       ),

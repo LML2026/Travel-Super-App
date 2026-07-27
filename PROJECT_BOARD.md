@@ -5,6 +5,7 @@ Detailed scope, owners, and status notes remain in docs/PROJECT_BOARD.md and spr
 
 ## Sprint 1
 - [ ] Authentication
+- [ ] TSAPP-ID-104 Legacy Auth Stack Consolidation
 - [ ] User Profile
 - [ ] Design System
 - [ ] Navigation
