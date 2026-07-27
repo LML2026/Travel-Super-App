@@ -12,6 +12,32 @@ This file is the architecture source of truth and fulfills the requested `docs/a
 - File storage: Firebase Storage (planned for trip documents)
 - Push: Firebase Cloud Messaging (planned)
 
+## Product Platform Modules
+The app is one platform composed of modules, not independent mini-apps.
+
+Platform layout:
+- Core Platform
+- Identity
+- Finance
+  - Currency
+  - Wallet
+  - Exchange
+  - Budget
+  - Expenses
+- Travel
+  - Trips
+  - Documents
+  - Maps
+  - Translator
+  - Checklists
+- Marketplace
+- AI
+
+Release 1.0 architecture priority:
+- Identity and profile persistence first
+- Finance foundation second
+- Travel companion breadth third
+
 ## Mobile Layering
 Current preferred feature structure:
 - models
@@ -22,10 +48,46 @@ Current preferred feature structure:
 - widgets
 
 Cross-cutting folders:
+- lib/core/analytics
+- lib/core/authentication
+- lib/core/configuration
+- lib/core/constants
+- lib/core/design_system
+- lib/core/error
+- lib/core/localization
+- lib/core/logging
+- lib/core/navigation
+- lib/core/networking
+- lib/core/notifications
+- lib/core/offline
+- lib/core/security
+- lib/core/storage
 - lib/core/theme
+- lib/core/utilities
 - lib/core/widgets
-- lib/core/api
-- lib/core/utils
+
+Feature modules are expected to expose production surfaces through the same layered contract:
+- domain/entities
+- domain/repositories
+- data/repositories
+- presentation/providers
+- presentation/screens
+- routes.dart
+
+## Core Platform Bootstrap
+The app entrypoint now resolves configuration before rendering the UI.
+
+Core files:
+- `lib/main.dart`: initializes Firebase, environment config, and the root provider override.
+- `lib/core/configuration/app_bootstrap.dart`: one-stop app startup sequence.
+- `lib/core/configuration/app_config.dart`: immutable app config exposed through Riverpod.
+- `lib/core/configuration/app_environment.dart`: development, staging, and production environment values.
+- `lib/core/design_system/design_system.dart`: single import for shared theme tokens and widgets.
+
+Rules:
+- Keep startup side effects in `AppBootstrap` rather than scattering them through `main.dart`.
+- Import the design system barrel when a screen needs shared theme tokens or base widgets.
+- Keep future cross-cutting services behind interfaces so the implementation can be swapped later.
 
 ## Navigation Standard (Riverpod + GoRouter)
 Navigation is standardized on Riverpod + GoRouter across the app.
@@ -95,7 +157,48 @@ Planned additions:
 - Hotels: search, save, detail
 - Weather: city forecast retrieval and display
 - Trips: orchestration layer combining travel entities
+- Documents: secure vault and metadata for passports, visas, tickets, and confirmations
 - AI: prompt assembly + backend orchestration
+
+## Phase 0 Foundation Baseline
+Target module roots for product-scale development:
+- app
+- core
+- features
+- shared
+
+Canonical feature roots for planned product streams:
+- authentication
+- profile
+- trips
+- finance
+- travel
+- ai
+- bookings
+- documents
+- translator
+- settings
+
+Migration guidance:
+- Existing modules (`auth`, `flights`, `hotels`, `wallet`) remain active until moved.
+- New sprint work should prefer canonical roots when creating new capability slices.
+- Preserve backward-compatible route names and provider contracts while migrating.
+
+Design-system baseline primitives:
+- Buttons: Primary, Secondary, Danger, icon actions
+- Cards: Wallet, Trip, Booking, Budget, Expense
+- Inputs: Search, currency and country pickers, date, amount, phone
+- States: Loading, Error, Empty, Offline, Permission
+- Navigation: bottom navigation, drawer support, FAB, modal sheet helper
+
+Sprint order baseline:
+1. Authentication and Profile
+2. Currency Engine
+3. Multi-Currency Wallet
+4. Trip Management
+5. Budget and Expenses
+6. Bookings
+7. AI Assistant
 
 ## Architecture Decisions
 - Keep backend stateless; treat Firestore as source of truth.

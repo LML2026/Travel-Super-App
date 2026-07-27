@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install backend dependencies
         working-directory: backend
@@ -52,17 +52,11 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Dart format check
+        run: dart format --set-exit-if-changed .
+
       - name: Flutter analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        run: flutter analyze
 
       - name: Flutter tests
-        run: |
-          set -o pipefail
-          set +e
-          flutter test --concurrency=1 2>&1 | tee flutter_test.log
-          status=${PIPESTATUS[0]}
-          if [ $status -ne 0 ]; then
-            summary=$(tail -n 120 flutter_test.log | sed 's/%/%25/g; s/\r/%0D/g; :a;N;$!ba;s/\n/%0A/g')
-            echo "::error title=Flutter tests failed::$summary"
-            exit $status
-          fi
+        run: flutter test

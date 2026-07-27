@@ -4,6 +4,8 @@ Travel Super App is a Flutter-first travel platform with a Node.js backend, Fire
 
 ## Product Direction
 - Milestone plan: [docs/PRODUCT_ROADMAP.md](docs/PRODUCT_ROADMAP.md)
+- Project board: [docs/PROJECT_BOARD.md](docs/PROJECT_BOARD.md)
+- Engineering workflow: [docs/ENGINEERING_WORKFLOW.md](docs/ENGINEERING_WORKFLOW.md)
 - Technical architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Backend API contract: [docs/API_SPEC.md](docs/API_SPEC.md)
 - UI library standard: [docs/UI_COMPONENT_LIBRARY.md](docs/UI_COMPONENT_LIBRARY.md)
@@ -14,12 +16,15 @@ Travel Super App is a Flutter-first travel platform with a Node.js backend, Fire
 - Sprint 2 backlog tickets: [docs/backlog/sprint-2](docs/backlog/sprint-2)
 - OpenAPI skeleton: [docs/openapi.yaml](docs/openapi.yaml)
 
-## Current Status
-- Authentication: complete
-- Flights: complete
-- Hotels: complete
-- Weather: complete
-- Trips: in progress
+## Release 1.0 Goal
+A traveller can create an account, plan trips, manage and convert currencies,
+track expenses against budgets, store documents securely, work offline, and sync across devices.
+
+## Current Priority Sequence
+1. Authentication module
+2. User profile module
+3. Persistence and synchronisation
+4. Currency engine and wallet completion
 
 ## Technology Stack
 - Mobile: Flutter
@@ -42,5 +47,5 @@ Travel Super App is a Flutter-first travel platform with a Node.js backend, Fire
 - Milestone release gates with tests and analyzer checks
 - Feature branches for all changes
 
-## Immediate Next Milestone
-Phase 2 Sprint 2: Edit Trip, Delete Trip, Duplicate Trip with tests and Firestore alignment.
+## Delivery Standard
+Every merged feature must be useful, scalable, testable, and replaceable.
