@@ -6,8 +6,10 @@ import '../../features/trips/domain/entities/trip.dart' as domain;
 import '../../features/trips/presentation/providers/trip_provider.dart';
 import '../../features/trips/presentation/screens/create_trip_page.dart';
 import '../../features/trips/presentation/screens/edit_trip_page.dart';
+import '../../features/trips/presentation/screens/trip_documents_page.dart';
 import '../../features/trips/presentation/screens/trip_dashboard_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
+import '../../features/trips/presentation/screens/trip_notes_page.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
 
@@ -59,6 +61,34 @@ List<RouteBase> buildTripRoutes() {
         }
 
         return _TripEditResolverPage(tripId: tripId);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.tripNotes.routeName,
+      path: AppRoute.tripNotes.path,
+      builder: (context, state) {
+        final tripId = state.pathParameters['id'];
+        if (tripId == null || tripId.isEmpty) {
+          return const RouteErrorPage(
+            message: 'Trip notes route requires a trip id path parameter.',
+          );
+        }
+
+        return TripNotesPage(tripId: tripId);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.tripDocuments.routeName,
+      path: AppRoute.tripDocuments.path,
+      builder: (context, state) {
+        final tripId = state.pathParameters['id'];
+        if (tripId == null || tripId.isEmpty) {
+          return const RouteErrorPage(
+            message: 'Trip documents route requires a trip id path parameter.',
+          );
+        }
+
+        return TripDocumentsPage(tripId: tripId);
       },
     ),
   ];

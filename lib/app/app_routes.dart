@@ -60,6 +60,8 @@ enum AppRoute {
   tripCreate,
   tripDetails,
   tripEdit,
+  tripNotes,
+  tripDocuments,
   profile,
   destination,
 }
@@ -127,6 +129,10 @@ extension AppRouteConfig on AppRoute {
         return '/trips/:id';
       case AppRoute.tripEdit:
         return '/trips/:id/edit';
+      case AppRoute.tripNotes:
+        return '/trips/:id/notes';
+      case AppRoute.tripDocuments:
+        return '/trips/:id/documents';
       case AppRoute.profile:
         return '/profile';
       case AppRoute.destination:
@@ -229,6 +235,16 @@ extension AppNavigation on BuildContext {
         AppRoute.tripEdit.routeName,
         pathParameters: {'id': tripId},
         extra: initialTrip,
+      );
+
+  Future<T?> pushTripNotes<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripNotes.routeName,
+        pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushTripDocuments<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripDocuments.routeName,
+        pathParameters: {'id': tripId},
       );
 
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);

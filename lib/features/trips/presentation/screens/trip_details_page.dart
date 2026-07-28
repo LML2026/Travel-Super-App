@@ -14,6 +14,7 @@ import '../../../taxi/domain/entities/taxi_saved_ride.dart';
 import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../../weather/models/weather_data.dart';
 import '../../../weather/providers/weather_provider.dart';
+import '../providers/trip_document_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'edit_trip_page.dart';
@@ -103,6 +104,7 @@ class TripDetailsPage extends ConsumerWidget {
         final hotelsAsync = ref.watch(savedHotelsProvider);
         final ridesAsync = ref.watch(taxiSavedRidesForTripProvider(trip.id));
         final expensesAsync = ref.watch(tripExpensesProvider(trip.id));
+        final documentsAsync = ref.watch(tripDocumentsProvider(trip.id));
 
         final linkedFlight = _findLinkedFlight(
           flightsAsync.valueOrNull ?? const <SavedFlight>[],
@@ -114,6 +116,7 @@ class TripDetailsPage extends ConsumerWidget {
         );
         final rides = ridesAsync.valueOrNull ?? const <TaxiSavedRide>[];
         final expenses = expensesAsync.valueOrNull ?? const <dynamic>[];
+        final documents = documentsAsync.valueOrNull ?? const <dynamic>[];
         final hasWeather = weatherAsync.valueOrNull != null;
 
         final spent =
@@ -147,10 +150,13 @@ class TripDetailsPage extends ConsumerWidget {
                 hasExpenses: expenses.isNotEmpty,
                 hasWeather: hasWeather,
                 hasNotes: (trip.notes ?? '').trim().isNotEmpty,
+                hasDocuments: documents.isNotEmpty,
                 onOpenFlights: () => context.pushFlights(),
                 onOpenHotels: () => context.pushHotels(),
                 onOpenTransport: () => context.pushTransport(),
                 onOpenWallet: () => context.pushWallet(),
+                onOpenNotes: () => context.pushTripNotes(trip.id),
+                onOpenDocuments: () => context.pushTripDocuments(trip.id),
                 onOpenAi: () => context.pushAiAssistant(),
               ),
               const _SectionDivider(),
@@ -580,10 +586,13 @@ class _TripWorkspaceSection extends StatelessWidget {
     required this.hasExpenses,
     required this.hasWeather,
     required this.hasNotes,
+    required this.hasDocuments,
     required this.onOpenFlights,
     required this.onOpenHotels,
     required this.onOpenTransport,
     required this.onOpenWallet,
+    required this.onOpenNotes,
+    required this.onOpenDocuments,
     required this.onOpenAi,
   });
 
@@ -593,10 +602,13 @@ class _TripWorkspaceSection extends StatelessWidget {
   final bool hasExpenses;
   final bool hasWeather;
   final bool hasNotes;
+  final bool hasDocuments;
   final VoidCallback onOpenFlights;
   final VoidCallback onOpenHotels;
   final VoidCallback onOpenTransport;
   final VoidCallback onOpenWallet;
+  final VoidCallback onOpenNotes;
+  final VoidCallback onOpenDocuments;
   final VoidCallback onOpenAi;
 
   @override
@@ -643,8 +655,16 @@ class _TripWorkspaceSection extends StatelessWidget {
             completed: hasNotes,
             completedText: 'Trip notes added',
             pendingText: 'No notes yet',
-            actionLabel: 'Edit Trip',
-            onAction: onOpenAi,
+            actionLabel: hasNotes ? 'Open' : 'Add',
+            onAction: onOpenNotes,
+          ),
+          _WorkspaceItem(
+            label: 'Documents',
+            completed: hasDocuments,
+            completedText: 'Documents stored',
+            pendingText: 'No travel documents yet',
+            actionLabel: hasDocuments ? 'Manage' : 'Add',
+            onAction: onOpenDocuments,
           ),
           _WorkspaceItem(
             label: 'Weather',
