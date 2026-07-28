@@ -212,7 +212,9 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Ride saved to trip transport itinerary.'),
+                      content: Text(
+                        'Ride saved to trip transport itinerary and expense log.',
+                      ),
                     ),
                   );
                 }
@@ -232,12 +234,14 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Fare prepared for expense recording (Stage 2).'),
+                  content: Text(
+                    'Fare is added automatically when you save the ride to a trip.',
+                  ),
                 ),
               );
             },
             icon: const Icon(Icons.receipt_long_outlined),
-            label: const Text('Record fare as expense'),
+            label: const Text('Expense auto-logging info'),
           ),
         ],
       ),

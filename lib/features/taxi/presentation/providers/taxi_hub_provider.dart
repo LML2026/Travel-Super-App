@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../expenses/domain/entities/expense.dart';
+import '../../../expenses/domain/repositories/expense_repository.dart';
+import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../data/providers/airport_transfer_provider.dart';
@@ -102,15 +105,19 @@ final taxiSavedRidesForSelectedTripProvider =
 });
 
 final taxiTransportActionsProvider = Provider<TaxiTransportActions>((ref) {
-  return TaxiTransportActions(ref.watch(taxiTransportRepositoryProvider));
+  return TaxiTransportActions(
+    ref.watch(taxiTransportRepositoryProvider),
+    ref.watch(expenseRepositoryProvider),
+  );
 });
 
 final selectedTaxiProviderNameProvider = StateProvider<String?>((ref) => null);
 
 class TaxiTransportActions {
-  TaxiTransportActions(this._repository);
+  TaxiTransportActions(this._repository, this._expenseRepository);
 
   final TaxiTransportRepository _repository;
+  final ExpenseRepository _expenseRepository;
 
   Future<void> saveRideToTrip({
     required String tripId,
@@ -141,6 +148,19 @@ class TaxiTransportActions {
       tripId: tripId,
       ride: ride,
     );
+
+    final expense = Expense(
+      id: const Uuid().v4(),
+      tripId: tripId,
+      title: 'Taxi - ${request.pickupAddress} to ${request.destinationAddress}',
+      amount: option.estimatedFare,
+      currency: option.currency,
+      category: '🚕 Transport',
+      date: request.pickupTime ?? DateTime.now(),
+      notes: 'Provider: $provider',
+    );
+
+    await _expenseRepository.createExpense(expense);
   }
 }
 
