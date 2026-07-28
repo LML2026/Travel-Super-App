@@ -6,6 +6,7 @@ import '../../features/destinations/destination_detail_page.dart';
 import '../../features/navigation/main_navigation_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/splash/splash_page.dart';
+import '../../features/transport/presentation/screens/transport_hub_page.dart';
 import '../../features/taxi/domain/entities/taxi_ride_request.dart';
 import '../../features/taxi/presentation/screens/saved_rides_page.dart';
 import '../../features/taxi/presentation/screens/taxi_booking_details_page.dart';
@@ -32,6 +33,11 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.wallet.routeName,
       path: AppRoute.wallet.path,
       builder: (context, state) => const WalletPage(),
+    ),
+    GoRoute(
+      name: AppRoute.transport.routeName,
+      path: AppRoute.transport.path,
+      builder: (context, state) => const TransportHubPage(),
     ),
     GoRoute(
       name: AppRoute.taxi.routeName,

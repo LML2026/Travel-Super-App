@@ -38,6 +38,7 @@ enum AppRoute {
   emailVerification,
   home,
   wallet,
+  transport,
   taxi,
   taxiResults,
   taxiBookingDetails,
@@ -82,14 +83,16 @@ extension AppRouteConfig on AppRoute {
         return '/home';
       case AppRoute.wallet:
         return '/wallet';
+      case AppRoute.transport:
+        return '/transport';
       case AppRoute.taxi:
-        return '/taxi';
+        return '/transport/taxi';
       case AppRoute.taxiResults:
-        return '/taxi/results';
+        return '/transport/taxi/results';
       case AppRoute.taxiBookingDetails:
-        return '/taxi/booking-details';
+        return '/transport/taxi/booking-details';
       case AppRoute.savedRides:
-        return '/taxi/saved';
+        return '/transport/taxi/saved';
       case AppRoute.flights:
         return '/flights';
       case AppRoute.flightSearch:
@@ -140,6 +143,9 @@ extension AppNavigation on BuildContext {
   void goHome() => goNamed(AppRoute.home.routeName);
 
   Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
+
+  Future<T?> pushTransport<T>() =>
+      pushNamed<T>(AppRoute.transport.routeName);
 
     Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
 
