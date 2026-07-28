@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
 import '../../../hotels/providers/hotel_provider.dart';
+import '../../../taxi/domain/entities/taxi_saved_ride.dart';
+import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../../weather/models/weather_data.dart';
 import '../../../weather/providers/weather_provider.dart';
 import '../../domain/entities/trip.dart';
@@ -48,7 +52,12 @@ class TripDetailsPage extends ConsumerWidget {
     await ref.read(createTripProvider.notifier).deleteTrip(trip.id);
 
     if (context.mounted) {
-      Navigator.pop(context);
+      final router = GoRouter.maybeOf(context);
+      if (router != null) {
+        context.pop();
+      } else {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -90,6 +99,7 @@ class TripDetailsPage extends ConsumerWidget {
         final weatherAsync = ref.watch(weatherProvider(trip.destination));
         final flightsAsync = ref.watch(savedFlightsProvider);
         final hotelsAsync = ref.watch(savedHotelsProvider);
+        final ridesAsync = ref.watch(taxiSavedRidesForTripProvider(trip.id));
 
         final linkedFlight = _findLinkedFlight(
           flightsAsync.valueOrNull ?? const <SavedFlight>[],
@@ -203,6 +213,27 @@ class TripDetailsPage extends ConsumerWidget {
                 ),
               ),
               const _SectionDivider(),
+              _DashboardSection(
+                icon: Icons.alt_route,
+                title: 'Transport Timeline',
+                child: ridesAsync.when(
+                  loading: () => const Text('Loading transport rides...'),
+                  error: (error, _) => Text('Could not load rides: $error'),
+                  data: (rides) {
+                    if (rides.isEmpty) {
+                      return const Text('No saved transport rides yet.');
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: rides
+                          .map((ride) => _TransportRideLine(ride: ride))
+                          .toList(growable: false),
+                    );
+                  },
+                ),
+              ),
+              const _SectionDivider(),
               const _DashboardSection(
                 icon: Icons.map_outlined,
                 title: 'Map',
@@ -231,6 +262,12 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: const Icon(Icons.edit),
                 label: const Text('Edit Trip'),
                 onPressed: () {
+                  final router = GoRouter.maybeOf(context);
+                  if (router != null) {
+                    context.pushEditTrip(trip.id, initialTrip: trip);
+                    return;
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -299,6 +336,56 @@ class TripDetailsPage extends ConsumerWidget {
       return value;
     }
     return DateFormat('dd MMM, HH:mm').format(parsed);
+  }
+}
+
+class _TransportRideLine extends StatelessWidget {
+  const _TransportRideLine({required this.ride});
+
+  final TaxiSavedRide ride;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheduledText = ride.scheduledAt == null
+        ? 'ASAP'
+        : DateFormat('dd MMM, HH:mm').format(ride.scheduledAt!);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 2),
+              child: Icon(Icons.local_taxi, size: 18),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${ride.pickupAddress} -> ${ride.destinationAddress}',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 2),
+                  Text('${ride.provider} | $scheduledText'),
+                  Text(
+                    '${ride.currency} ${ride.estimatedFare.toStringAsFixed(2)} | ${ride.passengers} pax | ${ride.luggage} luggage',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
