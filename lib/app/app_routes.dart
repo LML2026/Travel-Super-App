@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/destination.dart';
+import '../features/taxi/domain/entities/taxi_ride_option.dart';
+import '../features/taxi/domain/entities/taxi_ride_request.dart';
 import '../features/flights/models/flight.dart';
 import '../features/flights/models/saved_flight.dart';
 import '../features/hotels/models/hotel.dart';
@@ -18,6 +20,16 @@ class TripCreateRouteArgs {
   final bool forceCreateMode;
 }
 
+class TaxiBookingRouteArgs {
+  const TaxiBookingRouteArgs({
+    required this.request,
+    required this.option,
+  });
+
+  final TaxiRideRequest request;
+  final TaxiRideOption option;
+}
+
 enum AppRoute {
   splash,
   login,
@@ -25,6 +37,11 @@ enum AppRoute {
   forgotPassword,
   emailVerification,
   home,
+  wallet,
+  taxi,
+  taxiResults,
+  taxiBookingDetails,
+  savedRides,
   flights,
   flightSearch,
   flightRecent,
@@ -63,6 +80,16 @@ extension AppRouteConfig on AppRoute {
         return '/email-verification';
       case AppRoute.home:
         return '/home';
+      case AppRoute.wallet:
+        return '/wallet';
+      case AppRoute.taxi:
+        return '/taxi';
+      case AppRoute.taxiResults:
+        return '/taxi/results';
+      case AppRoute.taxiBookingDetails:
+        return '/taxi/booking-details';
+      case AppRoute.savedRides:
+        return '/taxi/saved';
       case AppRoute.flights:
         return '/flights';
       case AppRoute.flightSearch:
@@ -111,6 +138,19 @@ extension AppNavigation on BuildContext {
   void goLogin() => goNamed(AppRoute.login.routeName);
 
   void goHome() => goNamed(AppRoute.home.routeName);
+
+  Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
+
+    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+
+    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+      pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
+
+    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+      pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
+
+    Future<T?> pushSavedRides<T>() =>
+      pushNamed<T>(AppRoute.savedRides.routeName);
 
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 

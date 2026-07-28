@@ -14,12 +14,20 @@ import 'route_groups/hotel_routes.dart';
 import 'route_groups/trip_routes.dart';
 
 class _AuthRefreshListenable extends ChangeNotifier {
-  _AuthRefreshListenable(Stream<AuthUser?> authStateChanges)
-      : _subscription = authStateChanges.listen((_) {}) {
-    _subscription.onData((_) => notifyListeners());
+  _AuthRefreshListenable(Stream<AuthUser?> authStateChanges) {
+    _subscription = authStateChanges.listen((user) {
+      _currentUser = user;
+      _hasResolved = true;
+      notifyListeners();
+    });
   }
 
-  final StreamSubscription<AuthUser?> _subscription;
+  late final StreamSubscription<AuthUser?> _subscription;
+  AuthUser? _currentUser;
+  bool _hasResolved = false;
+
+  bool get hasResolved => _hasResolved;
+  AuthUser? get currentUser => _currentUser;
 
   @override
   void dispose() {
@@ -29,7 +37,9 @@ class _AuthRefreshListenable extends ChangeNotifier {
 }
 
 bool _isProtectedPath(String path) {
-  return path.startsWith('/wallet') ||
+  return path.startsWith('/home') ||
+      path.startsWith('/wallet') ||
+  path.startsWith('/taxi') ||
       path.startsWith('/documents') ||
       path.startsWith('/trips');
 }
@@ -44,7 +54,12 @@ GoRouter createAppRouter(Ref ref) {
     refreshListenable: authRefresh,
     redirect: (context, state) {
       final path = state.uri.path;
-      final user = ref.read(immediateCurrentUserProvider);
+
+      if (!authRefresh.hasResolved) {
+        return path == AppRoute.splash.path ? null : AppRoute.splash.path;
+      }
+
+      final user = authRefresh.currentUser;
       final isAuthenticated = user != null;
       final needsVerification = user != null && requiresEmailVerification(user);
 

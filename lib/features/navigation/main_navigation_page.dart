@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:travel_super_app/features/taxi/presentation/screens/taxi_search_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
+import 'package:travel_super_app/features/wallet/presentation/screens/wallet_page.dart';
 import '../flights/pages/flights_page.dart';
 import '../home/home_page.dart';
 import '../profile/profile_page.dart';
@@ -16,6 +18,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final List<Widget> _pages = const [
     HomePage(),
+    WalletPage(),
+    TaxiSearchPage(),
     FlightsPage(),
     TripListPage(),
     ProfilePage(),
@@ -37,6 +41,16 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: 'Wallet',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.local_taxi_outlined),
+            selectedIcon: Icon(Icons.local_taxi),
+            label: 'Taxi',
           ),
           NavigationDestination(
             icon: Icon(Icons.flight_outlined),
