@@ -191,3 +191,11 @@ Outcome:
 4. Wallet UI powered by the currency engine.
 
 This sequence establishes a stable identity layer and reusable financial foundation for later epics.
+
+## Version Progression
+
+- Version 0.2: Stable development baseline (auth, Firestore, clean analysis, core navigation).
+- Version 0.3: Transport and Wallet expansion.
+- Version 0.4: Flights and Hotels integration under Trips.
+- Version 0.5: AI Concierge workflows.
+- Version 1.0: Public release readiness (quality, security, performance, store compliance).

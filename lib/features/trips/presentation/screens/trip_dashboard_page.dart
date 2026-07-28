@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
@@ -10,12 +11,13 @@ import '../../../hotels/models/saved_hotel.dart';
 import '../../../hotels/providers/hotel_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import '../providers/trip_document_provider.dart';
+import '../widgets/activities_card.dart';
 import '../widgets/ai_assistant_card.dart';
 import '../widgets/budget_card.dart';
 import '../widgets/documents_card.dart';
 import '../widgets/flight_card.dart';
 import '../widgets/hotel_card.dart';
-import '../widgets/itinerary_card.dart';
 import '../widgets/map_card.dart';
 import '../widgets/translator_card.dart';
 import '../widgets/weather_card.dart';
@@ -53,7 +55,9 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final tripDays = _tripDays(_trip);
+    final documentsAsync = ref.watch(tripDocumentsProvider(_trip.id));
+    final hasDocuments =
+      (documentsAsync.valueOrNull ?? const <dynamic>[]).isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +67,14 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
             tooltip: 'Edit Trip',
             icon: const Icon(Icons.edit),
             onPressed: () {
+              final router = GoRouter.maybeOf(context);
+              if (router != null) {
+                context
+                    .pushEditTrip(_trip.id, initialTrip: _trip)
+                    .then((_) => _reloadTrip());
+                return;
+              }
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -112,9 +124,15 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                   ),
                 ),
               ),
-              ItineraryCard(days: tripDays),
+              ActivitiesCard(
+                tripId: _trip.id,
+                onOpenActivities: () => context.pushTripActivities(_trip.id),
+              ),
               const MapCard(),
-              const DocumentsCard(),
+              DocumentsCard(
+                hasDocuments: hasDocuments,
+                onOpenDocuments: () => context.pushTripDocuments(_trip.id),
+              ),
               const TranslatorCard(),
               const AiAssistantCard(),
             ],
@@ -318,11 +336,6 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     );
 
     return decision == true;
-  }
-
-  int _tripDays(Trip trip) {
-    final days = trip.returnDate.difference(trip.departureDate).inDays + 1;
-    return days < 1 ? 1 : days;
   }
 
   String _hotelAddress(SavedHotel hotel) {
