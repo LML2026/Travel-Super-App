@@ -8,6 +8,11 @@ abstract class WalletRepository {
 
   Future<Wallet?> getWallet(String userId);
 
+  Future<void> addCurrency({
+    required String walletId,
+    required String currency,
+  });
+
   Future<void> deposit({
     required String walletId,
     required double amount,

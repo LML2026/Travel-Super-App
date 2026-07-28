@@ -81,6 +81,21 @@ class InMemoryWalletRepository implements WalletRepository {
   Future<Wallet?> getWallet(String userId) async => _walletForUser(userId);
 
   @override
+  Future<void> addCurrency({
+    required String walletId,
+    required String currency,
+  }) async {
+    final userId = _resolveUserIdFromWalletId(walletId);
+    final wallet = _walletForUser(userId);
+
+    final balances = Map<String, double>.from(wallet.balances);
+    balances.putIfAbsent(currency, () => 0);
+    _walletsByUser[userId] = wallet.copyWith(balances: balances);
+
+    _emitUserState(userId);
+  }
+
+  @override
   Future<void> deposit({
     required String walletId,
     required double amount,

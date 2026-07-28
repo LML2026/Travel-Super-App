@@ -1,19 +1,57 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../data/repositories/firestore_wallet_repository.dart';
 import '../../data/repositories/in_memory_wallet_repository.dart';
+import '../../data/services/wallet_fx_service.dart';
 import '../../domain/entities/wallet.dart';
 import '../../domain/entities/wallet_transaction.dart';
 import '../../domain/repositories/wallet_repository.dart';
 
+class FxPair {
+  const FxPair({required this.base, required this.target});
+
+  final String base;
+  final String target;
+}
+
+const List<String> kSupportedWalletCurrencies = <String>[
+  'GBP',
+  'EUR',
+  'USD',
+  'GEL',
+  'RUB',
+  'TRY',
+  'AED',
+];
+
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
-  return InMemoryWalletRepository(
+  final userId = ref.watch(walletUserIdProvider);
+  if (userId == null || userId.isEmpty) {
+    return InMemoryWalletRepository(
+      defaultBaseCurrency: 'GBP',
+    );
+  }
+
+  return FirestoreWalletRepository(
+    userId: userId,
     defaultBaseCurrency: 'GBP',
   );
 });
 
+final walletFxServiceProvider = Provider<WalletFxService>((ref) {
+  return WalletFxService();
+});
+
+final fxRateProvider = FutureProvider.family<double, FxPair>((ref, pair) async {
+  return ref.watch(walletFxServiceProvider).getRate(
+        base: pair.base,
+        target: pair.target,
+      );
+});
+
 final walletUserIdProvider = Provider<String?>((ref) {
-  return ref.watch(currentUserIdProvider);
+  return ref.watch(currentUserProvider)?.uid;
 });
 
 final walletProvider = StreamProvider<Wallet>((ref) {
@@ -74,6 +112,19 @@ class WalletActions {
     return repository.deposit(
       walletId: walletId,
       amount: amount,
+      currency: currency,
+    );
+  }
+
+  Future<void> addCurrency(String currency) {
+    final repository = _repository;
+    final walletId = _walletId;
+    if (repository == null || walletId == null) {
+      _throwUnauthenticated();
+    }
+
+    return repository.addCurrency(
+      walletId: walletId,
       currency: currency,
     );
   }
