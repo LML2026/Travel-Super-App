@@ -5,6 +5,8 @@ import '../../app/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/widgets.dart';
+import '../wallet/domain/entities/wallet.dart';
+import '../wallet/presentation/providers/wallet_provider.dart';
 import 'models/dashboard_summary.dart';
 import 'providers/dashboard_provider.dart';
 
@@ -14,11 +16,10 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summaryAsync = ref.watch(dashboardSummaryProvider);
+    final walletAsync = ref.watch(walletProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Travel Dashboard'),
-      ),
+      appBar: AppBar(title: const Text('Travel Super App')),
       body: summaryAsync.when(
         loading: () => const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(
@@ -31,10 +32,26 @@ class HomePage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${greetingForNow()}, ${summary.userName} 👋', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                '${greetingForNow()}, ${summary.userName}',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    'London',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
               const SizedBox(height: AppSpacing.lg),
               if (summary.hasUpcomingTrip)
-                _UpcomingTripCard(summary: summary)
+                _UpcomingTripCard(summary: summary, onOpenTrip: () {
+                  context.pushTripDetails(summary.upcomingTrip!);
+                })
               else
                 const AppEmptyState(
                   icon: Icons.luggage_outlined,
@@ -42,52 +59,80 @@ class HomePage extends ConsumerWidget {
                   message: 'Save a trip to see flights, hotels, weather, and budget here.',
                 ),
               const SizedBox(height: AppSpacing.lg),
-              Text('Quick Actions', style: Theme.of(context).textTheme.titleMedium),
+              _WalletSnapshotCard(walletAsync: walletAsync),
+              const SizedBox(height: AppSpacing.lg),
+              Text('Book Transport', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.md,
-                childAspectRatio: 1.55,
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
-                  _QuickActionTile(
+                  _TransportActionChip(
+                    icon: Icons.local_taxi,
+                    label: 'Taxi',
+                    onTap: () => context.pushTaxi(),
+                  ),
+                  _TransportActionChip(
                     icon: Icons.flight,
                     label: 'Flights',
                     onTap: () => context.pushFlights(),
                   ),
-                  _QuickActionTile(
+                  _TransportActionChip(
                     icon: Icons.hotel,
                     label: 'Hotels',
                     onTap: () => context.pushHotels(),
                   ),
-                  _QuickActionTile(
-                    icon: Icons.map_outlined,
-                    label: 'Trips',
-                    onTap: () => context.pushTrips(),
+                  _TransportActionChip(
+                    icon: Icons.train,
+                    label: 'Trains',
+                    onTap: () => _showComingSoon(context, 'Train booking'),
                   ),
-                  _QuickActionTile(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: 'Wallet',
-                    onTap: () => _showComingSoon(context, 'Wallet'),
+                  _TransportActionChip(
+                    icon: Icons.directions_bus,
+                    label: 'Buses',
+                    onTap: () => _showComingSoon(context, 'Bus planning'),
                   ),
-                  _QuickActionTile(
-                    icon: Icons.translate,
-                    label: 'Translate',
-                    onTap: () => _showComingSoon(context, 'Translate'),
-                  ),
-                  _QuickActionTile(
-                    icon: Icons.smart_toy_outlined,
-                    label: 'AI Assistant',
-                    onTap: () => context.pushAiAssistant(),
-                  ),
-                  _QuickActionTile(
-                    icon: Icons.wb_sunny_outlined,
-                    label: 'Weather',
-                    onTap: () => context.pushWeather(),
+                  _TransportActionChip(
+                    icon: Icons.directions_car,
+                    label: 'Car Rental',
+                    onTap: () => _showComingSoon(context, 'Car rental'),
                   ),
                 ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                onTap: () => context.pushAiAssistant(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.smart_toy_outlined),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AI Assistant',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'How can I help today?',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
               ),
             ],
           ),
@@ -104,58 +149,34 @@ class HomePage extends ConsumerWidget {
 }
 
 class _UpcomingTripCard extends StatelessWidget {
-  const _UpcomingTripCard({required this.summary});
+  const _UpcomingTripCard({
+    required this.summary,
+    required this.onOpenTrip,
+  });
 
   final DashboardSummary summary;
+  final VoidCallback onOpenTrip;
 
   @override
   Widget build(BuildContext context) {
     final trip = summary.upcomingTrip!;
     final dateLine =
-      '${trip.startDate.day}–${trip.endDate.day} ${_monthName(trip.endDate.month)}';
-    final daysRemaining = trip.startDate.difference(DateTime.now()).inDays;
+        '${trip.startDate.day} ${_monthName(trip.startDate.month)} - ${trip.endDate.day} ${_monthName(trip.endDate.month)}';
 
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Next Trip', style: Theme.of(context).textTheme.titleMedium),
+          Text('Upcoming Trip', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
           Text(trip.destination, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
-          _DashboardLine(icon: Icons.calendar_month, label: dateLine),
-          const SizedBox(height: AppSpacing.sm),
-          _DashboardLine(
-            icon: Icons.schedule,
-            label: daysRemaining > 0 ? '$daysRemaining days remaining' : 'Trip in progress',
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _DashboardLine(
-            icon: Icons.flight,
-            label: summary.linkedFlight?.airline ?? 'Flight not linked',
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _DashboardLine(
-            icon: Icons.hotel_outlined,
-            label: summary.linkedHotel?.name ?? 'No hotel linked yet',
-            trailing: summary.linkedHotel == null
-                ? null
-                : RatingBadge(rating: summary.linkedHotel!.rating),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _DashboardLine(
-            icon: Icons.wb_sunny_outlined,
-            label: summary.weather == null
-                ? 'Weather unavailable'
-                : '${summary.weather!.tempC.toStringAsFixed(0)}°C ${summary.weather!.description}',
-          ),
+          Text(dateLine),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              const Icon(Icons.account_balance_wallet_outlined, color: AppColors.primary),
-              const SizedBox(width: AppSpacing.sm),
-              PriceTag(currency: summary.currency, amount: summary.budget),
-            ],
+          FilledButton.icon(
+            onPressed: onOpenTrip,
+            icon: const Icon(Icons.open_in_new),
+            label: const Text('Open Trip'),
           ),
         ],
       ),
@@ -171,32 +192,54 @@ class _UpcomingTripCard extends StatelessWidget {
   }
 }
 
-class _DashboardLine extends StatelessWidget {
-  const _DashboardLine({
-    required this.icon,
-    required this.label,
-    this.trailing,
-  });
+class _WalletSnapshotCard extends StatelessWidget {
+  const _WalletSnapshotCard({required this.walletAsync});
 
-  final IconData icon;
-  final String label;
-  final Widget? trailing;
+  final AsyncValue<Wallet> walletAsync;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 18),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(child: Text(label)),
-        if (trailing != null) trailing!,
-      ],
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Wallet', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.sm),
+          walletAsync.when(
+            loading: () => const Text('Loading balances...'),
+            error: (_, __) => const Text('Sign in to view wallet balances.'),
+            data: (wallet) {
+              final balances = wallet.balances;
+              if (balances.isEmpty) {
+                return const Text('No balances yet.');
+              }
+
+              final sortedKeys = balances.keys.toList()..sort();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: sortedKeys
+                    .take(3)
+                    .map(
+                      (currency) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          '$currency ${balances[currency]!.toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
+                    )
+                    .toList(growable: false),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _QuickActionTile extends StatelessWidget {
-  const _QuickActionTile({
+class _TransportActionChip extends StatelessWidget {
+  const _TransportActionChip({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -208,16 +251,10 @@ class _QuickActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.primary, size: 30),
-          const SizedBox(height: AppSpacing.sm),
-          Text(label, style: Theme.of(context).textTheme.titleMedium),
-        ],
-      ),
+    return ActionChip(
+      avatar: Icon(icon, size: 18, color: AppColors.primary),
+      label: Text(label),
+      onPressed: onTap,
     );
   }
 }

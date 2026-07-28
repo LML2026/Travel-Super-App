@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:travel_super_app/features/ai/screens/ai_assistant_page.dart';
 import 'package:travel_super_app/features/transport/presentation/screens/transport_hub_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
 import 'package:travel_super_app/features/wallet/presentation/screens/wallet_page.dart';
-import '../flights/pages/flights_page.dart';
 import '../home/home_page.dart';
-import '../profile/profile_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -18,11 +17,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final List<Widget> _pages = const [
     HomePage(),
+    TripListPage(),
     WalletPage(),
     TransportHubPage(),
-    FlightsPage(),
-    TripListPage(),
-    ProfilePage(),
+    AiAssistantPage(),
   ];
 
   @override
@@ -43,6 +41,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Home',
           ),
           NavigationDestination(
+            icon: Icon(Icons.luggage_outlined),
+            selectedIcon: Icon(Icons.luggage),
+            label: 'Trips',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.account_balance_wallet_outlined),
             selectedIcon: Icon(Icons.account_balance_wallet),
             label: 'Wallet',
@@ -53,19 +56,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Transport',
           ),
           NavigationDestination(
-            icon: Icon(Icons.flight_outlined),
-            selectedIcon: Icon(Icons.flight),
-            label: 'Flights',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.luggage_outlined),
-            selectedIcon: Icon(Icons.luggage),
-            label: 'Trips',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.smart_toy_outlined),
+            selectedIcon: Icon(Icons.smart_toy),
+            label: 'AI',
           ),
         ],
       ),
