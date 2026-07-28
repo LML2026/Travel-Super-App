@@ -8,6 +8,7 @@ import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
 import '../../../hotels/providers/hotel_provider.dart';
+import '../../../taxi/domain/entities/taxi_ride_request.dart';
 import '../../../taxi/domain/entities/taxi_saved_ride.dart';
 import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../../weather/models/weather_data.dart';
@@ -227,7 +228,24 @@ class TripDetailsPage extends ConsumerWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: rides
-                          .map((ride) => _TransportRideLine(ride: ride))
+                          .map((ride) => _TransportRideLine(
+                                ride: ride,
+                                onBookReturnRide: () {
+                                  final returnRequest = TaxiRideRequest(
+                                    pickupLatitude: ride.destinationLatitude,
+                                    pickupLongitude: ride.destinationLongitude,
+                                    pickupAddress: ride.destinationAddress,
+                                    destinationLatitude: ride.pickupLatitude,
+                                    destinationLongitude: ride.pickupLongitude,
+                                    destinationAddress: ride.pickupAddress,
+                                    pickupTime: ride.scheduledAt,
+                                    passengers: ride.passengers,
+                                    luggage: ride.luggage,
+                                  );
+
+                                  context.pushTaxiResults(returnRequest);
+                                },
+                              ))
                           .toList(growable: false),
                     );
                   },
@@ -340,9 +358,13 @@ class TripDetailsPage extends ConsumerWidget {
 }
 
 class _TransportRideLine extends StatelessWidget {
-  const _TransportRideLine({required this.ride});
+  const _TransportRideLine({
+    required this.ride,
+    required this.onBookReturnRide,
+  });
 
   final TaxiSavedRide ride;
+  final VoidCallback onBookReturnRide;
 
   @override
   Widget build(BuildContext context) {
@@ -378,6 +400,15 @@ class _TransportRideLine extends StatelessWidget {
                   Text('${ride.provider} | $scheduledText'),
                   Text(
                     '${ride.currency} ${ride.estimatedFare.toStringAsFixed(2)} | ${ride.passengers} pax | ${ride.luggage} luggage',
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton.icon(
+                      onPressed: onBookReturnRide,
+                      icon: const Icon(Icons.swap_horiz),
+                      label: const Text('Book Return Ride'),
+                    ),
                   ),
                 ],
               ),
