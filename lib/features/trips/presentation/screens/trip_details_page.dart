@@ -251,6 +251,14 @@ class TripDetailsPage extends ConsumerWidget {
                   },
                 ),
               ),
+              if (linkedFlight != null) ...[
+                const _SectionDivider(),
+                _AiArrivalSuggestionCard(
+                  flight: linkedFlight,
+                  trip: trip,
+                  linkedHotel: linkedHotel,
+                ),
+              ],
               const _SectionDivider(),
               const _DashboardSection(
                 icon: Icons.map_outlined,
@@ -417,6 +425,131 @@ class _TransportRideLine extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _AiArrivalSuggestionCard extends StatelessWidget {
+  const _AiArrivalSuggestionCard({
+    required this.flight,
+    required this.trip,
+    required this.linkedHotel,
+  });
+
+  final SavedFlight flight;
+  final Trip trip;
+  final SavedHotel? linkedHotel;
+
+  @override
+  Widget build(BuildContext context) {
+    final arrival = DateTime.tryParse(flight.arrivalAt);
+    final arrivalText = arrival == null
+        ? flight.arrivalAt
+        : DateFormat('HH:mm').format(arrival);
+
+    final isLateArrival = arrival != null && (arrival.hour >= 21 || arrival.hour <= 5);
+
+    final destinationAddress = _resolveHotelDestination();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.smart_toy_outlined),
+              const SizedBox(width: 8),
+              Text(
+                'AI Arrival Suggestions',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isLateArrival
+                ? 'You arrive at $arrivalText. Would you like to prepare a late-arrival plan?'
+                : 'Arrival at $arrivalText. Want to prepare your post-flight flow?',
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilledButton.icon(
+                onPressed: () {
+                  final request = TaxiRideRequest(
+                    pickupLatitude: 0,
+                    pickupLongitude: 0,
+                    pickupAddress: '${trip.destination} Airport',
+                    destinationLatitude: 0,
+                    destinationLongitude: 0,
+                    destinationAddress: destinationAddress,
+                    pickupTime: arrival,
+                    passengers: trip.travellers,
+                    luggage: trip.travellers,
+                  );
+
+                  context.pushTaxiResults(request);
+                },
+                icon: const Icon(Icons.local_taxi),
+                label: const Text('Book Taxi'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Hotel notification workflow coming next.'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.hotel_outlined),
+                label: const Text('Notify Hotel'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Receipt capture assistant is queued for next step.'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.receipt_long_outlined),
+                label: const Text('Save Receipt'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => context.pushAiAssistant(),
+                icon: const Icon(Icons.translate_outlined),
+                label: const Text('Translate Destination'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _resolveHotelDestination() {
+    final hotel = linkedHotel;
+    if (hotel == null) {
+      return '${trip.destination} City Center';
+    }
+
+    if (hotel.address.isNotEmpty) {
+      return hotel.address;
+    }
+
+    final country = hotel.country.trim();
+    if (country.isEmpty) {
+      return hotel.city;
+    }
+    return '${hotel.city}, $country';
   }
 }
 
