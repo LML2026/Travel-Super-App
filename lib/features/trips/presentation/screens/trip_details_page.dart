@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
@@ -101,6 +102,7 @@ class TripDetailsPage extends ConsumerWidget {
         final flightsAsync = ref.watch(savedFlightsProvider);
         final hotelsAsync = ref.watch(savedHotelsProvider);
         final ridesAsync = ref.watch(taxiSavedRidesForTripProvider(trip.id));
+        final expensesAsync = ref.watch(tripExpensesProvider(trip.id));
 
         final linkedFlight = _findLinkedFlight(
           flightsAsync.valueOrNull ?? const <SavedFlight>[],
@@ -110,6 +112,9 @@ class TripDetailsPage extends ConsumerWidget {
           hotelsAsync.valueOrNull ?? const <SavedHotel>[],
           trip.selectedHotelId,
         );
+        final rides = ridesAsync.valueOrNull ?? const <TaxiSavedRide>[];
+        final expenses = expensesAsync.valueOrNull ?? const <dynamic>[];
+        final hasWeather = weatherAsync.valueOrNull != null;
 
         final spent =
             (linkedFlight?.amount ?? 0) + (linkedHotel?.totalPrice ?? 0);
@@ -133,6 +138,20 @@ class TripDetailsPage extends ConsumerWidget {
               Text(
                 '${dateFormatter.format(trip.departureDate)} -> ${dateFormatter.format(trip.returnDate)}',
                 style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const _SectionDivider(),
+              _TripWorkspaceSection(
+                hasFlight: linkedFlight != null,
+                hasHotel: linkedHotel != null,
+                hasTransport: rides.isNotEmpty,
+                hasExpenses: expenses.isNotEmpty,
+                hasWeather: hasWeather,
+                hasNotes: (trip.notes ?? '').trim().isNotEmpty,
+                onOpenFlights: () => context.pushFlights(),
+                onOpenHotels: () => context.pushHotels(),
+                onOpenTransport: () => context.pushTransport(),
+                onOpenWallet: () => context.pushWallet(),
+                onOpenAi: () => context.pushAiAssistant(),
               ),
               const _SectionDivider(),
               _DashboardSection(
@@ -550,6 +569,148 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
       return hotel.city;
     }
     return '${hotel.city}, $country';
+  }
+}
+
+class _TripWorkspaceSection extends StatelessWidget {
+  const _TripWorkspaceSection({
+    required this.hasFlight,
+    required this.hasHotel,
+    required this.hasTransport,
+    required this.hasExpenses,
+    required this.hasWeather,
+    required this.hasNotes,
+    required this.onOpenFlights,
+    required this.onOpenHotels,
+    required this.onOpenTransport,
+    required this.onOpenWallet,
+    required this.onOpenAi,
+  });
+
+  final bool hasFlight;
+  final bool hasHotel;
+  final bool hasTransport;
+  final bool hasExpenses;
+  final bool hasWeather;
+  final bool hasNotes;
+  final VoidCallback onOpenFlights;
+  final VoidCallback onOpenHotels;
+  final VoidCallback onOpenTransport;
+  final VoidCallback onOpenWallet;
+  final VoidCallback onOpenAi;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DashboardSection(
+      icon: Icons.hub_outlined,
+      title: 'Trip Workspace',
+      child: Column(
+        children: [
+          _WorkspaceItem(
+            label: 'Flights',
+            completed: hasFlight,
+            completedText: 'Flight linked',
+            pendingText: 'Link a flight to this trip',
+            actionLabel: hasFlight ? 'View' : 'Add',
+            onAction: onOpenFlights,
+          ),
+          _WorkspaceItem(
+            label: 'Hotels',
+            completed: hasHotel,
+            completedText: 'Hotel linked',
+            pendingText: 'Add accommodation details',
+            actionLabel: hasHotel ? 'View' : 'Add',
+            onAction: onOpenHotels,
+          ),
+          _WorkspaceItem(
+            label: 'Transport',
+            completed: hasTransport,
+            completedText: 'Transport saved',
+            pendingText: 'Plan airport and city rides',
+            actionLabel: hasTransport ? 'Manage' : 'Plan',
+            onAction: onOpenTransport,
+          ),
+          _WorkspaceItem(
+            label: 'Expenses',
+            completed: hasExpenses,
+            completedText: 'Expenses tracked',
+            pendingText: 'No trip expenses yet',
+            actionLabel: 'Wallet',
+            onAction: onOpenWallet,
+          ),
+          _WorkspaceItem(
+            label: 'Notes',
+            completed: hasNotes,
+            completedText: 'Trip notes added',
+            pendingText: 'No notes yet',
+            actionLabel: 'Edit Trip',
+            onAction: onOpenAi,
+          ),
+          _WorkspaceItem(
+            label: 'Weather',
+            completed: hasWeather,
+            completedText: 'Forecast available',
+            pendingText: 'Forecast loading or unavailable',
+            actionLabel: 'Assistant',
+            onAction: onOpenAi,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkspaceItem extends StatelessWidget {
+  const _WorkspaceItem({
+    required this.label,
+    required this.completed,
+    required this.completedText,
+    required this.pendingText,
+    required this.actionLabel,
+    required this.onAction,
+  });
+
+  final String label;
+  final bool completed;
+  final String completedText;
+  final String pendingText;
+  final String actionLabel;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            completed ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: completed ? Colors.green : Colors.grey,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 2),
+                Text(completed ? completedText : pendingText),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: onAction,
+            child: Text(actionLabel),
+          ),
+        ],
+      ),
+    );
   }
 }
 
