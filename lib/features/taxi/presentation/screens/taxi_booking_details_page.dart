@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../trips/domain/entities/trip.dart';
+import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/providers/taxi_provider.dart';
 import '../providers/taxi_hub_provider.dart';
 
@@ -21,6 +23,77 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
       }
     }
     return null;
+  }
+
+  Future<String?> _selectTripId(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final trips = await ref.read(tripsProvider.future);
+    if (trips.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Create a trip first to save taxi rides.'),
+          ),
+        );
+      }
+      return null;
+    }
+
+    final currentSelected = ref.read(taxiTripSelectionProvider);
+    String selected = currentSelected ?? trips.first.id;
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select trip'),
+              content: SizedBox(
+                width: 360,
+                child: DropdownButtonFormField<String>(
+                  initialValue: selected,
+                  items: trips
+                      .map(
+                        (Trip trip) => DropdownMenuItem<String>(
+                          value: trip.id,
+                          child: Text('${trip.title} (${trip.destination})'),
+                        ),
+                      )
+                      .toList(growable: false),
+                  onChanged: (next) {
+                    if (next == null) {
+                      return;
+                    }
+                    setDialogState(() {
+                      selected = next;
+                    });
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(selected),
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      ref.read(taxiTripSelectionProvider.notifier).state = result;
+    }
+
+    return result;
   }
 
   Future<void> _openRouteOnMap(BuildContext context) async {
@@ -122,16 +195,34 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
-            onPressed: () {
-              final current = ref.read(savedRideRequestsProvider);
-              ref.read(savedRideRequestsProvider.notifier).state = [
-                ...current,
-                args.request,
-              ];
+            onPressed: () async {
+              final tripId = await _selectTripId(context, ref);
+              if (tripId == null) {
+                return;
+              }
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Ride saved to trip itinerary list.')),
-              );
+              try {
+                await ref.read(taxiTransportActionsProvider).saveRideToTrip(
+                      tripId: tripId,
+                      provider: args.option.providerName,
+                      request: args.request,
+                      option: args.option,
+                    );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Ride saved to trip transport itinerary.'),
+                    ),
+                  );
+                }
+              } catch (error) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Could not save ride: $error')),
+                  );
+                }
+              }
             },
             icon: const Icon(Icons.bookmark_add_outlined),
             label: const Text('Save ride to itinerary'),
