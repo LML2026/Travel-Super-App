@@ -17,10 +17,7 @@ class AppPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = icon == null
-        ? FilledButton(
-            onPressed: onPressed,
-            child: Text(label),
-          )
+        ? FilledButton(onPressed: onPressed, child: Text(label))
         : FilledButton.icon(
             onPressed: onPressed,
             icon: Icon(icon),
@@ -31,10 +28,7 @@ class AppPrimaryButton extends StatelessWidget {
       return button;
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: button,
-    );
+    return SizedBox(width: double.infinity, child: button);
   }
 }
 
@@ -55,10 +49,7 @@ class AppSecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = icon == null
-        ? OutlinedButton(
-            onPressed: onPressed,
-            child: Text(label),
-          )
+        ? OutlinedButton(onPressed: onPressed, child: Text(label))
         : OutlinedButton.icon(
             onPressed: onPressed,
             icon: Icon(icon),
@@ -69,9 +60,6 @@ class AppSecondaryButton extends StatelessWidget {
       return button;
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: button,
-    );
+    return SizedBox(width: double.infinity, child: button);
   }
 }

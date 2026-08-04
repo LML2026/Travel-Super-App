@@ -7,20 +7,20 @@ part of 'flight_model.dart';
 // **************************************************************************
 
 _$FlightImpl _$$FlightImplFromJson(Map<String, dynamic> json) => _$FlightImpl(
-      id: json['id'] as String,
-      airline: json['airline'] as String,
-      flightNumber: json['flightNumber'] as String,
-      departure: json['departure'] as String,
-      arrival: json['arrival'] as String,
-      departureTime: DateTime.parse(json['departureTime'] as String),
-      arrivalTime: DateTime.parse(json['arrivalTime'] as String),
-      duration: (json['duration'] as num).toInt(),
-      price: (json['price'] as num).toDouble(),
-      stops: (json['stops'] as num).toInt(),
-      seats: (json['seats'] as num).toInt(),
-      aircraft: json['aircraft'] as String,
-      rating: (json['rating'] as num).toDouble(),
-    );
+  id: json['id'] as String,
+  airline: json['airline'] as String,
+  flightNumber: json['flightNumber'] as String,
+  departure: json['departure'] as String,
+  arrival: json['arrival'] as String,
+  departureTime: DateTime.parse(json['departureTime'] as String),
+  arrivalTime: DateTime.parse(json['arrivalTime'] as String),
+  duration: (json['duration'] as num).toInt(),
+  price: (json['price'] as num).toDouble(),
+  stops: (json['stops'] as num).toInt(),
+  seats: (json['seats'] as num).toInt(),
+  aircraft: json['aircraft'] as String,
+  rating: (json['rating'] as num).toDouble(),
+);
 
 Map<String, dynamic> _$$FlightImplToJson(_$FlightImpl instance) =>
     <String, dynamic>{

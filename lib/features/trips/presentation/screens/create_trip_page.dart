@@ -66,9 +66,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
 
     if (_departureDate == null || _returnDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select both dates.'),
-        ),
+        const SnackBar(content: Text('Please select both dates.')),
       );
       return;
     }
@@ -97,29 +95,23 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Trip created successfully.'),
-        ),
+        const SnackBar(content: Text('Trip created successfully.')),
       );
 
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Trip'),
-      ),
+      appBar: AppBar(title: const Text('Create Trip')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -127,9 +119,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
           children: [
             TextFormField(
               controller: _destinationController,
-              decoration: const InputDecoration(
-                labelText: 'Destination',
-              ),
+              decoration: const InputDecoration(labelText: 'Destination'),
               validator: (value) =>
                   value == null || value.isEmpty ? 'Enter destination' : null,
             ),
@@ -155,11 +145,10 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _budgetController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Budget',
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
+              decoration: const InputDecoration(labelText: 'Budget'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Enter budget';
@@ -175,22 +164,11 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: _currency,
-              decoration: const InputDecoration(
-                labelText: 'Currency',
-              ),
+              decoration: const InputDecoration(labelText: 'Currency'),
               items: const [
-                DropdownMenuItem(
-                  value: 'GBP',
-                  child: Text('GBP'),
-                ),
-                DropdownMenuItem(
-                  value: 'EUR',
-                  child: Text('EUR'),
-                ),
-                DropdownMenuItem(
-                  value: 'USD',
-                  child: Text('USD'),
-                ),
+                DropdownMenuItem(value: 'GBP', child: Text('GBP')),
+                DropdownMenuItem(value: 'EUR', child: Text('EUR')),
+                DropdownMenuItem(value: 'USD', child: Text('USD')),
               ],
               onChanged: (value) {
                 setState(() => _currency = value!);
@@ -199,10 +177,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text(
-                  'Travellers',
-                  style: TextStyle(fontSize: 16),
-                ),
+                const Text('Travellers', style: TextStyle(fontSize: 16)),
                 const Spacer(),
                 IconButton(
                   onPressed: () {
@@ -212,10 +187,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                   },
                   icon: const Icon(Icons.remove_circle_outline),
                 ),
-                Text(
-                  '$_travellers',
-                  style: const TextStyle(fontSize: 18),
-                ),
+                Text('$_travellers', style: const TextStyle(fontSize: 18)),
                 IconButton(
                   onPressed: () {
                     setState(() => _travellers++);
@@ -228,9 +200,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             TextFormField(
               controller: _notesController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
-              ),
+              decoration: const InputDecoration(labelText: 'Notes'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(

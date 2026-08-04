@@ -8,7 +8,7 @@ import 'trip_storage_backend_stub.dart'
 
 class LocalStorageService {
   LocalStorageService({TripStorageBackend? backend})
-      : _backend = backend ?? createTripStorageBackend();
+    : _backend = backend ?? createTripStorageBackend();
 
   final TripStorageBackend _backend;
 
@@ -28,11 +28,7 @@ class LocalStorageService {
       appLogger.i('📁 Loaded ${trips.length} trips from local storage');
       return trips;
     } catch (e, st) {
-      appLogger.e(
-        '❌ Failed to load trips',
-        error: e,
-        stackTrace: st,
-      );
+      appLogger.e('❌ Failed to load trips', error: e, stackTrace: st);
       return [];
     }
   }
@@ -45,11 +41,7 @@ class LocalStorageService {
 
       appLogger.i('✅ Saved ${trips.length} trips to local storage');
     } catch (e, st) {
-      appLogger.e(
-        '❌ Failed to save trips',
-        error: e,
-        stackTrace: st,
-      );
+      appLogger.e('❌ Failed to save trips', error: e, stackTrace: st);
     }
   }
 
@@ -71,7 +63,7 @@ class LocalStorageService {
   Future<void> updateTrip(SavedTrip trip) async {
     final trips = await loadTrips();
     final index = trips.indexWhere((t) => t.id == trip.id);
-    
+
     if (index != -1) {
       trips[index] = trip;
       await saveTrips(trips);

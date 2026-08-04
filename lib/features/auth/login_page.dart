@@ -28,7 +28,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      await ref.read(authMutationProvider.notifier).signIn(
+      await ref
+          .read(authMutationProvider.notifier)
+          .signIn(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
           );
@@ -115,19 +117,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   const Text(
                     'Travel Super App',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Sign in to your account',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 40),
                   Form(

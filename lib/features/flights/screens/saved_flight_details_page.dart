@@ -6,10 +6,7 @@ import '../models/saved_flight.dart';
 import '../providers/flight_provider.dart';
 
 class SavedFlightDetailsPage extends ConsumerWidget {
-  const SavedFlightDetailsPage({
-    super.key,
-    required this.flight,
-  });
+  const SavedFlightDetailsPage({super.key, required this.flight});
 
   final SavedFlight flight;
 
@@ -35,9 +32,7 @@ class SavedFlightDetailsPage extends ConsumerWidget {
     final formattedDuration = formatDuration(flight.duration);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved Flight Details'),
-      ),
+      appBar: AppBar(title: const Text('Saved Flight Details')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +80,10 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2),
                       borderRadius: BorderRadius.circular(8),
@@ -95,10 +93,7 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                       children: [
                         const Text(
                           'Saved Price',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         Text(
                           '${flight.currency} ${flight.amount.toStringAsFixed(2)}',
@@ -133,7 +128,11 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                           child: Column(
                             children: [
                               const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: Colors.grey.shade300,
+                              ),
                               const SizedBox(height: 8),
                               Text(
                                 formattedDuration,
@@ -143,7 +142,11 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: Colors.grey.shade300,
+                              ),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -161,9 +164,15 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                     title: 'Flight Details',
                     child: Column(
                       children: [
-                        _DetailsRow(label: 'Duration', value: formattedDuration),
+                        _DetailsRow(
+                          label: 'Duration',
+                          value: formattedDuration,
+                        ),
                         _DetailsRow(label: 'Stops', value: _getStopsText()),
-                        _DetailsRow(label: 'Cabin Class', value: flight.cabinClass),
+                        _DetailsRow(
+                          label: 'Cabin Class',
+                          value: flight.cabinClass,
+                        ),
                       ],
                     ),
                   ),
@@ -173,10 +182,16 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await ref.read(removeSavedFlightProvider(flight.id).future);
+                            await ref.read(
+                              removeSavedFlightProvider(flight.id).future,
+                            );
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${flight.flightNumber} removed from saved flights')),
+                                SnackBar(
+                                  content: Text(
+                                    '${flight.flightNumber} removed from saved flights',
+                                  ),
+                                ),
                               );
                               Navigator.pop(context);
                             }
@@ -190,7 +205,11 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Booking ${flight.flightNumber} - Coming soon!')),
+                              SnackBar(
+                                content: Text(
+                                  'Booking ${flight.flightNumber} - Coming soon!',
+                                ),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.flight_takeoff),
@@ -222,10 +241,7 @@ class _DetailSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         child,
@@ -284,10 +300,7 @@ class _TimelineItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   time,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ],
             ),
@@ -311,19 +324,10 @@ class _DetailsRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),

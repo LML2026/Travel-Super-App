@@ -92,16 +92,21 @@ void main() {
       tripRepositoryProvider.overrideWithValue(fakeRepo),
       savedFlightsProvider.overrideWith((ref) => Stream.value(const [])),
       savedHotelsProvider.overrideWith((ref) => Stream.value(const [])),
-      weatherProvider('Paris')
-          .overrideWith((ref) async => throw Exception('offline')),
-      weatherProvider('Paris (Copy)')
-          .overrideWith((ref) async => throw Exception('offline')),
+      weatherProvider(
+        'Paris',
+      ).overrideWith((ref) async => throw Exception('offline')),
+      weatherProvider(
+        'Paris (Copy)',
+      ).overrideWith((ref) async => throw Exception('offline')),
       nearbyBundleProvider('Paris').overrideWith(
         (ref) async => const NearbyBundle(
           city: 'Paris',
           attractions: <NearbyPlace>[
             NearbyPlace(
-                name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
+              name: 'Eiffel Tower',
+              distanceKm: 2.1,
+              type: 'attraction',
+            ),
           ],
           restaurants: <NearbyPlace>[],
           transport: <NearbyPlace>[],

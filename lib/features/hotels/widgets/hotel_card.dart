@@ -9,10 +9,7 @@ import '../models/saved_hotel.dart';
 import '../providers/hotel_provider.dart';
 
 class HotelCard extends ConsumerStatefulWidget {
-  const HotelCard({
-    super.key,
-    required this.hotel,
-  });
+  const HotelCard({super.key, required this.hotel});
 
   final Hotel hotel;
 
@@ -26,10 +23,14 @@ class _HotelCardState extends ConsumerState<HotelCard> {
   }
 
   Future<void> _toggleSave() async {
-    final isSaved = await ref.read(isHotelSavedProvider(widget.hotel.id).future);
+    final isSaved = await ref.read(
+      isHotelSavedProvider(widget.hotel.id).future,
+    );
 
     if (isSaved) {
-      final saveId = await ref.read(getSavedHotelIdProvider(widget.hotel.id).future);
+      final saveId = await ref.read(
+        getSavedHotelIdProvider(widget.hotel.id).future,
+      );
       if (saveId != null) {
         await ref.read(removeSavedHotelProvider(saveId).future);
       }
@@ -86,12 +87,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                 return Container(
                   height: 220,
                   color: Colors.grey.shade300,
-                  child: const Center(
-                    child: Icon(
-                      Icons.hotel,
-                      size: 70,
-                    ),
-                  ),
+                  child: const Center(child: Icon(Icons.hotel, size: 70)),
                 );
               },
             ),
@@ -118,37 +114,24 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                     const SizedBox(width: AppSpacing.sm),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: 20,
-                        ),
+                        const Icon(Icons.star, color: Colors.amber, size: 20),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
                           widget.hotel.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(
-                  displayAddress,
-                  style: TextStyle(color: Colors.grey[700]),
-                ),
+                Text(displayAddress, style: TextStyle(color: Colors.grey[700])),
                 const SizedBox(height: AppSpacing.md),
                 Wrap(
                   spacing: AppSpacing.sm,
                   children: widget.hotel.amenities
                       .take(3)
-                      .map(
-                        (amenity) => Chip(
-                          label: Text(amenity),
-                        ),
-                      )
+                      .map((amenity) => Chip(label: Text(amenity)))
                       .toList(),
                 ),
                 const SizedBox(height: 14),
@@ -167,7 +150,9 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                       child: isSavedAsync.when(
                         data: (isSaved) => AppSecondaryButton(
                           onPressed: _toggleSave,
-                          icon: isSaved ? Icons.favorite : Icons.favorite_border,
+                          icon: isSaved
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                           label: 'Save',
                         ),
                         loading: () => OutlinedButton.icon(

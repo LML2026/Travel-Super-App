@@ -8,10 +8,7 @@ import '../../../core/utils/flight_formatter.dart';
 class FlightDetailsPage extends ConsumerWidget {
   final Flight flight;
 
-  const FlightDetailsPage({
-    super.key,
-    required this.flight,
-  });
+  const FlightDetailsPage({super.key, required this.flight});
 
   String _getFullDateTime(String isoDateTime) {
     try {
@@ -25,8 +22,8 @@ class FlightDetailsPage extends ConsumerWidget {
   }
 
   String _getStopsText() {
-    return flight.stops == 0 
-        ? '🟢 Direct Flight' 
+    return flight.stops == 0
+        ? '🟢 Direct Flight'
         : '🟠 ${flight.stops} Stop${flight.stops > 1 ? 's' : ''}';
   }
 
@@ -36,10 +33,7 @@ class FlightDetailsPage extends ConsumerWidget {
     final formattedDuration = formatDuration(flight.duration);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flight Details'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Flight Details'), elevation: 0),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +52,7 @@ class FlightDetailsPage extends ConsumerWidget {
                           flight.airlineLogo,
                           width: 60,
                           height: 60,
-                          errorBuilder: (_, __, ___) => 
+                          errorBuilder: (_, __, ___) =>
                               const Icon(Icons.flight, size: 60),
                         )
                       else
@@ -88,10 +82,13 @@ class FlightDetailsPage extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Price
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2),
                       borderRadius: BorderRadius.circular(8),
@@ -101,10 +98,7 @@ class FlightDetailsPage extends ConsumerWidget {
                       children: [
                         const Text(
                           'Total Price',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         Text(
                           '${flight.currency} ${flight.amount.toStringAsFixed(2)}',
@@ -186,10 +180,7 @@ class FlightDetailsPage extends ConsumerWidget {
                           label: 'Duration',
                           value: formattedDuration,
                         ),
-                        _DetailsRow(
-                          label: 'Stops',
-                          value: _getStopsText(),
-                        ),
+                        _DetailsRow(label: 'Stops', value: _getStopsText()),
                         _DetailsRow(
                           label: 'Cabin Class',
                           value: flight.stops == 0 ? 'Economy' : 'Mixed',
@@ -227,11 +218,18 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'From',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const Icon(Icons.arrow_forward, size: 32, color: Color(0xFF1976D2)),
+                              const Icon(
+                                Icons.arrow_forward,
+                                size: 32,
+                                color: Color(0xFF1976D2),
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
@@ -245,7 +243,10 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'To',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -267,11 +268,21 @@ class FlightDetailsPage extends ConsumerWidget {
                           data: (isSaved) => OutlinedButton.icon(
                             onPressed: () {
                               if (isSaved) {
-                                ref.read(getSavedFlightIdProvider(flight.id).future).then((saveId) {
-                                  if (saveId != null) {
-                                    ref.read(removeSavedFlightProvider(saveId).future);
-                                  }
-                                });
+                                ref
+                                    .read(
+                                      getSavedFlightIdProvider(
+                                        flight.id,
+                                      ).future,
+                                    )
+                                    .then((saveId) {
+                                      if (saveId != null) {
+                                        ref.read(
+                                          removeSavedFlightProvider(
+                                            saveId,
+                                          ).future,
+                                        );
+                                      }
+                                    });
                               } else {
                                 final savedFlight = SavedFlight(
                                   id: '',
@@ -290,7 +301,9 @@ class FlightDetailsPage extends ConsumerWidget {
                                   cabinClass: 'economy',
                                   savedAt: DateTime.now(),
                                 );
-                                ref.read(saveFlightProvider(savedFlight).future);
+                                ref.read(
+                                  saveFlightProvider(savedFlight).future,
+                                );
                               }
                             },
                             icon: Icon(
@@ -315,16 +328,18 @@ class FlightDetailsPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(width: 12),
-                      
+
                       // Book button
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Booking ${flight.flightNumber} - Coming soon!'),
+                                content: Text(
+                                  'Booking ${flight.flightNumber} - Coming soon!',
+                                ),
                               ),
                             );
                           },
@@ -348,10 +363,7 @@ class _DetailSection extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const _DetailSection({
-    required this.title,
-    required this.child,
-  });
+  const _DetailSection({required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -360,10 +372,7 @@ class _DetailSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         child,
@@ -428,10 +437,7 @@ class _TimelineItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   time,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ],
             ),
@@ -446,10 +452,7 @@ class _DetailsRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailsRow({
-    required this.label,
-    required this.value,
-  });
+  const _DetailsRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -458,19 +461,10 @@ class _DetailsRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),

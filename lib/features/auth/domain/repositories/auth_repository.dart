@@ -19,9 +19,7 @@ abstract class AuthRepository {
 
   Future<UserCredential> signInWithApple();
 
-  Future<void> sendPasswordReset({
-    required String email,
-  });
+  Future<void> sendPasswordReset({required String email});
 
   Future<void> signOut();
 }

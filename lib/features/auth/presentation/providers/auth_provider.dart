@@ -68,10 +68,7 @@ class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
       await ref
@@ -90,10 +87,9 @@ class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
-      await ref.read(registerUserUseCaseProvider).call(
-            email: email,
-            password: password,
-          );
+      await ref
+          .read(registerUserUseCaseProvider)
+          .call(email: email, password: password);
     });
     state = result;
     if (result.hasError) {
@@ -148,5 +144,5 @@ class AuthMutationNotifier extends AutoDisposeAsyncNotifier<void> {
 
 final authMutationProvider =
     AutoDisposeAsyncNotifierProvider<AuthMutationNotifier, void>(
-  AuthMutationNotifier.new,
-);
+      AuthMutationNotifier.new,
+    );

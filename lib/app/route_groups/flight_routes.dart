@@ -53,7 +53,8 @@ List<RouteBase> buildFlightRoutes() {
         final extra = state.extra;
         if (extra is! SavedFlight) {
           return const RouteErrorPage(
-            message: 'Saved flight details route requires a SavedFlight extra payload.',
+            message:
+                'Saved flight details route requires a SavedFlight extra payload.',
           );
         }
         return SavedFlightDetailsPage(flight: extra);

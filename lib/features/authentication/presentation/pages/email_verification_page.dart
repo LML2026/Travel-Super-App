@@ -94,7 +94,8 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider) ??
+    final user =
+        ref.watch(currentUserProvider) ??
         ref.watch(immediateCurrentUserProvider);
 
     return AppScaffold(
@@ -105,9 +106,9 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
         children: [
           Text(
             'Verify your email to continue',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(

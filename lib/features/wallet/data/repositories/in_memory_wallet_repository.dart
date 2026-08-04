@@ -12,7 +12,7 @@ class InMemoryWalletRepository implements WalletRepository {
   final Map<String, List<WalletTransaction>> _transactionsByUser = {};
   final Map<String, StreamController<Wallet>> _walletControllersByUser = {};
   final Map<String, StreamController<List<WalletTransaction>>>
-      _transactionControllersByUser = {};
+  _transactionControllersByUser = {};
 
   String _walletIdFor(String userId) => 'wallet-$userId';
 
@@ -30,11 +30,7 @@ class InMemoryWalletRepository implements WalletRepository {
         id: _walletIdFor(userId),
         userId: userId,
         baseCurrency: defaultBaseCurrency,
-        balances: {
-          defaultBaseCurrency: 1000,
-          'EUR': 500,
-          'USD': 250,
-        },
+        balances: {defaultBaseCurrency: 1000, 'EUR': 500, 'USD': 250},
       ),
     );
   }
@@ -51,7 +47,8 @@ class InMemoryWalletRepository implements WalletRepository {
   }
 
   StreamController<List<WalletTransaction>> _transactionControllerForUser(
-      String userId) {
+    String userId,
+  ) {
     return _transactionControllersByUser.putIfAbsent(
       userId,
       () => StreamController<List<WalletTransaction>>.broadcast(),
@@ -60,8 +57,9 @@ class InMemoryWalletRepository implements WalletRepository {
 
   void _emitUserState(String userId) {
     _walletControllerForUser(userId).add(_walletForUser(userId));
-    _transactionControllerForUser(userId)
-        .add(List.unmodifiable(_transactionsForUser(userId)));
+    _transactionControllerForUser(
+      userId,
+    ).add(List.unmodifiable(_transactionsForUser(userId)));
   }
 
   @override

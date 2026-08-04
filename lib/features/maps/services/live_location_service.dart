@@ -24,8 +24,9 @@ class GeolocatorLiveLocationService implements LiveLocationService {
       distanceFilter: 25,
     );
 
-    return Geolocator.getPositionStream(locationSettings: locationSettings)
-        .map(_fromPosition);
+    return Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).map(_fromPosition);
   }
 
   Future<Position> _getPosition() async {

@@ -22,7 +22,9 @@ class LocalTaxiProvider implements TaxiProvider {
       ..writeln('Destination: ${request.destinationAddress}')
       ..writeln('Passengers: ${request.passengers}')
       ..writeln('Luggage: ${request.luggage}')
-      ..writeln('Pickup time: ${request.pickupTime?.toIso8601String() ?? 'ASAP'}');
+      ..writeln(
+        'Pickup time: ${request.pickupTime?.toIso8601String() ?? 'ASAP'}',
+      );
 
     final smsUri = Uri(
       scheme: 'sms',

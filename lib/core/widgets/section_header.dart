@@ -33,10 +33,7 @@ class SectionHeader extends StatelessWidget {
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  subtitle!,
-                  style: textTheme.bodyMedium,
-                ),
+                Text(subtitle!, style: textTheme.bodyMedium),
               ],
             ],
           ),

@@ -33,11 +33,12 @@ class _AuthenticationLoginPageState
 
     setState(() => _loading = true);
     try {
-      final destination =
-          await ref.read(authActionControllerProvider.notifier).signInWithEmail(
-                email: _emailController.text.trim(),
-                password: _passwordController.text,
-              );
+      final destination = await ref
+          .read(authActionControllerProvider.notifier)
+          .signInWithEmail(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
 
       if (!mounted) {
         return;
@@ -131,8 +132,8 @@ class _AuthenticationLoginPageState
                 Text(
                   'Welcome back',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -141,16 +142,16 @@ class _AuthenticationLoginPageState
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !_loading,
-                        validator: AuthValidators.validateEmail,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'you@example.com',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  enabled: !_loading,
+                  validator: AuthValidators.validateEmail,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'you@example.com',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 PasswordField(
                   controller: _passwordController,
@@ -159,19 +160,19 @@ class _AuthenticationLoginPageState
                 ),
                 const SizedBox(height: 8),
                 CheckboxListTile(
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: const Text('Remember me'),
-                        subtitle: const Text(
-                          'Session is securely persisted on this device.',
-                        ),
-                        value: _rememberMe,
-                        onChanged: _loading
-                            ? null
-                            : (value) {
-                                setState(() => _rememberMe = value ?? true);
-                              },
-                      ),
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Remember me'),
+                  subtitle: const Text(
+                    'Session is securely persisted on this device.',
+                  ),
+                  value: _rememberMe,
+                  onChanged: _loading
+                      ? null
+                      : (value) {
+                          setState(() => _rememberMe = value ?? true);
+                        },
+                ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(

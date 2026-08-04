@@ -7,20 +7,20 @@ part of 'trip_model.dart';
 // **************************************************************************
 
 _$TripImpl _$$TripImplFromJson(Map<String, dynamic> json) => _$TripImpl(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      destination: json['destination'] as String,
-      startDate: DateTime.parse(json['startDate'] as String),
-      endDate: DateTime.parse(json['endDate'] as String),
-      budget: (json['budget'] as num).toDouble(),
-      spent: (json['spent'] as num).toDouble(),
-      status: json['status'] as String,
-      activities: (json['activities'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      imageUrl: json['imageUrl'] as String,
-      travelers: (json['travelers'] as num).toInt(),
-    );
+  id: json['id'] as String,
+  title: json['title'] as String,
+  destination: json['destination'] as String,
+  startDate: DateTime.parse(json['startDate'] as String),
+  endDate: DateTime.parse(json['endDate'] as String),
+  budget: (json['budget'] as num).toDouble(),
+  spent: (json['spent'] as num).toDouble(),
+  status: json['status'] as String,
+  activities: (json['activities'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  imageUrl: json['imageUrl'] as String,
+  travelers: (json['travelers'] as num).toInt(),
+);
 
 Map<String, dynamic> _$$TripImplToJson(_$TripImpl instance) =>
     <String, dynamic>{

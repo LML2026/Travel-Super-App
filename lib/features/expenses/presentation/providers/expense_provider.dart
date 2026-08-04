@@ -9,7 +9,10 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   return FirestoreExpenseRepository();
 });
 
-final tripExpensesProvider = StreamProvider.family<List<Expense>, String>((ref, tripId) {
+final tripExpensesProvider = StreamProvider.family<List<Expense>, String>((
+  ref,
+  tripId,
+) {
   return ref.watch(expenseRepositoryProvider).watchExpenses(tripId);
 });
 
@@ -56,15 +59,14 @@ class ExpenseMutationNotifier extends AutoDisposeAsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(expenseRepositoryProvider).deleteExpense(
-            tripId: tripId,
-            expenseId: expenseId,
-          ),
+      () => ref
+          .read(expenseRepositoryProvider)
+          .deleteExpense(tripId: tripId, expenseId: expenseId),
     );
   }
 }
 
 final expenseMutationProvider =
     AutoDisposeAsyncNotifierProvider<ExpenseMutationNotifier, void>(
-  ExpenseMutationNotifier.new,
-);
+      ExpenseMutationNotifier.new,
+    );

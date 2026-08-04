@@ -108,11 +108,14 @@ List<RouteBase> buildCoreRoutes() {
         final extra = state.extra;
         if (extra != null && extra is! NearbyServiceType) {
           return const RouteErrorPage(
-            message: 'Nearby Essentials expects an optional NearbyServiceType payload.',
+            message:
+                'Nearby Essentials expects an optional NearbyServiceType payload.',
           );
         }
 
-        return NearbyEssentialsPage(initialService: extra as NearbyServiceType?);
+        return NearbyEssentialsPage(
+          initialService: extra as NearbyServiceType?,
+        );
       },
     ),
     GoRoute(

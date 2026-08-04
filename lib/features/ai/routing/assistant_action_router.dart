@@ -59,7 +59,8 @@ class AssistantActionRouter {
           );
         }
         return const ReplyAssistantAction(
-            'I cannot see your Travel Coin balance right now.');
+          'I cannot see your Travel Coin balance right now.',
+        );
       case AssistantIntentType.showTodayJourney:
         if (context.activeJourney != null) {
           return ShowCommandCardAction(
@@ -92,7 +93,8 @@ class AssistantActionRouter {
         return const NavigateAssistantAction(AssistantNavigationTarget.trips);
       case AssistantIntentType.openTravelCoin:
         return const NavigateAssistantAction(
-            AssistantNavigationTarget.travelCoin);
+          AssistantNavigationTarget.travelCoin,
+        );
       case AssistantIntentType.planTrip:
         return ShowCommandCardAction(
           message: 'I can help you plan a trip.',
@@ -135,12 +137,12 @@ class AssistantActionRouter {
           final baseSpend = financial.estimatedSpend;
           final convertedSpend = financial.preferredCurrencySpend;
           final rateLabel = _rateLabel(financial.exchangeRateSource);
-          final rateNote = financial.exchangeRateSource ==
-                  TravelDataSource.cached
+          final rateNote =
+              financial.exchangeRateSource == TravelDataSource.cached
               ? 'Exchange rates haven\'t been refreshed recently, so the converted amount is an estimate.'
               : (financial.preferredCurrencySpend == null
-                  ? 'A converted value isn\'t available at the moment.'
-                  : '');
+                    ? 'A converted value isn\'t available at the moment.'
+                    : '');
           final spendText = convertedSpend != null
               ? '${convertedSpend.currency} ${convertedSpend.amount.toStringAsFixed(2)}'
               : '${baseSpend.currency} ${baseSpend.amount.toStringAsFixed(2)}';
@@ -152,13 +154,16 @@ class AssistantActionRouter {
           );
         }
         return const ReplyAssistantAction(
-            'Your remaining trip budget is available in your wallet summary.');
+          'Your remaining trip budget is available in your wallet summary.',
+        );
       case AssistantIntentType.showActiveJourney:
         return const NavigateAssistantAction(
-            AssistantNavigationTarget.activeJourney);
+          AssistantNavigationTarget.activeJourney,
+        );
       case AssistantIntentType.updateProfile:
         return const UnsupportedAssistantAction(
-            'Profile updates are not available yet.');
+          'Profile updates are not available yet.',
+        );
       case AssistantIntentType.findPlaces:
         return const NavigateAssistantAction(
           AssistantNavigationTarget.nearbyEssentials,
@@ -215,9 +220,9 @@ class AssistantActionRouter {
 
   String _formatWithSeparator(int value) {
     return value.toString().replaceAllMapped(
-          RegExp(r'\B(?=(\d{3})+(?!\d))'),
-          (match) => ',',
-        );
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => ',',
+    );
   }
 
   NearbyServiceType? nearbyServiceTypeFromName(String? raw) {

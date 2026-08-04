@@ -6,10 +6,7 @@ class SignInWithEmail {
 
   final AuthenticationRepository _repository;
 
-  Future<AuthUser?> call({
-    required String email,
-    required String password,
-  }) {
+  Future<AuthUser?> call({required String email, required String password}) {
     return _repository.signIn(email: email, password: password);
   }
 }

@@ -104,9 +104,7 @@ void main() {
     final repo = _OkRepo(toDomain(trip));
 
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(repo),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(repo)],
     );
     addTearDown(container.dispose);
 
@@ -123,9 +121,7 @@ void main() {
   test('CreateTripProvider exposes error when repository fails', () async {
     final trip = makeTrip();
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(_FailingRepo()),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(_FailingRepo())],
     );
     addTearDown(container.dispose);
 

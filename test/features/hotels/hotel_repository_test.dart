@@ -77,8 +77,9 @@ void main() {
         ),
       ];
 
-      when(() => mockHotelService.searchHotels(request))
-          .thenAnswer((_) async => mockHotels);
+      when(
+        () => mockHotelService.searchHotels(request),
+      ).thenAnswer((_) async => mockHotels);
 
       // Act
       final result = await hotelRepository.searchHotels(request);
@@ -108,8 +109,9 @@ void main() {
         rooms: 1,
       );
 
-      when(() => mockHotelService.searchHotels(request))
-          .thenThrow(Exception('Network error'));
+      when(
+        () => mockHotelService.searchHotels(request),
+      ).thenThrow(Exception('Network error'));
 
       // Act
       final result = await hotelRepository.searchHotels(request);
@@ -167,8 +169,9 @@ void main() {
         rooms: 1,
       );
 
-      when(() => mockHotelService.searchHotels(request))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockHotelService.searchHotels(request),
+      ).thenAnswer((_) async => []);
 
       // Act
       final result = await hotelRepository.searchHotels(request);
@@ -206,8 +209,9 @@ void main() {
         ),
       ];
 
-      when(() => mockHotelService.searchHotels(request))
-          .thenAnswer((_) async => mockHotels);
+      when(
+        () => mockHotelService.searchHotels(request),
+      ).thenAnswer((_) async => mockHotels);
 
       // Act
       final result = await hotelRepository.searchHotels(request);
@@ -247,8 +251,9 @@ void main() {
         ),
       ];
 
-      when(() => mockHotelService.searchHotels(request))
-          .thenAnswer((_) async => mockHotels);
+      when(
+        () => mockHotelService.searchHotels(request),
+      ).thenAnswer((_) async => mockHotels);
 
       // Act
       final result = await hotelRepository.searchHotels(request);

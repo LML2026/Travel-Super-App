@@ -7,25 +7,27 @@ part of 'hotel_model.dart';
 // **************************************************************************
 
 _$HotelImpl _$$HotelImplFromJson(Map<String, dynamic> json) => _$HotelImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      city: json['city'] as String,
-      address: json['address'] as String,
-      pricePerNight: (json['pricePerNight'] as num).toDouble(),
-      rating: (json['rating'] as num).toDouble(),
-      reviewCount: (json['reviewCount'] as num).toInt(),
-      imageUrl: json['imageUrl'] as String,
-      amenities:
-          (json['amenities'] as List<dynamic>).map((e) => e as String).toList(),
-      roomTypes:
-          (json['roomTypes'] as List<dynamic>).map((e) => e as String).toList(),
-      availableRooms: (json['availableRooms'] as num).toInt(),
-      checkInTime: json['checkInTime'] as String,
-      checkOutTime: json['checkOutTime'] as String,
-      hasWifi: json['hasWifi'] as bool,
-      hasPool: json['hasPool'] as bool,
-      hasGym: json['hasGym'] as bool,
-    );
+  id: json['id'] as String,
+  name: json['name'] as String,
+  city: json['city'] as String,
+  address: json['address'] as String,
+  pricePerNight: (json['pricePerNight'] as num).toDouble(),
+  rating: (json['rating'] as num).toDouble(),
+  reviewCount: (json['reviewCount'] as num).toInt(),
+  imageUrl: json['imageUrl'] as String,
+  amenities: (json['amenities'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  roomTypes: (json['roomTypes'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  availableRooms: (json['availableRooms'] as num).toInt(),
+  checkInTime: json['checkInTime'] as String,
+  checkOutTime: json['checkOutTime'] as String,
+  hasWifi: json['hasWifi'] as bool,
+  hasPool: json['hasPool'] as bool,
+  hasGym: json['hasGym'] as bool,
+);
 
 Map<String, dynamic> _$$HotelImplToJson(_$HotelImpl instance) =>
     <String, dynamic>{

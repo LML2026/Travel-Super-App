@@ -34,8 +34,10 @@ final tripLiveProvider = StreamProvider.family<Trip?, String>((ref, tripId) {
   });
 });
 
-final tripFlightsProvider =
-    Provider.family<AsyncValue<SavedFlight?>, String>((ref, tripId) {
+final tripFlightsProvider = Provider.family<AsyncValue<SavedFlight?>, String>((
+  ref,
+  tripId,
+) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
   final flightsAsync = ref.watch(savedFlightsProvider);
 
@@ -73,8 +75,10 @@ final tripFlightsProvider =
   return const AsyncValue<SavedFlight?>.data(null);
 });
 
-final tripHotelProvider =
-    Provider.family<AsyncValue<SavedHotel?>, String>((ref, tripId) {
+final tripHotelProvider = Provider.family<AsyncValue<SavedHotel?>, String>((
+  ref,
+  tripId,
+) {
   final tripAsync = ref.watch(tripLiveProvider(tripId));
   final hotelsAsync = ref.watch(savedHotelsProvider);
 
@@ -114,46 +118,46 @@ final tripHotelProvider =
 
 final tripBudgetProvider =
     Provider.family<AsyncValue<TripBudgetSummary>, String>((ref, tripId) {
-  final tripAsync = ref.watch(tripLiveProvider(tripId));
-  final expensesAsync = ref.watch(tripExpensesProvider(tripId));
+      final tripAsync = ref.watch(tripLiveProvider(tripId));
+      final expensesAsync = ref.watch(tripExpensesProvider(tripId));
 
-  if (tripAsync.hasError) {
-    return AsyncValue<TripBudgetSummary>.error(
-      tripAsync.error!,
-      tripAsync.stackTrace ?? StackTrace.current,
-    );
-  }
+      if (tripAsync.hasError) {
+        return AsyncValue<TripBudgetSummary>.error(
+          tripAsync.error!,
+          tripAsync.stackTrace ?? StackTrace.current,
+        );
+      }
 
-  if (expensesAsync.hasError) {
-    return AsyncValue<TripBudgetSummary>.error(
-      expensesAsync.error!,
-      expensesAsync.stackTrace ?? StackTrace.current,
-    );
-  }
+      if (expensesAsync.hasError) {
+        return AsyncValue<TripBudgetSummary>.error(
+          expensesAsync.error!,
+          expensesAsync.stackTrace ?? StackTrace.current,
+        );
+      }
 
-  if (tripAsync.isLoading || expensesAsync.isLoading) {
-    return const AsyncValue<TripBudgetSummary>.loading();
-  }
+      if (tripAsync.isLoading || expensesAsync.isLoading) {
+        return const AsyncValue<TripBudgetSummary>.loading();
+      }
 
-  final trip = tripAsync.valueOrNull;
-  if (trip == null) {
-    return AsyncValue<TripBudgetSummary>.error(
-      StateError('Trip not found'),
-      StackTrace.current,
-    );
-  }
+      final trip = tripAsync.valueOrNull;
+      if (trip == null) {
+        return AsyncValue<TripBudgetSummary>.error(
+          StateError('Trip not found'),
+          StackTrace.current,
+        );
+      }
 
-  final expenses = expensesAsync.valueOrNull ?? const [];
-  var spent = 0.0;
-  for (final expense in expenses) {
-    spent += expense.amount;
-  }
+      final expenses = expensesAsync.valueOrNull ?? const [];
+      var spent = 0.0;
+      for (final expense in expenses) {
+        spent += expense.amount;
+      }
 
-  return AsyncValue<TripBudgetSummary>.data(
-    TripBudgetSummary(
-      currency: trip.currency,
-      budget: trip.budget,
-      spent: spent,
-    ),
-  );
-});
+      return AsyncValue<TripBudgetSummary>.data(
+        TripBudgetSummary(
+          currency: trip.currency,
+          budget: trip.budget,
+          spent: spent,
+        ),
+      );
+    });

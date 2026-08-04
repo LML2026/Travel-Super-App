@@ -6,11 +6,7 @@ import 'package:travel_super_app/features/trips/presentation/screens/create_trip
 void main() {
   testWidgets('renders the create trip form', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: MaterialApp(
-          home: CreateTripPage(),
-        ),
-      ),
+      const ProviderScope(child: MaterialApp(home: CreateTripPage())),
     );
 
     expect(find.text('Create Trip'), findsOneWidget);

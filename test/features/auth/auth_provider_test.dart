@@ -14,22 +14,22 @@ void main() {
 
   setUp(() {
     repository = _MockAuthRepository();
-    when(() => repository.authStateChanges())
-        .thenAnswer((_) => const Stream<User?>.empty());
+    when(
+      () => repository.authStateChanges(),
+    ).thenAnswer((_) => const Stream<User?>.empty());
     when(() => repository.currentUser).thenReturn(null);
   });
 
   ProviderContainer makeContainer() {
     return ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(repository),
-      ],
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
     );
   }
 
   test('authStateProvider emits values from repository stream', () async {
-    when(() => repository.authStateChanges())
-        .thenAnswer((_) => Stream<User?>.value(null));
+    when(
+      () => repository.authStateChanges(),
+    ).thenAnswer((_) => Stream<User?>.value(null));
 
     final container = makeContainer();
     addTearDown(container.dispose);

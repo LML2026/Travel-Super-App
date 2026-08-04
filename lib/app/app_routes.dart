@@ -13,20 +13,14 @@ import '../features/hotels/models/saved_hotel.dart';
 import '../features/trips/domain/entities/trip.dart';
 
 class TripCreateRouteArgs {
-  const TripCreateRouteArgs({
-    this.initialTrip,
-    this.forceCreateMode = false,
-  });
+  const TripCreateRouteArgs({this.initialTrip, this.forceCreateMode = false});
 
   final Trip? initialTrip;
   final bool forceCreateMode;
 }
 
 class TaxiBookingRouteArgs {
-  const TaxiBookingRouteArgs({
-    required this.request,
-    required this.option,
-  });
+  const TaxiBookingRouteArgs({required this.request, required this.option});
 
   final TaxiRideRequest request;
   final TaxiRideOption option;
@@ -161,19 +155,17 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
 
-  Future<T?> pushTransport<T>() =>
-      pushNamed<T>(AppRoute.transport.routeName);
+  Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
 
-    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+  Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
 
-    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+  Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
       pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
 
-    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+  Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
       pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
 
-    Future<T?> pushSavedRides<T>() =>
-      pushNamed<T>(AppRoute.savedRides.routeName);
+  Future<T?> pushSavedRides<T>() => pushNamed<T>(AppRoute.savedRides.routeName);
 
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 
@@ -223,13 +215,8 @@ extension AppNavigation on BuildContext {
 
   void goNearbyEssentials() => goNamed(AppRoute.nearbyEssentials.routeName);
 
-  Future<T?> pushNearbyEssentials<T>({
-    NearbyServiceType? initialService,
-  }) =>
-      pushNamed<T>(
-        AppRoute.nearbyEssentials.routeName,
-        extra: initialService,
-      );
+  Future<T?> pushNearbyEssentials<T>({NearbyServiceType? initialService}) =>
+      pushNamed<T>(AppRoute.nearbyEssentials.routeName, extra: initialService);
 
   Future<T?> pushAiAssistant<T>() =>
       pushNamed<T>(AppRoute.aiAssistant.routeName);
@@ -239,20 +226,19 @@ extension AppNavigation on BuildContext {
   Future<T?> pushCreateTrip<T>({
     Trip? initialTrip,
     bool forceCreateMode = false,
-  }) =>
-      pushNamed<T>(
-        AppRoute.tripCreate.routeName,
-        extra: TripCreateRouteArgs(
-          initialTrip: initialTrip,
-          forceCreateMode: forceCreateMode,
-        ),
-      );
+  }) => pushNamed<T>(
+    AppRoute.tripCreate.routeName,
+    extra: TripCreateRouteArgs(
+      initialTrip: initialTrip,
+      forceCreateMode: forceCreateMode,
+    ),
+  );
 
   Future<T?> pushTripDetails<T>(Trip trip) => pushNamed<T>(
-        AppRoute.tripDetails.routeName,
-        pathParameters: {'id': trip.id},
-        extra: trip,
-      );
+    AppRoute.tripDetails.routeName,
+    pathParameters: {'id': trip.id},
+    extra: trip,
+  );
 
   Future<T?> pushEditTrip<T>(String tripId, {Trip? initialTrip}) =>
       pushNamed<T>(
@@ -262,19 +248,19 @@ extension AppNavigation on BuildContext {
       );
 
   Future<T?> pushTripNotes<T>(String tripId) => pushNamed<T>(
-        AppRoute.tripNotes.routeName,
-        pathParameters: {'id': tripId},
-      );
+    AppRoute.tripNotes.routeName,
+    pathParameters: {'id': tripId},
+  );
 
   Future<T?> pushTripDocuments<T>(String tripId) => pushNamed<T>(
-        AppRoute.tripDocuments.routeName,
-        pathParameters: {'id': tripId},
-      );
+    AppRoute.tripDocuments.routeName,
+    pathParameters: {'id': tripId},
+  );
 
   Future<T?> pushTripActivities<T>(String tripId) => pushNamed<T>(
-        AppRoute.tripActivities.routeName,
-        pathParameters: {'id': tripId},
-      );
+    AppRoute.tripActivities.routeName,
+    pathParameters: {'id': tripId},
+  );
 
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);
 

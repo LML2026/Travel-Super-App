@@ -6,14 +6,13 @@ import '../../data/repositories/firestore_trip_document_repository.dart';
 import '../../domain/entities/trip_document.dart';
 import '../../domain/repositories/trip_document_repository.dart';
 
-typedef TripDocumentRepositoryFactory = TripDocumentRepository Function(
-  String userId,
-);
+typedef TripDocumentRepositoryFactory =
+    TripDocumentRepository Function(String userId);
 
 final tripDocumentRepositoryFactoryProvider =
     Provider<TripDocumentRepositoryFactory>((ref) {
-  return (userId) => FirestoreTripDocumentRepository(userId: userId);
-});
+      return (userId) => FirestoreTripDocumentRepository(userId: userId);
+    });
 
 final tripDocumentRepositoryProvider = Provider<TripDocumentRepository>((ref) {
   final user = ref.watch(immediateCurrentUserProvider);
@@ -24,10 +23,11 @@ final tripDocumentRepositoryProvider = Provider<TripDocumentRepository>((ref) {
   return ref.read(tripDocumentRepositoryFactoryProvider).call(user.uid);
 });
 
-final tripDocumentsProvider =
-    StreamProvider.family<List<TripDocument>, String>((ref, tripId) {
-  return ref.watch(tripDocumentRepositoryProvider).watchDocuments(tripId);
-});
+final tripDocumentsProvider = StreamProvider.family<List<TripDocument>, String>(
+  (ref, tripId) {
+    return ref.watch(tripDocumentRepositoryProvider).watchDocuments(tripId);
+  },
+);
 
 final tripDocumentActionsProvider = Provider<TripDocumentActions>((ref) {
   return TripDocumentActions(ref.watch(tripDocumentRepositoryProvider));

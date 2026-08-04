@@ -7,7 +7,8 @@ import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
 
 class HotelApiService {
-  HotelApiService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  HotelApiService({ApiClient? apiClient})
+    : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
@@ -15,15 +16,16 @@ class HotelApiService {
     try {
       appLogger.i('Searching hotels for ${request.city}...');
 
-      final response = await _apiClient.post(
-        ApiEndpoints.hotelsSearch,
-        data: jsonEncode(request.toJson()),
-      ).timeout(
-        const Duration(seconds: 15),
-        onTimeout: () {
-          throw _SearchTimeoutException('Hotel search timed out. Please try again.');
-        },
-      );
+      final response = await _apiClient
+          .post(ApiEndpoints.hotelsSearch, data: jsonEncode(request.toJson()))
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw _SearchTimeoutException(
+                'Hotel search timed out. Please try again.',
+              );
+            },
+          );
 
       if (response.statusCode == 200) {
         final List<dynamic> hotelsList = response.data['hotels'] ?? [];
@@ -38,11 +40,7 @@ class HotelApiService {
 
       throw Exception('Unexpected response from hotel search service.');
     } catch (e, st) {
-      appLogger.e(
-        'Hotel search failed',
-        error: e,
-        stackTrace: st,
-      );
+      appLogger.e('Hotel search failed', error: e, stackTrace: st);
       throw Exception('Unable to search hotels right now. Please try again.');
     }
   }

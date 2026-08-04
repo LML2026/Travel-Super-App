@@ -45,14 +45,16 @@ void main() {
 
   group('FlightRepository', () {
     test('returns Success with flights on successful API call', () async {
-      when(() => mockService.searchFlights(
-            from: any(named: 'from'),
-            to: any(named: 'to'),
-            departureDate: any(named: 'departureDate'),
-            returnDate: any(named: 'returnDate'),
-            passengers: any(named: 'passengers'),
-            cabinClass: any(named: 'cabinClass'),
-          )).thenAnswer((_) async => testFlights);
+      when(
+        () => mockService.searchFlights(
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+          departureDate: any(named: 'departureDate'),
+          returnDate: any(named: 'returnDate'),
+          passengers: any(named: 'passengers'),
+          cabinClass: any(named: 'cabinClass'),
+        ),
+      ).thenAnswer((_) async => testFlights);
 
       final result = await repository.searchFlights(testRequest);
 
@@ -63,14 +65,16 @@ void main() {
     });
 
     test('returns Failure when API throws', () async {
-      when(() => mockService.searchFlights(
-            from: any(named: 'from'),
-            to: any(named: 'to'),
-            departureDate: any(named: 'departureDate'),
-            returnDate: any(named: 'returnDate'),
-            passengers: any(named: 'passengers'),
-            cabinClass: any(named: 'cabinClass'),
-          )).thenThrow(Exception('Network error'));
+      when(
+        () => mockService.searchFlights(
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+          departureDate: any(named: 'departureDate'),
+          returnDate: any(named: 'returnDate'),
+          passengers: any(named: 'passengers'),
+          cabinClass: any(named: 'cabinClass'),
+        ),
+      ).thenThrow(Exception('Network error'));
 
       final result = await repository.searchFlights(testRequest);
 
@@ -80,9 +84,21 @@ void main() {
     });
 
     test('FlightSearchRequest equality works for caching', () {
-      const req1 = FlightSearchRequest(from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
-      const req2 = FlightSearchRequest(from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
-      const req3 = FlightSearchRequest(from: 'LHR', to: 'JFK', departureDate: '2026-08-20');
+      const req1 = FlightSearchRequest(
+        from: 'LHR',
+        to: 'CDG',
+        departureDate: '2026-08-20',
+      );
+      const req2 = FlightSearchRequest(
+        from: 'LHR',
+        to: 'CDG',
+        departureDate: '2026-08-20',
+      );
+      const req3 = FlightSearchRequest(
+        from: 'LHR',
+        to: 'JFK',
+        departureDate: '2026-08-20',
+      );
 
       expect(req1, equals(req2));
       expect(req1.hashCode, equals(req2.hashCode));

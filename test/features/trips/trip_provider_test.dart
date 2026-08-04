@@ -86,9 +86,7 @@ void main() {
   test('tripsProvider reads watch stream from repository', () async {
     final fakeRepo = _FakeTripRepository(<domain.Trip>[makeDomainTrip()]);
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 
@@ -101,9 +99,7 @@ void main() {
   test('saveTrip provider delegates to repository create', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 
@@ -117,9 +113,7 @@ void main() {
   test('editTrip provider delegates to repository update', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 
@@ -133,9 +127,7 @@ void main() {
   test('removeTrip provider delegates to repository delete', () async {
     final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
-      overrides: [
-        tripRepositoryProvider.overrideWithValue(fakeRepo),
-      ],
+      overrides: [tripRepositoryProvider.overrideWithValue(fakeRepo)],
     );
     addTearDown(container.dispose);
 

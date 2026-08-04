@@ -157,8 +157,9 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                         child: _Counter(
                           label: 'Guests',
                           value: _guests,
-                          onDecrement:
-                              _guests > 1 ? () => setState(() => _guests--) : null,
+                          onDecrement: _guests > 1
+                              ? () => setState(() => _guests--)
+                              : null,
                           onIncrement: () => setState(() => _guests++),
                         ),
                       ),
@@ -167,8 +168,9 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                         child: _Counter(
                           label: 'Rooms',
                           value: _rooms,
-                          onDecrement:
-                              _rooms > 1 ? () => setState(() => _rooms--) : null,
+                          onDecrement: _rooms > 1
+                              ? () => setState(() => _rooms--)
+                              : null,
                           onIncrement: () => setState(() => _rooms++),
                         ),
                       ),
@@ -284,7 +286,9 @@ class _DateField extends StatelessWidget {
               const Icon(Icons.calendar_month),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('$label: ${value.day}/${value.month}/${value.year}'),
+                child: Text(
+                  '$label: ${value.day}/${value.month}/${value.year}',
+                ),
               ),
             ],
           ),
@@ -310,7 +314,10 @@ class _Counter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade400),
         borderRadius: BorderRadius.circular(8),
@@ -330,7 +337,10 @@ class _Counter extends StatelessWidget {
               ),
               Text(
                 '$value',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               IconButton(
                 onPressed: onIncrement,

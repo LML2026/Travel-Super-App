@@ -9,10 +9,7 @@ import '../../../trips/domain/entities/trip.dart';
 import 'add_expense_page.dart';
 
 class TripExpensesPage extends ConsumerStatefulWidget {
-  const TripExpensesPage({
-    super.key,
-    required this.trip,
-  });
+  const TripExpensesPage({super.key, required this.trip});
 
   final Trip trip;
 
@@ -70,10 +67,7 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
     }
 
     final notifier = ref.read(expenseMutationProvider.notifier);
-    await notifier.deleteExpense(
-      tripId: widget.trip.id,
-      expenseId: expense.id,
-    );
+    await notifier.deleteExpense(tripId: widget.trip.id, expenseId: expense.id);
     _showMutationErrorIfAny();
   }
 
@@ -94,9 +88,7 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
     final budgetAsync = ref.watch(tripBudgetProvider(widget.trip.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trip Expenses'),
-      ),
+      appBar: AppBar(title: const Text('Trip Expenses')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createExpense,
         icon: const Icon(Icons.add),
@@ -114,9 +106,8 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
           Expanded(
             child: expensesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(
-                child: Text('Unable to load expenses: $error'),
-              ),
+              error: (error, _) =>
+                  Center(child: Text('Unable to load expenses: $error')),
               data: (expenses) {
                 if (expenses.isEmpty) {
                   return const Center(
@@ -149,10 +140,7 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
 }
 
 class _ExpenseSummaryCard extends StatelessWidget {
-  const _ExpenseSummaryCard({
-    required this.trip,
-    required this.budgetAsync,
-  });
+  const _ExpenseSummaryCard({required this.trip, required this.budgetAsync});
 
   final Trip trip;
   final AsyncValue<TripBudgetSummary> budgetAsync;
@@ -165,9 +153,15 @@ class _ExpenseSummaryCard extends StatelessWidget {
       data: (summary) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
-          Text('Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
-          Text('Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
+          Text(
+            'Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}',
+          ),
+          Text(
+            'Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}',
+          ),
+          Text(
+            'Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}',
+          ),
         ],
       ),
     );

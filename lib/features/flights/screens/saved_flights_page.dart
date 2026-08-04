@@ -27,9 +27,7 @@ class SavedFlightsPage extends StatelessWidget {
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Saved Flights'),
-        ),
+        appBar: AppBar(title: const Text('Saved Flights')),
         body: const Center(
           child: Text('Please sign in to view saved flights.'),
         ),
@@ -44,9 +42,7 @@ class SavedFlightsPage extends StatelessWidget {
         .snapshots();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved Flights'),
-      ),
+      appBar: AppBar(title: const Text('Saved Flights')),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: savedFlightsStream,
         builder: (context, snapshot) {
@@ -63,9 +59,7 @@ class SavedFlightsPage extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final documents = snapshot.data?.docs ?? [];
@@ -75,22 +69,14 @@ class SavedFlightsPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.favorite_outline,
-                    size: 64,
-                  ),
+                  Icon(Icons.favorite_outline, size: 64),
                   SizedBox(height: 16),
                   Text(
                     'No saved flights yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
-                  Text(
-                    'Your saved flights will appear here.',
-                  ),
+                  Text('Your saved flights will appear here.'),
                 ],
               ),
             );
@@ -115,10 +101,14 @@ class SavedFlightsPage extends StatelessWidget {
                 arrivalAt: data['arrivalAt']?.toString() ?? '',
                 duration: data['duration']?.toString() ?? '0',
                 stops: int.tryParse(data['stops']?.toString() ?? '') ?? 0,
-                amount: double.tryParse(data['amount']?.toString() ?? '') ?? 0.0,
+                amount:
+                    double.tryParse(data['amount']?.toString() ?? '') ?? 0.0,
                 currency: data['currency']?.toString() ?? 'EUR',
               );
-              final savedFlight = SavedFlight.fromJson({...data, 'id': document.id});
+              final savedFlight = SavedFlight.fromJson({
+                ...data,
+                'id': document.id,
+              });
 
               final departureTime = _getTimeOnly(flight.departureAt);
               final arrivalTime = _getTimeOnly(flight.arrivalAt);
@@ -271,4 +261,3 @@ class SavedFlightsPage extends StatelessWidget {
     );
   }
 }
-

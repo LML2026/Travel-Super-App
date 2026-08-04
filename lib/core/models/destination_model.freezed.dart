@@ -12,7 +12,8 @@ part of 'destination_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Destination _$DestinationFromJson(Map<String, dynamic> json) {
   return _Destination.fromJson(json);
@@ -47,23 +48,25 @@ mixin _$Destination {
 /// @nodoc
 abstract class $DestinationCopyWith<$Res> {
   factory $DestinationCopyWith(
-          Destination value, $Res Function(Destination) then) =
-      _$DestinationCopyWithImpl<$Res, Destination>;
+    Destination value,
+    $Res Function(Destination) then,
+  ) = _$DestinationCopyWithImpl<$Res, Destination>;
   @useResult
-  $Res call(
-      {String id,
-      String name,
-      String country,
-      String countryCode,
-      String flag,
-      String description,
-      double rating,
-      int reviewCount,
-      String imageUrl,
-      double temperature,
-      String weather,
-      List<String> attractions,
-      int bestTimeToVisit});
+  $Res call({
+    String id,
+    String name,
+    String country,
+    String countryCode,
+    String flag,
+    String description,
+    double rating,
+    int reviewCount,
+    String imageUrl,
+    double temperature,
+    String weather,
+    List<String> attractions,
+    int bestTimeToVisit,
+  });
 }
 
 /// @nodoc
@@ -95,60 +98,63 @@ class _$DestinationCopyWithImpl<$Res, $Val extends Destination>
     Object? attractions = null,
     Object? bestTimeToVisit = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      country: null == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as String,
-      countryCode: null == countryCode
-          ? _value.countryCode
-          : countryCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      flag: null == flag
-          ? _value.flag
-          : flag // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      rating: null == rating
-          ? _value.rating
-          : rating // ignore: cast_nullable_to_non_nullable
-              as double,
-      reviewCount: null == reviewCount
-          ? _value.reviewCount
-          : reviewCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      imageUrl: null == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      temperature: null == temperature
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
-      weather: null == weather
-          ? _value.weather
-          : weather // ignore: cast_nullable_to_non_nullable
-              as String,
-      attractions: null == attractions
-          ? _value.attractions
-          : attractions // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      bestTimeToVisit: null == bestTimeToVisit
-          ? _value.bestTimeToVisit
-          : bestTimeToVisit // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            country: null == country
+                ? _value.country
+                : country // ignore: cast_nullable_to_non_nullable
+                      as String,
+            countryCode: null == countryCode
+                ? _value.countryCode
+                : countryCode // ignore: cast_nullable_to_non_nullable
+                      as String,
+            flag: null == flag
+                ? _value.flag
+                : flag // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: null == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String,
+            rating: null == rating
+                ? _value.rating
+                : rating // ignore: cast_nullable_to_non_nullable
+                      as double,
+            reviewCount: null == reviewCount
+                ? _value.reviewCount
+                : reviewCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            imageUrl: null == imageUrl
+                ? _value.imageUrl
+                : imageUrl // ignore: cast_nullable_to_non_nullable
+                      as String,
+            temperature: null == temperature
+                ? _value.temperature
+                : temperature // ignore: cast_nullable_to_non_nullable
+                      as double,
+            weather: null == weather
+                ? _value.weather
+                : weather // ignore: cast_nullable_to_non_nullable
+                      as String,
+            attractions: null == attractions
+                ? _value.attractions
+                : attractions // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            bestTimeToVisit: null == bestTimeToVisit
+                ? _value.bestTimeToVisit
+                : bestTimeToVisit // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -156,24 +162,26 @@ class _$DestinationCopyWithImpl<$Res, $Val extends Destination>
 abstract class _$$DestinationImplCopyWith<$Res>
     implements $DestinationCopyWith<$Res> {
   factory _$$DestinationImplCopyWith(
-          _$DestinationImpl value, $Res Function(_$DestinationImpl) then) =
-      __$$DestinationImplCopyWithImpl<$Res>;
+    _$DestinationImpl value,
+    $Res Function(_$DestinationImpl) then,
+  ) = __$$DestinationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String name,
-      String country,
-      String countryCode,
-      String flag,
-      String description,
-      double rating,
-      int reviewCount,
-      String imageUrl,
-      double temperature,
-      String weather,
-      List<String> attractions,
-      int bestTimeToVisit});
+  $Res call({
+    String id,
+    String name,
+    String country,
+    String countryCode,
+    String flag,
+    String description,
+    double rating,
+    int reviewCount,
+    String imageUrl,
+    double temperature,
+    String weather,
+    List<String> attractions,
+    int bestTimeToVisit,
+  });
 }
 
 /// @nodoc
@@ -181,8 +189,9 @@ class __$$DestinationImplCopyWithImpl<$Res>
     extends _$DestinationCopyWithImpl<$Res, _$DestinationImpl>
     implements _$$DestinationImplCopyWith<$Res> {
   __$$DestinationImplCopyWithImpl(
-      _$DestinationImpl _value, $Res Function(_$DestinationImpl) _then)
-      : super(_value, _then);
+    _$DestinationImpl _value,
+    $Res Function(_$DestinationImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Destination
   /// with the given fields replaced by the non-null parameter values.
@@ -203,81 +212,83 @@ class __$$DestinationImplCopyWithImpl<$Res>
     Object? attractions = null,
     Object? bestTimeToVisit = null,
   }) {
-    return _then(_$DestinationImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      country: null == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as String,
-      countryCode: null == countryCode
-          ? _value.countryCode
-          : countryCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      flag: null == flag
-          ? _value.flag
-          : flag // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      rating: null == rating
-          ? _value.rating
-          : rating // ignore: cast_nullable_to_non_nullable
-              as double,
-      reviewCount: null == reviewCount
-          ? _value.reviewCount
-          : reviewCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      imageUrl: null == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      temperature: null == temperature
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
-      weather: null == weather
-          ? _value.weather
-          : weather // ignore: cast_nullable_to_non_nullable
-              as String,
-      attractions: null == attractions
-          ? _value._attractions
-          : attractions // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      bestTimeToVisit: null == bestTimeToVisit
-          ? _value.bestTimeToVisit
-          : bestTimeToVisit // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$DestinationImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        country: null == country
+            ? _value.country
+            : country // ignore: cast_nullable_to_non_nullable
+                  as String,
+        countryCode: null == countryCode
+            ? _value.countryCode
+            : countryCode // ignore: cast_nullable_to_non_nullable
+                  as String,
+        flag: null == flag
+            ? _value.flag
+            : flag // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: null == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String,
+        rating: null == rating
+            ? _value.rating
+            : rating // ignore: cast_nullable_to_non_nullable
+                  as double,
+        reviewCount: null == reviewCount
+            ? _value.reviewCount
+            : reviewCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        imageUrl: null == imageUrl
+            ? _value.imageUrl
+            : imageUrl // ignore: cast_nullable_to_non_nullable
+                  as String,
+        temperature: null == temperature
+            ? _value.temperature
+            : temperature // ignore: cast_nullable_to_non_nullable
+                  as double,
+        weather: null == weather
+            ? _value.weather
+            : weather // ignore: cast_nullable_to_non_nullable
+                  as String,
+        attractions: null == attractions
+            ? _value._attractions
+            : attractions // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        bestTimeToVisit: null == bestTimeToVisit
+            ? _value.bestTimeToVisit
+            : bestTimeToVisit // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DestinationImpl implements _Destination {
-  const _$DestinationImpl(
-      {required this.id,
-      required this.name,
-      required this.country,
-      required this.countryCode,
-      required this.flag,
-      required this.description,
-      required this.rating,
-      required this.reviewCount,
-      required this.imageUrl,
-      required this.temperature,
-      required this.weather,
-      required final List<String> attractions,
-      required this.bestTimeToVisit})
-      : _attractions = attractions;
+  const _$DestinationImpl({
+    required this.id,
+    required this.name,
+    required this.country,
+    required this.countryCode,
+    required this.flag,
+    required this.description,
+    required this.rating,
+    required this.reviewCount,
+    required this.imageUrl,
+    required this.temperature,
+    required this.weather,
+    required final List<String> attractions,
+    required this.bestTimeToVisit,
+  }) : _attractions = attractions;
 
   factory _$DestinationImpl.fromJson(Map<String, dynamic> json) =>
       _$$DestinationImplFromJson(json);
@@ -341,8 +352,10 @@ class _$DestinationImpl implements _Destination {
             (identical(other.temperature, temperature) ||
                 other.temperature == temperature) &&
             (identical(other.weather, weather) || other.weather == weather) &&
-            const DeepCollectionEquality()
-                .equals(other._attractions, _attractions) &&
+            const DeepCollectionEquality().equals(
+              other._attractions,
+              _attractions,
+            ) &&
             (identical(other.bestTimeToVisit, bestTimeToVisit) ||
                 other.bestTimeToVisit == bestTimeToVisit));
   }
@@ -350,20 +363,21 @@ class _$DestinationImpl implements _Destination {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      country,
-      countryCode,
-      flag,
-      description,
-      rating,
-      reviewCount,
-      imageUrl,
-      temperature,
-      weather,
-      const DeepCollectionEquality().hash(_attractions),
-      bestTimeToVisit);
+    runtimeType,
+    id,
+    name,
+    country,
+    countryCode,
+    flag,
+    description,
+    rating,
+    reviewCount,
+    imageUrl,
+    temperature,
+    weather,
+    const DeepCollectionEquality().hash(_attractions),
+    bestTimeToVisit,
+  );
 
   /// Create a copy of Destination
   /// with the given fields replaced by the non-null parameter values.
@@ -375,27 +389,26 @@ class _$DestinationImpl implements _Destination {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DestinationImplToJson(
-      this,
-    );
+    return _$$DestinationImplToJson(this);
   }
 }
 
 abstract class _Destination implements Destination {
-  const factory _Destination(
-      {required final String id,
-      required final String name,
-      required final String country,
-      required final String countryCode,
-      required final String flag,
-      required final String description,
-      required final double rating,
-      required final int reviewCount,
-      required final String imageUrl,
-      required final double temperature,
-      required final String weather,
-      required final List<String> attractions,
-      required final int bestTimeToVisit}) = _$DestinationImpl;
+  const factory _Destination({
+    required final String id,
+    required final String name,
+    required final String country,
+    required final String countryCode,
+    required final String flag,
+    required final String description,
+    required final double rating,
+    required final int reviewCount,
+    required final String imageUrl,
+    required final double temperature,
+    required final String weather,
+    required final List<String> attractions,
+    required final int bestTimeToVisit,
+  }) = _$DestinationImpl;
 
   factory _Destination.fromJson(Map<String, dynamic> json) =
       _$DestinationImpl.fromJson;

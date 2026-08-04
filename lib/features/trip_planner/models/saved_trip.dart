@@ -4,7 +4,8 @@ class SavedTrip {
   final DateTime departureDate;
   final DateTime returnDate;
   final int travelers;
-  final List<String> flightIds; // Save flight IDs instead of full Flight objects
+  final List<String>
+  flightIds; // Save flight IDs instead of full Flight objects
   final List<String> hotelIds;
   final double totalBudget;
   final DateTime createdAt;
@@ -41,13 +42,20 @@ class SavedTrip {
     return SavedTrip(
       id: json['id'] ?? '',
       destination: json['destination'] ?? '',
-      departureDate: DateTime.parse(json['departureDate'] ?? DateTime.now().toIso8601String()),
-      returnDate: DateTime.parse(json['returnDate'] ?? DateTime.now().toIso8601String()),
+      departureDate: DateTime.parse(
+        json['departureDate'] ?? DateTime.now().toIso8601String(),
+      ),
+      returnDate: DateTime.parse(
+        json['returnDate'] ?? DateTime.now().toIso8601String(),
+      ),
       travelers: json['travelers'] ?? 1,
       flightIds: List<String>.from(json['flightIds'] ?? []),
       hotelIds: List<String>.from(json['hotelIds'] ?? []),
-      totalBudget: double.tryParse(json['totalBudget']?.toString() ?? '0') ?? 0.0,
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      totalBudget:
+          double.tryParse(json['totalBudget']?.toString() ?? '0') ?? 0.0,
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 

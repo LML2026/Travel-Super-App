@@ -24,10 +24,7 @@ class SectionTitle extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             if (actionText != null)
               GestureDetector(
@@ -45,10 +42,7 @@ class SectionTitle extends StatelessWidget {
         ),
         if (showDivider) ...[
           const SizedBox(height: 12),
-          Divider(
-            color: Colors.grey.shade300,
-            height: 1,
-          ),
+          Divider(color: Colors.grey.shade300, height: 1),
         ],
       ],
     );

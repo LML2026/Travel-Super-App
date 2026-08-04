@@ -25,7 +25,9 @@ class _FakeWalletRepository implements WalletRepository {
 
   @override
   Stream<Wallet> watchWallet(String userId) {
-    return Stream<Wallet>.value(_wallet.copyWith(userId: userId, id: 'wallet-$userId'));
+    return Stream<Wallet>.value(
+      _wallet.copyWith(userId: userId, id: 'wallet-$userId'),
+    );
   }
 
   @override
@@ -78,9 +80,7 @@ void main() {
   group('walletRepositoryProvider', () {
     test('uses in-memory repository when user is not authenticated', () {
       final container = ProviderContainer(
-        overrides: [
-          currentUserProvider.overrideWithValue(null),
-        ],
+        overrides: [currentUserProvider.overrideWithValue(null)],
       );
       addTearDown(container.dispose);
 
@@ -111,20 +111,20 @@ void main() {
   });
 
   group('walletProvider and actions', () {
-    test('walletProvider returns auth error when user is not authenticated',
-        () async {
-      final container = ProviderContainer(
-        overrides: [
-          currentUserProvider.overrideWithValue(null),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'walletProvider returns auth error when user is not authenticated',
+      () async {
+        final container = ProviderContainer(
+          overrides: [currentUserProvider.overrideWithValue(null)],
+        );
+        addTearDown(container.dispose);
 
-      await expectLater(
-        container.read(walletProvider.future),
-        throwsA(isA<StateError>()),
-      );
-    });
+        await expectLater(
+          container.read(walletProvider.future),
+          throwsA(isA<StateError>()),
+        );
+      },
+    );
 
     test('walletActions delegates to repository when authenticated', () async {
       final fakeRepository = _FakeWalletRepository();
@@ -154,19 +154,14 @@ void main() {
 
     test('walletActions throws state error when unauthenticated', () async {
       final container = ProviderContainer(
-        overrides: [
-          currentUserProvider.overrideWithValue(null),
-        ],
+        overrides: [currentUserProvider.overrideWithValue(null)],
       );
       addTearDown(container.dispose);
 
       final actions = container.read(walletActionsProvider);
 
       expect(actions.isAuthenticated, isFalse);
-      expect(
-        () => actions.deposit(10, 'GBP'),
-        throwsA(isA<StateError>()),
-      );
+      expect(() => actions.deposit(10, 'GBP'), throwsA(isA<StateError>()));
     });
   });
 }

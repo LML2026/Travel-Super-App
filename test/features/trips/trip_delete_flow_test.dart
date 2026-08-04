@@ -90,15 +90,18 @@ void main() {
       tripRepositoryProvider.overrideWithValue(fakeRepo),
       savedFlightsProvider.overrideWith((ref) => Stream.value(const [])),
       savedHotelsProvider.overrideWith((ref) => Stream.value(const [])),
-      weatherProvider('Paris').overrideWith(
-        (ref) async => throw Exception('offline'),
-      ),
+      weatherProvider(
+        'Paris',
+      ).overrideWith((ref) async => throw Exception('offline')),
       nearbyBundleProvider('Paris').overrideWith(
         (ref) async => const NearbyBundle(
           city: 'Paris',
           attractions: <NearbyPlace>[
             NearbyPlace(
-                name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
+              name: 'Eiffel Tower',
+              distanceKm: 2.1,
+              type: 'attraction',
+            ),
           ],
           restaurants: <NearbyPlace>[],
           transport: <NearbyPlace>[],
@@ -128,17 +131,16 @@ void main() {
     expect(fakeRepo.deletedTripIds, isEmpty);
   });
 
-  testWidgets('Trip details delete cancel does not delete trip',
-      (tester) async {
+  testWidgets('Trip details delete cancel does not delete trip', (
+    tester,
+  ) async {
     final trip = makeTrip();
     final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: commonOverrides(fakeRepo),
-        child: MaterialApp(
-          home: TripDetailsPage(tripId: trip.id),
-        ),
+        child: MaterialApp(home: TripDetailsPage(tripId: trip.id)),
       ),
     );
 
@@ -161,8 +163,9 @@ void main() {
     expect(fakeRepo.deletedTripIds, isEmpty);
   });
 
-  testWidgets('Trip details delete confirm deletes and pops to previous page',
-      (tester) async {
+  testWidgets('Trip details delete confirm deletes and pops to previous page', (
+    tester,
+  ) async {
     final trip = makeTrip();
     final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
 

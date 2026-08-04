@@ -47,7 +47,8 @@ List<RouteBase> buildHotelRoutes() {
         final extra = state.extra;
         if (extra is! SavedHotel) {
           return const RouteErrorPage(
-            message: 'Saved hotel details route requires a SavedHotel extra payload.',
+            message:
+                'Saved hotel details route requires a SavedHotel extra payload.',
           );
         }
         return SavedHotelDetailsPage(hotel: extra);

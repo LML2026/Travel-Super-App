@@ -7,13 +7,15 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
   FirestoreTaxiTransportRepository({
     required FirebaseFirestore firestore,
     required String userId,
-  })  : _firestore = firestore,
-        _userId = userId;
+  }) : _firestore = firestore,
+       _userId = userId;
 
   final FirebaseFirestore _firestore;
   final String _userId;
 
-  CollectionReference<Map<String, dynamic>> _transportCollection(String tripId) {
+  CollectionReference<Map<String, dynamic>> _transportCollection(
+    String tripId,
+  ) {
     return _firestore
         .collection('users')
         .doc(_userId)
@@ -68,7 +70,8 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
       destinationAddress: data['destinationAddress'] as String? ?? '',
       pickupLatitude: (data['pickupLatitude'] as num?)?.toDouble() ?? 0,
       pickupLongitude: (data['pickupLongitude'] as num?)?.toDouble() ?? 0,
-      destinationLatitude: (data['destinationLatitude'] as num?)?.toDouble() ?? 0,
+      destinationLatitude:
+          (data['destinationLatitude'] as num?)?.toDouble() ?? 0,
       destinationLongitude:
           (data['destinationLongitude'] as num?)?.toDouble() ?? 0,
       scheduledAt: parseDate(data['scheduledAt']),
@@ -88,9 +91,11 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
         .where('type', isEqualTo: 'taxi')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => _fromMap(doc.data()))
-            .toList(growable: false));
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => _fromMap(doc.data()))
+              .toList(growable: false),
+        );
   }
 
   @override
@@ -98,8 +103,8 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
     required String tripId,
     required TaxiSavedRide ride,
   }) async {
-    await _transportCollection(tripId)
-        .doc(ride.id)
-        .set(_toMap(ride), SetOptions(merge: true));
+    await _transportCollection(
+      tripId,
+    ).doc(ride.id).set(_toMap(ride), SetOptions(merge: true));
   }
 }

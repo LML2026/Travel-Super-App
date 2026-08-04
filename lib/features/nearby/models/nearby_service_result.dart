@@ -1,17 +1,8 @@
 import 'nearby_service_type.dart';
 
-enum NearbyDataSource {
-  google,
-  osm,
-  here,
-  fallback,
-}
+enum NearbyDataSource { google, osm, here, fallback }
 
-enum OpenStatusSource {
-  provider,
-  scheduleInference,
-  unknown,
-}
+enum OpenStatusSource { provider, scheduleInference, unknown }
 
 class NearbyServiceResult {
   const NearbyServiceResult({

@@ -99,8 +99,7 @@ List<RouteBase> buildTripRoutes() {
         final tripId = state.pathParameters['id'];
         if (tripId == null || tripId.isEmpty) {
           return const RouteErrorPage(
-            message:
-                'Trip activities route requires a trip id path parameter.',
+            message: 'Trip activities route requires a trip id path parameter.',
           );
         }
 
@@ -124,18 +123,14 @@ class _TripDashboardResolverPage extends ConsumerWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: Center(
-              child: Text('Failed to load trip: ${snapshot.error}'),
-            ),
+            body: Center(child: Text('Failed to load trip: ${snapshot.error}')),
           );
         }
 
@@ -143,9 +138,7 @@ class _TripDashboardResolverPage extends ConsumerWidget {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: const Center(
-              child: Text('Trip not found.'),
-            ),
+            body: const Center(child: Text('Trip not found.')),
           );
         }
 
@@ -169,18 +162,14 @@ class _TripEditResolverPage extends ConsumerWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(title: const Text('Edit Trip')),
-            body: Center(
-              child: Text('Failed to load trip: ${snapshot.error}'),
-            ),
+            body: Center(child: Text('Failed to load trip: ${snapshot.error}')),
           );
         }
 
@@ -188,9 +177,7 @@ class _TripEditResolverPage extends ConsumerWidget {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Edit Trip')),
-            body: const Center(
-              child: Text('Trip not found.'),
-            ),
+            body: const Center(child: Text('Trip not found.')),
           );
         }
 

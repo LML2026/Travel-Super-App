@@ -4,10 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 class TripTimeline extends StatelessWidget {
-  const TripTimeline({
-    super.key,
-    required this.entries,
-  });
+  const TripTimeline({super.key, required this.entries});
 
   final List<TripTimelineEntry> entries;
 
@@ -44,8 +41,10 @@ class TripTimeline extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(entry.dateLabel,
-                            style: Theme.of(context).textTheme.bodyMedium),
+                        Text(
+                          entry.dateLabel,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           entry.title,

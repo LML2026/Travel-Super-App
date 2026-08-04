@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'dashboard_section.dart';
 
 class ItineraryCard extends StatelessWidget {
-  const ItineraryCard({
-    super.key,
-    required this.days,
-  });
+  const ItineraryCard({super.key, required this.days});
 
   final int days;
 

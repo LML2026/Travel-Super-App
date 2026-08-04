@@ -49,15 +49,20 @@ class SavedHotel {
       address: json['address'] as String? ?? '',
       currency: json['currency'] as String? ?? 'GBP',
       rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
-      pricePerNight: double.tryParse(
-            json['pricePerNight']?.toString() ?? json['price']?.toString() ?? '',
+      pricePerNight:
+          double.tryParse(
+            json['pricePerNight']?.toString() ??
+                json['price']?.toString() ??
+                '',
           ) ??
           0.0,
       totalPrice: double.tryParse(json['totalPrice']?.toString() ?? '') ?? 0.0,
       beds: json['beds'] as int? ?? 1,
       roomType: json['roomType'] as String? ?? 'Standard Room',
       amenities: (json['amenities'] is List)
-          ? List<String>.from((json['amenities'] as List).map((e) => e.toString()))
+          ? List<String>.from(
+              (json['amenities'] as List).map((e) => e.toString()),
+            )
           : const ['Free Wi-Fi', 'Breakfast Included'],
       freeCancellation: json['freeCancellation'] == null
           ? true

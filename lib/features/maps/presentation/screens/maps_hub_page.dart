@@ -15,10 +15,7 @@ import '../../providers/live_location_provider.dart';
 import '../../services/map_link_service.dart';
 
 class MapsHubPage extends ConsumerStatefulWidget {
-  const MapsHubPage({
-    this.prefill,
-    super.key,
-  });
+  const MapsHubPage({this.prefill, super.key});
 
   final PlacesPrefill? prefill;
 
@@ -54,9 +51,7 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     final tripsAsync = ref.watch(tripsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Maps'),
-      ),
+      appBar: AppBar(title: const Text('Maps')),
       body: tripsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
@@ -154,11 +149,9 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
 
     setState(() {
       _submittedQuery = query;
-      _placeResultsFuture = ref.read(providerGatewayProvider).searchPlaces(
-            query: query,
-            categories: categories,
-            limit: 8,
-          );
+      _placeResultsFuture = ref
+          .read(providerGatewayProvider)
+          .searchPlaces(query: query, categories: categories, limit: 8);
     });
   }
 
@@ -173,9 +166,12 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     }
 
     final now = DateTime.now();
-    final upcomingTrips = trips.where((trip) => trip.endDate.isAfter(now)).toList()
-      ..sort((a, b) => a.startDate.compareTo(b.startDate));
-    final selected = upcomingTrips.isNotEmpty ? upcomingTrips.first : trips.first;
+    final upcomingTrips =
+        trips.where((trip) => trip.endDate.isAfter(now)).toList()
+          ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    final selected = upcomingTrips.isNotEmpty
+        ? upcomingTrips.first
+        : trips.first;
 
     if (_selectedTripId != selected.id) {
       _selectedTripId = selected.id;
@@ -190,9 +186,9 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Unable to open map link.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Unable to open map link.')));
   }
 }
 
@@ -216,7 +212,9 @@ class _EmptyMapsState extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            const Text('Create a trip to see map routes, hotels, airports, and nearby places here.'),
+            const Text(
+              'Create a trip to see map routes, hotels, airports, and nearby places here.',
+            ),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onOpenTrips,
@@ -259,8 +257,8 @@ class _MapsIntroCard extends StatelessWidget {
                   child: Text(
                     'Maps hub for $tripCount trip${tripCount == 1 ? '' : 's'}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -314,9 +312,9 @@ class _TripSelectorCard extends StatelessWidget {
           children: [
             Text(
               'Trip context',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
@@ -367,9 +365,9 @@ class _SearchCard extends StatelessWidget {
           children: [
             Text(
               'Search the map',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -441,10 +439,7 @@ class _SearchChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ActionChip(
-      label: Text(label),
-      onPressed: onTap,
-    );
+    return ActionChip(label: Text(label), onPressed: onTap);
   }
 }
 
@@ -474,8 +469,8 @@ class _LiveLocationCard extends StatelessWidget {
                 Text(
                   'Live location',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -539,8 +534,8 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
                   child: Text(
                     prefill.title ?? 'AI suggested place search',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -558,7 +553,8 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
                       .toList(growable: false),
                 ),
               ),
-            if (prefill.locationHint != null && prefill.locationHint!.trim().isNotEmpty)
+            if (prefill.locationHint != null &&
+                prefill.locationHint!.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text('Location hint: ${prefill.locationHint}'),
@@ -617,8 +613,8 @@ class _PlacesResultsSection extends StatelessWidget {
                 Text(
                   'Nearby results',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ...places.map((place) {
@@ -635,7 +631,9 @@ class _PlacesResultsSection extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,11 +643,15 @@ class _PlacesResultsSection extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   place.name,
-                                  style: const TextStyle(fontWeight: FontWeight.w700),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                               if (place.rating != null)
-                                Chip(label: Text(place.rating!.toStringAsFixed(1))),
+                                Chip(
+                                  label: Text(place.rating!.toStringAsFixed(1)),
+                                ),
                             ],
                           ),
                           if ((place.address ?? '').isNotEmpty) ...[

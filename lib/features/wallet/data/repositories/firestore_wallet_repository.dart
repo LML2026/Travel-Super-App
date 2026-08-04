@@ -9,8 +9,8 @@ class FirestoreWalletRepository implements WalletRepository {
     FirebaseFirestore? firestore,
     required String userId,
     this.defaultBaseCurrency = 'GBP',
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _userId = userId;
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _userId = userId;
 
   final FirebaseFirestore _firestore;
   final String _userId;
@@ -36,11 +36,7 @@ class FirestoreWalletRepository implements WalletRepository {
       id: _walletIdFor(userId),
       userId: userId,
       baseCurrency: defaultBaseCurrency,
-      balances: {
-        defaultBaseCurrency: 1000,
-        'EUR': 500,
-        'USD': 250,
-      },
+      balances: {defaultBaseCurrency: 1000, 'EUR': 500, 'USD': 250},
     );
   }
 
@@ -53,7 +49,8 @@ class FirestoreWalletRepository implements WalletRepository {
   }
 
   CollectionReference<Map<String, dynamic>> _transactionsCollection(
-      String userId) {
+    String userId,
+  ) {
     return _walletDoc(userId).collection('transactions');
   }
 
@@ -72,8 +69,8 @@ class FirestoreWalletRepository implements WalletRepository {
     String fallbackUserId,
     Map<String, dynamic> data,
   ) {
-    final rawBalances = (data['balances'] as Map<String, dynamic>? ??
-        <String, dynamic>{});
+    final rawBalances =
+        (data['balances'] as Map<String, dynamic>? ?? <String, dynamic>{});
     final balances = <String, double>{
       for (final entry in rawBalances.entries)
         entry.key: (entry.value as num).toDouble(),
@@ -158,9 +155,9 @@ class FirestoreWalletRepository implements WalletRepository {
   }
 
   Future<void> _appendTransaction(String userId, WalletTransaction tx) async {
-    await _transactionsCollection(userId)
-        .doc(tx.id)
-        .set(_transactionToMap(tx), SetOptions(merge: true));
+    await _transactionsCollection(
+      userId,
+    ).doc(tx.id).set(_transactionToMap(tx), SetOptions(merge: true));
   }
 
   @override
@@ -184,9 +181,11 @@ class FirestoreWalletRepository implements WalletRepository {
     return _transactionsCollection(_userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => _transactionFromMap(doc.data()))
-            .toList(growable: false));
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => _transactionFromMap(doc.data()))
+              .toList(growable: false),
+        );
   }
 
   @override
@@ -207,10 +206,10 @@ class FirestoreWalletRepository implements WalletRepository {
     final balances = Map<String, double>.from(wallet.balances);
     balances.putIfAbsent(currency, () => 0);
 
-    await _walletDoc(_userId).set(
-      {'balances': balances, 'updatedAt': FieldValue.serverTimestamp()},
-      SetOptions(merge: true),
-    );
+    await _walletDoc(_userId).set({
+      'balances': balances,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
   @override
@@ -226,10 +225,10 @@ class FirestoreWalletRepository implements WalletRepository {
     final balances = Map<String, double>.from(wallet.balances);
     balances[currency] = (balances[currency] ?? 0) + amount;
 
-    await _walletDoc(_userId).set(
-      {'balances': balances, 'updatedAt': FieldValue.serverTimestamp()},
-      SetOptions(merge: true),
-    );
+    await _walletDoc(_userId).set({
+      'balances': balances,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
     await _appendTransaction(
       _userId,
@@ -265,10 +264,10 @@ class FirestoreWalletRepository implements WalletRepository {
 
     balances[currency] = current - amount;
 
-    await _walletDoc(_userId).set(
-      {'balances': balances, 'updatedAt': FieldValue.serverTimestamp()},
-      SetOptions(merge: true),
-    );
+    await _walletDoc(_userId).set({
+      'balances': balances,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
     await _appendTransaction(
       _userId,
@@ -307,10 +306,10 @@ class FirestoreWalletRepository implements WalletRepository {
     balances[fromCurrency] = (balances[fromCurrency] ?? 0) - amount;
     balances[toCurrency] = (balances[toCurrency] ?? 0) + convertedAmount;
 
-    await _walletDoc(_userId).set(
-      {'balances': balances, 'updatedAt': FieldValue.serverTimestamp()},
-      SetOptions(merge: true),
-    );
+    await _walletDoc(_userId).set({
+      'balances': balances,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
     await _appendTransaction(
       _userId,

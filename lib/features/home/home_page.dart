@@ -21,7 +21,8 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Travel Super App')),
       body: summaryAsync.when(
-        loading: () => const LoadingIndicator(message: 'Preparing your dashboard...'),
+        loading: () =>
+            const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(
           title: 'Dashboard unavailable',
           message: error.toString(),
@@ -49,19 +50,26 @@ class HomePage extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               if (summary.hasUpcomingTrip)
-                _UpcomingTripCard(summary: summary, onOpenTrip: () {
-                  context.pushTripDetails(summary.upcomingTrip!);
-                })
+                _UpcomingTripCard(
+                  summary: summary,
+                  onOpenTrip: () {
+                    context.pushTripDetails(summary.upcomingTrip!);
+                  },
+                )
               else
                 const AppEmptyState(
                   icon: Icons.luggage_outlined,
                   title: 'No upcoming trip',
-                  message: 'Save a trip to see flights, hotels, weather, and budget here.',
+                  message:
+                      'Save a trip to see flights, hotels, weather, and budget here.',
                 ),
               const SizedBox(height: AppSpacing.lg),
               _WalletSnapshotCard(walletAsync: walletAsync),
               const SizedBox(height: AppSpacing.lg),
-              Text('Book Transport', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                'Book Transport',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.md),
               Wrap(
                 spacing: AppSpacing.sm,
@@ -149,10 +157,7 @@ class HomePage extends ConsumerWidget {
 }
 
 class _UpcomingTripCard extends StatelessWidget {
-  const _UpcomingTripCard({
-    required this.summary,
-    required this.onOpenTrip,
-  });
+  const _UpcomingTripCard({required this.summary, required this.onOpenTrip});
 
   final DashboardSummary summary;
   final VoidCallback onOpenTrip;
@@ -169,7 +174,10 @@ class _UpcomingTripCard extends StatelessWidget {
         children: [
           Text('Upcoming Trip', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
-          Text(trip.destination, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Text(
+            trip.destination,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(dateLine),
           const SizedBox(height: AppSpacing.md),
@@ -185,8 +193,18 @@ class _UpcomingTripCard extends StatelessWidget {
 
   static String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }

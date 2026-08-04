@@ -5,8 +5,8 @@ import '../models/trip_model.dart';
 
 class TripFirestoreService {
   TripFirestoreService({FirebaseFirestore? firestore, FirebaseAuth? auth})
-      : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -39,7 +39,8 @@ class TripFirestoreService {
     }
 
     return TripModel.fromJson(
-        _fromFirestoreMap(doc.id, doc.data() ?? const {}));
+      _fromFirestoreMap(doc.id, doc.data() ?? const {}),
+    );
   }
 
   Future<List<TripModel>> getAllTrips() async {
@@ -50,10 +51,15 @@ class TripFirestoreService {
   }
 
   Stream<List<TripModel>> watchTrips() {
-    return _tripCollection.orderBy('startDate').snapshots().map(
+    return _tripCollection
+        .orderBy('startDate')
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs
-              .map((doc) =>
-                  TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())))
+              .map(
+                (doc) =>
+                    TripModel.fromJson(_fromFirestoreMap(doc.id, doc.data())),
+              )
               .toList(),
         );
   }
@@ -112,13 +118,16 @@ class TripFirestoreService {
     return {
       'title': json['title'],
       'destination': json['destination'],
-      'startDate':
-          Timestamp.fromDate(parse(json['startDate']) ?? trip.startDate),
+      'startDate': Timestamp.fromDate(
+        parse(json['startDate']) ?? trip.startDate,
+      ),
       'endDate': Timestamp.fromDate(parse(json['endDate']) ?? trip.endDate),
-      'departureDate':
-          Timestamp.fromDate(parse(json['departureDate']) ?? trip.startDate),
-      'returnDate':
-          Timestamp.fromDate(parse(json['returnDate']) ?? trip.endDate),
+      'departureDate': Timestamp.fromDate(
+        parse(json['departureDate']) ?? trip.startDate,
+      ),
+      'returnDate': Timestamp.fromDate(
+        parse(json['returnDate']) ?? trip.endDate,
+      ),
       'budget': json['budget'],
       'notes': json['notes'],
       'imageUrl': json['imageUrl'],
@@ -129,8 +138,8 @@ class TripFirestoreService {
       'weatherSnapshot': json['weatherSnapshot'],
       'weatherSnapshotCapturedAt':
           parse(json['weatherSnapshotCapturedAt']) == null
-              ? null
-              : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
+          ? null
+          : Timestamp.fromDate(parse(json['weatherSnapshotCapturedAt'])!),
       'createdAt': parse(json['createdAt']) == null
           ? null
           : Timestamp.fromDate(parse(json['createdAt'])!),

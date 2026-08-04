@@ -15,27 +15,19 @@ class TripListPage extends ConsumerWidget {
     final tripsAsync = ref.watch(tripListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Trips'),
-      ),
+      appBar: AppBar(title: const Text('My Trips')),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const CreateTripPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const CreateTripPage()),
           );
         },
       ),
       body: tripsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, stack) => Center(
-          child: Text(error.toString()),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text(error.toString())),
         data: (trips) {
           if (trips.isEmpty) {
             return const _EmptyTripsView();
@@ -45,9 +37,7 @@ class TripListPage extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             itemCount: trips.length,
             itemBuilder: (context, index) {
-              return TripCard(
-                trip: trips[index],
-              );
+              return TripCard(trip: trips[index]);
             },
           );
         },
@@ -57,10 +47,7 @@ class TripListPage extends ConsumerWidget {
 }
 
 class TripCard extends StatelessWidget {
-  const TripCard({
-    super.key,
-    required this.trip,
-  });
+  const TripCard({super.key, required this.trip});
 
   final Trip trip;
 
@@ -72,14 +59,10 @@ class TripCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       child: ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.flight_takeoff),
-        ),
+        leading: const CircleAvatar(child: Icon(Icons.flight_takeoff)),
         title: Text(
           trip.destination,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,23 +74,15 @@ class TripCard extends StatelessWidget {
               "${formatter.format(trip.returnDate)}",
             ),
             const SizedBox(height: 6),
-            Text(
-              "Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}",
-            ),
-            Text(
-              "Travellers: ${trip.travellers}",
-            ),
+            Text("Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}"),
+            Text("Travellers: ${trip.travellers}"),
           ],
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => TripDashboardPage(
-                trip: trip,
-              ),
-            ),
+            MaterialPageRoute(builder: (_) => TripDashboardPage(trip: trip)),
           );
         },
       ),
@@ -124,23 +99,14 @@ class _EmptyTripsView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.luggage,
-            size: 80,
-            color: Colors.grey,
-          ),
+          Icon(Icons.luggage, size: 80, color: Colors.grey),
           SizedBox(height: 20),
           Text(
             "No trips yet",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(
-            "Tap + to create your first trip.",
-          ),
+          Text("Tap + to create your first trip."),
         ],
       ),
     );

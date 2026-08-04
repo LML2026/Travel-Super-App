@@ -39,11 +39,10 @@ class Trip extends Equatable {
     this.createdAt,
     this.updatedAt,
     this.status,
-  })  : startDate = _resolveStartDate(startDate, departureDate),
-        endDate =
-            _resolveEndDate(endDate, returnDate, startDate, departureDate),
-        currency = currency ?? 'GBP',
-        travellers = travellers ?? 1;
+  }) : startDate = _resolveStartDate(startDate, departureDate),
+       endDate = _resolveEndDate(endDate, returnDate, startDate, departureDate),
+       currency = currency ?? 'GBP',
+       travellers = travellers ?? 1;
 
   Trip copyWith({
     String? id,
@@ -110,7 +109,9 @@ class Trip extends Equatable {
   int get nights => endDate.difference(startDate).inDays;
 
   static DateTime _resolveStartDate(
-      DateTime? startDate, DateTime? departureDate) {
+    DateTime? startDate,
+    DateTime? departureDate,
+  ) {
     final resolved = startDate ?? departureDate;
     if (resolved != null) {
       return resolved;
@@ -137,22 +138,22 @@ class Trip extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        destination,
-        startDate,
-        endDate,
-        budget,
-        notes,
-        imageUrl,
-        currency,
-        travellers,
-        selectedFlightId,
-        selectedHotelId,
-        weatherSnapshot,
-        weatherSnapshotCapturedAt,
-        createdAt,
-        updatedAt,
-        status,
-      ];
+    id,
+    title,
+    destination,
+    startDate,
+    endDate,
+    budget,
+    notes,
+    imageUrl,
+    currency,
+    travellers,
+    selectedFlightId,
+    selectedHotelId,
+    weatherSnapshot,
+    weatherSnapshotCapturedAt,
+    createdAt,
+    updatedAt,
+    status,
+  ];
 }

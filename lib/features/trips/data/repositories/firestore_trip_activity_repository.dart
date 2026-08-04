@@ -7,8 +7,8 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
   FirestoreTripActivityRepository({
     FirebaseFirestore? firestore,
     required String userId,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _userId = userId;
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _userId = userId;
 
   final FirebaseFirestore _firestore;
   final String _userId;
@@ -71,16 +71,18 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
     return _collection(tripId)
         .orderBy('scheduledAt')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => _fromMap(doc.data()))
-            .toList(growable: false));
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => _fromMap(doc.data()))
+              .toList(growable: false),
+        );
   }
 
   @override
   Future<void> addActivity(TripActivity activity) async {
-    await _collection(activity.tripId)
-        .doc(activity.id)
-        .set(_toMap(activity), SetOptions(merge: true));
+    await _collection(
+      activity.tripId,
+    ).doc(activity.id).set(_toMap(activity), SetOptions(merge: true));
   }
 
   @override

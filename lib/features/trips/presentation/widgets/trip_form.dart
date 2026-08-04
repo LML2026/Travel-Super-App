@@ -88,10 +88,7 @@ class TripForm extends StatelessWidget {
           decoration: const InputDecoration(labelText: 'Notes'),
         ),
         const SizedBox(height: 30),
-        ElevatedButton(
-          onPressed: onSubmit,
-          child: Text(submitLabel),
-        ),
+        ElevatedButton(onPressed: onSubmit, child: Text(submitLabel)),
       ],
     );
   }

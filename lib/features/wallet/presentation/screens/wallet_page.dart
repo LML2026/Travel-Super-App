@@ -13,8 +13,9 @@ class WalletPage extends ConsumerStatefulWidget {
 }
 
 class _WalletPageState extends ConsumerState<WalletPage> {
-  final TextEditingController _convertAmountController =
-      TextEditingController(text: '50');
+  final TextEditingController _convertAmountController = TextEditingController(
+    text: '50',
+  );
   String? _fromCurrency;
   String? _toCurrency;
 
@@ -93,9 +94,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 transactionsAsync.when(
                   loading: () => const LinearProgressIndicator(),
                   error: (error, _) => Text(error.toString()),
-                  data: (transactions) => _SpendingAnalytics(
-                    transactions: transactions,
-                  ),
+                  data: (transactions) =>
+                      _SpendingAnalytics(transactions: transactions),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -104,11 +104,11 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 ),
                 const SizedBox(height: 8),
                 transactionsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, _) => Text(error.toString()),
-                  data: (transactions) => _TransactionList(
-                    transactions: transactions,
-                  ),
+                  data: (transactions) =>
+                      _TransactionList(transactions: transactions),
                 ),
               ],
             ),
@@ -179,10 +179,12 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               DropdownButtonFormField<String>(
                 initialValue: selected,
                 items: currencies
-                    .map((currency) => DropdownMenuItem<String>(
-                          value: currency,
-                          child: Text(currency),
-                        ))
+                    .map(
+                      (currency) => DropdownMenuItem<String>(
+                        value: currency,
+                        child: Text(currency),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {
@@ -193,8 +195,9 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               const SizedBox(height: 12),
               TextField(
                 controller: amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(labelText: 'Amount'),
               ),
             ],
@@ -225,7 +228,9 @@ class _WalletPageState extends ConsumerState<WalletPage> {
 
   Future<void> _showSendDialog(BuildContext context) async {
     final amountController = TextEditingController(text: '25');
-    final destinationController = TextEditingController(text: 'wallet-recipient');
+    final destinationController = TextEditingController(
+      text: 'wallet-recipient',
+    );
     final wallet = ref.read(walletProvider).valueOrNull;
     final currencies = wallet?.balances.keys.toList() ?? <String>[];
     String selected = currencies.isNotEmpty ? currencies.first : 'GBP';
@@ -241,10 +246,12 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               DropdownButtonFormField<String>(
                 initialValue: selected,
                 items: currencies
-                    .map((currency) => DropdownMenuItem<String>(
-                          value: currency,
-                          child: Text(currency),
-                        ))
+                    .map(
+                      (currency) => DropdownMenuItem<String>(
+                        value: currency,
+                        child: Text(currency),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {
@@ -255,15 +262,17 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               const SizedBox(height: 12),
               TextField(
                 controller: amountController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(labelText: 'Amount'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: destinationController,
-                decoration:
-                    const InputDecoration(labelText: 'Destination wallet ID'),
+                decoration: const InputDecoration(
+                  labelText: 'Destination wallet ID',
+                ),
               ),
             ],
           ),
@@ -316,7 +325,9 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               }
 
               _fromCurrency ??= currencies.first;
-              _toCurrency ??= currencies.length > 1 ? currencies[1] : currencies.first;
+              _toCurrency ??= currencies.length > 1
+                  ? currencies[1]
+                  : currencies.first;
 
               final from = _fromCurrency!;
               final to = _toCurrency!;
@@ -331,8 +342,10 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Convert Currency',
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Convert Currency',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -340,10 +353,12 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                         child: DropdownButtonFormField<String>(
                           initialValue: from,
                           items: currencies
-                              .map((currency) => DropdownMenuItem<String>(
-                                    value: currency,
-                                    child: Text(currency),
-                                  ))
+                              .map(
+                                (currency) => DropdownMenuItem<String>(
+                                  value: currency,
+                                  child: Text(currency),
+                                ),
+                              )
                               .toList(),
                           onChanged: (value) {
                             if (value != null) {
@@ -358,10 +373,12 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                         child: DropdownButtonFormField<String>(
                           initialValue: to,
                           items: currencies
-                              .map((currency) => DropdownMenuItem<String>(
-                                    value: currency,
-                                    child: Text(currency),
-                                  ))
+                              .map(
+                                (currency) => DropdownMenuItem<String>(
+                                  value: currency,
+                                  child: Text(currency),
+                                ),
+                              )
                               .toList(),
                           onChanged: (value) {
                             if (value != null) {
@@ -376,8 +393,9 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _convertAmountController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(labelText: 'Amount'),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -402,7 +420,9 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                           : () async {
                               final rate = rateAsync.value!;
                               Navigator.of(context).pop();
-                              await ref.read(walletActionsProvider).convert(
+                              await ref
+                                  .read(walletActionsProvider)
+                                  .convert(
                                     amount: amount,
                                     from: from,
                                     to: to,
@@ -435,7 +455,10 @@ class _WalletHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Fintech Wallet', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Fintech Wallet',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 4),
             Text('Base currency: $baseCurrency'),
           ],
@@ -461,22 +484,25 @@ class _CurrencyCard extends ConsumerWidget {
     final money = NumberFormat.currency(symbol: '$currency ');
     final rateAsync = currency == baseCurrency
         ? const AsyncValue<double>.data(1)
-        : ref.watch(fxRateProvider(FxPair(base: baseCurrency, target: currency)));
+        : ref.watch(
+            fxRateProvider(FxPair(base: baseCurrency, target: currency)),
+          );
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            CircleAvatar(
-              child: Text(currency),
-            ),
+            CircleAvatar(child: Text(currency)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(currency, style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    currency,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   Text(money.format(balance)),
                   const SizedBox(height: 2),
                   rateAsync.when(
@@ -549,7 +575,8 @@ class _SpendingAnalytics extends StatelessWidget {
   Widget build(BuildContext context) {
     final outboundByCurrency = <String, double>{};
     for (final tx in transactions) {
-      final isSpend = tx.type == WalletTransactionType.transferOut ||
+      final isSpend =
+          tx.type == WalletTransactionType.transferOut ||
           tx.type == WalletTransactionType.currencyConversion;
       if (!isSpend) {
         continue;

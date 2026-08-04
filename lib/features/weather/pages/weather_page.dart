@@ -29,9 +29,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
     final weatherAsync = ref.watch(weatherProvider(_searchCity));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Weather'),
-      ),
+      appBar: AppBar(title: const Text('Weather')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -93,10 +91,7 @@ class _WeatherCard extends StatelessWidget {
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text(
-            weather.emoji,
-            style: const TextStyle(fontSize: 80),
-          ),
+          Text(weather.emoji, style: const TextStyle(fontSize: 80)),
           const SizedBox(height: AppSpacing.sm),
           Text(
             '${weather.tempC.toStringAsFixed(0)}°C',
@@ -110,9 +105,21 @@ class _WeatherCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _Stat(label: 'Humidity', value: '${weather.humidity}%', icon: Icons.water_drop),
-              _Stat(label: 'Wind', value: '${weather.windKph.toStringAsFixed(0)} km/h', icon: Icons.air),
-              _Stat(label: 'Feels like', value: '${weather.tempF.toStringAsFixed(0)}°F', icon: Icons.thermostat),
+              _Stat(
+                label: 'Humidity',
+                value: '${weather.humidity}%',
+                icon: Icons.water_drop,
+              ),
+              _Stat(
+                label: 'Wind',
+                value: '${weather.windKph.toStringAsFixed(0)} km/h',
+                icon: Icons.air,
+              ),
+              _Stat(
+                label: 'Feels like',
+                value: '${weather.tempF.toStringAsFixed(0)}°F',
+                icon: Icons.thermostat,
+              ),
             ],
           ),
         ],
@@ -133,7 +140,10 @@ class _Stat extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.primary),
         const SizedBox(height: AppSpacing.xs),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );

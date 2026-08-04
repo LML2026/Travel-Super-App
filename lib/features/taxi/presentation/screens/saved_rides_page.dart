@@ -35,8 +35,9 @@ class SavedRidesPage extends ConsumerWidget {
             });
           }
 
-          final ridesAsync =
-              ref.watch(taxiSavedRidesForTripProvider(effectiveTripId));
+          final ridesAsync = ref.watch(
+            taxiSavedRidesForTripProvider(effectiveTripId),
+          );
 
           return Column(
             children: [

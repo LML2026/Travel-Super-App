@@ -5,7 +5,7 @@ import '../models/user_profile_model.dart';
 
 class FirestoreUserProfileRepository implements UserProfileRepository {
   FirestoreUserProfileRepository({FirestoreProfileDataSource? dataSource})
-      : _dataSource = dataSource ?? FirestoreProfileDataSource();
+    : _dataSource = dataSource ?? FirestoreProfileDataSource();
 
   final FirestoreProfileDataSource _dataSource;
 

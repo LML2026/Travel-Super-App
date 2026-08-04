@@ -11,9 +11,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Recent Searches'),
-        ),
+        appBar: AppBar(title: const Text('Recent Searches')),
         body: const Center(
           child: Text('Please sign in to view recent searches.'),
         ),
@@ -29,9 +27,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
         .snapshots();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recent Searches'),
-      ),
+      appBar: AppBar(title: const Text('Recent Searches')),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: searchesStream,
         builder: (context, snapshot) {
@@ -48,9 +44,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final documents = snapshot.data?.docs ?? [];
@@ -60,22 +54,14 @@ class RecentFlightSearchesPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.history,
-                    size: 64,
-                  ),
+                  Icon(Icons.history, size: 64),
                   SizedBox(height: 16),
                   Text(
                     'No recent searches yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
-                  Text(
-                    'Your flight searches will appear here.',
-                  ),
+                  Text('Your flight searches will appear here.'),
                 ],
               ),
             );
@@ -93,31 +79,25 @@ class RecentFlightSearchesPage extends StatelessWidget {
               final to = data['to']?.toString() ?? '';
               final passengers =
                   int.tryParse(data['passengers']?.toString() ?? '') ?? 1;
-              final cabinClass =
-                  data['cabinClass']?.toString() ?? 'Economy';
+              final cabinClass = data['cabinClass']?.toString() ?? 'Economy';
 
-              final departureDate =
-                  _formatDate(data['departureDate']?.toString());
+              final departureDate = _formatDate(
+                data['departureDate']?.toString(),
+              );
 
-              final returnDate =
-                  _formatDate(data['returnDate']?.toString());
+              final returnDate = _formatDate(data['returnDate']?.toString());
 
               return Card(
                 child: ListTile(
-                  leading: const CircleAvatar(
-                    child: Icon(Icons.flight),
-                  ),
+                  leading: const CircleAvatar(child: Icon(Icons.flight)),
                   title: Text(
                     '$from → $to',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     [
                       'Departure: $departureDate',
-                      if (returnDate != 'Not selected')
-                        'Return: $returnDate',
+                      if (returnDate != 'Not selected') 'Return: $returnDate',
                       '$passengers passenger${passengers == 1 ? '' : 's'}',
                       cabinClass,
                     ].join('\n'),

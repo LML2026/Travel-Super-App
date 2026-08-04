@@ -53,10 +53,12 @@ class FlightFirestoreService {
         .limit(20)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => RecentSearch.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
-    });
+          return snapshot.docs
+              .map(
+                (doc) => RecentSearch.fromJson({...doc.data(), 'id': doc.id}),
+              )
+              .toList();
+        });
   }
 
   /// Delete a recent search
@@ -129,10 +131,10 @@ class FlightFirestoreService {
         .orderBy('savedAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => SavedFlight.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
-    });
+          return snapshot.docs
+              .map((doc) => SavedFlight.fromJson({...doc.data(), 'id': doc.id}))
+              .toList();
+        });
   }
 
   /// Check if a flight is saved

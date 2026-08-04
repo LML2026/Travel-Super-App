@@ -5,9 +5,7 @@ class SendPasswordReset {
 
   final AuthRepository _repository;
 
-  Future<void> call({
-    required String email,
-  }) {
+  Future<void> call({required String email}) {
     return _repository.sendPasswordReset(email: email);
   }
 }

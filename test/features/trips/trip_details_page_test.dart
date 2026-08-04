@@ -56,120 +56,127 @@ class _FakeTripRepository implements TripRepository {
 
 void main() {
   testWidgets(
-      'TripDetailsPage shows saved snapshot label when live weather fails',
-      (tester) async {
-    final trip = domain.Trip(
-      id: 'trip-1',
-      title: 'Paris Getaway',
-      destination: 'Paris',
-      startDate: DateTime(2026, 9, 14),
-      endDate: DateTime(2026, 9, 18),
-      budget: 1250,
-      currency: 'GBP',
-      selectedFlightId: 'flight-1',
-      selectedHotelId: 'hotel-1',
-      weatherSnapshot: const {
-        'city': 'Paris',
-        'country': 'France',
-        'tempC': 22,
-        'tempF': 71.6,
-        'description': 'Sunny',
-        'iconCode': '0',
-        'humidity': 50,
-        'windKph': 12,
-        'condition': 'clear',
-      },
-      weatherSnapshotCapturedAt: DateTime(2026, 7, 26, 10, 30),
-      createdAt: DateTime(2026, 7, 26),
-    );
-    final fakeTripRepository = _FakeTripRepository(<domain.Trip>[trip]);
+    'TripDetailsPage shows saved snapshot label when live weather fails',
+    (tester) async {
+      final trip = domain.Trip(
+        id: 'trip-1',
+        title: 'Paris Getaway',
+        destination: 'Paris',
+        startDate: DateTime(2026, 9, 14),
+        endDate: DateTime(2026, 9, 18),
+        budget: 1250,
+        currency: 'GBP',
+        selectedFlightId: 'flight-1',
+        selectedHotelId: 'hotel-1',
+        weatherSnapshot: const {
+          'city': 'Paris',
+          'country': 'France',
+          'tempC': 22,
+          'tempF': 71.6,
+          'description': 'Sunny',
+          'iconCode': '0',
+          'humidity': 50,
+          'windKph': 12,
+          'condition': 'clear',
+        },
+        weatherSnapshotCapturedAt: DateTime(2026, 7, 26, 10, 30),
+        createdAt: DateTime(2026, 7, 26),
+      );
+      final fakeTripRepository = _FakeTripRepository(<domain.Trip>[trip]);
 
-    final savedFlight = SavedFlight(
-      id: 'doc-1',
-      flightId: 'flight-1',
-      airline: 'British Airways',
-      airlineLogo: '',
-      flightNumber: 'BA304',
-      origin: 'London',
-      destination: 'Paris',
-      departureAt: '2026-09-14T09:30:00',
-      arrivalAt: '2026-09-14T12:15:00',
-      duration: 'PT1H45M',
-      stops: 0,
-      amount: 320,
-      currency: 'GBP',
-      cabinClass: 'economy',
-      savedAt: DateTime(2026, 7, 26),
-    );
+      final savedFlight = SavedFlight(
+        id: 'doc-1',
+        flightId: 'flight-1',
+        airline: 'British Airways',
+        airlineLogo: '',
+        flightNumber: 'BA304',
+        origin: 'London',
+        destination: 'Paris',
+        departureAt: '2026-09-14T09:30:00',
+        arrivalAt: '2026-09-14T12:15:00',
+        duration: 'PT1H45M',
+        stops: 0,
+        amount: 320,
+        currency: 'GBP',
+        cabinClass: 'economy',
+        savedAt: DateTime(2026, 7, 26),
+      );
 
-    final savedHotel = SavedHotel(
-      id: 'doc-2',
-      hotelId: 'hotel-1',
-      name: 'Hilton Paris Opera',
-      city: 'Paris',
-      country: 'France',
-      address: 'Paris, France',
-      currency: 'GBP',
-      rating: 4.6,
-      pricePerNight: 185,
-      totalPrice: 740,
-      beds: 1,
-      roomType: 'Deluxe Room',
-      amenities: const ['Free Wi-Fi'],
-      freeCancellation: true,
-      description: 'Central stay',
-      image: 'https://example.com/hotel.jpg',
-      nights: 4,
-      savedAt: DateTime(2026, 7, 26),
-    );
+      final savedHotel = SavedHotel(
+        id: 'doc-2',
+        hotelId: 'hotel-1',
+        name: 'Hilton Paris Opera',
+        city: 'Paris',
+        country: 'France',
+        address: 'Paris, France',
+        currency: 'GBP',
+        rating: 4.6,
+        pricePerNight: 185,
+        totalPrice: 740,
+        beds: 1,
+        roomType: 'Deluxe Room',
+        amenities: const ['Free Wi-Fi'],
+        freeCancellation: true,
+        description: 'Central stay',
+        image: 'https://example.com/hotel.jpg',
+        nights: 4,
+        savedAt: DateTime(2026, 7, 26),
+      );
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider
-              .overrideWith((ref) => Stream.value([savedFlight])),
-          savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris')
-              .overrideWith((ref) async => throw Exception('offline')),
-          nearbyBundleProvider('Paris').overrideWith(
-            (ref) async => const NearbyBundle(
-              city: 'Paris',
-              attractions: [
-                NearbyPlace(
-                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
-              ],
-              restaurants: [],
-              transport: [],
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            tripRepositoryProvider.overrideWithValue(fakeTripRepository),
+            savedFlightsProvider.overrideWith(
+              (ref) => Stream.value([savedFlight]),
             ),
-          ),
-          currencyRateProvider('EUR').overrideWith(
-            (ref) async =>
-                const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
-          ),
-        ],
-        child: MaterialApp(
-          home: TripDetailsPage(tripId: trip.id),
+            savedHotelsProvider.overrideWith(
+              (ref) => Stream.value([savedHotel]),
+            ),
+            weatherProvider(
+              'Paris',
+            ).overrideWith((ref) async => throw Exception('offline')),
+            nearbyBundleProvider('Paris').overrideWith(
+              (ref) async => const NearbyBundle(
+                city: 'Paris',
+                attractions: [
+                  NearbyPlace(
+                    name: 'Eiffel Tower',
+                    distanceKm: 2.1,
+                    type: 'attraction',
+                  ),
+                ],
+                restaurants: [],
+                transport: [],
+              ),
+            ),
+            currencyRateProvider('EUR').overrideWith(
+              (ref) async =>
+                  const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+            ),
+          ],
+          child: MaterialApp(home: TripDetailsPage(tripId: trip.id)),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(find.text('Trip Dashboard'), findsOneWidget);
-    expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('14 Sep 2026 -> 18 Sep 2026'), findsOneWidget);
-    expect(find.text('GBP 1250.00'), findsOneWidget);
-    expect(find.text('Spent GBP 1060.00'), findsOneWidget);
-    expect(find.text('Remaining GBP 190.00'), findsOneWidget);
+      expect(find.text('Trip Dashboard'), findsOneWidget);
+      expect(find.text('Paris'), findsOneWidget);
+      expect(find.text('14 Sep 2026 -> 18 Sep 2026'), findsOneWidget);
+      expect(find.text('GBP 1250.00'), findsOneWidget);
+      expect(find.text('Spent GBP 1060.00'), findsOneWidget);
+      expect(find.text('Remaining GBP 190.00'), findsOneWidget);
 
-    expect(find.text('Weather unavailable.'), findsOneWidget);
-    expect(find.text('BA304'), findsOneWidget);
-    expect(find.text('Hilton Paris Opera'), findsOneWidget);
-  });
+      expect(find.text('Weather unavailable.'), findsOneWidget);
+      expect(find.text('BA304'), findsOneWidget);
+      expect(find.text('Hilton Paris Opera'), findsOneWidget);
+    },
+  );
 
-  testWidgets('TripDetailsPage shows fallback when no linked flight',
-      (tester) async {
+  testWidgets('TripDetailsPage shows fallback when no linked flight', (
+    tester,
+  ) async {
     final trip = domain.Trip(
       id: 'trip-2',
       title: 'Paris Getaway',
@@ -226,17 +233,22 @@ void main() {
       ProviderScope(
         overrides: [
           tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider
-              .overrideWith((ref) => Stream.value([savedFlight])),
+          savedFlightsProvider.overrideWith(
+            (ref) => Stream.value([savedFlight]),
+          ),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris')
-              .overrideWith((ref) async => throw Exception('offline')),
+          weatherProvider(
+            'Paris',
+          ).overrideWith((ref) async => throw Exception('offline')),
           nearbyBundleProvider('Paris').overrideWith(
             (ref) async => const NearbyBundle(
               city: 'Paris',
               attractions: [
                 NearbyPlace(
-                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
+                  name: 'Eiffel Tower',
+                  distanceKm: 2.1,
+                  type: 'attraction',
+                ),
               ],
               restaurants: [],
               transport: [],
@@ -247,9 +259,7 @@ void main() {
                 const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
           ),
         ],
-        child: MaterialApp(
-          home: TripDetailsPage(tripId: trip.id),
-        ),
+        child: MaterialApp(home: TripDetailsPage(tripId: trip.id)),
       ),
     );
 
@@ -259,8 +269,9 @@ void main() {
     expect(find.text('Hilton Paris Opera'), findsOneWidget);
   });
 
-  testWidgets('TripDetailsPage shows fallback when no linked hotel',
-      (tester) async {
+  testWidgets('TripDetailsPage shows fallback when no linked hotel', (
+    tester,
+  ) async {
     final trip = domain.Trip(
       id: 'trip-3',
       title: 'Paris Getaway',
@@ -317,17 +328,22 @@ void main() {
       ProviderScope(
         overrides: [
           tripRepositoryProvider.overrideWithValue(fakeTripRepository),
-          savedFlightsProvider
-              .overrideWith((ref) => Stream.value([savedFlight])),
+          savedFlightsProvider.overrideWith(
+            (ref) => Stream.value([savedFlight]),
+          ),
           savedHotelsProvider.overrideWith((ref) => Stream.value([savedHotel])),
-          weatherProvider('Paris')
-              .overrideWith((ref) async => throw Exception('offline')),
+          weatherProvider(
+            'Paris',
+          ).overrideWith((ref) async => throw Exception('offline')),
           nearbyBundleProvider('Paris').overrideWith(
             (ref) async => const NearbyBundle(
               city: 'Paris',
               attractions: [
                 NearbyPlace(
-                    name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction')
+                  name: 'Eiffel Tower',
+                  distanceKm: 2.1,
+                  type: 'attraction',
+                ),
               ],
               restaurants: [],
               transport: [],
@@ -338,9 +354,7 @@ void main() {
                 const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
           ),
         ],
-        child: MaterialApp(
-          home: TripDetailsPage(tripId: trip.id),
-        ),
+        child: MaterialApp(home: TripDetailsPage(tripId: trip.id)),
       ),
     );
 

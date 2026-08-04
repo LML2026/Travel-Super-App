@@ -18,15 +18,13 @@ import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/watch_auth_state.dart';
 
-enum AuthDestination {
-  home,
-  emailVerification,
-}
+enum AuthDestination { home, emailVerification }
 
 const bool kEnforceEmailVerification = true;
 
-final authenticationRepositoryProvider =
-    Provider<AuthenticationRepository>((ref) {
+final authenticationRepositoryProvider = Provider<AuthenticationRepository>((
+  ref,
+) {
   return FirebaseAuthenticationRepository();
 });
 
@@ -54,8 +52,9 @@ final sendPasswordResetUseCaseProvider = Provider<SendPasswordReset>((ref) {
   return SendPasswordReset(ref.watch(authenticationRepositoryProvider));
 });
 
-final sendEmailVerificationUseCaseProvider =
-    Provider<SendEmailVerification>((ref) {
+final sendEmailVerificationUseCaseProvider = Provider<SendEmailVerification>((
+  ref,
+) {
   return SendEmailVerification(ref.watch(authenticationRepositoryProvider));
 });
 
@@ -109,7 +108,9 @@ class AuthActionController extends AutoDisposeAsyncNotifier<void> {
       return;
     }
 
-    await ref.read(ensureUserProfileUseCaseProvider).call(
+    await ref
+        .read(ensureUserProfileUseCaseProvider)
+        .call(
           uid: user.uid,
           profile: UserProfile(
             displayName: displayName ?? '',
@@ -128,10 +129,9 @@ class AuthActionController extends AutoDisposeAsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
-      final user = await ref.read(signInWithEmailUseCaseProvider).call(
-            email: email,
-            password: password,
-          );
+      final user = await ref
+          .read(signInWithEmailUseCaseProvider)
+          .call(email: email, password: password);
 
       if (user != null) {
         await _ensureProfile(user);
@@ -158,11 +158,9 @@ class AuthActionController extends AutoDisposeAsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
-      final user = await ref.read(registerWithEmailUseCaseProvider).call(
-            email: email,
-            password: password,
-            displayName: displayName,
-          );
+      final user = await ref
+          .read(registerWithEmailUseCaseProvider)
+          .call(email: email, password: password, displayName: displayName);
 
       await _ensureProfile(user, displayName: displayName.trim());
       await ref.read(sendEmailVerificationUseCaseProvider).call();
@@ -275,5 +273,5 @@ class AuthActionController extends AutoDisposeAsyncNotifier<void> {
 
 final authActionControllerProvider =
     AutoDisposeAsyncNotifierProvider<AuthActionController, void>(
-  AuthActionController.new,
-);
+      AuthActionController.new,
+    );

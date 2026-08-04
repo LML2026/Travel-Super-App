@@ -5,14 +5,14 @@ import 'package:intl/intl.dart';
 import '../providers/trip_activity_provider.dart';
 
 class TripActivitiesPage extends ConsumerWidget {
-  const TripActivitiesPage({
-    super.key,
-    required this.tripId,
-  });
+  const TripActivitiesPage({super.key, required this.tripId});
 
   final String tripId;
 
-  Future<void> _showAddActivityDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showAddActivityDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final titleController = TextEditingController();
     final locationController = TextEditingController();
     final dateController = TextEditingController();
@@ -69,18 +69,23 @@ class TripActivitiesPage extends ConsumerWidget {
                 }
 
                 final rawDate = dateController.text.trim();
-                final parsedDate =
-                    rawDate.isEmpty ? null : DateTime.tryParse(rawDate);
+                final parsedDate = rawDate.isEmpty
+                    ? null
+                    : DateTime.tryParse(rawDate);
                 if (rawDate.isNotEmpty && parsedDate == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Invalid date format. Use yyyy-mm-dd hh:mm'),
+                      content: Text(
+                        'Invalid date format. Use yyyy-mm-dd hh:mm',
+                      ),
                     ),
                   );
                   return;
                 }
 
-                await ref.read(tripActivityActionsProvider).addActivity(
+                await ref
+                    .read(tripActivityActionsProvider)
+                    .addActivity(
                       tripId: tripId,
                       title: title,
                       location: locationController.text.trim().isEmpty
@@ -109,9 +114,9 @@ class TripActivitiesPage extends ConsumerWidget {
     notesController.dispose();
 
     if (added == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trip activity added.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Trip activity added.')));
     }
   }
 
@@ -128,7 +133,8 @@ class TripActivitiesPage extends ConsumerWidget {
       ),
       body: activitiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Could not load activities: $error')),
+        error: (error, _) =>
+            Center(child: Text('Could not load activities: $error')),
         data: (activities) {
           if (activities.isEmpty) {
             return const Center(
@@ -157,7 +163,9 @@ class TripActivitiesPage extends ConsumerWidget {
                     tooltip: 'Delete',
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
-                      await ref.read(tripActivityActionsProvider).deleteActivity(
+                      await ref
+                          .read(tripActivityActionsProvider)
+                          .deleteActivity(
                             tripId: tripId,
                             activityId: activity.id,
                           );

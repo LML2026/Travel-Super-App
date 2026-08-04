@@ -45,20 +45,18 @@ class ActivitiesCard extends ConsumerWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ...items.map(
-                (activity) {
-                  final schedule = activity.scheduledAt == null
-                      ? 'Unscheduled'
-                      : DateFormat('dd MMM, HH:mm').format(activity.scheduledAt!);
-                  final location = activity.location?.trim().isNotEmpty == true
-                      ? activity.location!.trim()
-                      : 'No location';
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text('• ${activity.title} | $location | $schedule'),
-                  );
-                },
-              ),
+              ...items.map((activity) {
+                final schedule = activity.scheduledAt == null
+                    ? 'Unscheduled'
+                    : DateFormat('dd MMM, HH:mm').format(activity.scheduledAt!);
+                final location = activity.location?.trim().isNotEmpty == true
+                    ? activity.location!.trim()
+                    : 'No location';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text('• ${activity.title} | $location | $schedule'),
+                );
+              }),
               const SizedBox(height: 6),
               TextButton(
                 onPressed: onOpenActivities,

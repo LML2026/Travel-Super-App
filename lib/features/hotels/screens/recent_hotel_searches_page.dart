@@ -18,8 +18,18 @@ class RecentHotelSearchesPage extends ConsumerWidget {
 
   String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -29,13 +39,9 @@ class RecentHotelSearchesPage extends ConsumerWidget {
     final recentSearchesAsync = ref.watch(recentHotelSearchesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recent Searches'),
-      ),
+      appBar: AppBar(title: const Text('Recent Searches')),
       body: recentSearchesAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -80,9 +86,9 @@ class RecentHotelSearchesPage extends ConsumerWidget {
             itemBuilder: (context, index) {
               final search = searches[index];
               final checkInDate = _formatDate(search.checkInDate);
-              final nights = DateTime.parse(search.checkOutDate)
-                  .difference(DateTime.parse(search.checkInDate))
-                  .inDays;
+              final nights = DateTime.parse(
+                search.checkOutDate,
+              ).difference(DateTime.parse(search.checkInDate)).inDays;
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -102,7 +108,9 @@ class RecentHotelSearchesPage extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(checkInDate),
                       const SizedBox(height: 4),
-                      Text('$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}'),
+                      Text(
+                        '$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}',
+                      ),
                     ],
                   ),
                   trailing: PopupMenuButton(
