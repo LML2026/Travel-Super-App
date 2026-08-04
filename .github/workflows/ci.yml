@@ -57,16 +57,20 @@ jobs:
       - name: Dart format check (changed files only)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            if [ "${{ github.event.action }}" = "synchronize" ]; then
+              RANGE="HEAD^..HEAD"
+            else
+              RANGE="${{ github.event.pull_request.base.sha }}...HEAD"
+            fi
           else
-            BASE_SHA="${{ github.event.before }}"
+            RANGE="${{ github.event.before }}...HEAD"
           fi
 
-          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-            BASE_SHA="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+          if ! git rev-parse "$RANGE" >/dev/null 2>&1; then
+            RANGE="HEAD^..HEAD"
           fi
 
-          mapfile -t DART_FILES < <(git diff --name-only "$BASE_SHA"...HEAD -- '*.dart')
+          mapfile -t DART_FILES < <(git diff --diff-filter=ACMR --name-only "$RANGE" -- '*.dart')
 
           if [ ${#DART_FILES[@]} -eq 0 ]; then
             echo "No Dart file changes to format-check."
