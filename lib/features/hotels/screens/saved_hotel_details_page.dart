@@ -7,14 +7,19 @@ import '../models/saved_hotel.dart';
 import '../providers/hotel_provider.dart';
 
 class SavedHotelDetailsPage extends ConsumerWidget {
-  const SavedHotelDetailsPage({super.key, required this.hotel});
+  const SavedHotelDetailsPage({
+    super.key,
+    required this.hotel,
+  });
 
   final SavedHotel hotel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Hotel Details')),
+      appBar: AppBar(
+        title: const Text('Saved Hotel Details'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -24,16 +29,9 @@ class SavedHotelDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    hotel.name,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  Text(hotel.name, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    hotel.address.isEmpty
-                        ? '${hotel.city}, ${hotel.country}'
-                        : hotel.address,
-                  ),
+                  Text(hotel.address.isEmpty ? '${hotel.city}, ${hotel.country}' : hotel.address),
                   const SizedBox(height: AppSpacing.sm),
                   Row(
                     children: [
@@ -56,10 +54,7 @@ class SavedHotelDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Stay Details',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  Text('Stay Details', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: AppSpacing.md),
                   Text('Room: ${hotel.roomType}'),
                   const SizedBox(height: AppSpacing.xs),
@@ -67,11 +62,7 @@ class SavedHotelDetailsPage extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.xs),
                   Text('Nights: ${hotel.nights}'),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    hotel.freeCancellation
-                        ? 'Free cancellation available'
-                        : 'Cancellation policy restricted',
-                  ),
+                  Text(hotel.freeCancellation ? 'Free cancellation available' : 'Cancellation policy restricted'),
                 ],
               ),
             ),
@@ -80,17 +71,12 @@ class SavedHotelDetailsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Amenities',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  Text('Amenities', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: AppSpacing.md),
                   Wrap(
                     spacing: AppSpacing.sm,
                     runSpacing: AppSpacing.sm,
-                    children: hotel.amenities
-                        .map((amenity) => Chip(label: Text(amenity)))
-                        .toList(),
+                    children: hotel.amenities.map((amenity) => Chip(label: Text(amenity))).toList(),
                   ),
                 ],
               ),
@@ -101,10 +87,7 @@ class SavedHotelDetailsPage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Description',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text('Description', style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: AppSpacing.md),
                     Text(hotel.description),
                   ],
@@ -122,11 +105,7 @@ class SavedHotelDetailsPage extends ConsumerWidget {
                       await ref.read(removeSavedHotelProvider(hotel.id).future);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${hotel.name} removed from saved hotels',
-                            ),
-                          ),
+                          SnackBar(content: Text('${hotel.name} removed from saved hotels')),
                         );
                         Navigator.pop(context);
                       }
@@ -140,9 +119,7 @@ class SavedHotelDetailsPage extends ConsumerWidget {
                     icon: Icons.calendar_month,
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Booking ${hotel.name} - Coming soon!'),
-                        ),
+                        SnackBar(content: Text('Booking ${hotel.name} - Coming soon!')),
                       );
                     },
                   ),

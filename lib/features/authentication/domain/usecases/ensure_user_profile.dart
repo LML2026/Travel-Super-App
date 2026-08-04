@@ -6,7 +6,10 @@ class EnsureUserProfile {
 
   final UserProfileRepository _repository;
 
-  Future<void> call({required String uid, required UserProfile profile}) {
+  Future<void> call({
+    required String uid,
+    required UserProfile profile,
+  }) {
     return _repository.ensureProfile(uid: uid, profile: profile);
   }
 }

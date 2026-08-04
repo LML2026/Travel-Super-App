@@ -20,12 +20,13 @@ void main() {
       currency: 'GBP',
     );
 
-    testWidgets('FlightCard displays flight information correctly', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('FlightCard displays flight information correctly',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: testFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: testFlight),
+          ),
         ),
       );
 
@@ -43,9 +44,8 @@ void main() {
       expect(find.text('🟢 Direct'), findsOneWidget);
     });
 
-    testWidgets('FlightCard shows stop information for connecting flights', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('FlightCard shows stop information for connecting flights',
+        (WidgetTester tester) async {
       final connectingFlight = Flight(
         id: 'flight-2',
         airline: 'Lufthansa',
@@ -63,7 +63,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: connectingFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: connectingFlight),
+          ),
         ),
       );
 
@@ -73,12 +75,12 @@ void main() {
       expect(find.text('GBP 180.00'), findsOneWidget);
     });
 
-    testWidgets('FlightCard displays airline logo', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('FlightCard displays airline logo', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: testFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: testFlight),
+          ),
         ),
       );
 
@@ -89,7 +91,9 @@ void main() {
     testWidgets('FlightCard has a book button', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: testFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: testFlight),
+          ),
         ),
       );
 
@@ -98,12 +102,13 @@ void main() {
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
-    testWidgets('FlightCard book button shows snackbar on tap', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('FlightCard book button shows snackbar on tap',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: testFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: testFlight),
+          ),
         ),
       );
 
@@ -115,9 +120,8 @@ void main() {
       expect(find.text('Booking BA123 - Coming soon!'), findsOneWidget);
     });
 
-    testWidgets('FlightCard displays multiple stops correctly', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('FlightCard displays multiple stops correctly',
+        (WidgetTester tester) async {
       final multiStopFlight = Flight(
         id: 'flight-3',
         airline: 'Turkish Airlines',
@@ -135,7 +139,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: multiStopFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: multiStopFlight),
+          ),
         ),
       );
 
@@ -151,7 +157,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: FlightCard(flight: testFlight)),
+          home: Scaffold(
+            body: FlightCard(flight: testFlight),
+          ),
         ),
       );
 

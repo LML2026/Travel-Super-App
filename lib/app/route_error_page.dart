@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RouteErrorPage extends StatelessWidget {
-  const RouteErrorPage({super.key, required this.message});
+  const RouteErrorPage({
+    super.key,
+    required this.message,
+  });
 
   final String message;
 

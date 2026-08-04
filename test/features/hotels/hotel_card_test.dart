@@ -18,23 +18,20 @@ void main() {
       address: 'Paris, France',
       price: 145.00,
       currency: 'GBP',
-      amenities: const [
-        'Free Wi-Fi',
-        'Breakfast Included',
-        'Free cancellation',
-      ],
+      amenities: const ['Free Wi-Fi', 'Breakfast Included', 'Free cancellation'],
       totalPrice: 435.00,
       beds: 2,
       nights: 3,
     );
 
-    testWidgets('HotelCard displays hotel information correctly', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays hotel information correctly',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -43,10 +40,9 @@ void main() {
       expect(find.text('Luxury Paris Boutique'), findsOneWidget);
 
       // Verify city
-      final hasCity =
-          find.text('Paris').evaluate().isNotEmpty ||
+        final hasCity = find.text('Paris').evaluate().isNotEmpty ||
           find.text('Paris, France').evaluate().isNotEmpty;
-      expect(hasCity, isTrue);
+        expect(hasCity, isTrue);
 
       // Verify rating
       expect(find.text('4.8'), findsOneWidget);
@@ -55,13 +51,13 @@ void main() {
       expect(find.text('GBP 145 / night'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays bed information', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays bed information', (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -70,13 +66,13 @@ void main() {
       expect(find.text('Free Wi-Fi'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays night information', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays night information', (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -88,7 +84,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -100,33 +98,32 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
 
       await tester.pump(const Duration(milliseconds: 50));
       final hasSaveButton = find.text('Save').evaluate().isNotEmpty;
-      final hasLoading = find
-          .byType(CircularProgressIndicator)
-          .evaluate()
-          .isNotEmpty;
+      final hasLoading = find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
 
       expect(hasSaveButton || hasLoading, isTrue);
       expect(find.text('Book Now'), findsOneWidget);
       expect(find.byType(FilledButton), findsOneWidget);
     });
 
-    testWidgets('HotelCard book button navigates to details page', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard book button navigates to details page',
+        (WidgetTester tester) async {
       final router = GoRouter(
         initialLocation: '/',
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) =>
-                Scaffold(body: HotelCard(hotel: testHotel)),
+            builder: (context, state) => Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
           GoRoute(
             name: AppRoute.hotelDetails.routeName,
@@ -139,7 +136,11 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(child: MaterialApp.router(routerConfig: router)),
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
+          ),
+        ),
       );
 
       await tester.tap(find.text('Book Now'));
@@ -148,9 +149,8 @@ void main() {
       expect(find.text('Hotel Details'), findsOneWidget);
     });
 
-    testWidgets('HotelCard with single bed displays correctly', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard with single bed displays correctly',
+        (WidgetTester tester) async {
       final singleBedHotel = Hotel(
         id: 'h2',
         name: 'Economy London Hotel',
@@ -169,7 +169,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: singleBedHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: singleBedHotel),
+            ),
           ),
         ),
       );
@@ -177,13 +179,13 @@ void main() {
       expect(find.text('Economy London Hotel'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays star rating with icon', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays star rating with icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -195,13 +197,13 @@ void main() {
       expect(find.text('4.8'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays all required icons', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays all required icons', (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -220,7 +222,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: testHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
           ),
         ),
       );
@@ -229,9 +233,8 @@ void main() {
       expect(find.byType(Card), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays nightly price', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('HotelCard displays nightly price',
+        (WidgetTester tester) async {
       final customHotel = Hotel(
         id: 'h3',
         name: 'Test Hotel',
@@ -250,7 +253,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: HotelCard(hotel: customHotel)),
+            home: Scaffold(
+              body: HotelCard(hotel: customHotel),
+            ),
           ),
         ),
       );

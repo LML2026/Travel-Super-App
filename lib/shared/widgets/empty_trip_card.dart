@@ -18,15 +18,25 @@ class EmptyTripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      padding: const EdgeInsets.symmetric(
+        vertical: 32,
+        horizontal: 24,
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: 2),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 2,
+        ),
         borderRadius: BorderRadius.circular(12),
         color: Colors.grey.shade50,
       ),
       child: Column(
         children: [
-          Icon(icon, size: 48, color: Colors.grey.shade400),
+          Icon(
+            icon,
+            size: 48,
+            color: Colors.grey.shade400,
+          ),
           const SizedBox(height: 12),
           Text(
             message,
@@ -38,7 +48,10 @@ class EmptyTripCard extends StatelessWidget {
           ),
           if (actionLabel != null) ...[
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: onActionTap, child: Text(actionLabel!)),
+            ElevatedButton(
+              onPressed: onActionTap,
+              child: Text(actionLabel!),
+            ),
           ],
         ],
       ),

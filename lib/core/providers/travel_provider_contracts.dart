@@ -18,7 +18,11 @@ enum TravelProviderCapability {
   offlineStorage,
 }
 
-enum TravelDataSource { live, cached, mock }
+enum TravelDataSource {
+  live,
+  cached,
+  mock,
+}
 
 class TravelProviderDescriptor {
   const TravelProviderDescriptor({
@@ -53,7 +57,10 @@ class ExchangeRateQuote {
 }
 
 class MoneyAmount {
-  const MoneyAmount({required this.amount, required this.currency});
+  const MoneyAmount({
+    required this.amount,
+    required this.currency,
+  });
 
   final double amount;
   final String currency;
@@ -122,7 +129,12 @@ class PlaceDetails extends PlaceResult {
   final String? website;
 }
 
-enum NotificationPriority { low, normal, high, critical }
+enum NotificationPriority {
+  low,
+  normal,
+  high,
+  critical,
+}
 
 enum NotificationSource {
   planner,
@@ -234,12 +246,12 @@ enum PlaceCategory {
 
 abstract class TravelProvider {
   TravelProviderDescriptor get descriptor => const TravelProviderDescriptor(
-    id: 'default-provider',
-    displayName: 'Default Provider',
-    capabilities: <TravelProviderCapability>{},
-    isLive: false,
-    requiresNetwork: false,
-  );
+        id: 'default-provider',
+        displayName: 'Default Provider',
+        capabilities: <TravelProviderCapability>{},
+        isLive: false,
+        requiresNetwork: false,
+      );
 
   Future<bool> isAvailable();
 
@@ -271,7 +283,9 @@ abstract class PaymentProvider implements TravelProvider {
 }
 
 abstract interface class ActivityProvider implements TravelProvider {
-  Future<List<String>> searchActivities({required String destination});
+  Future<List<String>> searchActivities({
+    required String destination,
+  });
 }
 
 abstract interface class TranslationProvider implements TravelProvider {
@@ -314,7 +328,9 @@ abstract class TravelTranslationProvider implements TravelProvider {
 }
 
 abstract interface class TravelNotificationProvider implements TravelProvider {
-  Future<List<TravelNotification>> getPendingNotifications({String? journeyId});
+  Future<List<TravelNotification>> getPendingNotifications({
+    String? journeyId,
+  });
 }
 
 abstract interface class TravelOfflineStore implements TravelProvider {

@@ -2,15 +2,20 @@ import '../../../../core/api/api_client.dart';
 import '../../../../core/api/api_endpoints.dart';
 
 class WalletFxService {
-  WalletFxService({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+  WalletFxService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
-  Future<double> getRate({required String base, required String target}) async {
+  Future<double> getRate({
+    required String base,
+    required String target,
+  }) async {
     final response = await _apiClient.get(
       ApiEndpoints.currencyRate,
-      queryParameters: {'base': base, 'target': target},
+      queryParameters: {
+        'base': base,
+        'target': target,
+      },
     );
 
     if (response.statusCode != 200 || response.data is! Map<String, dynamic>) {

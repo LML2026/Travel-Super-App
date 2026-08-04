@@ -36,22 +36,21 @@ void main() {
   }
 
   test('computes distance and exposes km helper', () {
-    final result = buildResult(id: 'a', latitude: 51.5010, longitude: -0.1420);
+    final result = buildResult(
+      id: 'a',
+      latitude: 51.5010,
+      longitude: -0.1420,
+    );
 
-    final withDistance = ranker
-        .withComputedDistance(
-          results: <NearbyServiceResult>[result],
-          userLatitude: 51.5007,
-          userLongitude: -0.1246,
-        )
-        .first;
+    final withDistance = ranker.withComputedDistance(
+      results: <NearbyServiceResult>[result],
+      userLatitude: 51.5007,
+      userLongitude: -0.1246,
+    ).first;
 
     expect(withDistance.distanceMeters, isNotNull);
     expect(withDistance.distanceMeters!, greaterThan(1000));
-    expect(
-      withDistance.distanceKm,
-      closeTo(withDistance.distanceMeters! / 1000, 0.0001),
-    );
+    expect(withDistance.distanceKm, closeTo(withDistance.distanceMeters! / 1000, 0.0001));
   });
 
   test('sorts nearest first and keeps unknown distance last', () {
@@ -74,38 +73,29 @@ void main() {
       distanceMeters: null,
     );
 
-    final sorted = ranker.sortNearestFirst(<NearbyServiceResult>[
-      far,
-      unknown,
-      nearby,
-    ]);
+    final sorted = ranker.sortNearestFirst(
+      <NearbyServiceResult>[far, unknown, nearby],
+    );
 
-    expect(sorted.map((result) => result.id).toList(), <String>[
-      'nearby',
-      'far',
-      'unknown',
-    ]);
+    expect(sorted.map((result) => result.id).toList(), <String>['nearby', 'far', 'unknown']);
   });
 
-  test(
-    'keeps open status source unknown when provider does not supply data',
-    () {
-      final result = buildResult(
-        id: 'unknown-open',
-        latitude: 51.5007,
-        longitude: -0.1246,
-        isOpenNow: null,
-        openStatusSource: OpenStatusSource.unknown,
-        wheelchairAccessible: true,
-        hasAccessibleToilet: true,
-        hasBabyChanging: false,
-      );
+  test('keeps open status source unknown when provider does not supply data', () {
+    final result = buildResult(
+      id: 'unknown-open',
+      latitude: 51.5007,
+      longitude: -0.1246,
+      isOpenNow: null,
+      openStatusSource: OpenStatusSource.unknown,
+      wheelchairAccessible: true,
+      hasAccessibleToilet: true,
+      hasBabyChanging: false,
+    );
 
-      expect(result.isOpenNow, isNull);
-      expect(result.openStatusSource, OpenStatusSource.unknown);
-      expect(result.wheelchairAccessible, isTrue);
-      expect(result.hasAccessibleToilet, isTrue);
-      expect(result.hasBabyChanging, isFalse);
-    },
-  );
+    expect(result.isOpenNow, isNull);
+    expect(result.openStatusSource, OpenStatusSource.unknown);
+    expect(result.wheelchairAccessible, isTrue);
+    expect(result.hasAccessibleToilet, isTrue);
+    expect(result.hasBabyChanging, isFalse);
+  });
 }

@@ -5,7 +5,10 @@ import '../../core/theme/text_styles.dart';
 class HomeHeader extends StatelessWidget {
   final String userName;
 
-  const HomeHeader({super.key, required this.userName});
+  const HomeHeader({
+    super.key,
+    required this.userName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +29,25 @@ class HomeHeader extends StatelessWidget {
           children: [
             const Text(
               "Travel Super App",
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
               "Good Morning, $userName 👋",
-              style: AppTextStyles.heading.copyWith(color: Colors.white),
+              style: AppTextStyles.heading.copyWith(
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
               "Where would you like to travel today?",
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+              ),
             ),
           ],
         ),

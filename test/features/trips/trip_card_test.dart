@@ -4,9 +4,8 @@ import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/widgets/trip_card.dart';
 
 void main() {
-  testWidgets('TripCard shows destination, budget and travellers', (
-    tester,
-  ) async {
+  testWidgets('TripCard shows destination, budget and travellers',
+      (tester) async {
     final trip = Trip(
       id: 'trip-1',
       title: 'Paris Getaway',
@@ -21,7 +20,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: TripCard(trip: trip, onTap: () {}),
+          body: TripCard(
+            trip: trip,
+            onTap: () {},
+          ),
         ),
       ),
     );

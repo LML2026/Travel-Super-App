@@ -4,7 +4,7 @@ import '../models/user_profile_model.dart';
 
 class FirestoreProfileDataSource {
   FirestoreProfileDataSource({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -16,8 +16,7 @@ class FirestoreProfileDataSource {
     final snapshot = await userRef.get();
     final data = snapshot.data();
     final existingProfile = data?['profile'];
-    final hasCreatedAt =
-        existingProfile is Map<String, dynamic> &&
+    final hasCreatedAt = existingProfile is Map<String, dynamic> &&
         existingProfile['createdAt'] != null;
 
     final payload = <String, dynamic>{

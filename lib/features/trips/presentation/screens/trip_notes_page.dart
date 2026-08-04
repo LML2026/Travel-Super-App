@@ -5,7 +5,10 @@ import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 
 class TripNotesPage extends ConsumerStatefulWidget {
-  const TripNotesPage({super.key, required this.tripId});
+  const TripNotesPage({
+    super.key,
+    required this.tripId,
+  });
 
   final String tripId;
 
@@ -65,17 +68,17 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Trip notes saved.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip notes saved.')),
+      );
       Navigator.of(context).pop();
     } catch (error) {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Could not save notes: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not save notes: $error')),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -88,7 +91,9 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_trip == null) {

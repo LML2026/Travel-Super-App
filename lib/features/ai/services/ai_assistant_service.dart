@@ -7,7 +7,7 @@ import '../../weather/models/weather_data.dart';
 
 class AiAssistantService {
   AiAssistantService({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+      : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
@@ -128,23 +128,19 @@ class AiAssistantService {
 
     if (destination != null) {
       advice.add(
-        'For $destination, start by locking in flights early and booking a central hotel to reduce daily transport costs.',
-      );
+          'For $destination, start by locking in flights early and booking a central hotel to reduce daily transport costs.');
       advice.add(
-        'Prioritise 2-3 major attractions and keep one lighter day for local neighbourhoods and restaurants.',
-      );
+          'Prioritise 2-3 major attractions and keep one lighter day for local neighbourhoods and restaurants.');
     }
 
     if (budget != null) {
       advice.add(
-        'With a budget of £${budget.toStringAsFixed(0)}, aim to keep about 40% for hotel, 30% for flights, and reserve the rest for food, transport, and attractions.',
-      );
+          'With a budget of £${budget.toStringAsFixed(0)}, aim to keep about 40% for hotel, 30% for flights, and reserve the rest for food, transport, and attractions.');
     }
 
     if (nights != null) {
       advice.add(
-        'For a ${nights}-day trip, plan one anchor activity per day and group nearby sights together to avoid wasted travel time.',
-      );
+          'For a ${nights}-day trip, plan one anchor activity per day and group nearby sights together to avoid wasted travel time.');
     }
 
     if (linkedTrip != null && linkedHotel != null) {
@@ -155,13 +151,11 @@ class AiAssistantService {
 
     if (advice.isEmpty) {
       advice.add(
-        'Tell me your destination, trip length, and budget, and I can suggest flights, hotels, daily pacing, and likely spending.',
-      );
+          'Tell me your destination, trip length, and budget, and I can suggest flights, hotels, daily pacing, and likely spending.');
     }
 
     advice.add(
-      'Next step: open Flights, Hotels, and Trips to turn this plan into a saved itinerary.',
-    );
+        'Next step: open Flights, Hotels, and Trips to turn this plan into a saved itinerary.');
     return advice.join('\n\n');
   }
 
@@ -177,9 +171,7 @@ class AiAssistantService {
   }
 
   SavedFlight? _findRelevantFlight(
-    String? destination,
-    List<SavedFlight> flights,
-  ) {
+      String? destination, List<SavedFlight> flights) {
     if (destination == null) return flights.isEmpty ? null : flights.first;
     final lower = destination.toLowerCase();
     for (final flight in flights) {

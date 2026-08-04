@@ -8,23 +8,21 @@ void main() {
     final routes = buildTripRoutes().whereType<GoRoute>().toList();
 
     expect(
-      routes.map((route) => route.path),
-      containsAll(<String>[
-        AppRoute.trips.path,
-        AppRoute.tripCreate.path,
-        AppRoute.tripDetails.path,
-        AppRoute.tripEdit.path,
-      ]),
-    );
+        routes.map((route) => route.path),
+        containsAll(<String>[
+          AppRoute.trips.path,
+          AppRoute.tripCreate.path,
+          AppRoute.tripDetails.path,
+          AppRoute.tripEdit.path,
+        ]));
 
     expect(
-      routes.map((route) => route.name),
-      containsAll(<String?>[
-        AppRoute.trips.routeName,
-        AppRoute.tripCreate.routeName,
-        AppRoute.tripDetails.routeName,
-        AppRoute.tripEdit.routeName,
-      ]),
-    );
+        routes.map((route) => route.name),
+        containsAll(<String?>[
+          AppRoute.trips.routeName,
+          AppRoute.tripCreate.routeName,
+          AppRoute.tripDetails.routeName,
+          AppRoute.tripEdit.routeName,
+        ]));
   });
 }

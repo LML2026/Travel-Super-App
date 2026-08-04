@@ -12,8 +12,7 @@ part of 'hotel_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Hotel _$HotelFromJson(Map<String, dynamic> json) {
   return _Hotel.fromJson(json);
@@ -52,24 +51,23 @@ abstract class $HotelCopyWith<$Res> {
   factory $HotelCopyWith(Hotel value, $Res Function(Hotel) then) =
       _$HotelCopyWithImpl<$Res, Hotel>;
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String city,
-    String address,
-    double pricePerNight,
-    double rating,
-    int reviewCount,
-    String imageUrl,
-    List<String> amenities,
-    List<String> roomTypes,
-    int availableRooms,
-    String checkInTime,
-    String checkOutTime,
-    bool hasWifi,
-    bool hasPool,
-    bool hasGym,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String city,
+      String address,
+      double pricePerNight,
+      double rating,
+      int reviewCount,
+      String imageUrl,
+      List<String> amenities,
+      List<String> roomTypes,
+      int availableRooms,
+      String checkInTime,
+      String checkOutTime,
+      bool hasWifi,
+      bool hasPool,
+      bool hasGym});
 }
 
 /// @nodoc
@@ -104,104 +102,99 @@ class _$HotelCopyWithImpl<$Res, $Val extends Hotel>
     Object? hasPool = null,
     Object? hasGym = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            city: null == city
-                ? _value.city
-                : city // ignore: cast_nullable_to_non_nullable
-                      as String,
-            address: null == address
-                ? _value.address
-                : address // ignore: cast_nullable_to_non_nullable
-                      as String,
-            pricePerNight: null == pricePerNight
-                ? _value.pricePerNight
-                : pricePerNight // ignore: cast_nullable_to_non_nullable
-                      as double,
-            rating: null == rating
-                ? _value.rating
-                : rating // ignore: cast_nullable_to_non_nullable
-                      as double,
-            reviewCount: null == reviewCount
-                ? _value.reviewCount
-                : reviewCount // ignore: cast_nullable_to_non_nullable
-                      as int,
-            imageUrl: null == imageUrl
-                ? _value.imageUrl
-                : imageUrl // ignore: cast_nullable_to_non_nullable
-                      as String,
-            amenities: null == amenities
-                ? _value.amenities
-                : amenities // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            roomTypes: null == roomTypes
-                ? _value.roomTypes
-                : roomTypes // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            availableRooms: null == availableRooms
-                ? _value.availableRooms
-                : availableRooms // ignore: cast_nullable_to_non_nullable
-                      as int,
-            checkInTime: null == checkInTime
-                ? _value.checkInTime
-                : checkInTime // ignore: cast_nullable_to_non_nullable
-                      as String,
-            checkOutTime: null == checkOutTime
-                ? _value.checkOutTime
-                : checkOutTime // ignore: cast_nullable_to_non_nullable
-                      as String,
-            hasWifi: null == hasWifi
-                ? _value.hasWifi
-                : hasWifi // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            hasPool: null == hasPool
-                ? _value.hasPool
-                : hasPool // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            hasGym: null == hasGym
-                ? _value.hasGym
-                : hasGym // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      pricePerNight: null == pricePerNight
+          ? _value.pricePerNight
+          : pricePerNight // ignore: cast_nullable_to_non_nullable
+              as double,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+      reviewCount: null == reviewCount
+          ? _value.reviewCount
+          : reviewCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      amenities: null == amenities
+          ? _value.amenities
+          : amenities // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      roomTypes: null == roomTypes
+          ? _value.roomTypes
+          : roomTypes // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      availableRooms: null == availableRooms
+          ? _value.availableRooms
+          : availableRooms // ignore: cast_nullable_to_non_nullable
+              as int,
+      checkInTime: null == checkInTime
+          ? _value.checkInTime
+          : checkInTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      checkOutTime: null == checkOutTime
+          ? _value.checkOutTime
+          : checkOutTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      hasWifi: null == hasWifi
+          ? _value.hasWifi
+          : hasWifi // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasPool: null == hasPool
+          ? _value.hasPool
+          : hasPool // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasGym: null == hasGym
+          ? _value.hasGym
+          : hasGym // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$HotelImplCopyWith<$Res> implements $HotelCopyWith<$Res> {
   factory _$$HotelImplCopyWith(
-    _$HotelImpl value,
-    $Res Function(_$HotelImpl) then,
-  ) = __$$HotelImplCopyWithImpl<$Res>;
+          _$HotelImpl value, $Res Function(_$HotelImpl) then) =
+      __$$HotelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String name,
-    String city,
-    String address,
-    double pricePerNight,
-    double rating,
-    int reviewCount,
-    String imageUrl,
-    List<String> amenities,
-    List<String> roomTypes,
-    int availableRooms,
-    String checkInTime,
-    String checkOutTime,
-    bool hasWifi,
-    bool hasPool,
-    bool hasGym,
-  });
+  $Res call(
+      {String id,
+      String name,
+      String city,
+      String address,
+      double pricePerNight,
+      double rating,
+      int reviewCount,
+      String imageUrl,
+      List<String> amenities,
+      List<String> roomTypes,
+      int availableRooms,
+      String checkInTime,
+      String checkOutTime,
+      bool hasWifi,
+      bool hasPool,
+      bool hasGym});
 }
 
 /// @nodoc
@@ -209,9 +202,8 @@ class __$$HotelImplCopyWithImpl<$Res>
     extends _$HotelCopyWithImpl<$Res, _$HotelImpl>
     implements _$$HotelImplCopyWith<$Res> {
   __$$HotelImplCopyWithImpl(
-    _$HotelImpl _value,
-    $Res Function(_$HotelImpl) _then,
-  ) : super(_value, _then);
+      _$HotelImpl _value, $Res Function(_$HotelImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Hotel
   /// with the given fields replaced by the non-null parameter values.
@@ -235,99 +227,97 @@ class __$$HotelImplCopyWithImpl<$Res>
     Object? hasPool = null,
     Object? hasGym = null,
   }) {
-    return _then(
-      _$HotelImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        city: null == city
-            ? _value.city
-            : city // ignore: cast_nullable_to_non_nullable
-                  as String,
-        address: null == address
-            ? _value.address
-            : address // ignore: cast_nullable_to_non_nullable
-                  as String,
-        pricePerNight: null == pricePerNight
-            ? _value.pricePerNight
-            : pricePerNight // ignore: cast_nullable_to_non_nullable
-                  as double,
-        rating: null == rating
-            ? _value.rating
-            : rating // ignore: cast_nullable_to_non_nullable
-                  as double,
-        reviewCount: null == reviewCount
-            ? _value.reviewCount
-            : reviewCount // ignore: cast_nullable_to_non_nullable
-                  as int,
-        imageUrl: null == imageUrl
-            ? _value.imageUrl
-            : imageUrl // ignore: cast_nullable_to_non_nullable
-                  as String,
-        amenities: null == amenities
-            ? _value._amenities
-            : amenities // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        roomTypes: null == roomTypes
-            ? _value._roomTypes
-            : roomTypes // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        availableRooms: null == availableRooms
-            ? _value.availableRooms
-            : availableRooms // ignore: cast_nullable_to_non_nullable
-                  as int,
-        checkInTime: null == checkInTime
-            ? _value.checkInTime
-            : checkInTime // ignore: cast_nullable_to_non_nullable
-                  as String,
-        checkOutTime: null == checkOutTime
-            ? _value.checkOutTime
-            : checkOutTime // ignore: cast_nullable_to_non_nullable
-                  as String,
-        hasWifi: null == hasWifi
-            ? _value.hasWifi
-            : hasWifi // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        hasPool: null == hasPool
-            ? _value.hasPool
-            : hasPool // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        hasGym: null == hasGym
-            ? _value.hasGym
-            : hasGym // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    return _then(_$HotelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      pricePerNight: null == pricePerNight
+          ? _value.pricePerNight
+          : pricePerNight // ignore: cast_nullable_to_non_nullable
+              as double,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+      reviewCount: null == reviewCount
+          ? _value.reviewCount
+          : reviewCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      imageUrl: null == imageUrl
+          ? _value.imageUrl
+          : imageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      amenities: null == amenities
+          ? _value._amenities
+          : amenities // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      roomTypes: null == roomTypes
+          ? _value._roomTypes
+          : roomTypes // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      availableRooms: null == availableRooms
+          ? _value.availableRooms
+          : availableRooms // ignore: cast_nullable_to_non_nullable
+              as int,
+      checkInTime: null == checkInTime
+          ? _value.checkInTime
+          : checkInTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      checkOutTime: null == checkOutTime
+          ? _value.checkOutTime
+          : checkOutTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      hasWifi: null == hasWifi
+          ? _value.hasWifi
+          : hasWifi // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasPool: null == hasPool
+          ? _value.hasPool
+          : hasPool // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hasGym: null == hasGym
+          ? _value.hasGym
+          : hasGym // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$HotelImpl implements _Hotel {
-  const _$HotelImpl({
-    required this.id,
-    required this.name,
-    required this.city,
-    required this.address,
-    required this.pricePerNight,
-    required this.rating,
-    required this.reviewCount,
-    required this.imageUrl,
-    required final List<String> amenities,
-    required final List<String> roomTypes,
-    required this.availableRooms,
-    required this.checkInTime,
-    required this.checkOutTime,
-    required this.hasWifi,
-    required this.hasPool,
-    required this.hasGym,
-  }) : _amenities = amenities,
-       _roomTypes = roomTypes;
+  const _$HotelImpl(
+      {required this.id,
+      required this.name,
+      required this.city,
+      required this.address,
+      required this.pricePerNight,
+      required this.rating,
+      required this.reviewCount,
+      required this.imageUrl,
+      required final List<String> amenities,
+      required final List<String> roomTypes,
+      required this.availableRooms,
+      required this.checkInTime,
+      required this.checkOutTime,
+      required this.hasWifi,
+      required this.hasPool,
+      required this.hasGym})
+      : _amenities = amenities,
+        _roomTypes = roomTypes;
 
   factory _$HotelImpl.fromJson(Map<String, dynamic> json) =>
       _$$HotelImplFromJson(json);
@@ -398,14 +388,10 @@ class _$HotelImpl implements _Hotel {
                 other.reviewCount == reviewCount) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
-            const DeepCollectionEquality().equals(
-              other._amenities,
-              _amenities,
-            ) &&
-            const DeepCollectionEquality().equals(
-              other._roomTypes,
-              _roomTypes,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._amenities, _amenities) &&
+            const DeepCollectionEquality()
+                .equals(other._roomTypes, _roomTypes) &&
             (identical(other.availableRooms, availableRooms) ||
                 other.availableRooms == availableRooms) &&
             (identical(other.checkInTime, checkInTime) ||
@@ -420,24 +406,23 @@ class _$HotelImpl implements _Hotel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    name,
-    city,
-    address,
-    pricePerNight,
-    rating,
-    reviewCount,
-    imageUrl,
-    const DeepCollectionEquality().hash(_amenities),
-    const DeepCollectionEquality().hash(_roomTypes),
-    availableRooms,
-    checkInTime,
-    checkOutTime,
-    hasWifi,
-    hasPool,
-    hasGym,
-  );
+      runtimeType,
+      id,
+      name,
+      city,
+      address,
+      pricePerNight,
+      rating,
+      reviewCount,
+      imageUrl,
+      const DeepCollectionEquality().hash(_amenities),
+      const DeepCollectionEquality().hash(_roomTypes),
+      availableRooms,
+      checkInTime,
+      checkOutTime,
+      hasWifi,
+      hasPool,
+      hasGym);
 
   /// Create a copy of Hotel
   /// with the given fields replaced by the non-null parameter values.
@@ -449,29 +434,30 @@ class _$HotelImpl implements _Hotel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$HotelImplToJson(this);
+    return _$$HotelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Hotel implements Hotel {
-  const factory _Hotel({
-    required final String id,
-    required final String name,
-    required final String city,
-    required final String address,
-    required final double pricePerNight,
-    required final double rating,
-    required final int reviewCount,
-    required final String imageUrl,
-    required final List<String> amenities,
-    required final List<String> roomTypes,
-    required final int availableRooms,
-    required final String checkInTime,
-    required final String checkOutTime,
-    required final bool hasWifi,
-    required final bool hasPool,
-    required final bool hasGym,
-  }) = _$HotelImpl;
+  const factory _Hotel(
+      {required final String id,
+      required final String name,
+      required final String city,
+      required final String address,
+      required final double pricePerNight,
+      required final double rating,
+      required final int reviewCount,
+      required final String imageUrl,
+      required final List<String> amenities,
+      required final List<String> roomTypes,
+      required final int availableRooms,
+      required final String checkInTime,
+      required final String checkOutTime,
+      required final bool hasWifi,
+      required final bool hasPool,
+      required final bool hasGym}) = _$HotelImpl;
 
   factory _Hotel.fromJson(Map<String, dynamic> json) = _$HotelImpl.fromJson;
 

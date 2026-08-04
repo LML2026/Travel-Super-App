@@ -5,7 +5,7 @@ import '../datasources/firebase_auth_datasource.dart';
 
 class FirebaseAuthenticationRepository implements AuthenticationRepository {
   FirebaseAuthenticationRepository({FirebaseAuthDataSource? dataSource})
-    : _dataSource = dataSource ?? FirebaseAuthDataSource();
+      : _dataSource = dataSource ?? FirebaseAuthDataSource();
 
   final FirebaseAuthDataSource _dataSource;
 
@@ -33,10 +33,8 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
     required String email,
     required String password,
   }) async {
-    final credential = await _dataSource.signIn(
-      email: email,
-      password: password,
-    );
+    final credential =
+        await _dataSource.signIn(email: email, password: password);
     final user = credential.user;
     if (user == null) {
       return null;

@@ -55,7 +55,9 @@ void main() {
   test('tripExpensesProvider streams expenses for trip', () async {
     final fakeRepo = _FakeExpenseRepository();
     final container = ProviderContainer(
-      overrides: [expenseRepositoryProvider.overrideWithValue(fakeRepo)],
+      overrides: [
+        expenseRepositoryProvider.overrideWithValue(fakeRepo),
+      ],
     );
     addTearDown(() async {
       await fakeRepo.controller.close();
@@ -73,7 +75,9 @@ void main() {
   test('expenseMutationProvider delegates create/update/delete', () async {
     final fakeRepo = _FakeExpenseRepository();
     final container = ProviderContainer(
-      overrides: [expenseRepositoryProvider.overrideWithValue(fakeRepo)],
+      overrides: [
+        expenseRepositoryProvider.overrideWithValue(fakeRepo),
+      ],
     );
     addTearDown(() async {
       await fakeRepo.controller.close();
@@ -94,7 +98,10 @@ void main() {
 
     await notifier.updateExpense(_expense());
 
-    await notifier.deleteExpense(tripId: 'trip-1', expenseId: 'expense-1');
+    await notifier.deleteExpense(
+      tripId: 'trip-1',
+      expenseId: 'expense-1',
+    );
 
     expect(fakeRepo.created, hasLength(1));
     expect(fakeRepo.created.single.title, 'Taxi');

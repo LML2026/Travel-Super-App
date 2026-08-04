@@ -13,7 +13,10 @@ import '../services/nearby_service_engine.dart';
 import 'widgets/nearby_state_views.dart';
 
 class NearbyEssentialsPage extends StatefulWidget {
-  const NearbyEssentialsPage({this.initialService, super.key});
+  const NearbyEssentialsPage({
+    this.initialService,
+    super.key,
+  });
 
   final NearbyServiceType? initialService;
 
@@ -32,8 +35,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
   @override
   void initState() {
     super.initState();
-    _selectedService =
-        widget.initialService ?? nearbyEssentialsMvpServices.first;
+    _selectedService = widget.initialService ?? nearbyEssentialsMvpServices.first;
   }
 
   void _showComingSoon() {
@@ -60,7 +62,9 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
     final selectedMetadata = _selectedService.metadata;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Nearby Essentials')),
+      appBar: AppBar(
+        title: const Text('Nearby Essentials'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
@@ -113,8 +117,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           const SectionHeader(
             title: 'Core services',
-            subtitle:
-                'The first Nearby Essentials services planned for the MVP utility layer.',
+            subtitle: 'The first Nearby Essentials services planned for the MVP utility layer.',
           ),
           const SizedBox(height: AppSpacing.md),
           GridView.builder(
@@ -163,7 +166,9 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
                             ),
                             child: Text(
                               'Selected',
-                              style: Theme.of(context).textTheme.labelSmall
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
                                   ?.copyWith(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w700,
@@ -192,8 +197,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           SectionHeader(
             title: '${selectedMetadata.label} filters',
-            subtitle:
-                'Reusable filter metadata is ready before live provider wiring.',
+            subtitle: 'Reusable filter metadata is ready before live provider wiring.',
           ),
           const SizedBox(height: AppSpacing.md),
           TravelCard(
@@ -201,7 +205,9 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: selectedMetadata.previewFilters
-                  .map((filterLabel) => Chip(label: Text(filterLabel)))
+                  .map(
+                    (filterLabel) => Chip(label: Text(filterLabel)),
+                  )
                   .toList(growable: false),
             ),
           ),
@@ -228,8 +234,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           SectionHeader(
             title: '${selectedMetadata.label} results foundation',
-            subtitle:
-                'This placeholder becomes the shared results area in the next commit.',
+            subtitle: 'This placeholder becomes the shared results area in the next commit.',
           ),
           const SizedBox(height: AppSpacing.md),
           NearbyPlaceholderState(
@@ -240,8 +245,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           const SectionHeader(
             title: 'State foundations',
-            subtitle:
-                'Loading, empty, and error states are ready for engine wiring.',
+            subtitle: 'Loading, empty, and error states are ready for engine wiring.',
           ),
           const SizedBox(height: AppSpacing.md),
           const NearbyLoadingState(
@@ -250,14 +254,12 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.md),
           const NearbyEmptyState(
             title: 'No nearby results yet',
-            message:
-                'This shared empty state will be used when a service search returns no nearby essentials.',
+            message: 'This shared empty state will be used when a service search returns no nearby essentials.',
           ),
           const SizedBox(height: AppSpacing.md),
           NearbyErrorState(
             title: 'Nearby Essentials unavailable',
-            message:
-                'This shared error state is ready for provider, permission, or location failures.',
+            message: 'This shared error state is ready for provider, permission, or location failures.',
             onRetry: _openMapsHandoff,
           ),
         ],

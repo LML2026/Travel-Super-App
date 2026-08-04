@@ -51,13 +51,10 @@ class HotelFirestoreService {
         .limit(20)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map(
-                (doc) =>
-                    RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}),
-              )
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}))
+          .toList();
+    });
   }
 
   /// Delete a recent search
@@ -136,10 +133,10 @@ class HotelFirestoreService {
         .orderBy('savedAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => SavedHotel.fromJson({...doc.data(), 'id': doc.id}))
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => SavedHotel.fromJson({...doc.data(), 'id': doc.id}))
+          .toList();
+    });
   }
 
   /// Check if a hotel is saved

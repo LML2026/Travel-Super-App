@@ -20,8 +20,8 @@ class NearbyServiceMetadata {
   final bool isMvp;
 }
 
-const Map<NearbyServiceType, NearbyServiceMetadata>
-nearbyServiceMetadataByType = <NearbyServiceType, NearbyServiceMetadata>{
+const Map<NearbyServiceType, NearbyServiceMetadata> nearbyServiceMetadataByType =
+    <NearbyServiceType, NearbyServiceMetadata>{
   NearbyServiceType.toilet: NearbyServiceMetadata(
     type: NearbyServiceType.toilet,
     label: 'Toilets',
@@ -113,7 +113,8 @@ nearbyServiceMetadataByType = <NearbyServiceType, NearbyServiceMetadata>{
   ),
 };
 
-const List<NearbyServiceType> nearbyEssentialsMvpServices = <NearbyServiceType>[
+const List<NearbyServiceType> nearbyEssentialsMvpServices =
+    <NearbyServiceType>[
   NearbyServiceType.toilet,
   NearbyServiceType.atm,
   NearbyServiceType.pharmacy,

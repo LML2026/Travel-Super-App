@@ -26,7 +26,10 @@ class SearchField extends StatelessWidget {
       textInputAction: TextInputAction.search,
       decoration: const InputDecoration(
         prefixIcon: Icon(Icons.search),
-      ).copyWith(hintText: hintText, border: const OutlineInputBorder()),
+      ).copyWith(
+        hintText: hintText,
+        border: const OutlineInputBorder(),
+      ),
     );
   }
 }

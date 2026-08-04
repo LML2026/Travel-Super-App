@@ -22,7 +22,10 @@ class ReplyAssistantAction extends AssistantAction {
 }
 
 class ShowCommandCardAction extends AssistantAction {
-  const ShowCommandCardAction({required this.message, required this.card});
+  const ShowCommandCardAction({
+    required this.message,
+    required this.card,
+  });
 
   final String message;
   final AssistantCommandCard card;

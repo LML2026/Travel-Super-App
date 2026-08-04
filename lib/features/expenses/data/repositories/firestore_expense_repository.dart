@@ -6,9 +6,11 @@ import '../../domain/repositories/expense_repository.dart';
 import '../models/expense_model.dart';
 
 class FirestoreExpenseRepository implements ExpenseRepository {
-  FirestoreExpenseRepository({FirebaseFirestore? firestore, FirebaseAuth? auth})
-    : _firestore = firestore ?? FirebaseFirestore.instance,
-      _auth = auth ?? FirebaseAuth.instance;
+  FirestoreExpenseRepository({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? auth,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _auth = auth ?? FirebaseAuth.instance;
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -37,29 +39,27 @@ class FirestoreExpenseRepository implements ExpenseRepository {
     }
 
     return _expenseCollection(tripId)
-        .orderBy('date')
+      .orderBy('date')
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => ExpenseModel.fromFirestore(doc))
-              .toList(),
-        );
+        .map((snapshot) => snapshot.docs
+            .map((doc) => ExpenseModel.fromFirestore(doc))
+            .toList());
   }
 
   @override
   Future<void> createExpense(Expense expense) async {
     final model = ExpenseModel.fromEntity(expense);
-    await _expenseCollection(
-      expense.tripId,
-    ).doc(expense.id).set(model.toFirestore());
+    await _expenseCollection(expense.tripId)
+        .doc(expense.id)
+        .set(model.toFirestore());
   }
 
   @override
   Future<void> updateExpense(Expense expense) async {
     final model = ExpenseModel.fromEntity(expense);
-    await _expenseCollection(
-      expense.tripId,
-    ).doc(expense.id).update(model.toFirestore());
+    await _expenseCollection(expense.tripId)
+        .doc(expense.id)
+        .update(model.toFirestore());
   }
 
   @override

@@ -5,7 +5,10 @@ abstract interface class AuthenticationRepository {
 
   Stream<AuthUser?> authStateChanges();
 
-  Future<AuthUser?> signIn({required String email, required String password});
+  Future<AuthUser?> signIn({
+    required String email,
+    required String password,
+  });
 
   Future<AuthUser> register({
     required String email,

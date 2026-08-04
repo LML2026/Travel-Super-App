@@ -45,7 +45,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.flight_takeoff, color: Colors.white, size: 90),
+            Icon(
+              Icons.flight_takeoff,
+              color: Colors.white,
+              size: 90,
+            ),
             SizedBox(height: 30),
             Text(
               "Travel Super App",
@@ -56,7 +60,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               ),
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(color: Colors.white),
+            CircularProgressIndicator(
+              color: Colors.white,
+            ),
           ],
         ),
       ),

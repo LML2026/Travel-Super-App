@@ -19,7 +19,10 @@ import '../../domain/providers/taxi_provider.dart';
 import '../../domain/repositories/taxi_transport_repository.dart';
 
 final taxiProvidersProvider = Provider<List<TaxiProvider>>((ref) {
-  return const <TaxiProvider>[LocalTaxiProvider(), AirportTransferProvider()];
+  return const <TaxiProvider>[
+    LocalTaxiProvider(),
+    AirportTransferProvider(),
+  ];
 });
 
 final taxiPrimaryProvider = Provider<TaxiProvider>((ref) {
@@ -27,54 +30,51 @@ final taxiPrimaryProvider = Provider<TaxiProvider>((ref) {
 });
 
 final taxiRideOptionsProvider =
-    FutureProvider.family<List<TaxiRideOption>, TaxiRideRequest>((
-      ref,
-      request,
-    ) async {
-      final providers = <TaxiProvider>[
-        ref.read(taxiPrimaryProvider),
-        ...ref.read(taxiProvidersProvider),
-      ];
+    FutureProvider.family<List<TaxiRideOption>, TaxiRideRequest>(
+        (ref, request) async {
+  final providers = <TaxiProvider>[
+    ref.read(taxiPrimaryProvider),
+    ...ref.read(taxiProvidersProvider),
+  ];
 
-      final options = <TaxiRideOption>[];
-      for (var i = 0; i < providers.length; i++) {
-        final provider = providers[i];
-        if (!await provider.isAvailable()) {
-          continue;
-        }
+  final options = <TaxiRideOption>[];
+  for (var i = 0; i < providers.length; i++) {
+    final provider = providers[i];
+    if (!await provider.isAvailable()) {
+      continue;
+    }
 
-        // Stage 1: static comparison values to support a quick provider hub.
-        options.add(
-          TaxiRideOption(
-            providerName: provider.name,
-            estimatedFare: 18 + (i * 6) + (request.passengers * 1.5),
-            currency: 'GBP',
-            estimatedPickupMinutes: 4 + (i * 3),
-            description: request.pickupTime == null
-                ? 'Fast pickup from nearby drivers'
-                : 'Scheduled pickup for your selected time',
-          ),
-        );
-      }
+    // Stage 1: static comparison values to support a quick provider hub.
+    options.add(
+      TaxiRideOption(
+        providerName: provider.name,
+        estimatedFare: 18 + (i * 6) + (request.passengers * 1.5),
+        currency: 'GBP',
+        estimatedPickupMinutes: 4 + (i * 3),
+        description: request.pickupTime == null
+            ? 'Fast pickup from nearby drivers'
+            : 'Scheduled pickup for your selected time',
+      ),
+    );
+  }
 
-      options.sort((a, b) => a.estimatedFare.compareTo(b.estimatedFare));
-      return options;
-    });
+  options.sort((a, b) => a.estimatedFare.compareTo(b.estimatedFare));
+  return options;
+});
 
-typedef TaxiTransportRepositoryFactory =
-    TaxiTransportRepository Function(String userId);
+typedef TaxiTransportRepositoryFactory = TaxiTransportRepository Function(
+  String userId,
+);
 
 final taxiTransportRepositoryFactoryProvider =
     Provider<TaxiTransportRepositoryFactory>((ref) {
-      return (userId) => FirestoreTaxiTransportRepository(
+  return (userId) => FirestoreTaxiTransportRepository(
         firestore: FirebaseFirestore.instance,
         userId: userId,
       );
-    });
+});
 
-final taxiTransportRepositoryProvider = Provider<TaxiTransportRepository>((
-  ref,
-) {
+final taxiTransportRepositoryProvider = Provider<TaxiTransportRepository>((ref) {
   final user = ref.watch(immediateCurrentUserProvider);
   if (user == null) {
     return const _UnauthenticatedTaxiTransportRepository();
@@ -91,22 +91,18 @@ final taxiTripsProvider = Provider<AsyncValue<List<Trip>>>((ref) {
 
 final taxiSavedRidesForTripProvider =
     StreamProvider.family<List<TaxiSavedRide>, String>((ref, tripId) {
-      return ref
-          .watch(taxiTransportRepositoryProvider)
-          .watchRidesForTrip(tripId);
-    });
+  return ref.watch(taxiTransportRepositoryProvider).watchRidesForTrip(tripId);
+});
 
 final taxiSavedRidesForSelectedTripProvider =
     StreamProvider<List<TaxiSavedRide>>((ref) {
-      final tripId = ref.watch(taxiTripSelectionProvider);
-      if (tripId == null || tripId.isEmpty) {
-        return Stream.value(const <TaxiSavedRide>[]);
-      }
+  final tripId = ref.watch(taxiTripSelectionProvider);
+  if (tripId == null || tripId.isEmpty) {
+    return Stream.value(const <TaxiSavedRide>[]);
+  }
 
-      return ref
-          .watch(taxiTransportRepositoryProvider)
-          .watchRidesForTrip(tripId);
-    });
+  return ref.watch(taxiTransportRepositoryProvider).watchRidesForTrip(tripId);
+});
 
 final taxiTransportActionsProvider = Provider<TaxiTransportActions>((ref) {
   return TaxiTransportActions(
@@ -148,7 +144,10 @@ class TaxiTransportActions {
       createdAt: DateTime.now(),
     );
 
-    await _repository.saveRide(tripId: tripId, ride: ride);
+    await _repository.saveRide(
+      tripId: tripId,
+      ride: ride,
+    );
 
     final expense = Expense(
       id: const Uuid().v4(),

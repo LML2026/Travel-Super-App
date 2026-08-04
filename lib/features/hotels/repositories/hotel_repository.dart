@@ -21,7 +21,10 @@ class HotelRepository {
         error: e,
         stackTrace: st,
       );
-      return Failure(e.toString(), error: e);
+      return Failure(
+        e.toString(),
+        error: e,
+      );
     }
   }
 }

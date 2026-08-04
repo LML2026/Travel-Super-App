@@ -39,7 +39,7 @@ class _AuthRefreshListenable extends ChangeNotifier {
 bool _isProtectedPath(String path) {
   return path.startsWith('/home') ||
       path.startsWith('/wallet') ||
-      path.startsWith('/transport') ||
+  path.startsWith('/transport') ||
       path.startsWith('/documents') ||
       path.startsWith('/trips');
 }
@@ -83,8 +83,7 @@ GoRouter createAppRouter(Ref ref) {
         return AppRoute.home.path;
       }
 
-      final isAuthEntryPath =
-          path == AppRoute.login.path ||
+      final isAuthEntryPath = path == AppRoute.login.path ||
           path == AppRoute.register.path ||
           path == AppRoute.forgotPassword.path;
 

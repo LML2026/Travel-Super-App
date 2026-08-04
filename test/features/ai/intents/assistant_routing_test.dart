@@ -72,10 +72,7 @@ void main() {
     );
 
     expect(action, isA<ShowCommandCardAction>());
-    expect(
-      (action as ShowCommandCardAction).card.title,
-      contains('Smart Wallet'),
-    );
+    expect((action as ShowCommandCardAction).card.title, contains('Smart Wallet'));
   });
 
   test('routes coin requests to a live balance reply', () {
@@ -118,25 +115,22 @@ void main() {
     expect(action.parameters['serviceType'], 'toilet');
   });
 
-  test(
-    'routes pharmacy request to nearby essentials with pharmacy prefill',
-    () {
-      final action = router.route(
-        intent: const AssistantIntent(
-          type: AssistantIntentType.findNearbyPharmacy,
-          confidence: 0.91,
-        ),
-        context: context,
-      );
+  test('routes pharmacy request to nearby essentials with pharmacy prefill', () {
+    final action = router.route(
+      intent: const AssistantIntent(
+        type: AssistantIntentType.findNearbyPharmacy,
+        confidence: 0.91,
+      ),
+      context: context,
+    );
 
-      expect(action, isA<NavigateAssistantAction>());
-      expect(
-        (action as NavigateAssistantAction).target,
-        AssistantNavigationTarget.nearbyEssentials,
-      );
-      expect(action.parameters['serviceType'], 'pharmacy');
-    },
-  );
+    expect(action, isA<NavigateAssistantAction>());
+    expect(
+      (action as NavigateAssistantAction).target,
+      AssistantNavigationTarget.nearbyEssentials,
+    );
+    expect(action.parameters['serviceType'], 'pharmacy');
+  });
 
   test('returns a safe reply when no active journey exists', () {
     final action = router.route(
@@ -155,10 +149,7 @@ void main() {
     );
 
     expect(action, isA<ReplyAssistantAction>());
-    expect(
-      (action as ReplyAssistantAction).message,
-      contains('active journey'),
-    );
+    expect((action as ReplyAssistantAction).message, contains('active journey'));
   });
 
   test('returns a fallback reply for unknown requests', () {

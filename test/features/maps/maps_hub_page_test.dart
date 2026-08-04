@@ -48,11 +48,8 @@ class _FakeProviderGateway implements ProviderGateway {
   }
 
   @override
-  Future<String> translate({
-    required String text,
-    required String sourceLanguageCode,
-    required String targetLanguageCode,
-  }) async => text;
+  Future<String> translate({required String text, required String sourceLanguageCode, required String targetLanguageCode}) async =>
+      text;
 }
 
 class _FakeLiveLocationService implements LiveLocationService {
@@ -114,9 +111,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          tripRepositoryProvider.overrideWithValue(
-            _FakeTripRepository(<Trip>[trip]),
-          ),
+          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(<Trip>[trip])),
           providerGatewayProvider.overrideWithValue(_FakeProviderGateway()),
           liveLocationServiceProvider.overrideWithValue(
             _FakeLiveLocationService(
@@ -129,7 +124,9 @@ void main() {
             ),
           ),
         ],
-        child: const MaterialApp(home: MapsHubPage()),
+        child: const MaterialApp(
+          home: MapsHubPage(),
+        ),
       ),
     );
 
@@ -141,63 +138,58 @@ void main() {
     expect(find.byType(MapCard), findsOneWidget);
   });
 
-  testWidgets(
-    'Maps hub shows nearby essentials prefill title and category chip',
-    (tester) async {
-      final trip = Trip(
-        id: 'trip-1',
-        title: 'Rome Escape',
-        destination: 'Rome',
-        startDate: DateTime(2026, 9, 2),
-        endDate: DateTime(2026, 9, 8),
-        budget: 1500,
-        currency: 'GBP',
-        travellers: 2,
-      );
+  testWidgets('Maps hub shows nearby essentials prefill title and category chip',
+      (tester) async {
+    final trip = Trip(
+      id: 'trip-1',
+      title: 'Rome Escape',
+      destination: 'Rome',
+      startDate: DateTime(2026, 9, 2),
+      endDate: DateTime(2026, 9, 8),
+      budget: 1500,
+      currency: 'GBP',
+      travellers: 2,
+    );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            tripRepositoryProvider.overrideWithValue(
-              _FakeTripRepository(<Trip>[trip]),
-            ),
-            providerGatewayProvider.overrideWithValue(_FakeProviderGateway()),
-            liveLocationServiceProvider.overrideWithValue(
-              _FakeLiveLocationService(
-                LiveLocation(
-                  latitude: 51.5072,
-                  longitude: -0.1276,
-                  accuracy: 9,
-                  timestamp: DateTime(2026, 7, 28),
-                ),
-              ),
-            ),
-          ],
-          child: const MaterialApp(
-            home: MapsHubPage(
-              prefill: PlacesPrefill(
-                query: 'public toilets open now within 500 m',
-                title: 'Toilets',
-                categories: <PlaceCategory>{PlaceCategory.toilet},
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(<Trip>[trip])),
+          providerGatewayProvider.overrideWithValue(_FakeProviderGateway()),
+          liveLocationServiceProvider.overrideWithValue(
+            _FakeLiveLocationService(
+              LiveLocation(
+                latitude: 51.5072,
+                longitude: -0.1276,
+                accuracy: 9,
+                timestamp: DateTime(2026, 7, 28),
               ),
             ),
           ),
+        ],
+        child: const MaterialApp(
+          home: MapsHubPage(
+            prefill: PlacesPrefill(
+              query: 'public toilets open now within 500 m',
+              title: 'Toilets',
+              categories: <PlaceCategory>{PlaceCategory.toilet},
+            ),
+          ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
-      final suggestedSearch = find.textContaining(
-        'Suggested search: public toilets open now within 500 m',
-      );
-      await tester.scrollUntilVisible(
-        suggestedSearch,
-        220,
-        scrollable: find.byType(Scrollable).first,
-      );
+    final suggestedSearch =
+        find.textContaining('Suggested search: public toilets open now within 500 m');
+    await tester.scrollUntilVisible(
+      suggestedSearch,
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
 
-      expect(suggestedSearch, findsOneWidget);
-      expect(find.text('toilet'), findsOneWidget);
-    },
-  );
+    expect(suggestedSearch, findsOneWidget);
+    expect(find.text('toilet'), findsOneWidget);
+  });
 }

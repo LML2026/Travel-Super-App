@@ -34,16 +34,13 @@ void main() {
     authRepository = _MockAuthenticationRepository();
     profileRepository = _MockUserProfileRepository();
 
-    when(
-      () => authRepository.authStateChanges(),
-    ).thenAnswer((_) => const Stream<AuthUser?>.empty());
+    when(() => authRepository.authStateChanges())
+      .thenAnswer((_) => const Stream<AuthUser?>.empty());
     when(() => authRepository.currentUser).thenReturn(null);
-    when(
-      () => profileRepository.ensureProfile(
-        uid: any(named: 'uid'),
-        profile: any(named: 'profile'),
-      ),
-    ).thenAnswer((_) async {});
+    when(() => profileRepository.ensureProfile(
+          uid: any(named: 'uid'),
+          profile: any(named: 'profile'),
+        )).thenAnswer((_) async {});
   });
 
   ProviderContainer makeContainer() {
@@ -62,13 +59,11 @@ void main() {
       emailVerified: false,
     );
 
-    when(
-      () => authRepository.register(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-        displayName: any(named: 'displayName'),
-      ),
-    ).thenAnswer((_) async => user);
+    when(() => authRepository.register(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+        )).thenAnswer((_) async => user);
     when(() => authRepository.sendEmailVerification()).thenAnswer((_) async {});
 
     final container = makeContainer();
@@ -93,19 +88,20 @@ void main() {
       emailVerified: true,
     );
 
-    when(
-      () => authRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      ),
-    ).thenAnswer((_) async => user);
+    when(() => authRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        )).thenAnswer((_) async => user);
 
     final container = makeContainer();
     addTearDown(container.dispose);
 
     final destination = await container
         .read(authActionControllerProvider.notifier)
-        .signInWithEmail(email: 'verified@example.com', password: 'secret123');
+        .signInWithEmail(
+          email: 'verified@example.com',
+          password: 'secret123',
+        );
 
     expect(destination, AuthDestination.home);
   });

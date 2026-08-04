@@ -46,8 +46,14 @@ class ExpenseListItem extends StatelessWidget {
           }
         },
         itemBuilder: (context) => const [
-          PopupMenuItem<String>(value: 'edit', child: Text('Edit')),
-          PopupMenuItem<String>(value: 'delete', child: Text('Delete')),
+          PopupMenuItem<String>(
+            value: 'edit',
+            child: Text('Edit'),
+          ),
+          PopupMenuItem<String>(
+            value: 'delete',
+            child: Text('Delete'),
+          ),
         ],
       ),
       onTap: onEdit,

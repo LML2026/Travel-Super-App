@@ -23,18 +23,13 @@ final flightFirestoreServiceProvider = Provider<FlightFirestoreService>(
 /// FutureProvider.family — Riverpod manages loading / data / error.
 /// UI calls: ref.watch(flightSearchProvider(request))
 final flightSearchProvider =
-    FutureProvider.family<List<Flight>, FlightSearchRequest>((
-      ref,
-      request,
-    ) async {
-      final result = await ref
-          .read(flightRepositoryProvider)
-          .searchFlights(request);
-      return switch (result) {
-        Success(:final data) => data,
-        Failure(:final message) => throw Exception(message),
-      };
-    });
+    FutureProvider.family<List<Flight>, FlightSearchRequest>((ref, request) async {
+  final result = await ref.read(flightRepositoryProvider).searchFlights(request);
+  return switch (result) {
+    Success(:final data) => data,
+    Failure(:final message) => throw Exception(message),
+  };
+});
 
 // ── Recent Searches provider ───────────────────────────────────────────────
 /// Stream of recent flight searches ordered by newest first
@@ -46,26 +41,22 @@ final recentFlightSearchesProvider = StreamProvider<List<RecentSearch>>((ref) {
 /// Mutation provider to save a search
 final saveRecentSearchProvider =
     FutureProvider.family<void, FlightSearchRequest>((ref, request) async {
-      await ref
-          .read(flightFirestoreServiceProvider)
-          .saveRecentSearch(
-            from: request.from,
-            to: request.to,
-            departureDate: request.departureDate,
-            returnDate: request.returnDate,
-            passengers: request.passengers,
-            cabinClass: request.cabinClass,
-          );
-      // Invalidate the recent searches stream to refetch
-      ref.invalidate(recentFlightSearchesProvider);
-    });
+  await ref.read(flightFirestoreServiceProvider).saveRecentSearch(
+    from: request.from,
+    to: request.to,
+    departureDate: request.departureDate,
+    returnDate: request.returnDate,
+    passengers: request.passengers,
+    cabinClass: request.cabinClass,
+  );
+  // Invalidate the recent searches stream to refetch
+  ref.invalidate(recentFlightSearchesProvider);
+});
 
 // ── Delete Recent Search provider ──────────────────────────────────────────
 /// Mutation provider to delete a recent search
-final deleteRecentSearchProvider = FutureProvider.family<void, String>((
-  ref,
-  searchId,
-) async {
+final deleteRecentSearchProvider =
+    FutureProvider.family<void, String>((ref, searchId) async {
   await ref.read(flightFirestoreServiceProvider).deleteRecentSearch(searchId);
   // Invalidate the recent searches stream to refetch
   ref.invalidate(recentFlightSearchesProvider);
@@ -79,37 +70,30 @@ final savedFlightsProvider = StreamProvider<List<SavedFlight>>((ref) {
 
 // ── Save Flight provider ───────────────────────────────────────────────────
 /// Mutation provider to save a flight
-final saveFlightProvider = FutureProvider.family<void, SavedFlight>((
-  ref,
-  savedFlight,
-) async {
-  await ref
-      .read(flightFirestoreServiceProvider)
-      .saveFlight(
-        flightId: savedFlight.flightId,
-        airline: savedFlight.airline,
-        airlineLogo: savedFlight.airlineLogo,
-        flightNumber: savedFlight.flightNumber,
-        origin: savedFlight.origin,
-        destination: savedFlight.destination,
-        departureAt: savedFlight.departureAt,
-        arrivalAt: savedFlight.arrivalAt,
-        duration: savedFlight.duration,
-        stops: savedFlight.stops,
-        amount: savedFlight.amount,
-        currency: savedFlight.currency,
-        cabinClass: savedFlight.cabinClass,
-      );
+final saveFlightProvider = FutureProvider.family<void, SavedFlight>((ref, savedFlight) async {
+  await ref.read(flightFirestoreServiceProvider).saveFlight(
+    flightId: savedFlight.flightId,
+    airline: savedFlight.airline,
+    airlineLogo: savedFlight.airlineLogo,
+    flightNumber: savedFlight.flightNumber,
+    origin: savedFlight.origin,
+    destination: savedFlight.destination,
+    departureAt: savedFlight.departureAt,
+    arrivalAt: savedFlight.arrivalAt,
+    duration: savedFlight.duration,
+    stops: savedFlight.stops,
+    amount: savedFlight.amount,
+    currency: savedFlight.currency,
+    cabinClass: savedFlight.cabinClass,
+  );
   // Invalidate the saved flights stream to refetch
   ref.invalidate(savedFlightsProvider);
 });
 
 // ── Remove Saved Flight provider ───────────────────────────────────────────
 /// Mutation provider to remove a saved flight
-final removeSavedFlightProvider = FutureProvider.family<void, String>((
-  ref,
-  saveId,
-) async {
+final removeSavedFlightProvider =
+    FutureProvider.family<void, String>((ref, saveId) async {
   await ref.read(flightFirestoreServiceProvider).removeSavedFlight(saveId);
   // Invalidate the saved flights stream to refetch
   ref.invalidate(savedFlightsProvider);
@@ -117,18 +101,13 @@ final removeSavedFlightProvider = FutureProvider.family<void, String>((
 
 // ── Check if Flight is Saved provider ──────────────────────────────────────
 /// Check if a specific flight is saved
-final isFlightSavedProvider = FutureProvider.family<bool, String>((
-  ref,
-  flightId,
-) async {
+final isFlightSavedProvider = FutureProvider.family<bool, String>((ref, flightId) async {
   return ref.read(flightFirestoreServiceProvider).isFlightSaved(flightId);
 });
 
 // ── Get Save ID provider ───────────────────────────────────────────────────
 /// Get the save document ID for a flight
-final getSavedFlightIdProvider = FutureProvider.family<String?, String>((
-  ref,
-  flightId,
-) async {
+final getSavedFlightIdProvider = FutureProvider.family<String?, String>((ref, flightId) async {
   return ref.read(flightFirestoreServiceProvider).getSavedFlightId(flightId);
 });
+

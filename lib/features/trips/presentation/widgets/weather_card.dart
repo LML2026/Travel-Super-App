@@ -5,7 +5,11 @@ import '../../../weather/providers/weather_provider.dart';
 import 'dashboard_section.dart';
 
 class WeatherCard extends ConsumerWidget {
-  const WeatherCard({super.key, required this.destination, this.onTap});
+  const WeatherCard({
+    super.key,
+    required this.destination,
+    this.onTap,
+  });
 
   final String destination;
   final VoidCallback? onTap;

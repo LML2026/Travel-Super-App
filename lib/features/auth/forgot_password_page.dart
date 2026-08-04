@@ -27,9 +27,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     setState(() => _loading = true);
 
     try {
-      await ref
-          .read(authMutationProvider.notifier)
-          .sendPasswordReset(email: _emailController.text.trim());
+      await ref.read(authMutationProvider.notifier).sendPasswordReset(
+        email: _emailController.text.trim(),
+      );
 
       if (mounted) {
         setState(() => _emailSent = true);
@@ -58,7 +58,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     return LoadingOverlay(
       isLoading: _loading,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Reset Password')),
+        appBar: AppBar(
+          title: const Text('Reset Password'),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -72,7 +74,10 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 const SizedBox(height: 8),
                 Text(
                   'We\'ll send you a link to reset your password.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Form(

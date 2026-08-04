@@ -5,7 +5,7 @@ import '../models/nearby_bundle.dart';
 
 class HotelExperienceService {
   HotelExperienceService({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+      : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
@@ -28,7 +28,10 @@ class HotelExperienceService {
   }) async {
     final response = await _apiClient.get(
       ApiEndpoints.currencyRate,
-      queryParameters: {'base': base, 'target': target},
+      queryParameters: {
+        'base': base,
+        'target': target,
+      },
     );
 
     if (response.statusCode != 200 || response.data is! Map<String, dynamic>) {

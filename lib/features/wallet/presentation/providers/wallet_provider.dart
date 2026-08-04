@@ -28,10 +28,15 @@ const List<String> kSupportedWalletCurrencies = <String>[
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
   final userId = ref.watch(walletUserIdProvider);
   if (userId == null || userId.isEmpty) {
-    return InMemoryWalletRepository(defaultBaseCurrency: 'GBP');
+    return InMemoryWalletRepository(
+      defaultBaseCurrency: 'GBP',
+    );
   }
 
-  return FirestoreWalletRepository(userId: userId, defaultBaseCurrency: 'GBP');
+  return FirestoreWalletRepository(
+    userId: userId,
+    defaultBaseCurrency: 'GBP',
+  );
 });
 
 final walletFxServiceProvider = Provider<WalletFxService>((ref) {
@@ -39,9 +44,10 @@ final walletFxServiceProvider = Provider<WalletFxService>((ref) {
 });
 
 final fxRateProvider = FutureProvider.family<double, FxPair>((ref, pair) async {
-  return ref
-      .watch(walletFxServiceProvider)
-      .getRate(base: pair.base, target: pair.target);
+  return ref.watch(walletFxServiceProvider).getRate(
+        base: pair.base,
+        target: pair.target,
+      );
 });
 
 final walletUserIdProvider = Provider<String?>((ref) {
@@ -57,9 +63,8 @@ final walletProvider = StreamProvider<Wallet>((ref) {
   return ref.watch(walletRepositoryProvider).watchWallet(userId);
 });
 
-final walletTransactionsProvider = StreamProvider<List<WalletTransaction>>((
-  ref,
-) {
+final walletTransactionsProvider =
+    StreamProvider<List<WalletTransaction>>((ref) {
   final userId = ref.watch(walletUserIdProvider);
   if (userId == null || userId.isEmpty) {
     return Stream.error(
@@ -82,12 +87,12 @@ final walletCurrenciesProvider = Provider<List<String>>((ref) {
 
 class WalletActions {
   WalletActions.authenticated(this._repository, this._walletId)
-    : isAuthenticated = true;
+      : isAuthenticated = true;
 
   const WalletActions.unauthenticated()
-    : _repository = null,
-      _walletId = null,
-      isAuthenticated = false;
+      : _repository = null,
+        _walletId = null,
+        isAuthenticated = false;
 
   final WalletRepository? _repository;
   final String? _walletId;
@@ -118,7 +123,10 @@ class WalletActions {
       _throwUnauthenticated();
     }
 
-    return repository.addCurrency(walletId: walletId, currency: currency);
+    return repository.addCurrency(
+      walletId: walletId,
+      currency: currency,
+    );
   }
 
   Future<void> transfer(

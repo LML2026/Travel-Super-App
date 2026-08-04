@@ -12,8 +12,7 @@ part of 'search_params_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 FlightSearchParams _$FlightSearchParamsFromJson(Map<String, dynamic> json) {
   return _FlightSearchParams.fromJson(json);
@@ -41,18 +40,16 @@ mixin _$FlightSearchParams {
 /// @nodoc
 abstract class $FlightSearchParamsCopyWith<$Res> {
   factory $FlightSearchParamsCopyWith(
-    FlightSearchParams value,
-    $Res Function(FlightSearchParams) then,
-  ) = _$FlightSearchParamsCopyWithImpl<$Res, FlightSearchParams>;
+          FlightSearchParams value, $Res Function(FlightSearchParams) then) =
+      _$FlightSearchParamsCopyWithImpl<$Res, FlightSearchParams>;
   @useResult
-  $Res call({
-    String departure,
-    String arrival,
-    DateTime departureDate,
-    DateTime? returnDate,
-    int passengers,
-    String tripType,
-  });
+  $Res call(
+      {String departure,
+      String arrival,
+      DateTime departureDate,
+      DateTime? returnDate,
+      int passengers,
+      String tripType});
 }
 
 /// @nodoc
@@ -77,65 +74,59 @@ class _$FlightSearchParamsCopyWithImpl<$Res, $Val extends FlightSearchParams>
     Object? passengers = null,
     Object? tripType = null,
   }) {
-    return _then(
-      _value.copyWith(
-            departure: null == departure
-                ? _value.departure
-                : departure // ignore: cast_nullable_to_non_nullable
-                      as String,
-            arrival: null == arrival
-                ? _value.arrival
-                : arrival // ignore: cast_nullable_to_non_nullable
-                      as String,
-            departureDate: null == departureDate
-                ? _value.departureDate
-                : departureDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            returnDate: freezed == returnDate
-                ? _value.returnDate
-                : returnDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            passengers: null == passengers
-                ? _value.passengers
-                : passengers // ignore: cast_nullable_to_non_nullable
-                      as int,
-            tripType: null == tripType
-                ? _value.tripType
-                : tripType // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      departure: null == departure
+          ? _value.departure
+          : departure // ignore: cast_nullable_to_non_nullable
+              as String,
+      arrival: null == arrival
+          ? _value.arrival
+          : arrival // ignore: cast_nullable_to_non_nullable
+              as String,
+      departureDate: null == departureDate
+          ? _value.departureDate
+          : departureDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      returnDate: freezed == returnDate
+          ? _value.returnDate
+          : returnDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      passengers: null == passengers
+          ? _value.passengers
+          : passengers // ignore: cast_nullable_to_non_nullable
+              as int,
+      tripType: null == tripType
+          ? _value.tripType
+          : tripType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$FlightSearchParamsImplCopyWith<$Res>
     implements $FlightSearchParamsCopyWith<$Res> {
-  factory _$$FlightSearchParamsImplCopyWith(
-    _$FlightSearchParamsImpl value,
-    $Res Function(_$FlightSearchParamsImpl) then,
-  ) = __$$FlightSearchParamsImplCopyWithImpl<$Res>;
+  factory _$$FlightSearchParamsImplCopyWith(_$FlightSearchParamsImpl value,
+          $Res Function(_$FlightSearchParamsImpl) then) =
+      __$$FlightSearchParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String departure,
-    String arrival,
-    DateTime departureDate,
-    DateTime? returnDate,
-    int passengers,
-    String tripType,
-  });
+  $Res call(
+      {String departure,
+      String arrival,
+      DateTime departureDate,
+      DateTime? returnDate,
+      int passengers,
+      String tripType});
 }
 
 /// @nodoc
 class __$$FlightSearchParamsImplCopyWithImpl<$Res>
     extends _$FlightSearchParamsCopyWithImpl<$Res, _$FlightSearchParamsImpl>
     implements _$$FlightSearchParamsImplCopyWith<$Res> {
-  __$$FlightSearchParamsImplCopyWithImpl(
-    _$FlightSearchParamsImpl _value,
-    $Res Function(_$FlightSearchParamsImpl) _then,
-  ) : super(_value, _then);
+  __$$FlightSearchParamsImplCopyWithImpl(_$FlightSearchParamsImpl _value,
+      $Res Function(_$FlightSearchParamsImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of FlightSearchParams
   /// with the given fields replaced by the non-null parameter values.
@@ -149,48 +140,45 @@ class __$$FlightSearchParamsImplCopyWithImpl<$Res>
     Object? passengers = null,
     Object? tripType = null,
   }) {
-    return _then(
-      _$FlightSearchParamsImpl(
-        departure: null == departure
-            ? _value.departure
-            : departure // ignore: cast_nullable_to_non_nullable
-                  as String,
-        arrival: null == arrival
-            ? _value.arrival
-            : arrival // ignore: cast_nullable_to_non_nullable
-                  as String,
-        departureDate: null == departureDate
-            ? _value.departureDate
-            : departureDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        returnDate: freezed == returnDate
-            ? _value.returnDate
-            : returnDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        passengers: null == passengers
-            ? _value.passengers
-            : passengers // ignore: cast_nullable_to_non_nullable
-                  as int,
-        tripType: null == tripType
-            ? _value.tripType
-            : tripType // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
+    return _then(_$FlightSearchParamsImpl(
+      departure: null == departure
+          ? _value.departure
+          : departure // ignore: cast_nullable_to_non_nullable
+              as String,
+      arrival: null == arrival
+          ? _value.arrival
+          : arrival // ignore: cast_nullable_to_non_nullable
+              as String,
+      departureDate: null == departureDate
+          ? _value.departureDate
+          : departureDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      returnDate: freezed == returnDate
+          ? _value.returnDate
+          : returnDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      passengers: null == passengers
+          ? _value.passengers
+          : passengers // ignore: cast_nullable_to_non_nullable
+              as int,
+      tripType: null == tripType
+          ? _value.tripType
+          : tripType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FlightSearchParamsImpl implements _FlightSearchParams {
-  const _$FlightSearchParamsImpl({
-    required this.departure,
-    required this.arrival,
-    required this.departureDate,
-    this.returnDate,
-    required this.passengers,
-    required this.tripType,
-  });
+  const _$FlightSearchParamsImpl(
+      {required this.departure,
+      required this.arrival,
+      required this.departureDate,
+      this.returnDate,
+      required this.passengers,
+      required this.tripType});
 
   factory _$FlightSearchParamsImpl.fromJson(Map<String, dynamic> json) =>
       _$$FlightSearchParamsImplFromJson(json);
@@ -233,15 +221,8 @@ class _$FlightSearchParamsImpl implements _FlightSearchParams {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    departure,
-    arrival,
-    departureDate,
-    returnDate,
-    passengers,
-    tripType,
-  );
+  int get hashCode => Object.hash(runtimeType, departure, arrival,
+      departureDate, returnDate, passengers, tripType);
 
   /// Create a copy of FlightSearchParams
   /// with the given fields replaced by the non-null parameter values.
@@ -250,25 +231,24 @@ class _$FlightSearchParamsImpl implements _FlightSearchParams {
   @pragma('vm:prefer-inline')
   _$$FlightSearchParamsImplCopyWith<_$FlightSearchParamsImpl> get copyWith =>
       __$$FlightSearchParamsImplCopyWithImpl<_$FlightSearchParamsImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FlightSearchParamsImplToJson(this);
+    return _$$FlightSearchParamsImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _FlightSearchParams implements FlightSearchParams {
-  const factory _FlightSearchParams({
-    required final String departure,
-    required final String arrival,
-    required final DateTime departureDate,
-    final DateTime? returnDate,
-    required final int passengers,
-    required final String tripType,
-  }) = _$FlightSearchParamsImpl;
+  const factory _FlightSearchParams(
+      {required final String departure,
+      required final String arrival,
+      required final DateTime departureDate,
+      final DateTime? returnDate,
+      required final int passengers,
+      required final String tripType}) = _$FlightSearchParamsImpl;
 
   factory _FlightSearchParams.fromJson(Map<String, dynamic> json) =
       _$FlightSearchParamsImpl.fromJson;
@@ -319,17 +299,15 @@ mixin _$HotelSearchParams {
 /// @nodoc
 abstract class $HotelSearchParamsCopyWith<$Res> {
   factory $HotelSearchParamsCopyWith(
-    HotelSearchParams value,
-    $Res Function(HotelSearchParams) then,
-  ) = _$HotelSearchParamsCopyWithImpl<$Res, HotelSearchParams>;
+          HotelSearchParams value, $Res Function(HotelSearchParams) then) =
+      _$HotelSearchParamsCopyWithImpl<$Res, HotelSearchParams>;
   @useResult
-  $Res call({
-    String city,
-    DateTime checkInDate,
-    DateTime checkOutDate,
-    int guests,
-    int rooms,
-  });
+  $Res call(
+      {String city,
+      DateTime checkInDate,
+      DateTime checkOutDate,
+      int guests,
+      int rooms});
 }
 
 /// @nodoc
@@ -353,60 +331,54 @@ class _$HotelSearchParamsCopyWithImpl<$Res, $Val extends HotelSearchParams>
     Object? guests = null,
     Object? rooms = null,
   }) {
-    return _then(
-      _value.copyWith(
-            city: null == city
-                ? _value.city
-                : city // ignore: cast_nullable_to_non_nullable
-                      as String,
-            checkInDate: null == checkInDate
-                ? _value.checkInDate
-                : checkInDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            checkOutDate: null == checkOutDate
-                ? _value.checkOutDate
-                : checkOutDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            guests: null == guests
-                ? _value.guests
-                : guests // ignore: cast_nullable_to_non_nullable
-                      as int,
-            rooms: null == rooms
-                ? _value.rooms
-                : rooms // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      checkInDate: null == checkInDate
+          ? _value.checkInDate
+          : checkInDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      checkOutDate: null == checkOutDate
+          ? _value.checkOutDate
+          : checkOutDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      guests: null == guests
+          ? _value.guests
+          : guests // ignore: cast_nullable_to_non_nullable
+              as int,
+      rooms: null == rooms
+          ? _value.rooms
+          : rooms // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$HotelSearchParamsImplCopyWith<$Res>
     implements $HotelSearchParamsCopyWith<$Res> {
-  factory _$$HotelSearchParamsImplCopyWith(
-    _$HotelSearchParamsImpl value,
-    $Res Function(_$HotelSearchParamsImpl) then,
-  ) = __$$HotelSearchParamsImplCopyWithImpl<$Res>;
+  factory _$$HotelSearchParamsImplCopyWith(_$HotelSearchParamsImpl value,
+          $Res Function(_$HotelSearchParamsImpl) then) =
+      __$$HotelSearchParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String city,
-    DateTime checkInDate,
-    DateTime checkOutDate,
-    int guests,
-    int rooms,
-  });
+  $Res call(
+      {String city,
+      DateTime checkInDate,
+      DateTime checkOutDate,
+      int guests,
+      int rooms});
 }
 
 /// @nodoc
 class __$$HotelSearchParamsImplCopyWithImpl<$Res>
     extends _$HotelSearchParamsCopyWithImpl<$Res, _$HotelSearchParamsImpl>
     implements _$$HotelSearchParamsImplCopyWith<$Res> {
-  __$$HotelSearchParamsImplCopyWithImpl(
-    _$HotelSearchParamsImpl _value,
-    $Res Function(_$HotelSearchParamsImpl) _then,
-  ) : super(_value, _then);
+  __$$HotelSearchParamsImplCopyWithImpl(_$HotelSearchParamsImpl _value,
+      $Res Function(_$HotelSearchParamsImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of HotelSearchParams
   /// with the given fields replaced by the non-null parameter values.
@@ -419,43 +391,40 @@ class __$$HotelSearchParamsImplCopyWithImpl<$Res>
     Object? guests = null,
     Object? rooms = null,
   }) {
-    return _then(
-      _$HotelSearchParamsImpl(
-        city: null == city
-            ? _value.city
-            : city // ignore: cast_nullable_to_non_nullable
-                  as String,
-        checkInDate: null == checkInDate
-            ? _value.checkInDate
-            : checkInDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        checkOutDate: null == checkOutDate
-            ? _value.checkOutDate
-            : checkOutDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        guests: null == guests
-            ? _value.guests
-            : guests // ignore: cast_nullable_to_non_nullable
-                  as int,
-        rooms: null == rooms
-            ? _value.rooms
-            : rooms // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
+    return _then(_$HotelSearchParamsImpl(
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      checkInDate: null == checkInDate
+          ? _value.checkInDate
+          : checkInDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      checkOutDate: null == checkOutDate
+          ? _value.checkOutDate
+          : checkOutDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      guests: null == guests
+          ? _value.guests
+          : guests // ignore: cast_nullable_to_non_nullable
+              as int,
+      rooms: null == rooms
+          ? _value.rooms
+          : rooms // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$HotelSearchParamsImpl implements _HotelSearchParams {
-  const _$HotelSearchParamsImpl({
-    required this.city,
-    required this.checkInDate,
-    required this.checkOutDate,
-    required this.guests,
-    required this.rooms,
-  });
+  const _$HotelSearchParamsImpl(
+      {required this.city,
+      required this.checkInDate,
+      required this.checkOutDate,
+      required this.guests,
+      required this.rooms});
 
   factory _$HotelSearchParamsImpl.fromJson(Map<String, dynamic> json) =>
       _$$HotelSearchParamsImplFromJson(json);
@@ -502,24 +471,23 @@ class _$HotelSearchParamsImpl implements _HotelSearchParams {
   @pragma('vm:prefer-inline')
   _$$HotelSearchParamsImplCopyWith<_$HotelSearchParamsImpl> get copyWith =>
       __$$HotelSearchParamsImplCopyWithImpl<_$HotelSearchParamsImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$HotelSearchParamsImplToJson(this);
+    return _$$HotelSearchParamsImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _HotelSearchParams implements HotelSearchParams {
-  const factory _HotelSearchParams({
-    required final String city,
-    required final DateTime checkInDate,
-    required final DateTime checkOutDate,
-    required final int guests,
-    required final int rooms,
-  }) = _$HotelSearchParamsImpl;
+  const factory _HotelSearchParams(
+      {required final String city,
+      required final DateTime checkInDate,
+      required final DateTime checkOutDate,
+      required final int guests,
+      required final int rooms}) = _$HotelSearchParamsImpl;
 
   factory _HotelSearchParams.fromJson(Map<String, dynamic> json) =
       _$HotelSearchParamsImpl.fromJson;

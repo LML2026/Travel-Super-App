@@ -22,7 +22,10 @@ class DestinationDetailPage extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(destination.image, fit: BoxFit.cover),
+                  Image.asset(
+                    destination.image,
+                    fit: BoxFit.cover,
+                  ),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(

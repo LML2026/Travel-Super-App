@@ -8,15 +8,17 @@ class FlightsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Flights')),
+      appBar: AppBar(
+        title: const Text('Flights'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
             'Where would you like to fly?',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -36,7 +38,10 @@ class FlightsPage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      child: Icon(Icons.flight_takeoff, size: 30),
+                      child: Icon(
+                        Icons.flight_takeoff,
+                        size: 30,
+                      ),
                     ),
                     SizedBox(width: 18),
                     Expanded(
@@ -51,7 +56,9 @@ class FlightsPage extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 6),
-                          Text('Compare routes, prices and airlines'),
+                          Text(
+                            'Compare routes, prices and airlines',
+                          ),
                         ],
                       ),
                     ),
@@ -66,7 +73,9 @@ class FlightsPage extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.history),
               title: const Text('Recent searches'),
-              subtitle: const Text('View your recent flight searches'),
+              subtitle: const Text(
+                'View your recent flight searches',
+              ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 context.pushRecentFlights();
@@ -78,7 +87,9 @@ class FlightsPage extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.favorite_outline),
               title: const Text('Saved flights'),
-              subtitle: const Text('View flight offers saved for later'),
+              subtitle: const Text(
+                'View flight offers saved for later',
+              ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 context.pushSavedFlights();

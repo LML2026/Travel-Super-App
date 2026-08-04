@@ -28,12 +28,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     setState(() => _loading = true);
 
     try {
-      await ref
-          .read(authMutationProvider.notifier)
-          .register(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
+      await ref.read(authMutationProvider.notifier).register(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -59,7 +57,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return LoadingOverlay(
       isLoading: _loading,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Create Account')),
+        appBar: AppBar(
+          title: const Text('Create Account'),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -73,7 +73,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 const SizedBox(height: 8),
                 Text(
                   'Create your account to get started',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Form(

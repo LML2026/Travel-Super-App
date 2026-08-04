@@ -18,9 +18,8 @@ class _MockRegisterUser extends Mock implements RegisterUser {}
 class _MockSendPasswordReset extends Mock implements SendPasswordReset {}
 
 void main() {
-  testWidgets('Login shows mapped message for invalid credentials', (
-    tester,
-  ) async {
+  testWidgets('Login shows mapped message for invalid credentials',
+      (tester) async {
     final signIn = _MockSignIn();
     when(
       () => signIn.call(
@@ -33,7 +32,9 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [signInUseCaseProvider.overrideWithValue(signIn)],
+        overrides: [
+          signInUseCaseProvider.overrideWithValue(signIn),
+        ],
         child: const MaterialApp(home: LoginPage()),
       ),
     );
@@ -46,9 +47,8 @@ void main() {
     expect(find.text('Incorrect email or password.'), findsOneWidget);
   });
 
-  testWidgets('Register shows mapped message for email already in use', (
-    tester,
-  ) async {
+  testWidgets('Register shows mapped message for email already in use',
+      (tester) async {
     final register = _MockRegisterUser();
     when(
       () => register.call(
@@ -64,7 +64,9 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [registerUserUseCaseProvider.overrideWithValue(register)],
+        overrides: [
+          registerUserUseCaseProvider.overrideWithValue(register),
+        ],
         child: const MaterialApp(home: RegisterPage()),
       ),
     );
@@ -75,23 +77,23 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Create Account'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('An account already exists for this email.'),
-      findsOneWidget,
-    );
+    expect(find.text('An account already exists for this email.'), findsOneWidget);
   });
 
-  testWidgets('Forgot password shows mapped message for invalid email', (
-    tester,
-  ) async {
+  testWidgets('Forgot password shows mapped message for invalid email',
+      (tester) async {
     final reset = _MockSendPasswordReset();
-    when(() => reset.call(email: any(named: 'email'))).thenThrow(
+    when(
+      () => reset.call(email: any(named: 'email')),
+    ).thenThrow(
       FirebaseAuthException(code: 'invalid-email', message: 'Invalid'),
     );
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [sendPasswordResetUseCaseProvider.overrideWithValue(reset)],
+        overrides: [
+          sendPasswordResetUseCaseProvider.overrideWithValue(reset),
+        ],
         child: const MaterialApp(home: ForgotPasswordPage()),
       ),
     );

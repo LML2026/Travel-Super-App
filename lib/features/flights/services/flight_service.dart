@@ -49,15 +49,13 @@ class FlightService {
 
         final flightList = rawFlights
             .whereType<Map>()
-            .map((item) => Flight.fromJson(Map<String, dynamic>.from(item)))
+          .map((item) => Flight.fromJson(Map<String, dynamic>.from(item)))
             .toList();
 
         appLogger.i('FlightService: parsed ${flightList.length} flights');
         return flightList;
       } else {
-        throw Exception(
-          'API Error ${response.statusCode}: ${jsonEncode(response.data)}',
-        );
+        throw Exception('API Error ${response.statusCode}: ${jsonEncode(response.data)}');
       }
     } catch (e, st) {
       appLogger.e('FlightService: error', error: e, stackTrace: st);

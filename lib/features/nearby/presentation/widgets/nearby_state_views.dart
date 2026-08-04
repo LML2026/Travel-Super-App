@@ -35,7 +35,10 @@ class NearbyPlaceholderState extends StatelessWidget {
 }
 
 class NearbyLoadingState extends StatelessWidget {
-  const NearbyLoadingState({super.key, required this.message});
+  const NearbyLoadingState({
+    super.key,
+    required this.message,
+  });
 
   final String message;
 

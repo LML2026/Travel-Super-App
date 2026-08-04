@@ -73,8 +73,7 @@ class NearbyDistanceRanker {
     final dLat = _toRadians(toLatitude - fromLatitude);
     final dLon = _toRadians(toLongitude - fromLongitude);
 
-    final a =
-        math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_toRadians(fromLatitude)) *
             math.cos(_toRadians(toLatitude)) *
             math.sin(dLon / 2) *

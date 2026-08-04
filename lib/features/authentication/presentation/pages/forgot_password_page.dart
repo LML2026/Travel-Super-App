@@ -29,9 +29,9 @@ class _AuthenticationForgotPasswordPageState
 
     setState(() => _loading = true);
     try {
-      await ref
-          .read(authActionControllerProvider.notifier)
-          .sendPasswordReset(email: _emailController.text.trim());
+      await ref.read(authActionControllerProvider.notifier).sendPasswordReset(
+            email: _emailController.text.trim(),
+          );
       if (mounted) {
         setState(() => _emailSent = true);
       }
@@ -63,8 +63,8 @@ class _AuthenticationForgotPasswordPageState
               Text(
                 'Forgot your password?',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 8),
               Text(

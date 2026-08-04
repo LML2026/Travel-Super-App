@@ -12,8 +12,7 @@ part of 'flight_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Flight _$FlightFromJson(Map<String, dynamic> json) {
   return _Flight.fromJson(json);
@@ -49,21 +48,20 @@ abstract class $FlightCopyWith<$Res> {
   factory $FlightCopyWith(Flight value, $Res Function(Flight) then) =
       _$FlightCopyWithImpl<$Res, Flight>;
   @useResult
-  $Res call({
-    String id,
-    String airline,
-    String flightNumber,
-    String departure,
-    String arrival,
-    DateTime departureTime,
-    DateTime arrivalTime,
-    int duration,
-    double price,
-    int stops,
-    int seats,
-    String aircraft,
-    double rating,
-  });
+  $Res call(
+      {String id,
+      String airline,
+      String flightNumber,
+      String departure,
+      String arrival,
+      DateTime departureTime,
+      DateTime arrivalTime,
+      int duration,
+      double price,
+      int stops,
+      int seats,
+      String aircraft,
+      double rating});
 }
 
 /// @nodoc
@@ -95,89 +93,84 @@ class _$FlightCopyWithImpl<$Res, $Val extends Flight>
     Object? aircraft = null,
     Object? rating = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            airline: null == airline
-                ? _value.airline
-                : airline // ignore: cast_nullable_to_non_nullable
-                      as String,
-            flightNumber: null == flightNumber
-                ? _value.flightNumber
-                : flightNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            departure: null == departure
-                ? _value.departure
-                : departure // ignore: cast_nullable_to_non_nullable
-                      as String,
-            arrival: null == arrival
-                ? _value.arrival
-                : arrival // ignore: cast_nullable_to_non_nullable
-                      as String,
-            departureTime: null == departureTime
-                ? _value.departureTime
-                : departureTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            arrivalTime: null == arrivalTime
-                ? _value.arrivalTime
-                : arrivalTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            duration: null == duration
-                ? _value.duration
-                : duration // ignore: cast_nullable_to_non_nullable
-                      as int,
-            price: null == price
-                ? _value.price
-                : price // ignore: cast_nullable_to_non_nullable
-                      as double,
-            stops: null == stops
-                ? _value.stops
-                : stops // ignore: cast_nullable_to_non_nullable
-                      as int,
-            seats: null == seats
-                ? _value.seats
-                : seats // ignore: cast_nullable_to_non_nullable
-                      as int,
-            aircraft: null == aircraft
-                ? _value.aircraft
-                : aircraft // ignore: cast_nullable_to_non_nullable
-                      as String,
-            rating: null == rating
-                ? _value.rating
-                : rating // ignore: cast_nullable_to_non_nullable
-                      as double,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      airline: null == airline
+          ? _value.airline
+          : airline // ignore: cast_nullable_to_non_nullable
+              as String,
+      flightNumber: null == flightNumber
+          ? _value.flightNumber
+          : flightNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      departure: null == departure
+          ? _value.departure
+          : departure // ignore: cast_nullable_to_non_nullable
+              as String,
+      arrival: null == arrival
+          ? _value.arrival
+          : arrival // ignore: cast_nullable_to_non_nullable
+              as String,
+      departureTime: null == departureTime
+          ? _value.departureTime
+          : departureTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      arrivalTime: null == arrivalTime
+          ? _value.arrivalTime
+          : arrivalTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      duration: null == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as int,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      stops: null == stops
+          ? _value.stops
+          : stops // ignore: cast_nullable_to_non_nullable
+              as int,
+      seats: null == seats
+          ? _value.seats
+          : seats // ignore: cast_nullable_to_non_nullable
+              as int,
+      aircraft: null == aircraft
+          ? _value.aircraft
+          : aircraft // ignore: cast_nullable_to_non_nullable
+              as String,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$FlightImplCopyWith<$Res> implements $FlightCopyWith<$Res> {
   factory _$$FlightImplCopyWith(
-    _$FlightImpl value,
-    $Res Function(_$FlightImpl) then,
-  ) = __$$FlightImplCopyWithImpl<$Res>;
+          _$FlightImpl value, $Res Function(_$FlightImpl) then) =
+      __$$FlightImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String airline,
-    String flightNumber,
-    String departure,
-    String arrival,
-    DateTime departureTime,
-    DateTime arrivalTime,
-    int duration,
-    double price,
-    int stops,
-    int seats,
-    String aircraft,
-    double rating,
-  });
+  $Res call(
+      {String id,
+      String airline,
+      String flightNumber,
+      String departure,
+      String arrival,
+      DateTime departureTime,
+      DateTime arrivalTime,
+      int duration,
+      double price,
+      int stops,
+      int seats,
+      String aircraft,
+      double rating});
 }
 
 /// @nodoc
@@ -185,9 +178,8 @@ class __$$FlightImplCopyWithImpl<$Res>
     extends _$FlightCopyWithImpl<$Res, _$FlightImpl>
     implements _$$FlightImplCopyWith<$Res> {
   __$$FlightImplCopyWithImpl(
-    _$FlightImpl _value,
-    $Res Function(_$FlightImpl) _then,
-  ) : super(_value, _then);
+      _$FlightImpl _value, $Res Function(_$FlightImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of Flight
   /// with the given fields replaced by the non-null parameter values.
@@ -208,83 +200,80 @@ class __$$FlightImplCopyWithImpl<$Res>
     Object? aircraft = null,
     Object? rating = null,
   }) {
-    return _then(
-      _$FlightImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        airline: null == airline
-            ? _value.airline
-            : airline // ignore: cast_nullable_to_non_nullable
-                  as String,
-        flightNumber: null == flightNumber
-            ? _value.flightNumber
-            : flightNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        departure: null == departure
-            ? _value.departure
-            : departure // ignore: cast_nullable_to_non_nullable
-                  as String,
-        arrival: null == arrival
-            ? _value.arrival
-            : arrival // ignore: cast_nullable_to_non_nullable
-                  as String,
-        departureTime: null == departureTime
-            ? _value.departureTime
-            : departureTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        arrivalTime: null == arrivalTime
-            ? _value.arrivalTime
-            : arrivalTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        duration: null == duration
-            ? _value.duration
-            : duration // ignore: cast_nullable_to_non_nullable
-                  as int,
-        price: null == price
-            ? _value.price
-            : price // ignore: cast_nullable_to_non_nullable
-                  as double,
-        stops: null == stops
-            ? _value.stops
-            : stops // ignore: cast_nullable_to_non_nullable
-                  as int,
-        seats: null == seats
-            ? _value.seats
-            : seats // ignore: cast_nullable_to_non_nullable
-                  as int,
-        aircraft: null == aircraft
-            ? _value.aircraft
-            : aircraft // ignore: cast_nullable_to_non_nullable
-                  as String,
-        rating: null == rating
-            ? _value.rating
-            : rating // ignore: cast_nullable_to_non_nullable
-                  as double,
-      ),
-    );
+    return _then(_$FlightImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      airline: null == airline
+          ? _value.airline
+          : airline // ignore: cast_nullable_to_non_nullable
+              as String,
+      flightNumber: null == flightNumber
+          ? _value.flightNumber
+          : flightNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      departure: null == departure
+          ? _value.departure
+          : departure // ignore: cast_nullable_to_non_nullable
+              as String,
+      arrival: null == arrival
+          ? _value.arrival
+          : arrival // ignore: cast_nullable_to_non_nullable
+              as String,
+      departureTime: null == departureTime
+          ? _value.departureTime
+          : departureTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      arrivalTime: null == arrivalTime
+          ? _value.arrivalTime
+          : arrivalTime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      duration: null == duration
+          ? _value.duration
+          : duration // ignore: cast_nullable_to_non_nullable
+              as int,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      stops: null == stops
+          ? _value.stops
+          : stops // ignore: cast_nullable_to_non_nullable
+              as int,
+      seats: null == seats
+          ? _value.seats
+          : seats // ignore: cast_nullable_to_non_nullable
+              as int,
+      aircraft: null == aircraft
+          ? _value.aircraft
+          : aircraft // ignore: cast_nullable_to_non_nullable
+              as String,
+      rating: null == rating
+          ? _value.rating
+          : rating // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FlightImpl implements _Flight {
-  const _$FlightImpl({
-    required this.id,
-    required this.airline,
-    required this.flightNumber,
-    required this.departure,
-    required this.arrival,
-    required this.departureTime,
-    required this.arrivalTime,
-    required this.duration,
-    required this.price,
-    required this.stops,
-    required this.seats,
-    required this.aircraft,
-    required this.rating,
-  });
+  const _$FlightImpl(
+      {required this.id,
+      required this.airline,
+      required this.flightNumber,
+      required this.departure,
+      required this.arrival,
+      required this.departureTime,
+      required this.arrivalTime,
+      required this.duration,
+      required this.price,
+      required this.stops,
+      required this.seats,
+      required this.aircraft,
+      required this.rating});
 
   factory _$FlightImpl.fromJson(Map<String, dynamic> json) =>
       _$$FlightImplFromJson(json);
@@ -350,21 +339,20 @@ class _$FlightImpl implements _Flight {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    airline,
-    flightNumber,
-    departure,
-    arrival,
-    departureTime,
-    arrivalTime,
-    duration,
-    price,
-    stops,
-    seats,
-    aircraft,
-    rating,
-  );
+      runtimeType,
+      id,
+      airline,
+      flightNumber,
+      departure,
+      arrival,
+      departureTime,
+      arrivalTime,
+      duration,
+      price,
+      stops,
+      seats,
+      aircraft,
+      rating);
 
   /// Create a copy of Flight
   /// with the given fields replaced by the non-null parameter values.
@@ -376,26 +364,27 @@ class _$FlightImpl implements _Flight {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FlightImplToJson(this);
+    return _$$FlightImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Flight implements Flight {
-  const factory _Flight({
-    required final String id,
-    required final String airline,
-    required final String flightNumber,
-    required final String departure,
-    required final String arrival,
-    required final DateTime departureTime,
-    required final DateTime arrivalTime,
-    required final int duration,
-    required final double price,
-    required final int stops,
-    required final int seats,
-    required final String aircraft,
-    required final double rating,
-  }) = _$FlightImpl;
+  const factory _Flight(
+      {required final String id,
+      required final String airline,
+      required final String flightNumber,
+      required final String departure,
+      required final String arrival,
+      required final DateTime departureTime,
+      required final DateTime arrivalTime,
+      required final int duration,
+      required final double price,
+      required final int stops,
+      required final int seats,
+      required final String aircraft,
+      required final double rating}) = _$FlightImpl;
 
   factory _Flight.fromJson(Map<String, dynamic> json) = _$FlightImpl.fromJson;
 

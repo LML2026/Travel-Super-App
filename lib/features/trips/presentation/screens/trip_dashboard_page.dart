@@ -24,7 +24,10 @@ import '../widgets/weather_card.dart';
 import 'edit_trip_page.dart';
 
 class TripDashboardPage extends ConsumerStatefulWidget {
-  const TripDashboardPage({super.key, required this.trip});
+  const TripDashboardPage({
+    super.key,
+    required this.trip,
+  });
 
   final Trip trip;
 
@@ -54,7 +57,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   Widget build(BuildContext context) {
     final documentsAsync = ref.watch(tripDocumentsProvider(_trip.id));
     final hasDocuments =
-        (documentsAsync.valueOrNull ?? const <dynamic>[]).isNotEmpty;
+      (documentsAsync.valueOrNull ?? const <dynamic>[]).isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,7 +77,9 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
 
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => EditTripPage(trip: _trip)),
+                MaterialPageRoute(
+                  builder: (_) => EditTripPage(trip: _trip),
+                ),
               ).then((_) => _reloadTrip());
             },
           ),
@@ -364,14 +369,13 @@ class _TripHeader extends StatelessWidget {
           children: [
             Text(
               trip.destination,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${formatter.format(trip.departureDate)} → ${formatter.format(trip.returnDate)}',
-            ),
+                '${formatter.format(trip.departureDate)} → ${formatter.format(trip.returnDate)}'),
           ],
         ),
       ),

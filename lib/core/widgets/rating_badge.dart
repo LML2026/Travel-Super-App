@@ -4,7 +4,10 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
 class RatingBadge extends StatelessWidget {
-  const RatingBadge({super.key, required this.rating});
+  const RatingBadge({
+    super.key,
+    required this.rating,
+  });
 
   final double rating;
 

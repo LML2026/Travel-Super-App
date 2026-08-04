@@ -7,7 +7,10 @@ import '../providers/hotel_experience_provider.dart';
 import '../providers/hotel_provider.dart';
 
 class HotelDetailsPage extends ConsumerWidget {
-  const HotelDetailsPage({super.key, required this.hotel});
+  const HotelDetailsPage({
+    super.key,
+    required this.hotel,
+  });
 
   final Hotel hotel;
 
@@ -21,7 +24,9 @@ class HotelDetailsPage extends ConsumerWidget {
     final experienceService = ref.read(hotelExperienceServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hotel Details')),
+      appBar: AppBar(
+        title: const Text('Hotel Details'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -29,7 +34,10 @@ class HotelDetailsPage extends ConsumerWidget {
           children: [
             _HeroCard(hotel: hotel),
             const SizedBox(height: 16),
-            _SectionCard(title: 'Description', child: Text(hotel.description)),
+            _SectionCard(
+              title: 'Description',
+              child: Text(hotel.description),
+            ),
             const SizedBox(height: 12),
             _SectionCard(
               title: 'Room & Facilities',
@@ -49,8 +57,7 @@ class HotelDetailsPage extends ConsumerWidget {
                   _IconLine(
                     icon: Icons.bed_outlined,
                     label: 'Stay',
-                    value:
-                        '${hotel.beds} bed${hotel.beds > 1 ? 's' : ''}, ${hotel.nights} night${hotel.nights > 1 ? 's' : ''}',
+                    value: '${hotel.beds} bed${hotel.beds > 1 ? 's' : ''}, ${hotel.nights} night${hotel.nights > 1 ? 's' : ''}',
                   ),
                   _IconLine(
                     icon: Icons.payments_outlined,
@@ -112,42 +119,26 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Nearby Attractions, Restaurants & Transport',
               child: nearbyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) =>
-                    const Text('Nearby places are unavailable right now.'),
+                error: (_, __) => const Text('Nearby places are unavailable right now.'),
                 data: (nearby) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _NearbyList(
                       title: 'Attractions',
                       icon: Icons.place_outlined,
-                      entries: nearby.attractions
-                          .map(
-                            (p) =>
-                                '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)',
-                          )
-                          .toList(),
+                      entries: nearby.attractions.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
                     ),
                     const SizedBox(height: 8),
                     _NearbyList(
                       title: 'Restaurants',
                       icon: Icons.restaurant_outlined,
-                      entries: nearby.restaurants
-                          .map(
-                            (p) =>
-                                '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)',
-                          )
-                          .toList(),
+                      entries: nearby.restaurants.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
                     ),
                     const SizedBox(height: 8),
                     _NearbyList(
                       title: 'Transport',
                       icon: Icons.directions_transit_outlined,
-                      entries: nearby.transport
-                          .map(
-                            (p) =>
-                                '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)',
-                          )
-                          .toList(),
+                      entries: nearby.transport.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
                     ),
                   ],
                 ),
@@ -158,8 +149,7 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Live Weather',
               child: weatherAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) =>
-                    const Text('Weather is currently unavailable.'),
+                error: (_, __) => const Text('Weather is currently unavailable.'),
                 data: (weather) => Row(
                   children: [
                     Text(weather.emoji, style: const TextStyle(fontSize: 30)),
@@ -178,8 +168,7 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Currency Conversion',
               child: currencyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) =>
-                    const Text('Currency conversion unavailable.'),
+                error: (_, __) => const Text('Currency conversion unavailable.'),
                 data: (rate) => Text(
                   '1 ${rate.base} = ${rate.rate.toStringAsFixed(2)} ${rate.target}\n'
                   'Estimated nightly price: ${(hotel.pricePerNight * rate.rate).toStringAsFixed(0)} ${rate.target}',
@@ -215,13 +204,9 @@ class HotelDetailsPage extends ConsumerWidget {
                     data: (isSaved) => OutlinedButton.icon(
                       onPressed: () async {
                         if (isSaved) {
-                          final saveId = await ref.read(
-                            getSavedHotelIdProvider(hotel.id).future,
-                          );
+                          final saveId = await ref.read(getSavedHotelIdProvider(hotel.id).future);
                           if (saveId != null) {
-                            await ref.read(
-                              removeSavedHotelProvider(saveId).future,
-                            );
+                            await ref.read(removeSavedHotelProvider(saveId).future);
                           }
                           return;
                         }
@@ -265,9 +250,7 @@ class HotelDetailsPage extends ConsumerWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            'Booking flow for ${hotel.name} will be enabled in the next sprint.',
-                          ),
+                          content: Text('Booking flow for ${hotel.name} will be enabled in the next sprint.'),
                         ),
                       );
                     },
@@ -359,9 +342,9 @@ class _HeroCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   hotel.name,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
               ),
               const Icon(Icons.star_rounded, color: Colors.amber),
@@ -410,9 +393,9 @@ class _SectionCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           const SizedBox(height: 10),
           child,
@@ -423,11 +406,7 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _IconLine extends StatelessWidget {
-  const _IconLine({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _IconLine({required this.icon, required this.label, required this.value});
 
   final IconData icon;
   final String label;
@@ -442,7 +421,9 @@ class _IconLine extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: const Color(0xFF3669B3)),
           const SizedBox(width: 8),
-          Expanded(child: Text('$label: $value')),
+          Expanded(
+            child: Text('$label: $value'),
+          ),
         ],
       ),
     );
@@ -489,7 +470,9 @@ class _NearbyList extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: const Color(0xFF3669B3)),
         const SizedBox(width: 8),
-        Expanded(child: Text('$title: ${entries.join(', ')}')),
+        Expanded(
+          child: Text('$title: ${entries.join(', ')}'),
+        ),
       ],
     );
   }

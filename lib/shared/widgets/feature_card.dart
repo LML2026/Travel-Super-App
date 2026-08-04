@@ -17,7 +17,9 @@ class FeatureCard extends StatelessWidget {
     return Card(
       elevation: 3,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(

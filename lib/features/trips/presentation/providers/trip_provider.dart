@@ -39,10 +39,8 @@ final tripsProvider = StreamProvider<List<Trip>>((ref) {
   return ref.watch(getTripsUseCaseProvider).call();
 });
 
-final selectedTripProvider = FutureProvider.family<Trip?, String>((
-  ref,
-  tripId,
-) async {
+final selectedTripProvider =
+    FutureProvider.family<Trip?, String>((ref, tripId) async {
   return ref.watch(getTripUseCaseProvider).call(tripId);
 });
 

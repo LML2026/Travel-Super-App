@@ -85,9 +85,9 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
     }
 
     if (_date == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Date is required.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Date is required.')),
+      );
       return;
     }
 
@@ -128,9 +128,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
     if (mutationState.hasError) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Could not save expense: ${mutationState.error}'),
-        ),
+        SnackBar(content: Text('Could not save expense: ${mutationState.error}')),
       );
       return;
     }
@@ -144,7 +142,9 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
     final isEditing = widget.initialExpense != null;
 
     return Scaffold(
-      appBar: AppBar(title: Text(isEditing ? 'Edit Expense' : 'Add Expense')),
+      appBar: AppBar(
+        title: Text(isEditing ? 'Edit Expense' : 'Add Expense'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -152,7 +152,9 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Expense Name'),
+              decoration: const InputDecoration(
+                labelText: 'Expense Name',
+              ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Title is required.';
@@ -163,9 +165,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 labelText: 'Amount (£)',
                 hintText: _currency,
@@ -229,7 +229,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
                 _date == null
                     ? 'Select date'
                     : '${_date!.day.toString().padLeft(2, '0')} '
-                          '${_monthName(_date!.month)} ${_date!.year}',
+                        '${_monthName(_date!.month)} ${_date!.year}',
               ),
               trailing: const Icon(Icons.calendar_today),
               onTap: _pickDate,

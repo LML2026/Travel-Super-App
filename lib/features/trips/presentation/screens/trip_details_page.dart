@@ -20,7 +20,10 @@ import '../providers/trip_provider.dart';
 import 'edit_trip_page.dart';
 
 class TripDetailsPage extends ConsumerWidget {
-  const TripDetailsPage({super.key, required this.tripId});
+  const TripDetailsPage({
+    super.key,
+    required this.tripId,
+  });
 
   final String tripId;
 
@@ -70,14 +73,18 @@ class TripDetailsPage extends ConsumerWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: Center(child: Text(snapshot.error.toString())),
+            body: Center(
+              child: Text(snapshot.error.toString()),
+            ),
           );
         }
 
@@ -86,7 +93,9 @@ class TripDetailsPage extends ConsumerWidget {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: const Center(child: Text('Trip not found')),
+            body: const Center(
+              child: Text('Trip not found'),
+            ),
           );
         }
 
@@ -116,15 +125,17 @@ class TripDetailsPage extends ConsumerWidget {
         final dateFormatter = DateFormat('dd MMM yyyy');
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Trip Dashboard')),
+          appBar: AppBar(
+            title: const Text('Trip Dashboard'),
+          ),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Text(
                 trip.destination,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -173,11 +184,9 @@ class TripDetailsPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${linkedFlight.origin} -> ${linkedFlight.destination}',
-                          ),
+                              '${linkedFlight.origin} -> ${linkedFlight.destination}'),
                           Text(
-                            'Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}',
-                          ),
+                              'Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}'),
                         ],
                       ),
               ),
@@ -201,8 +210,7 @@ class TripDetailsPage extends ConsumerWidget {
                                 : linkedHotel.address,
                           ),
                           Text(
-                            'Rating: ${linkedHotel.rating.toStringAsFixed(1)}',
-                          ),
+                              'Rating: ${linkedHotel.rating.toStringAsFixed(1)}'),
                         ],
                       ),
               ),
@@ -217,8 +225,7 @@ class TripDetailsPage extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text('Spent ${trip.currency} ${spent.toStringAsFixed(2)}'),
                     Text(
-                      'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}',
-                    ),
+                        'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
                   ],
                 ),
               ),
@@ -246,26 +253,24 @@ class TripDetailsPage extends ConsumerWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: rides
-                          .map(
-                            (ride) => _TransportRideLine(
-                              ride: ride,
-                              onBookReturnRide: () {
-                                final returnRequest = TaxiRideRequest(
-                                  pickupLatitude: ride.destinationLatitude,
-                                  pickupLongitude: ride.destinationLongitude,
-                                  pickupAddress: ride.destinationAddress,
-                                  destinationLatitude: ride.pickupLatitude,
-                                  destinationLongitude: ride.pickupLongitude,
-                                  destinationAddress: ride.pickupAddress,
-                                  pickupTime: ride.scheduledAt,
-                                  passengers: ride.passengers,
-                                  luggage: ride.luggage,
-                                );
+                          .map((ride) => _TransportRideLine(
+                                ride: ride,
+                                onBookReturnRide: () {
+                                  final returnRequest = TaxiRideRequest(
+                                    pickupLatitude: ride.destinationLatitude,
+                                    pickupLongitude: ride.destinationLongitude,
+                                    pickupAddress: ride.destinationAddress,
+                                    destinationLatitude: ride.pickupLatitude,
+                                    destinationLongitude: ride.pickupLongitude,
+                                    destinationAddress: ride.pickupAddress,
+                                    pickupTime: ride.scheduledAt,
+                                    passengers: ride.passengers,
+                                    luggage: ride.luggage,
+                                  );
 
-                                context.pushTaxiResults(returnRequest);
-                              },
-                            ),
-                          )
+                                  context.pushTaxiResults(returnRequest);
+                                },
+                              ))
                           .toList(growable: false),
                     );
                   },
@@ -316,7 +321,9 @@ class TripDetailsPage extends ConsumerWidget {
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => EditTripPage(trip: trip)),
+                    MaterialPageRoute(
+                      builder: (_) => EditTripPage(trip: trip),
+                    ),
                   );
                 },
               ),
@@ -464,8 +471,7 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
         ? flight.arrivalAt
         : DateFormat('HH:mm').format(arrival);
 
-    final isLateArrival =
-        arrival != null && (arrival.hour >= 21 || arrival.hour <= 5);
+    final isLateArrival = arrival != null && (arrival.hour >= 21 || arrival.hour <= 5);
 
     final destinationAddress = _resolveHotelDestination();
 
@@ -484,9 +490,9 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'AI Arrival Suggestions',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
             ],
           ),
@@ -535,9 +541,7 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Receipt capture assistant is queued for next step.',
-                      ),
+                      content: Text('Receipt capture assistant is queued for next step.'),
                     ),
                   );
                 },
@@ -714,16 +718,16 @@ class _WorkspaceItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
+                Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(completed ? completedText : pendingText),
               ],
             ),
           ),
-          TextButton(onPressed: onAction, child: Text(actionLabel)),
+          TextButton(
+            onPressed: onAction,
+            child: Text(actionLabel),
+          ),
         ],
       ),
     );
@@ -752,9 +756,9 @@ class _DashboardSection extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               title,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
           ],
         ),

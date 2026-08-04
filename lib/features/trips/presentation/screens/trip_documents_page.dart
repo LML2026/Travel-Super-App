@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/trip_document_provider.dart';
 
 class TripDocumentsPage extends ConsumerWidget {
-  const TripDocumentsPage({super.key, required this.tripId});
+  const TripDocumentsPage({
+    super.key,
+    required this.tripId,
+  });
 
   final String tripId;
 
-  Future<void> _showAddDocumentDialog(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _showAddDocumentDialog(BuildContext context, WidgetRef ref) async {
     final titleController = TextEditingController();
     final typeController = TextEditingController(text: 'General');
     final referenceController = TextEditingController();
@@ -71,9 +71,7 @@ class TripDocumentsPage extends ConsumerWidget {
                   return;
                 }
 
-                await ref
-                    .read(tripDocumentActionsProvider)
-                    .addDocument(
+                await ref.read(tripDocumentActionsProvider).addDocument(
                       tripId: tripId,
                       title: title,
                       type: type,
@@ -100,9 +98,9 @@ class TripDocumentsPage extends ConsumerWidget {
     notesController.dispose();
 
     if (added == true && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Trip document added.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip document added.')),
+      );
     }
   }
 
@@ -119,8 +117,7 @@ class TripDocumentsPage extends ConsumerWidget {
       ),
       body: documentsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) =>
-            Center(child: Text('Could not load documents: $error')),
+        error: (error, _) => Center(child: Text('Could not load documents: $error')),
         data: (documents) {
           if (documents.isEmpty) {
             return const Center(
@@ -143,9 +140,7 @@ class TripDocumentsPage extends ConsumerWidget {
                     tooltip: 'Delete',
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
-                      await ref
-                          .read(tripDocumentActionsProvider)
-                          .deleteDocument(
+                      await ref.read(tripDocumentActionsProvider).deleteDocument(
                             tripId: tripId,
                             documentId: document.id,
                           );

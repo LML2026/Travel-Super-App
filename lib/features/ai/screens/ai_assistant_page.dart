@@ -44,8 +44,7 @@ class _AiAssistantPageState extends ConsumerState<AiAssistantPage> {
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: messages.length,
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 return AssistantMessageBubble(message: messages[index]);
               },
@@ -64,8 +63,7 @@ class _AiAssistantPageState extends ConsumerState<AiAssistantPage> {
                   child: AppTextField(
                     controller: _controller,
                     label: 'Ask the assistant',
-                    hint:
-                        'I am travelling to Paris for four days with a budget of £1,500',
+                    hint: 'I am travelling to Paris for four days with a budget of £1,500',
                     prefixIcon: Icons.smart_toy_outlined,
                     onSubmitted: (_) => _send(),
                   ),

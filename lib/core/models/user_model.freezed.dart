@@ -12,8 +12,7 @@ part of 'user_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserProfile _$UserProfileFromJson(Map<String, dynamic> json) {
   return _UserProfile.fromJson(json);
@@ -47,24 +46,22 @@ mixin _$UserProfile {
 /// @nodoc
 abstract class $UserProfileCopyWith<$Res> {
   factory $UserProfileCopyWith(
-    UserProfile value,
-    $Res Function(UserProfile) then,
-  ) = _$UserProfileCopyWithImpl<$Res, UserProfile>;
+          UserProfile value, $Res Function(UserProfile) then) =
+      _$UserProfileCopyWithImpl<$Res, UserProfile>;
   @useResult
-  $Res call({
-    String uid,
-    String email,
-    String? displayName,
-    String? photoUrl,
-    String? phoneNumber,
-    String? bio,
-    String? country,
-    List<String> favoriteDestinations,
-    int tripsCompleted,
-    DateTime createdAt,
-    DateTime? lastLogin,
-    bool emailVerified,
-  });
+  $Res call(
+      {String uid,
+      String email,
+      String? displayName,
+      String? photoUrl,
+      String? phoneNumber,
+      String? bio,
+      String? country,
+      List<String> favoriteDestinations,
+      int tripsCompleted,
+      DateTime createdAt,
+      DateTime? lastLogin,
+      bool emailVerified});
 }
 
 /// @nodoc
@@ -95,59 +92,56 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
     Object? lastLogin = freezed,
     Object? emailVerified = null,
   }) {
-    return _then(
-      _value.copyWith(
-            uid: null == uid
-                ? _value.uid
-                : uid // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            displayName: freezed == displayName
-                ? _value.displayName
-                : displayName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            photoUrl: freezed == photoUrl
-                ? _value.photoUrl
-                : photoUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            phoneNumber: freezed == phoneNumber
-                ? _value.phoneNumber
-                : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            bio: freezed == bio
-                ? _value.bio
-                : bio // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            country: freezed == country
-                ? _value.country
-                : country // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            favoriteDestinations: null == favoriteDestinations
-                ? _value.favoriteDestinations
-                : favoriteDestinations // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            tripsCompleted: null == tripsCompleted
-                ? _value.tripsCompleted
-                : tripsCompleted // ignore: cast_nullable_to_non_nullable
-                      as int,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            lastLogin: freezed == lastLogin
-                ? _value.lastLogin
-                : lastLogin // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            emailVerified: null == emailVerified
-                ? _value.emailVerified
-                : emailVerified // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: freezed == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      favoriteDestinations: null == favoriteDestinations
+          ? _value.favoriteDestinations
+          : favoriteDestinations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      tripsCompleted: null == tripsCompleted
+          ? _value.tripsCompleted
+          : tripsCompleted // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      lastLogin: freezed == lastLogin
+          ? _value.lastLogin
+          : lastLogin // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      emailVerified: null == emailVerified
+          ? _value.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
@@ -155,25 +149,23 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
 abstract class _$$UserProfileImplCopyWith<$Res>
     implements $UserProfileCopyWith<$Res> {
   factory _$$UserProfileImplCopyWith(
-    _$UserProfileImpl value,
-    $Res Function(_$UserProfileImpl) then,
-  ) = __$$UserProfileImplCopyWithImpl<$Res>;
+          _$UserProfileImpl value, $Res Function(_$UserProfileImpl) then) =
+      __$$UserProfileImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String uid,
-    String email,
-    String? displayName,
-    String? photoUrl,
-    String? phoneNumber,
-    String? bio,
-    String? country,
-    List<String> favoriteDestinations,
-    int tripsCompleted,
-    DateTime createdAt,
-    DateTime? lastLogin,
-    bool emailVerified,
-  });
+  $Res call(
+      {String uid,
+      String email,
+      String? displayName,
+      String? photoUrl,
+      String? phoneNumber,
+      String? bio,
+      String? country,
+      List<String> favoriteDestinations,
+      int tripsCompleted,
+      DateTime createdAt,
+      DateTime? lastLogin,
+      bool emailVerified});
 }
 
 /// @nodoc
@@ -181,9 +173,8 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     extends _$UserProfileCopyWithImpl<$Res, _$UserProfileImpl>
     implements _$$UserProfileImplCopyWith<$Res> {
   __$$UserProfileImplCopyWithImpl(
-    _$UserProfileImpl _value,
-    $Res Function(_$UserProfileImpl) _then,
-  ) : super(_value, _then);
+      _$UserProfileImpl _value, $Res Function(_$UserProfileImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -203,78 +194,76 @@ class __$$UserProfileImplCopyWithImpl<$Res>
     Object? lastLogin = freezed,
     Object? emailVerified = null,
   }) {
-    return _then(
-      _$UserProfileImpl(
-        uid: null == uid
-            ? _value.uid
-            : uid // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        displayName: freezed == displayName
-            ? _value.displayName
-            : displayName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        photoUrl: freezed == photoUrl
-            ? _value.photoUrl
-            : photoUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        phoneNumber: freezed == phoneNumber
-            ? _value.phoneNumber
-            : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        bio: freezed == bio
-            ? _value.bio
-            : bio // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        country: freezed == country
-            ? _value.country
-            : country // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        favoriteDestinations: null == favoriteDestinations
-            ? _value._favoriteDestinations
-            : favoriteDestinations // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        tripsCompleted: null == tripsCompleted
-            ? _value.tripsCompleted
-            : tripsCompleted // ignore: cast_nullable_to_non_nullable
-                  as int,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        lastLogin: freezed == lastLogin
-            ? _value.lastLogin
-            : lastLogin // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        emailVerified: null == emailVerified
-            ? _value.emailVerified
-            : emailVerified // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    return _then(_$UserProfileImpl(
+      uid: null == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      displayName: freezed == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      favoriteDestinations: null == favoriteDestinations
+          ? _value._favoriteDestinations
+          : favoriteDestinations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      tripsCompleted: null == tripsCompleted
+          ? _value.tripsCompleted
+          : tripsCompleted // ignore: cast_nullable_to_non_nullable
+              as int,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      lastLogin: freezed == lastLogin
+          ? _value.lastLogin
+          : lastLogin // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      emailVerified: null == emailVerified
+          ? _value.emailVerified
+          : emailVerified // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserProfileImpl implements _UserProfile {
-  const _$UserProfileImpl({
-    required this.uid,
-    required this.email,
-    required this.displayName,
-    required this.photoUrl,
-    required this.phoneNumber,
-    required this.bio,
-    required this.country,
-    required final List<String> favoriteDestinations,
-    required this.tripsCompleted,
-    required this.createdAt,
-    required this.lastLogin,
-    required this.emailVerified,
-  }) : _favoriteDestinations = favoriteDestinations;
+  const _$UserProfileImpl(
+      {required this.uid,
+      required this.email,
+      required this.displayName,
+      required this.photoUrl,
+      required this.phoneNumber,
+      required this.bio,
+      required this.country,
+      required final List<String> favoriteDestinations,
+      required this.tripsCompleted,
+      required this.createdAt,
+      required this.lastLogin,
+      required this.emailVerified})
+      : _favoriteDestinations = favoriteDestinations;
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserProfileImplFromJson(json);
@@ -331,10 +320,8 @@ class _$UserProfileImpl implements _UserProfile {
                 other.phoneNumber == phoneNumber) &&
             (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.country, country) || other.country == country) &&
-            const DeepCollectionEquality().equals(
-              other._favoriteDestinations,
-              _favoriteDestinations,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._favoriteDestinations, _favoriteDestinations) &&
             (identical(other.tripsCompleted, tripsCompleted) ||
                 other.tripsCompleted == tripsCompleted) &&
             (identical(other.createdAt, createdAt) ||
@@ -348,20 +335,19 @@ class _$UserProfileImpl implements _UserProfile {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    uid,
-    email,
-    displayName,
-    photoUrl,
-    phoneNumber,
-    bio,
-    country,
-    const DeepCollectionEquality().hash(_favoriteDestinations),
-    tripsCompleted,
-    createdAt,
-    lastLogin,
-    emailVerified,
-  );
+      runtimeType,
+      uid,
+      email,
+      displayName,
+      photoUrl,
+      phoneNumber,
+      bio,
+      country,
+      const DeepCollectionEquality().hash(_favoriteDestinations),
+      tripsCompleted,
+      createdAt,
+      lastLogin,
+      emailVerified);
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.
@@ -373,25 +359,26 @@ class _$UserProfileImpl implements _UserProfile {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserProfileImplToJson(this);
+    return _$$UserProfileImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserProfile implements UserProfile {
-  const factory _UserProfile({
-    required final String uid,
-    required final String email,
-    required final String? displayName,
-    required final String? photoUrl,
-    required final String? phoneNumber,
-    required final String? bio,
-    required final String? country,
-    required final List<String> favoriteDestinations,
-    required final int tripsCompleted,
-    required final DateTime createdAt,
-    required final DateTime? lastLogin,
-    required final bool emailVerified,
-  }) = _$UserProfileImpl;
+  const factory _UserProfile(
+      {required final String uid,
+      required final String email,
+      required final String? displayName,
+      required final String? photoUrl,
+      required final String? phoneNumber,
+      required final String? bio,
+      required final String? country,
+      required final List<String> favoriteDestinations,
+      required final int tripsCompleted,
+      required final DateTime createdAt,
+      required final DateTime? lastLogin,
+      required final bool emailVerified}) = _$UserProfileImpl;
 
   factory _UserProfile.fromJson(Map<String, dynamic> json) =
       _$UserProfileImpl.fromJson;

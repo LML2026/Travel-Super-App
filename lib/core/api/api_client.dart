@@ -3,17 +3,16 @@ import '../constants/api_config.dart';
 
 class ApiClient {
   ApiClient({Dio? dio})
-    : _dio =
-          dio ??
-          Dio(
-            BaseOptions(
-              baseUrl: apiBaseUrl,
-              contentType: 'application/json',
-              connectTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 15),
-              sendTimeout: const Duration(seconds: 15),
-            ),
-          );
+      : _dio = dio ??
+            Dio(
+              BaseOptions(
+                baseUrl: apiBaseUrl,
+                contentType: 'application/json',
+                connectTimeout: const Duration(seconds: 10),
+                receiveTimeout: const Duration(seconds: 15),
+                sendTimeout: const Duration(seconds: 15),
+              ),
+            );
 
   final Dio _dio;
 

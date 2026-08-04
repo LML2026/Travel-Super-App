@@ -7,8 +7,8 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
   FirestoreTripDocumentRepository({
     FirebaseFirestore? firestore,
     required String userId,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _userId = userId;
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _userId = userId;
 
   final FirebaseFirestore _firestore;
   final String _userId;
@@ -61,18 +61,16 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
     return _collection(tripId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => _fromMap(doc.data()))
-              .toList(growable: false),
-        );
+        .map((snapshot) => snapshot.docs
+            .map((doc) => _fromMap(doc.data()))
+            .toList(growable: false));
   }
 
   @override
   Future<void> addDocument(TripDocument document) async {
-    await _collection(
-      document.tripId,
-    ).doc(document.id).set(_toMap(document), SetOptions(merge: true));
+    await _collection(document.tripId)
+        .doc(document.id)
+        .set(_toMap(document), SetOptions(merge: true));
   }
 
   @override

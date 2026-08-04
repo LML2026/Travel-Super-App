@@ -5,7 +5,11 @@ import '../providers/trip_dashboard_provider.dart';
 import 'dashboard_section.dart';
 
 class BudgetCard extends ConsumerWidget {
-  const BudgetCard({super.key, required this.tripId, this.onTap});
+  const BudgetCard({
+    super.key,
+    required this.tripId,
+    this.onTap,
+  });
 
   final String tripId;
   final VoidCallback? onTap;
@@ -21,14 +25,11 @@ class BudgetCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}',
-          ),
+              'Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
           Text(
-            'Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}',
-          ),
+              'Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
           Text(
-            'Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}',
-          ),
+              'Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
         ],
       ),
     );

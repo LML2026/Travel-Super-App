@@ -7,7 +7,11 @@ enum WalletTransactionType {
   currencyConversion,
 }
 
-enum WalletTransactionStatus { pending, completed, failed }
+enum WalletTransactionStatus {
+  pending,
+  completed,
+  failed,
+}
 
 class WalletTransaction extends Equatable {
   const WalletTransaction({
@@ -40,17 +44,17 @@ class WalletTransaction extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    walletId,
-    type,
-    status,
-    amount,
-    currency,
-    description,
-    recipientWalletId,
-    convertedAmount,
-    convertedCurrency,
-    exchangeRate,
-    createdAt,
-  ];
+        id,
+        walletId,
+        type,
+        status,
+        amount,
+        currency,
+        description,
+        recipientWalletId,
+        convertedAmount,
+        convertedCurrency,
+        exchangeRate,
+        createdAt,
+      ];
 }

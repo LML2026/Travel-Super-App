@@ -6,7 +6,11 @@ void main() {
   testWidgets('app shell boots with ProviderScope', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(home: Scaffold(body: Text('Smoke Test'))),
+        child: MaterialApp(
+          home: Scaffold(
+            body: Text('Smoke Test'),
+          ),
+        ),
       ),
     );
     await tester.pump();
