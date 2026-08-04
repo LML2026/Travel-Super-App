@@ -108,7 +108,7 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
                 },
               ),
               const SizedBox(height: 12),
-              MapCard(trip: selectedTrip),
+              const MapCard(),
               const SizedBox(height: 12),
               _SearchCard(
                 controller: _searchController,
