@@ -54,7 +54,8 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Dart format check (changed files only)
+      - name: Determine changed Dart files
+        id: changed_dart
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             if [ "${{ github.event.action }}" = "synchronize" ]; then
@@ -72,18 +73,39 @@ jobs:
             RANGE="HEAD^..HEAD"
           fi
 
-          mapfile -t DART_FILES < <(git diff --diff-filter=ACMR --name-only "$RANGE" -- '*.dart')
+          git diff --diff-filter=ACMR --name-only "$RANGE" -- '*.dart' > changed_dart_files.txt
+          COUNT=$(wc -l < changed_dart_files.txt | xargs)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
-          if [ ${#DART_FILES[@]} -eq 0 ]; then
+      - name: Dart format check (changed files only)
+        run: |
+          if [ "${{ steps.changed_dart.outputs.count }}" = "0" ]; then
             echo "No Dart file changes to format-check."
             exit 0
           fi
 
+          mapfile -t DART_FILES < changed_dart_files.txt
+
           printf 'Checking format for %s Dart files\n' "${#DART_FILES[@]}"
           dart format --set-exit-if-changed "${DART_FILES[@]}"
 
-      - name: Flutter analyze
-        run: flutter analyze
+      - name: Flutter analyze (changed files only)
+        run: |
+          if [ "${{ steps.changed_dart.outputs.count }}" = "0" ]; then
+            echo "No Dart file changes to analyze."
+            exit 0
+          fi
+
+          mapfile -t DART_FILES < changed_dart_files.txt
+
+          printf 'Analyzing %s Dart files\n' "${#DART_FILES[@]}"
+          flutter analyze "${DART_FILES[@]}"
 
       - name: Flutter tests
-        run: flutter test
+        run: |
+          if [ "${{ steps.changed_dart.outputs.count }}" = "0" ]; then
+            echo "No Dart file changes to test."
+            exit 0
+          fi
+
+          flutter test
