@@ -6,8 +6,10 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/travel_card.dart';
+import '../models/nearby_service_filter.dart';
 import '../models/nearby_service_metadata.dart';
 import '../models/nearby_service_type.dart';
+import '../services/nearby_service_engine.dart';
 import 'widgets/nearby_state_views.dart';
 
 class NearbyEssentialsPage extends StatefulWidget {
@@ -23,7 +25,12 @@ class NearbyEssentialsPage extends StatefulWidget {
 }
 
 class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
+  static const NearbyServiceEngine _serviceEngine = NearbyServiceEngine();
   NearbyServiceType _selectedService = nearbyEssentialsMvpServices.first;
+  NearbyServiceFilter _previewFilter = const NearbyServiceFilter(
+    openNow: true,
+    maxDistanceMeters: 500,
+  );
 
   @override
   void initState() {
@@ -41,31 +48,13 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
     );
   }
 
-  String _queryPreviewFor(NearbyServiceType serviceType) {
-    switch (serviceType) {
-      case NearbyServiceType.toilet:
-        return 'public toilets open now within 500 m';
-      case NearbyServiceType.atm:
-        return 'atm open now within 1 km';
-      case NearbyServiceType.pharmacy:
-        return 'pharmacy open now within 1 km';
-      case NearbyServiceType.hospital:
-        return 'hospital open now within 3 km';
-      case NearbyServiceType.restaurant:
-        return 'restaurants open now within 2 km';
-      case NearbyServiceType.cafe:
-        return 'cafes open now within 2 km';
-      case NearbyServiceType.fuel:
-        return 'fuel stations open now within 5 km';
-      case NearbyServiceType.parking:
-        return 'parking open now within 2 km';
-      case NearbyServiceType.supermarket:
-        return 'supermarkets open now within 2 km';
-      case NearbyServiceType.hotel:
-        return 'hotels within 3 km';
-      case NearbyServiceType.taxi:
-        return 'taxi pickup points within 2 km';
-    }
+  void _openMapsHandoff() {
+    context.pushMaps(
+      prefill: _serviceEngine.buildPlacesPrefill(
+        serviceType: _selectedService,
+        filter: _previewFilter,
+      ),
+    );
   }
 
   @override
@@ -120,7 +109,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
                 PrimaryButton(
                   text: 'Open in maps',
                   icon: Icons.explore_outlined,
-                  onPressed: _showComingSoon,
+                  onPressed: _openMapsHandoff,
                 ),
               ],
             ),
@@ -233,7 +222,10 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  _queryPreviewFor(_selectedService),
+                  _serviceEngine.buildQueryPreview(
+                    _selectedService,
+                    _previewFilter,
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -268,7 +260,7 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           NearbyErrorState(
             title: 'Nearby Essentials unavailable',
             message: 'This shared error state is ready for provider, permission, or location failures.',
-            onRetry: _showComingSoon,
+            onRetry: _openMapsHandoff,
           ),
         ],
       ),
