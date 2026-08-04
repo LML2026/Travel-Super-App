@@ -3,6 +3,10 @@ import 'package:go_router/go_router.dart';
 import '../../core/models/destination.dart';
 import '../../features/ai/screens/ai_assistant_page.dart';
 import '../../features/destinations/destination_detail_page.dart';
+import '../../features/maps/models/places_prefill.dart';
+import '../../features/maps/presentation/screens/maps_hub_page.dart';
+import '../../features/nearby/models/nearby_service_type.dart';
+import '../../features/nearby/presentation/nearby_essentials_page.dart';
 import '../../features/navigation/main_navigation_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/splash/splash_page.dart';
@@ -82,6 +86,34 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.weather.routeName,
       path: AppRoute.weather.path,
       builder: (context, state) => const WeatherPage(),
+    ),
+    GoRoute(
+      name: AppRoute.maps.routeName,
+      path: AppRoute.maps.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra != null && extra is! PlacesPrefill) {
+          return const RouteErrorPage(
+            message: 'Maps route received an invalid places prefill payload.',
+          );
+        }
+
+        return MapsHubPage(prefill: extra as PlacesPrefill?);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.nearbyEssentials.routeName,
+      path: AppRoute.nearbyEssentials.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra != null && extra is! NearbyServiceType) {
+          return const RouteErrorPage(
+            message: 'Nearby Essentials expects an optional NearbyServiceType payload.',
+          );
+        }
+
+        return NearbyEssentialsPage(initialService: extra as NearbyServiceType?);
+      },
     ),
     GoRoute(
       name: AppRoute.aiAssistant.routeName,

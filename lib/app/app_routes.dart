@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/destination.dart';
+import '../features/maps/models/places_prefill.dart';
+import '../features/nearby/models/nearby_service_type.dart';
 import '../features/taxi/domain/entities/taxi_ride_option.dart';
 import '../features/taxi/domain/entities/taxi_ride_request.dart';
 import '../features/flights/models/flight.dart';
@@ -55,6 +57,8 @@ enum AppRoute {
   hotelDetails,
   savedHotelDetails,
   weather,
+  maps,
+  nearbyEssentials,
   aiAssistant,
   trips,
   tripCreate,
@@ -120,6 +124,10 @@ extension AppRouteConfig on AppRoute {
         return '/hotels/saved/details';
       case AppRoute.weather:
         return '/weather';
+      case AppRoute.maps:
+        return '/maps';
+      case AppRoute.nearbyEssentials:
+        return '/nearby-essentials';
       case AppRoute.aiAssistant:
         return '/ai';
       case AppRoute.trips:
@@ -209,6 +217,19 @@ extension AppNavigation on BuildContext {
       pushNamed<T>(AppRoute.savedHotelDetails.routeName, extra: hotel);
 
   Future<T?> pushWeather<T>() => pushNamed<T>(AppRoute.weather.routeName);
+
+  Future<T?> pushMaps<T>({PlacesPrefill? prefill}) =>
+      pushNamed<T>(AppRoute.maps.routeName, extra: prefill);
+
+  void goNearbyEssentials() => goNamed(AppRoute.nearbyEssentials.routeName);
+
+  Future<T?> pushNearbyEssentials<T>({
+    NearbyServiceType? initialService,
+  }) =>
+      pushNamed<T>(
+        AppRoute.nearbyEssentials.routeName,
+        extra: initialService,
+      );
 
   Future<T?> pushAiAssistant<T>() =>
       pushNamed<T>(AppRoute.aiAssistant.routeName);
