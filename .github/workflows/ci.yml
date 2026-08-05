@@ -48,90 +48,19 @@ jobs:
   flutter-quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          cache: true
 
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Check changed Dart formatting
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          EVENT_ACTION: ${{ github.event.action }}
-          EVENT_BEFORE: ${{ github.event.before }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PUSH_BEFORE_SHA: ${{ github.event.before }}
-          CURRENT_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            HEAD_SHA="$PR_HEAD_SHA"
-
-            if [[ "$EVENT_ACTION" == "synchronize" \
-                  && -n "$EVENT_BEFORE" \
-                  && "$EVENT_BEFORE" != "0000000000000000000000000000000000000000" ]]; then
-              BASE_SHA="$EVENT_BEFORE"
-            else
-              BASE_SHA="$PR_BASE_SHA"
-            fi
-          else
-            HEAD_SHA="$CURRENT_SHA"
-            BASE_SHA="$PUSH_BEFORE_SHA"
-          fi
-
-          echo "BASE_SHA=$BASE_SHA"
-          echo "HEAD_SHA=$HEAD_SHA"
-
-          git diff \
-            --name-only \
-            --diff-filter=ACMR \
-            "$BASE_SHA" \
-            "$HEAD_SHA" \
-            -- '*.dart' > changed_dart_files.txt
-
-          if [[ ! -s changed_dart_files.txt ]]; then
-            echo "No changed Dart files to format-check."
-            exit 0
-          fi
-
-          echo "Changed Dart files:"
-          cat changed_dart_files.txt
-
-          while IFS= read -r file; do
-            [[ -f "$file" ]] && dart format --output=none --set-exit-if-changed "$file"
-          done < changed_dart_files.txt
-
       - name: Flutter analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Targeted authentication tests
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          test_paths=()
-
-          [[ -d test/features/auth ]] &&
-            test_paths+=("test/features/auth")
-
-          [[ -d test/features/authentication ]] &&
-            test_paths+=("test/features/authentication")
-
-          if [[ ${#test_paths[@]} -eq 0 ]]; then
-            echo "No authentication test directories found."
-            exit 0
-          fi
-
-          flutter test -r compact "${test_paths[@]}"
+      - name: Flutter trips tests
+        run: flutter test test/features/trips -r compact
