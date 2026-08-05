@@ -7,7 +7,10 @@
     "start": "node server.js",
     "dev": "node server.js",
     "check:architecture": "node ../tools/check-architecture.mjs",
-    "check:foundation": "npm run check:architecture"
+    "check:openapi": "node ../tools/check-openapi-contracts.mjs",
+    "check:api-spec-coverage": "node ../tools/check-api-spec-coverage.mjs",
+    "test:contracts": "npm run check:openapi && npm run check:api-spec-coverage",
+    "check:foundation": "npm run check:architecture && npm run test:contracts"
   },
   "dependencies": {
     "compression": "^1.8.1",
