@@ -128,9 +128,11 @@ class TripDetailsPage extends ConsumerWidget {
           appBar: AppBar(
             title: const Text('Trip Dashboard'),
           ),
-          body: ListView(
+          body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            children: [
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               Text(
                 trip.destination,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -335,6 +337,7 @@ class TripDetailsPage extends ConsumerWidget {
               ),
             ],
           ),
+        ),
         );
       },
     );
