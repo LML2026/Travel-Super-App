@@ -124,7 +124,7 @@ class NearbyErrorState extends StatelessWidget {
             PrimaryButton(
               text: 'Retry preview',
               icon: Icons.refresh,
-              onPressed: onRetry,
+              onPressed: onRetry!,
             ),
           ],
         ],
