@@ -38,16 +38,6 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
     _selectedService = widget.initialService ?? nearbyEssentialsMvpServices.first;
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${_selectedService.metadata.label} live search is coming in the next nearby batch.',
-        ),
-      ),
-    );
-  }
-
   void _openMapsHandoff() {
     context.pushMaps(
       prefill: _serviceEngine.buildPlacesPrefill(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/trip.dart';
+import '../../domain/entities/trip.dart';
 import 'dashboard_section.dart';
 
 class MapCard extends StatelessWidget {
