@@ -28,6 +28,19 @@ jobs:
       - name: Check architecture structure
         run: node tools/check-architecture.mjs
 
+      - name: OpenAPI contract guard
+        run: node tools/check-openapi-contracts.mjs
+
+      - name: API spec coverage guard
+        run: node tools/check-api-spec-coverage.mjs
+
+      - name: Automation workflow parity guard
+        run: node tools/check-automation-workflow-parity.mjs
+
+      - name: Backend contract tests
+        working-directory: backend
+        run: npm run test:contracts
+
       - name: Backend smoke syntax check
         working-directory: backend
         run: node --check server.js
@@ -57,23 +70,27 @@ jobs:
       - name: Determine changed Dart files
         id: changed_dart
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            if [ "${{ github.event.action }}" = "synchronize" ]; then
-              HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-              git fetch --no-tags origin "$HEAD_SHA" --depth=2
-              RANGE="$HEAD_SHA^..$HEAD_SHA"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.action }}" == "synchronize" && -n "${{ github.event.before }}" ]]; then
+              BASE_SHA="${{ github.event.before }}"
             else
-              RANGE="${{ github.event.pull_request.base.sha }}...HEAD"
+              BASE_SHA="${{ github.event.pull_request.base.sha }}"
             fi
           else
-            RANGE="${{ github.event.before }}...HEAD"
+            BASE_SHA="${{ github.event.before }}"
           fi
 
-          if ! git rev-parse "$RANGE" >/dev/null 2>&1; then
-            RANGE="HEAD^..HEAD"
+          echo "BASE_SHA=$BASE_SHA"
+          echo "HEAD_SHA=${{ github.sha }}"
+
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            BASE_SHA="HEAD^"
           fi
 
-          git diff --diff-filter=ACMR --name-only "$RANGE" -- '*.dart' > changed_dart_files.txt
+          git diff --name-only --diff-filter=ACMR "$BASE_SHA" HEAD \
+            | grep '\.dart$' \
+            > changed_dart_files.txt || true
+
           COUNT=$(wc -l < changed_dart_files.txt | xargs)
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
