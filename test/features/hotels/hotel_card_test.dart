@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:travel_super_app/app/app_routes.dart';
 import 'package:travel_super_app/features/hotels/models/hotel.dart';
+import 'package:travel_super_app/features/hotels/pages/hotel_details_page.dart';
 import 'package:travel_super_app/features/hotels/widgets/hotel_card.dart';
 
 void main() {
@@ -113,17 +116,34 @@ void main() {
 
     testWidgets('HotelCard book button navigates to details page',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
               body: HotelCard(hotel: testHotel),
             ),
+          ),
+          GoRoute(
+            name: AppRoute.hotelDetails.routeName,
+            path: AppRoute.hotelDetails.path,
+            builder: (context, state) {
+              return HotelDetailsPage(hotel: state.extra! as Hotel);
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
           ),
         ),
       );
 
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.text('Book Now'));
       await tester.pumpAndSettle();
 
       expect(find.text('Hotel Details'), findsOneWidget);
@@ -194,10 +214,10 @@ void main() {
     });
 
     testWidgets('HotelCard layout is responsive', (WidgetTester tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(400, 800);
-      tester.binding.window.devicePixelRatioTestValue = 1.0;
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-      addTearDown(tester.binding.window.clearDevicePixelRatioTestValue);
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
       await tester.pumpWidget(
         ProviderScope(

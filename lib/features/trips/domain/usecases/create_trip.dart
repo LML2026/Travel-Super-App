@@ -7,6 +7,6 @@ class CreateTrip {
   final TripRepository _repository;
 
   Future<void> call(Trip trip) {
-    return _repository.create(trip);
+    return _repository.createTrip(trip);
   }
 }

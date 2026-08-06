@@ -1,68 +1,61 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as model;
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
-
-final _createTripActionProvider =
-    Provider.family<Future<void>, Trip>((ref, trip) {
-  return createTrip(ref, trip);
-});
-
-final _updateTripActionProvider =
-    Provider.family<Future<void>, Trip>((ref, trip) {
-  return updateTrip(ref, trip);
-});
-
-final _deleteTripActionProvider =
-    Provider.family<Future<void>, String>((ref, tripId) {
-  return deleteTrip(ref, tripId);
-});
 
 class _FakeTripRepository extends TripRepository {
   _FakeTripRepository(this._trips);
 
-  final List<Trip> _trips;
-  final List<Trip> createdTrips = <Trip>[];
-  final List<Trip> updatedTrips = <Trip>[];
+  final List<domain.Trip> _trips;
+  final List<domain.Trip> createdTrips = <domain.Trip>[];
+  final List<domain.Trip> updatedTrips = <domain.Trip>[];
   final List<String> deletedTripIds = <String>[];
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return Stream.value(_trips);
   }
 
   @override
-  Future<void> create(domain.Trip trip) async {
+  Future<void> createTrip(domain.Trip trip) async {
     createdTrips.add(trip);
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {
+  Future<void> updateTrip(domain.Trip trip) async {
     updatedTrips.add(trip);
   }
 
   @override
-  Future<void> delete(String id) async {
-    deletedTripIds.add(id);
+  Future<void> deleteTrip(String tripId) async {
+    deletedTripIds.add(tripId);
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> get(String tripId) async {
     for (final trip in _trips) {
-      if (trip.id == id) {
+      if (trip.id == tripId) {
         return trip;
       }
     }
     return null;
   }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return _trips;
+  }
 }
 
 void main() {
-  Trip makeTrip({String id = 'trip-1'}) {
-    return Trip(
+  model.Trip makeModelTrip({String id = 'trip-1'}) {
+    return model.Trip(
       id: id,
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -74,8 +67,24 @@ void main() {
     );
   }
 
+  domain.Trip makeDomainTrip({String id = 'trip-1'}) {
+    return domain.Trip(
+      id: id,
+      title: 'Paris Getaway',
+      destination: 'Paris',
+      startDate: DateTime(2026, 9, 14),
+      endDate: DateTime(2026, 9, 18),
+      budget: 1500,
+      currency: 'GBP',
+      travellers: 2,
+      notes: 'Anniversary trip',
+      createdAt: DateTime(2026, 7, 1),
+      updatedAt: DateTime(2026, 7, 1),
+    );
+  }
+
   test('tripsProvider reads watch stream from repository', () async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[makeDomainTrip()]);
     final container = ProviderContainer(
       overrides: [
         tripRepositoryProvider.overrideWithValue(fakeRepo),
@@ -89,8 +98,8 @@ void main() {
     expect(trips.first.destination, 'Paris');
   });
 
-  test('createTrip helper delegates to repository create', () async {
-    final fakeRepo = _FakeTripRepository(const <Trip>[]);
+  test('saveTrip provider delegates to repository create', () async {
+    final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
         tripRepositoryProvider.overrideWithValue(fakeRepo),
@@ -98,14 +107,15 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(_createTripActionProvider(makeTrip(id: 'new-trip')));
+    final notifier = container.read(createTripProvider.notifier);
+    await notifier.createTrip(makeModelTrip(id: 'new-trip'));
 
     expect(fakeRepo.createdTrips, hasLength(1));
     expect(fakeRepo.createdTrips.single.id, 'new-trip');
   });
 
-  test('updateTrip helper delegates to repository update', () async {
-    final fakeRepo = _FakeTripRepository(const <Trip>[]);
+  test('editTrip provider delegates to repository update', () async {
+    final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
         tripRepositoryProvider.overrideWithValue(fakeRepo),
@@ -113,14 +123,15 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(_updateTripActionProvider(makeTrip(id: 'edit-trip')));
+    final notifier = container.read(createTripProvider.notifier);
+    await notifier.updateTrip(makeModelTrip(id: 'edit-trip'));
 
     expect(fakeRepo.updatedTrips, hasLength(1));
     expect(fakeRepo.updatedTrips.single.id, 'edit-trip');
   });
 
-  test('deleteTrip helper delegates to repository delete', () async {
-    final fakeRepo = _FakeTripRepository(const <Trip>[]);
+  test('removeTrip provider delegates to repository delete', () async {
+    final fakeRepo = _FakeTripRepository(const <domain.Trip>[]);
     final container = ProviderContainer(
       overrides: [
         tripRepositoryProvider.overrideWithValue(fakeRepo),
@@ -128,8 +139,9 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(_deleteTripActionProvider('trip-delete'));
+    final notifier = container.read(createTripProvider.notifier);
+    await notifier.deleteTrip('trip-delete');
 
     expect(fakeRepo.deletedTripIds, <String>['trip-delete']);
-  }
+  });
 }

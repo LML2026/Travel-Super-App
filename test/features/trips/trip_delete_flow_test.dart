@@ -7,9 +7,9 @@ import 'package:travel_super_app/features/hotels/models/nearby_bundle.dart';
 import 'package:travel_super_app/features/hotels/models/nearby_place.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_experience_provider.dart';
 import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_details_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
@@ -18,40 +18,62 @@ import 'package:travel_super_app/features/weather/providers/weather_provider.dar
 class _FakeTripRepository extends TripRepository {
   _FakeTripRepository(this._trips);
 
-  final List<Trip> _trips;
+  final List<domain.Trip> _trips;
   final List<String> deletedTripIds = <String>[];
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(_trips);
+  Stream<List<domain.Trip>> watchTrips() {
+    return Stream.value(_trips.map(_toDomainTrip).toList());
   }
 
   @override
-  Future<void> delete(String id) async {
-    deletedTripIds.add(id);
+  Future<void> deleteTrip(String tripId) async {
+    deletedTripIds.add(tripId);
   }
 
   @override
-  Future<void> create(domain.Trip trip) async {}
+  Future<void> createTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> get(String tripId) async {
     for (final trip in _trips) {
-      if (trip.id == id) {
-        return trip;
+      if (trip.id == tripId) {
+        return _toDomainTrip(trip);
       }
     }
     return null;
   }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return _trips.map(_toDomainTrip).toList();
+  }
+}
+
+domain.Trip _toDomainTrip(domain.Trip trip) {
+  return domain.Trip(
+    id: trip.id,
+    title: trip.title,
+    destination: trip.destination,
+    startDate: trip.startDate,
+    endDate: trip.endDate,
+    budget: trip.budget,
+    currency: trip.currency,
+    travellers: trip.travellers,
+    notes: trip.notes,
+    createdAt: trip.createdAt,
+    updatedAt: trip.updatedAt,
+  );
 }
 
 void main() {
-  Trip makeTrip() {
-    return Trip(
+  domain.Trip makeTrip() {
+    return domain.Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -75,20 +97,22 @@ void main() {
         (ref) async => const NearbyBundle(
           city: 'Paris',
           attractions: <NearbyPlace>[
-            NearbyPlace(name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
+            NearbyPlace(
+                name: 'Eiffel Tower', distanceKm: 2.1, type: 'attraction'),
           ],
           restaurants: <NearbyPlace>[],
           transport: <NearbyPlace>[],
         ),
       ),
       currencyRateProvider('EUR').overrideWith(
-        (ref) async => const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
+        (ref) async =>
+            const CurrencyRate(base: 'GBP', target: 'EUR', rate: 1.17),
       ),
     ];
   }
 
-  testWidgets('Trip list delete cancel does not delete item', (tester) async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
+  testWidgets('Trip list shows trip item without delete menu', (tester) async {
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[makeTrip()]);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -99,47 +123,48 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete').first);
+    expect(find.text('Paris'), findsOneWidget);
+    expect(find.byType(PopupMenuButton<String>), findsNothing);
+    expect(fakeRepo.deletedTripIds, isEmpty);
+  });
+
+  testWidgets('Trip details delete cancel does not delete trip',
+      (tester) async {
+    final trip = makeTrip();
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: commonOverrides(fakeRepo),
+        child: MaterialApp(
+          home: TripDetailsPage(tripId: trip.id),
+        ),
+      ),
+    );
+
     await tester.pumpAndSettle();
 
-    expect(find.text('Delete trip?'), findsOneWidget);
-    expect(find.textContaining('Remove your trip to Paris?'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Delete Trip'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Delete Trip'));
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Cancel'));
+    expect(find.text('Delete Trip'), findsWidgets);
+    expect(find.text('Delete "Paris"?'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
     await tester.pumpAndSettle();
 
     expect(fakeRepo.deletedTripIds, isEmpty);
   });
 
-  testWidgets('Trip list delete confirm calls delete and shows feedback', (tester) async {
-    final fakeRepo = _FakeTripRepository(<Trip>[makeTrip()]);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: commonOverrides(fakeRepo),
-        child: const MaterialApp(home: TripListPage()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete').first);
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
-    await tester.pumpAndSettle();
-
-    expect(fakeRepo.deletedTripIds, <String>['trip-1']);
-    expect(find.text('Deleted trip to Paris.'), findsOneWidget);
-  });
-
-  testWidgets('Trip details delete confirm deletes and pops to previous page', (tester) async {
+  testWidgets('Trip details delete confirm deletes and pops to previous page',
+      (tester) async {
     final trip = makeTrip();
-    final fakeRepo = _FakeTripRepository(<Trip>[trip]);
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -154,7 +179,7 @@ void main() {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => TripDetailsPage(trip: trip),
+                          builder: (_) => TripDetailsPage(tripId: trip.id),
                         ),
                       );
                     },
@@ -171,11 +196,15 @@ void main() {
     await tester.tap(find.text('Open Details'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Trip to Paris'), findsOneWidget);
+    expect(find.text('Trip Dashboard'), findsOneWidget);
+    expect(find.text('Paris'), findsOneWidget);
 
-    await tester.tap(find.byType(PopupMenuButton<String>).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete trip'));
+    await tester.scrollUntilVisible(
+      find.text('Delete Trip'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Delete Trip'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
@@ -183,6 +212,6 @@ void main() {
 
     expect(fakeRepo.deletedTripIds, <String>['trip-1']);
     expect(find.text('Open Details'), findsOneWidget);
-    expect(find.text('Trip to Paris'), findsNothing);
+    expect(find.text('Trip Dashboard'), findsNothing);
   });
 }

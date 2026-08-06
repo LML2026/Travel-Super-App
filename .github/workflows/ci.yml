@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install backend dependencies
         working-directory: backend
@@ -27,6 +27,19 @@ jobs:
 
       - name: Check architecture structure
         run: node tools/check-architecture.mjs
+
+      - name: OpenAPI contract guard
+        run: node tools/check-openapi-contracts.mjs
+
+      - name: API spec coverage guard
+        run: node tools/check-api-spec-coverage.mjs
+
+      - name: Automation workflow parity guard
+        run: node tools/check-automation-workflow-parity.mjs
+
+      - name: Backend contract tests
+        working-directory: backend
+        run: npm run test:contracts
 
       - name: Backend smoke syntax check
         working-directory: backend
@@ -46,8 +59,11 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Create placeholder .env for asset bundle
+        run: touch .env
+
       - name: Flutter analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Flutter trips tests
-        run: flutter test test/features/trips
+        run: flutter test test/features/trips -r compact

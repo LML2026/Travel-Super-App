@@ -2,11 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/destination.dart';
+import '../features/maps/models/places_prefill.dart';
+import '../features/nearby/models/nearby_service_type.dart';
+import '../features/taxi/domain/entities/taxi_ride_option.dart';
+import '../features/taxi/domain/entities/taxi_ride_request.dart';
 import '../features/flights/models/flight.dart';
 import '../features/flights/models/saved_flight.dart';
 import '../features/hotels/models/hotel.dart';
 import '../features/hotels/models/saved_hotel.dart';
-import '../features/trips/models/trip.dart';
+import '../features/trips/domain/entities/trip.dart';
 
 class TripCreateRouteArgs {
   const TripCreateRouteArgs({
@@ -18,12 +22,29 @@ class TripCreateRouteArgs {
   final bool forceCreateMode;
 }
 
+class TaxiBookingRouteArgs {
+  const TaxiBookingRouteArgs({
+    required this.request,
+    required this.option,
+  });
+
+  final TaxiRideRequest request;
+  final TaxiRideOption option;
+}
+
 enum AppRoute {
   splash,
   login,
   register,
   forgotPassword,
+  emailVerification,
   home,
+  wallet,
+  transport,
+  taxi,
+  taxiResults,
+  taxiBookingDetails,
+  savedRides,
   flights,
   flightSearch,
   flightRecent,
@@ -36,10 +57,16 @@ enum AppRoute {
   hotelDetails,
   savedHotelDetails,
   weather,
+  maps,
+  nearbyEssentials,
   aiAssistant,
   trips,
   tripCreate,
   tripDetails,
+  tripEdit,
+  tripNotes,
+  tripDocuments,
+  tripActivities,
   profile,
   destination,
 }
@@ -57,8 +84,22 @@ extension AppRouteConfig on AppRoute {
         return '/register';
       case AppRoute.forgotPassword:
         return '/forgot-password';
+      case AppRoute.emailVerification:
+        return '/email-verification';
       case AppRoute.home:
         return '/home';
+      case AppRoute.wallet:
+        return '/wallet';
+      case AppRoute.transport:
+        return '/transport';
+      case AppRoute.taxi:
+        return '/transport/taxi';
+      case AppRoute.taxiResults:
+        return '/transport/taxi/results';
+      case AppRoute.taxiBookingDetails:
+        return '/transport/taxi/booking-details';
+      case AppRoute.savedRides:
+        return '/transport/taxi/saved';
       case AppRoute.flights:
         return '/flights';
       case AppRoute.flightSearch:
@@ -83,6 +124,10 @@ extension AppRouteConfig on AppRoute {
         return '/hotels/saved/details';
       case AppRoute.weather:
         return '/weather';
+      case AppRoute.maps:
+        return '/maps';
+      case AppRoute.nearbyEssentials:
+        return '/nearby-essentials';
       case AppRoute.aiAssistant:
         return '/ai';
       case AppRoute.trips:
@@ -90,7 +135,15 @@ extension AppRouteConfig on AppRoute {
       case AppRoute.tripCreate:
         return '/trips/create';
       case AppRoute.tripDetails:
-        return '/trips/details';
+        return '/trips/:id';
+      case AppRoute.tripEdit:
+        return '/trips/:id/edit';
+      case AppRoute.tripNotes:
+        return '/trips/:id/notes';
+      case AppRoute.tripDocuments:
+        return '/trips/:id/documents';
+      case AppRoute.tripActivities:
+        return '/trips/:id/activities';
       case AppRoute.profile:
         return '/profile';
       case AppRoute.destination:
@@ -106,10 +159,31 @@ extension AppNavigation on BuildContext {
 
   void goHome() => goNamed(AppRoute.home.routeName);
 
+  Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
+
+  Future<T?> pushTransport<T>() =>
+      pushNamed<T>(AppRoute.transport.routeName);
+
+    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+
+    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+      pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
+
+    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+      pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
+
+    Future<T?> pushSavedRides<T>() =>
+      pushNamed<T>(AppRoute.savedRides.routeName);
+
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 
   Future<T?> pushForgotPassword<T>() =>
       pushNamed<T>(AppRoute.forgotPassword.routeName);
+
+  void goEmailVerification() => goNamed(AppRoute.emailVerification.routeName);
+
+  Future<T?> pushEmailVerification<T>() =>
+      pushNamed<T>(AppRoute.emailVerification.routeName);
 
   Future<T?> pushFlights<T>() => pushNamed<T>(AppRoute.flights.routeName);
 
@@ -122,26 +196,40 @@ extension AppNavigation on BuildContext {
   Future<T?> pushSavedFlights<T>() =>
       pushNamed<T>(AppRoute.flightSaved.routeName);
 
-    Future<T?> pushFlightDetails<T>(Flight flight) =>
+  Future<T?> pushFlightDetails<T>(Flight flight) =>
       pushNamed<T>(AppRoute.flightDetails.routeName, extra: flight);
 
-    Future<T?> pushSavedFlightDetails<T>(SavedFlight flight) =>
+  Future<T?> pushSavedFlightDetails<T>(SavedFlight flight) =>
       pushNamed<T>(AppRoute.savedFlightDetails.routeName, extra: flight);
 
   Future<T?> pushHotels<T>() => pushNamed<T>(AppRoute.hotels.routeName);
 
-    Future<T?> pushRecentHotelSearches<T>() =>
+  Future<T?> pushRecentHotelSearches<T>() =>
       pushNamed<T>(AppRoute.hotelRecent.routeName);
 
-    Future<T?> pushSavedHotels<T>() => pushNamed<T>(AppRoute.hotelSaved.routeName);
+  Future<T?> pushSavedHotels<T>() =>
+      pushNamed<T>(AppRoute.hotelSaved.routeName);
 
-    Future<T?> pushHotelDetails<T>(Hotel hotel) =>
+  Future<T?> pushHotelDetails<T>(Hotel hotel) =>
       pushNamed<T>(AppRoute.hotelDetails.routeName, extra: hotel);
 
-    Future<T?> pushSavedHotelDetails<T>(SavedHotel hotel) =>
+  Future<T?> pushSavedHotelDetails<T>(SavedHotel hotel) =>
       pushNamed<T>(AppRoute.savedHotelDetails.routeName, extra: hotel);
 
   Future<T?> pushWeather<T>() => pushNamed<T>(AppRoute.weather.routeName);
+
+  Future<T?> pushMaps<T>({PlacesPrefill? prefill}) =>
+      pushNamed<T>(AppRoute.maps.routeName, extra: prefill);
+
+  void goNearbyEssentials() => goNamed(AppRoute.nearbyEssentials.routeName);
+
+  Future<T?> pushNearbyEssentials<T>({
+    NearbyServiceType? initialService,
+  }) =>
+      pushNamed<T>(
+        AppRoute.nearbyEssentials.routeName,
+        extra: initialService,
+      );
 
   Future<T?> pushAiAssistant<T>() =>
       pushNamed<T>(AppRoute.aiAssistant.routeName);
@@ -160,8 +248,33 @@ extension AppNavigation on BuildContext {
         ),
       );
 
-  Future<T?> pushTripDetails<T>(Trip trip) =>
-      pushNamed<T>(AppRoute.tripDetails.routeName, extra: trip);
+  Future<T?> pushTripDetails<T>(Trip trip) => pushNamed<T>(
+        AppRoute.tripDetails.routeName,
+        pathParameters: {'id': trip.id},
+        extra: trip,
+      );
+
+  Future<T?> pushEditTrip<T>(String tripId, {Trip? initialTrip}) =>
+      pushNamed<T>(
+        AppRoute.tripEdit.routeName,
+        pathParameters: {'id': tripId},
+        extra: initialTrip,
+      );
+
+  Future<T?> pushTripNotes<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripNotes.routeName,
+        pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushTripDocuments<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripDocuments.routeName,
+        pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushTripActivities<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripActivities.routeName,
+        pathParameters: {'id': tripId},
+      );
 
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);
 

@@ -49,7 +49,7 @@ class FlightService {
 
         final flightList = rawFlights
             .whereType<Map>()
-            .map((item) => Flight.fromJson(Map<String, dynamic>.from(item as Map)))
+          .map((item) => Flight.fromJson(Map<String, dynamic>.from(item)))
             .toList();
 
         appLogger.i('FlightService: parsed ${flightList.length} flights');

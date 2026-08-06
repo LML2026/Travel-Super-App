@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/services/auth_service.dart';
 import '../../core/validators/auth_validators.dart';
+import 'presentation/providers/auth_provider.dart';
+import 'presentation/utils/auth_error_mapper.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _auth = AuthService();
   bool _loading = false;
 
   Future<void> _register() async {
@@ -27,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _loading = true);
 
     try {
-      await _auth.register(
+      await ref.read(authMutationProvider.notifier).register(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -38,10 +39,10 @@ class _RegisterPageState extends State<RegisterPage> {
         );
         Navigator.pop(context);
       }
-    } catch (e) {
+    } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text(AuthErrorMapper.messageFor(error))),
         );
       }
     }

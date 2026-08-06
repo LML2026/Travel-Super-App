@@ -1,128 +1,201 @@
 # Travel Super App Product Roadmap
 
-## Objective
-Move from feature-by-feature implementation to milestone-based product delivery with clear acceptance criteria, release goals, and quality gates.
+## Vision
+Build a production-grade travel super app, not a collection of demos.
 
-## Current Baseline (Phase 1)
-- Authentication: Complete
-- Flights: Complete
-- Hotels: Complete
-- Weather: Complete
-- Trips: In progress
+Every feature must satisfy four criteria:
+- Useful: solves a real traveller problem.
+- Scalable: supports growth without major redesign.
+- Testable: includes automated tests where appropriate.
+- Replaceable: external services can be swapped without changing the rest of the app.
 
-## Phase 2: Trip Management
+## Release 1.0 Goal
+A traveller should be able to:
+- Create an account.
+- Plan a trip.
+- Manage a multi-currency wallet.
+- Convert currencies.
+- Track expenses.
+- Stay within budget.
+- Store travel documents securely.
+- Access everything offline.
+- Sync across devices.
 
-### Sprint 1 (done)
-- Create Trip
-- Trip List
-- Trip Details
+Everything in active development should contribute to this goal.
 
-### Sprint 2 (next)
-- Edit Trip
-- Delete Trip
-- Duplicate Trip
+## Product Platform Structure
+Travel Super App
+- Core Platform
+- Identity
+- Finance
+	- Currency
+	- Wallet
+	- Exchange
+	- Budget
+	- Expenses
+- Travel
+	- Trips
+	- Documents
+	- Maps
+	- Translator
+	- Checklists
+- Marketplace
+- AI
 
-Acceptance criteria:
-- User can edit existing trip destination, dates, budget, currency, travellers, and notes.
-- User can delete trip with confirmation and optimistic UI refresh.
-- User can duplicate a trip and optionally adjust dates before save.
-- All actions update Firestore under users/{uid}/trips.
+## First Three Real Milestones
 
-### Sprint 3
-- Attach Flight
-- Attach Hotel
-- Add rich Notes
-- Upload Documents (tickets, visas, insurance)
+### Milestone 1 - Core Platform
+Deliverables:
+- Stable project structure
+- Authentication
+- User profile
+- Settings
+- Design system
+- Navigation
+- Localisation
+- Offline storage
 
-Acceptance criteria:
-- Flight and hotel linking persisted by ID on trip.
-- Notes support multi-line text and display on details page.
-- Documents stored in Firebase Storage with metadata in Firestore.
+Outcome:
+- A polished application shell.
 
-## Phase 3: Travel Planner
-- Itinerary timeline per trip
-- Add itinerary item (flight, hotel, activity, dining, transport, note)
-- Reorder items with drag-and-drop
+### Milestone 2 - Finance
+Deliverables:
+- ISO currency catalogue
+- Exchange-rate service
+- Multi-currency wallet
+- Converter
+- Transaction history
+- Budgets
+- Expenses
 
-Acceptance criteria:
-- Stable ordering field (sortIndex) persisted in Firestore.
-- Reordering reflected across app reload.
-- Timeline supports same-day multiple events.
+Outcome:
+- A traveller can manage money anywhere in the world.
 
-## Phase 4: Smart Dashboard
-- Next trip card
-- Countdown
-- Weather snapshot
-- Quick actions
+### Milestone 3 - Travel
+Deliverables:
+- Trips
+- Itineraries
+- Bookings
+- Documents
+- Packing lists
+- Maps
+- Notifications
 
-Acceptance criteria:
-- Dashboard loads in < 2 seconds on warm start.
-- Handles no-trip state and offline state gracefully.
+Outcome:
+- The app becomes a complete travel companion.
 
-## Phase 5: Wallet
-- Multi-currency balances
-- Live exchange rates
-- Spending tracker
-- Budget progress
+## Project Board (Current)
+- Core Platform: In progress
+- Authentication: Ready
+- User Profile: Ready
+- Currency Engine: Ready
+- Wallet: Started
+- Budget: Planned
+- Expenses: Planned
+- Trips: Foundation complete
+- Documents: Planned
+- Bookings: Planned
+- AI Assistant: Planned
 
-Acceptance criteria:
-- Budget summary computed from expenses and trip budget.
-- Currency conversion uses latest available rates with timestamp.
+## Product Roadmap (12 Epics)
 
-## Phase 6: Translator
-- Text translation
-- Voice conversation support
-- Camera translation hooks
-- Offline language pack strategy
+### Epic 1 - Core Platform
+- App bootstrap
+- Dependency injection
+- GoRouter navigation
+- Design system
+- Logging
+- Configuration
+- Localisation
+- Offline storage
 
-Acceptance criteria:
-- Translation feature available in degraded mode when network unavailable.
+### Epic 2 - Identity
+- Firebase Authentication
+- User profiles
+- Settings
+- Preferences
+- Biometric authentication
 
-## Phase 7: AI Travel Assistant
-- Itinerary generation
-- Travel recommendations
-- Budget estimate
-- Destination Q and A
+### Epic 3 - Finance
+- Currency engine
+- Multi-currency wallet
+- Exchange rates
+- Converter
+- Transactions
 
-Acceptance criteria:
-- Every assistant response includes source mode: llm or fallback.
-- Prompt and context boundaries documented and tested.
+### Epic 4 - Trips
+- Trip planner
+- Itinerary
+- Notes
+- Packing lists
+- Calendar integration
 
-## Phase 8: Notifications
-- Flight delay alerts
+### Epic 5 - Budgets
+- Trip budgets
+- Expense tracker
+- Spending analytics
+- Receipt storage
+
+### Epic 6 - Bookings
+- Flights
+- Hotels
+- Car hire
+- Rail
+- Activities
+
+### Epic 7 - Documents
+- Passport vault
+- Visa storage
+- Insurance
+- Boarding passes
+- Secure encrypted storage
+
+### Epic 8 - AI
+- Trip planner
+- Packing assistant
+- Budget adviser
+- Currency assistant
+- Translation helper
+
+### Epic 9 - Social
+- Shared trips
+- Group expenses
+- Trip invitations
+- Live location (optional)
+
+### Epic 10 - Marketplace
+- Insurance
+- eSIM
+- Airport lounges
+- Transfers
+- Local experiences
+
+### Epic 11 - Notifications
+- Flight reminders
+- Budget alerts
+- Exchange-rate alerts
 - Check-in reminders
-- Weather alerts
-- Passport expiry reminders
-- Currency rate alerts
 
-Acceptance criteria:
-- User-level notification preferences and opt-out controls.
+### Epic 12 - Production
+- Analytics
+- Crash reporting
+- Performance
+- Accessibility
+- CI/CD
+- Store publishing
 
-## Phase 9: Booking and Payments
-- Payment provider integration
-- Booking history
-- Receipt download
+## Current Highest-Priority Sequence
+1. Firebase Authentication (replace demo user assumptions).
+2. User Profile with preferences (language, home currency, home country).
+3. Currency Engine (all ISO 4217 currencies, favourites, search, exchange rates).
+4. Wallet UI powered by the currency engine.
 
-Acceptance criteria:
-- PCI-safe architecture with no card data stored in app backend.
-- Signed receipt URLs and audit trails.
+This sequence establishes a stable identity layer and reusable financial foundation for later epics.
 
-## Version Roadmap
-- v1.0: Authentication, Flights, Hotels, Weather
-- v1.1: Trip Management
-- v1.2: Saved Items and Itinerary
-- v1.3: Maps and Attractions
-- v1.4: Wallet and Budget
-- v1.5: Translator
-- v2.0: AI Travel Assistant
-- v2.1: Payments and Booking
-- v3.0: App Store and Play Store release
+## Version Progression
 
-## Delivery Cadence
-- Sprint length: 2 weeks
-- Definition of done:
-  - Feature acceptance criteria met
-  - Unit and widget tests added/updated
-  - API contract documented
-  - No analyzer errors in touched modules
-  - Release notes updated
+- Version 0.2: Stable development baseline (auth, Firestore, clean analysis, core navigation).
+- Version 0.3: Transport and Wallet expansion.
+- Version 0.4: Flights and Hotels integration under Trips.
+- Version 0.5: AI Concierge workflows.
+- Version 1.0: Public release readiness (quality, security, performance, store compliance).

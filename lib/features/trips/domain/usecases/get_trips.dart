@@ -7,6 +7,6 @@ class GetTrips {
   final TripRepository _repository;
 
   Stream<List<Trip>> call() {
-    return _repository.watchAll();
+    return _repository.watchTrips();
   }
 }

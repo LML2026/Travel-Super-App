@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/widgets/trip_card.dart';
 
 void main() {
-  testWidgets('TripCard shows destination, budget and travellers', (tester) async {
+  testWidgets('TripCard shows destination, budget and travellers',
+      (tester) async {
     final trip = Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -27,7 +29,7 @@ void main() {
     );
 
     expect(find.text('Paris'), findsOneWidget);
-    expect(find.text('Budget £1250'), findsOneWidget);
+    expect(find.text('Budget £1,250'), findsOneWidget);
     expect(find.text('1 Traveller'), findsOneWidget);
     expect(find.text('View itinerary →'), findsOneWidget);
   });

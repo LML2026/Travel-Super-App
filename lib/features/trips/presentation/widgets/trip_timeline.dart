@@ -44,7 +44,8 @@ class TripTimeline extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(entry.dateLabel, style: Theme.of(context).textTheme.bodyMedium),
+                        Text(entry.dateLabel,
+                            style: Theme.of(context).textTheme.bodyMedium),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           entry.title,

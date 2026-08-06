@@ -1,58 +1,69 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/features/trips/domain/entities/trip.dart' as domain;
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
+    as domain;
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
-import 'package:travel_super_app/features/trips/models/trip.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 
 class _OkRepo extends TripRepository {
   _OkRepo(this._trip);
 
-  final Trip _trip;
+  final domain.Trip _trip;
   bool created = false;
 
   @override
-  Future<void> create(domain.Trip trip) async {
+  Future<void> createTrip(domain.Trip trip) async {
     created = true;
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
-    return Stream.value(<Trip>[_trip]);
+  Stream<List<domain.Trip>> watchTrips() {
+    return Stream.value(<domain.Trip>[_trip]);
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
-    return id == _trip.id ? _trip : null;
+  Future<domain.Trip?> get(String tripId) async {
+    return tripId == _trip.id ? _trip : null;
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return <domain.Trip>[_trip];
   }
 }
 
 class _FailingRepo extends TripRepository {
   @override
-  Future<void> create(domain.Trip trip) async {
+  Future<void> createTrip(domain.Trip trip) async {
     throw Exception('firestore unavailable');
   }
 
   @override
-  Future<void> update(domain.Trip trip) async {}
+  Future<void> updateTrip(domain.Trip trip) async {}
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> deleteTrip(String tripId) async {}
 
   @override
-  Stream<List<domain.Trip>> watchAll() {
+  Stream<List<domain.Trip>> watchTrips() {
     return const Stream.empty();
   }
 
   @override
-  Future<domain.Trip?> get(String id) async {
+  Future<domain.Trip?> get(String tripId) async {
     return null;
+  }
+
+  @override
+  Future<List<domain.Trip>> getAll() async {
+    return const <domain.Trip>[];
   }
 }
 
@@ -60,6 +71,7 @@ void main() {
   Trip makeTrip() {
     return Trip(
       id: 'trip-1',
+      title: 'Paris Getaway',
       destination: 'Paris',
       startDate: DateTime(2026, 9, 14),
       endDate: DateTime(2026, 9, 18),
@@ -71,9 +83,25 @@ void main() {
     );
   }
 
+  domain.Trip toDomain(Trip trip) {
+    return domain.Trip(
+      id: trip.id,
+      title: trip.title,
+      destination: trip.destination,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      budget: trip.budget,
+      currency: trip.currency,
+      travellers: trip.travellers,
+      notes: trip.notes,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+    );
+  }
+
   test('CreateTripProvider succeeds and trip appears in list stream', () async {
     final trip = makeTrip();
-    final repo = _OkRepo(trip);
+    final repo = _OkRepo(toDomain(trip));
 
     final container = ProviderContainer(
       overrides: [
@@ -83,7 +111,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.create(trip);
+    await notifier.createTrip(trip);
 
     expect(repo.created, isTrue);
 
@@ -102,7 +130,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.create(trip);
+    await notifier.createTrip(trip);
 
     final state = container.read(createTripProvider);
     expect(state.hasError, isTrue);

@@ -5,7 +5,7 @@ class DeleteTrip {
 
   final TripRepository _repository;
 
-  Future<void> call(String tripId) {
-    return _repository.delete(tripId);
+  Future<void> call(String id) {
+    return _repository.deleteTrip(id);
   }
 }

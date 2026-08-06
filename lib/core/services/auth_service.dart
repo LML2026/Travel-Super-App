@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,5 +36,21 @@ class AuthService {
 
   Future<void> signOut() {
     return _auth.signOut();
+  }
+
+  Future<UserCredential> signInWithGoogle() {
+    final provider = GoogleAuthProvider();
+    if (kIsWeb) {
+      return _auth.signInWithPopup(provider);
+    }
+    return _auth.signInWithProvider(provider);
+  }
+
+  Future<UserCredential> signInWithApple() {
+    final provider = AppleAuthProvider();
+    if (kIsWeb) {
+      return _auth.signInWithPopup(provider);
+    }
+    return _auth.signInWithProvider(provider);
   }
 }

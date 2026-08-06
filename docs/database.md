@@ -7,6 +7,10 @@
 - users/{uid}/trips/{tripId}
 - users/{uid}/savedFlights/{flightId}
 - users/{uid}/savedHotels/{hotelId}
+- users/{uid}/trips/{tripId}/transport/{rideId}
+- users/{uid}/trips/{tripId}/expenses/{expenseId}
+- users/{uid}/trips/{tripId}/documents/{documentId}
+- users/{uid}/trips/{tripId}/activities/{activityId}
 
 ## Trip Document Baseline
 - destination
@@ -22,11 +26,19 @@
 - createdAt
 - updatedAt
 
+## Firestore Paths
+- users/{uid}/trips/{tripId}
+- users/{uid}/saved_flights/{saveId}
+- users/{uid}/saved_hotels/{saveId}
+- users/{uid}/trips/{tripId}/transport/{rideId}
+- users/{uid}/trips/{tripId}/expenses/{expenseId}
+- users/{uid}/trips/{tripId}/documents/{documentId}
+- users/{uid}/trips/{tripId}/activities/{activityId}
+
 ## Planned Additions
 - users/{uid}/trips/{tripId}/itinerary/{itemId}
-- users/{uid}/trips/{tripId}/documents/{docId}
 - users/{uid}/wallet/{currencyCode}
-- users/{uid}/expenses/{expenseId}
+- users/{uid}/expenses/{expenseId} (legacy global path, optional)
 
 ## Data Rules
 - Keep user data scoped by uid.
