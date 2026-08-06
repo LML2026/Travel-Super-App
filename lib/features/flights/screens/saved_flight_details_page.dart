@@ -85,7 +85,8 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2),
                       borderRadius: BorderRadius.circular(8),
@@ -133,7 +134,10 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                           child: Column(
                             children: [
                               const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
+                              Container(
+                                  width: 2,
+                                  height: 40,
+                                  color: Colors.grey.shade300),
                               const SizedBox(height: 8),
                               Text(
                                 formattedDuration,
@@ -143,7 +147,10 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
+                              Container(
+                                  width: 2,
+                                  height: 40,
+                                  color: Colors.grey.shade300),
                               const SizedBox(height: 8),
                             ],
                           ),
@@ -161,9 +168,11 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                     title: 'Flight Details',
                     child: Column(
                       children: [
-                        _DetailsRow(label: 'Duration', value: formattedDuration),
+                        _DetailsRow(
+                            label: 'Duration', value: formattedDuration),
                         _DetailsRow(label: 'Stops', value: _getStopsText()),
-                        _DetailsRow(label: 'Cabin Class', value: flight.cabinClass),
+                        _DetailsRow(
+                            label: 'Cabin Class', value: flight.cabinClass),
                       ],
                     ),
                   ),
@@ -173,10 +182,13 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await ref.read(removeSavedFlightProvider(flight.id).future);
+                            await ref.read(
+                                removeSavedFlightProvider(flight.id).future);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${flight.flightNumber} removed from saved flights')),
+                                SnackBar(
+                                    content: Text(
+                                        '${flight.flightNumber} removed from saved flights')),
                               );
                               Navigator.pop(context);
                             }
@@ -190,7 +202,9 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Booking ${flight.flightNumber} - Coming soon!')),
+                              SnackBar(
+                                  content: Text(
+                                      'Booking ${flight.flightNumber} - Coming soon!')),
                             );
                           },
                           icon: const Icon(Icons.flight_takeoff),

@@ -11,9 +11,11 @@ class FlightRepository {
 
   FlightRepository({FlightService? api}) : _api = api ?? FlightService();
 
-  Future<Result<List<Flight>>> searchFlights(FlightSearchRequest request) async {
+  Future<Result<List<Flight>>> searchFlights(
+      FlightSearchRequest request) async {
     try {
-      appLogger.i('FlightRepository: searching ${request.from} → ${request.to}');
+      appLogger
+          .i('FlightRepository: searching ${request.from} → ${request.to}');
       final flights = await _api.searchFlights(
         from: request.from,
         to: request.to,
@@ -30,4 +32,3 @@ class FlightRepository {
     }
   }
 }
-

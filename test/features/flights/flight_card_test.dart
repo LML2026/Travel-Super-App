@@ -75,7 +75,8 @@ void main() {
       expect(find.text('GBP 180.00'), findsOneWidget);
     });
 
-    testWidgets('FlightCard displays airline logo', (WidgetTester tester) async {
+    testWidgets('FlightCard displays airline logo',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

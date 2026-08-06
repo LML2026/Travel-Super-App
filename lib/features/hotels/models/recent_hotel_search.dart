@@ -32,12 +32,12 @@ class RecentHotelSearch {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'city': city,
-    'checkInDate': checkInDate,
-    'checkOutDate': checkOutDate,
-    'guests': guests,
-    'rooms': rooms,
-    'searchedAt': searchedAt.toIso8601String(),
-  };
+        'id': id,
+        'city': city,
+        'checkInDate': checkInDate,
+        'checkOutDate': checkOutDate,
+        'guests': guests,
+        'rooms': rooms,
+        'searchedAt': searchedAt.toIso8601String(),
+      };
 }

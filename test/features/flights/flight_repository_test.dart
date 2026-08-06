@@ -80,9 +80,12 @@ void main() {
     });
 
     test('FlightSearchRequest equality works for caching', () {
-      const req1 = FlightSearchRequest(from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
-      const req2 = FlightSearchRequest(from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
-      const req3 = FlightSearchRequest(from: 'LHR', to: 'JFK', departureDate: '2026-08-20');
+      const req1 = FlightSearchRequest(
+          from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
+      const req2 = FlightSearchRequest(
+          from: 'LHR', to: 'CDG', departureDate: '2026-08-20');
+      const req3 = FlightSearchRequest(
+          from: 'LHR', to: 'JFK', departureDate: '2026-08-20');
 
       expect(req1, equals(req2));
       expect(req1.hashCode, equals(req2.hashCode));

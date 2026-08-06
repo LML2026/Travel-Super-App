@@ -161,19 +161,17 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
 
-  Future<T?> pushTransport<T>() =>
-      pushNamed<T>(AppRoute.transport.routeName);
+  Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
 
-    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+  Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
 
-    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+  Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
       pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
 
-    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+  Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
       pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
 
-    Future<T?> pushSavedRides<T>() =>
-      pushNamed<T>(AppRoute.savedRides.routeName);
+  Future<T?> pushSavedRides<T>() => pushNamed<T>(AppRoute.savedRides.routeName);
 
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 

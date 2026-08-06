@@ -35,7 +35,8 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
   @override
   void initState() {
     super.initState();
-    _selectedService = widget.initialService ?? nearbyEssentialsMvpServices.first;
+    _selectedService =
+        widget.initialService ?? nearbyEssentialsMvpServices.first;
   }
 
   void _openMapsHandoff() {
@@ -107,7 +108,8 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           const SectionHeader(
             title: 'Core services',
-            subtitle: 'The first Nearby Essentials services planned for the MVP utility layer.',
+            subtitle:
+                'The first Nearby Essentials services planned for the MVP utility layer.',
           ),
           const SizedBox(height: AppSpacing.md),
           GridView.builder(
@@ -187,7 +189,8 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           SectionHeader(
             title: '${selectedMetadata.label} filters',
-            subtitle: 'Reusable filter metadata is ready before live provider wiring.',
+            subtitle:
+                'Reusable filter metadata is ready before live provider wiring.',
           ),
           const SizedBox(height: AppSpacing.md),
           TravelCard(
@@ -224,7 +227,8 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           SectionHeader(
             title: '${selectedMetadata.label} results foundation',
-            subtitle: 'This placeholder becomes the shared results area in the next commit.',
+            subtitle:
+                'This placeholder becomes the shared results area in the next commit.',
           ),
           const SizedBox(height: AppSpacing.md),
           NearbyPlaceholderState(
@@ -235,7 +239,8 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.lg),
           const SectionHeader(
             title: 'State foundations',
-            subtitle: 'Loading, empty, and error states are ready for engine wiring.',
+            subtitle:
+                'Loading, empty, and error states are ready for engine wiring.',
           ),
           const SizedBox(height: AppSpacing.md),
           const NearbyLoadingState(
@@ -244,12 +249,14 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
           const SizedBox(height: AppSpacing.md),
           const NearbyEmptyState(
             title: 'No nearby results yet',
-            message: 'This shared empty state will be used when a service search returns no nearby essentials.',
+            message:
+                'This shared empty state will be used when a service search returns no nearby essentials.',
           ),
           const SizedBox(height: AppSpacing.md),
           NearbyErrorState(
             title: 'Nearby Essentials unavailable',
-            message: 'This shared error state is ready for provider, permission, or location failures.',
+            message:
+                'This shared error state is ready for provider, permission, or location failures.',
             onRetry: _openMapsHandoff,
           ),
         ],

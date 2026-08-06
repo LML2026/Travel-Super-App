@@ -26,13 +26,16 @@ class NearbyProviderFallbackEngine {
           (result) => _withSourceMetadata(
             result,
             isFallback: true,
-            fallbackReason: primaryFailed ? 'primary_failed' : 'quality_enrichment',
+            fallbackReason:
+                primaryFailed ? 'primary_failed' : 'quality_enrichment',
           ),
         )
         .toList(growable: false);
 
     if (primaryFailed || taggedPrimary.isEmpty) {
-      return _rankByQuality(serviceType, taggedFallback).take(limit).toList(growable: false);
+      return _rankByQuality(serviceType, taggedFallback)
+          .take(limit)
+          .toList(growable: false);
     }
 
     final combined = <NearbyServiceResult>[
@@ -40,7 +43,9 @@ class NearbyProviderFallbackEngine {
       ...taggedFallback,
     ];
     final deduped = _dedupe(combined);
-    return _rankByQuality(serviceType, deduped).take(limit).toList(growable: false);
+    return _rankByQuality(serviceType, deduped)
+        .take(limit)
+        .toList(growable: false);
   }
 
   NearbyServiceResult _withSourceMetadata(
@@ -82,7 +87,8 @@ class NearbyProviderFallbackEngine {
     final output = <NearbyServiceResult>[];
 
     for (final result in input) {
-      final key = '${result.name.toLowerCase()}|${result.address.toLowerCase()}';
+      final key =
+          '${result.name.toLowerCase()}|${result.address.toLowerCase()}';
       if (seen.add(key)) {
         output.add(result);
       }
@@ -129,7 +135,8 @@ class NearbyProviderFallbackEngine {
     }
 
     if (result.distanceMeters != null) {
-      final distanceBonus = (5000 - result.distanceMeters!).clamp(0, 5000) ~/ 250;
+      final distanceBonus =
+          (5000 - result.distanceMeters!).clamp(0, 5000) ~/ 250;
       score += distanceBonus;
     }
 
@@ -146,7 +153,8 @@ class NearbyProviderFallbackEngine {
         }
         break;
       case NearbyServiceType.pharmacy:
-        if (result.isOpenNow == true && result.openStatusSource == OpenStatusSource.provider) {
+        if (result.isOpenNow == true &&
+            result.openStatusSource == OpenStatusSource.provider) {
           score += 45;
         } else if (result.isOpenNow == true) {
           score += 20;

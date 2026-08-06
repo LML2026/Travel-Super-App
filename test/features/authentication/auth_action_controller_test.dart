@@ -35,7 +35,7 @@ void main() {
     profileRepository = _MockUserProfileRepository();
 
     when(() => authRepository.authStateChanges())
-      .thenAnswer((_) => const Stream<AuthUser?>.empty());
+        .thenAnswer((_) => const Stream<AuthUser?>.empty());
     when(() => authRepository.currentUser).thenReturn(null);
     when(() => profileRepository.ensureProfile(
           uid: any(named: 'uid'),

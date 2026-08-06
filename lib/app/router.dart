@@ -39,7 +39,7 @@ class _AuthRefreshListenable extends ChangeNotifier {
 bool _isProtectedPath(String path) {
   return path.startsWith('/home') ||
       path.startsWith('/wallet') ||
-  path.startsWith('/transport') ||
+      path.startsWith('/transport') ||
       path.startsWith('/documents') ||
       path.startsWith('/trips');
 }

@@ -115,10 +115,12 @@ class SavedFlightsPage extends StatelessWidget {
                 arrivalAt: data['arrivalAt']?.toString() ?? '',
                 duration: data['duration']?.toString() ?? '0',
                 stops: int.tryParse(data['stops']?.toString() ?? '') ?? 0,
-                amount: double.tryParse(data['amount']?.toString() ?? '') ?? 0.0,
+                amount:
+                    double.tryParse(data['amount']?.toString() ?? '') ?? 0.0,
                 currency: data['currency']?.toString() ?? 'EUR',
               );
-              final savedFlight = SavedFlight.fromJson({...data, 'id': document.id});
+              final savedFlight =
+                  SavedFlight.fromJson({...data, 'id': document.id});
 
               final departureTime = _getTimeOnly(flight.departureAt);
               final arrivalTime = _getTimeOnly(flight.arrivalAt);
@@ -271,4 +273,3 @@ class SavedFlightsPage extends StatelessWidget {
     );
   }
 }
-

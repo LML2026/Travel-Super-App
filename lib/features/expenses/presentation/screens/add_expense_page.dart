@@ -128,7 +128,8 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
     if (mutationState.hasError) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save expense: ${mutationState.error}')),
+        SnackBar(
+            content: Text('Could not save expense: ${mutationState.error}')),
       );
       return;
     }
@@ -165,7 +166,8 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 labelText: 'Amount (£)',
                 hintText: _currency,

@@ -20,5 +20,6 @@ class Journey extends Equatable {
   final List<Object?> items;
 
   @override
-  List<Object?> get props => [id, tripId, title, destination, startDate, endDate, items];
+  List<Object?> get props =>
+      [id, tripId, title, destination, startDate, endDate, items];
 }

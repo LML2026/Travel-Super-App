@@ -48,7 +48,10 @@ class _FakeProviderGateway implements ProviderGateway {
   }
 
   @override
-  Future<String> translate({required String text, required String sourceLanguageCode, required String targetLanguageCode}) async =>
+  Future<String> translate(
+          {required String text,
+          required String sourceLanguageCode,
+          required String targetLanguageCode}) async =>
       text;
 }
 
@@ -111,7 +114,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(<Trip>[trip])),
+          tripRepositoryProvider
+              .overrideWithValue(_FakeTripRepository(<Trip>[trip])),
           providerGatewayProvider.overrideWithValue(_FakeProviderGateway()),
           liveLocationServiceProvider.overrideWithValue(
             _FakeLiveLocationService(
@@ -138,7 +142,8 @@ void main() {
     expect(find.byType(MapCard), findsOneWidget);
   });
 
-  testWidgets('Maps hub shows nearby essentials prefill title and category chip',
+  testWidgets(
+      'Maps hub shows nearby essentials prefill title and category chip',
       (tester) async {
     final trip = Trip(
       id: 'trip-1',
@@ -154,7 +159,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          tripRepositoryProvider.overrideWithValue(_FakeTripRepository(<Trip>[trip])),
+          tripRepositoryProvider
+              .overrideWithValue(_FakeTripRepository(<Trip>[trip])),
           providerGatewayProvider.overrideWithValue(_FakeProviderGateway()),
           liveLocationServiceProvider.overrideWithValue(
             _FakeLiveLocationService(
@@ -181,8 +187,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final suggestedSearch =
-        find.textContaining('Suggested search: public toilets open now within 500 m');
+    final suggestedSearch = find.textContaining(
+        'Suggested search: public toilets open now within 500 m');
     await tester.scrollUntilVisible(
       suggestedSearch,
       220,

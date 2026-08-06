@@ -3,7 +3,8 @@ import '../../../core/api/api_endpoints.dart';
 import '../models/weather_data.dart';
 
 class WeatherService {
-  WeatherService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  WeatherService({ApiClient? apiClient})
+      : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 

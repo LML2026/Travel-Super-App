@@ -71,7 +71,7 @@ class LocalStorageService {
   Future<void> updateTrip(SavedTrip trip) async {
     final trips = await loadTrips();
     final index = trips.indexWhere((t) => t.id == trip.id);
-    
+
     if (index != -1) {
       trips[index] = trip;
       await saveTrips(trips);

@@ -30,8 +30,8 @@ class _FlightCardState extends ConsumerState<FlightCard> {
   }
 
   String _getStopsText() {
-    return widget.flight.stops == 0 
-        ? '🟢 Direct' 
+    return widget.flight.stops == 0
+        ? '🟢 Direct'
         : '🟠 ${widget.flight.stops} Stop${widget.flight.stops > 1 ? 's' : ''}';
   }
 
@@ -123,14 +123,14 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       widget.flight.airlineLogo,
                       width: 40,
                       height: 40,
-                      errorBuilder: (_, __, ___) => 
+                      errorBuilder: (_, __, ___) =>
                           const Icon(Icons.flight, size: 40),
                     )
                   else
                     const Icon(Icons.flight, size: 40),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Airline name and flight number
                   Expanded(
                     child: Column(
@@ -153,7 +153,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ],
                     ),
                   ),
-                  
+
                   // Price
                   Text(
                     '${widget.flight.currency} ${widget.flight.amount.toStringAsFixed(2)}',
@@ -163,9 +163,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       color: Color(0xFF1976D2),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 8),
-                  
+
                   // Heart button
                   IconButton(
                     tooltip: 'Save flight',
@@ -174,9 +174,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Route airports
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -199,9 +199,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Timeline with times
               Row(
                 children: [
@@ -217,9 +217,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Timeline arrow
                   Expanded(
                     child: Column(
@@ -240,9 +240,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Arrival time
                   Column(
                     children: [
@@ -257,9 +257,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Duration, stops, and details
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -308,20 +308,22 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Book button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: widget.onBookPressed ?? () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Booking ${widget.flight.flightNumber} - Coming soon!'),
-                      ),
-                    );
-                  },
+                  onPressed: widget.onBookPressed ??
+                      () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Booking ${widget.flight.flightNumber} - Coming soon!'),
+                          ),
+                        );
+                      },
                   icon: const Icon(Icons.flight_takeoff),
                   label: const Text('Book Flight'),
                   style: ElevatedButton.styleFrom(
@@ -349,7 +351,7 @@ class _TimelinePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final center = size.height / 2;
-    
+
     // Draw line
     canvas.drawLine(
       Offset(0, center),

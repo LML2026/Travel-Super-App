@@ -49,7 +49,8 @@ class ActivitiesCard extends ConsumerWidget {
                 (activity) {
                   final schedule = activity.scheduledAt == null
                       ? 'Unscheduled'
-                      : DateFormat('dd MMM, HH:mm').format(activity.scheduledAt!);
+                      : DateFormat('dd MMM, HH:mm')
+                          .format(activity.scheduledAt!);
                   final location = activity.location?.trim().isNotEmpty == true
                       ? activity.location!.trim()
                       : 'No location';

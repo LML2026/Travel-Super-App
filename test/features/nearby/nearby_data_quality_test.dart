@@ -50,7 +50,8 @@ void main() {
 
     expect(withDistance.distanceMeters, isNotNull);
     expect(withDistance.distanceMeters!, greaterThan(1000));
-    expect(withDistance.distanceKm, closeTo(withDistance.distanceMeters! / 1000, 0.0001));
+    expect(withDistance.distanceKm,
+        closeTo(withDistance.distanceMeters! / 1000, 0.0001));
   });
 
   test('sorts nearest first and keeps unknown distance last', () {
@@ -77,10 +78,12 @@ void main() {
       <NearbyServiceResult>[far, unknown, nearby],
     );
 
-    expect(sorted.map((result) => result.id).toList(), <String>['nearby', 'far', 'unknown']);
+    expect(sorted.map((result) => result.id).toList(),
+        <String>['nearby', 'far', 'unknown']);
   });
 
-  test('keeps open status source unknown when provider does not supply data', () {
+  test('keeps open status source unknown when provider does not supply data',
+      () {
     final result = buildResult(
       id: 'unknown-open',
       latitude: 51.5007,

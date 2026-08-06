@@ -74,7 +74,8 @@ final taxiTransportRepositoryFactoryProvider =
       );
 });
 
-final taxiTransportRepositoryProvider = Provider<TaxiTransportRepository>((ref) {
+final taxiTransportRepositoryProvider =
+    Provider<TaxiTransportRepository>((ref) {
   final user = ref.watch(immediateCurrentUserProvider);
   if (user == null) {
     return const _UnauthenticatedTaxiTransportRepository();

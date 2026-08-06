@@ -91,25 +91,25 @@ class _AuthenticationRegisterPageState
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                        controller: _nameController,
-                        enabled: !_loading,
-                        validator: AuthValidators.validateName,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                  controller: _nameController,
+                  enabled: !_loading,
+                  validator: AuthValidators.validateName,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        enabled: !_loading,
-                        validator: AuthValidators.validateEmail,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  enabled: !_loading,
+                  validator: AuthValidators.validateEmail,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 PasswordField(
                   controller: _passwordController,
@@ -128,16 +128,16 @@ class _AuthenticationRegisterPageState
                 ),
                 const SizedBox(height: 12),
                 CheckboxListTile(
-                        value: _acceptedTerms,
-                        onChanged: _loading
-                            ? null
-                            : (value) {
-                                setState(() => _acceptedTerms = value ?? false);
-                              },
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: const Text('I accept Terms and Privacy Policy'),
-                      ),
+                  value: _acceptedTerms,
+                  onChanged: _loading
+                      ? null
+                      : (value) {
+                          setState(() => _acceptedTerms = value ?? false);
+                        },
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('I accept Terms and Privacy Policy'),
+                ),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _loading ? null : _register,

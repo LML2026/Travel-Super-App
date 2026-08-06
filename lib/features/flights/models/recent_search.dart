@@ -35,13 +35,13 @@ class RecentSearch {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'from': from,
-    'to': to,
-    'departureDate': departureDate,
-    'returnDate': returnDate,
-    'passengers': passengers,
-    'cabinClass': cabinClass,
-    'searchedAt': searchedAt.toIso8601String(),
-  };
+        'id': id,
+        'from': from,
+        'to': to,
+        'departureDate': departureDate,
+        'returnDate': returnDate,
+        'passengers': passengers,
+        'cabinClass': cabinClass,
+        'searchedAt': searchedAt.toIso8601String(),
+      };
 }

@@ -26,7 +26,7 @@ Future<void> addTrip(
   List<String> hotelIds = const [],
 }) async {
   final storage = ref.read(localStorageServiceProvider);
-  
+
   const uuid = Uuid();
   final trip = SavedTrip(
     id: uuid.v4(),
@@ -41,7 +41,7 @@ Future<void> addTrip(
   );
 
   await storage.addTrip(trip);
-  
+
   // Refresh the trips list
   ref.invalidate(savedTripsProvider);
 }
@@ -50,7 +50,7 @@ Future<void> addTrip(
 Future<void> deleteTrip(WidgetRef ref, String tripId) async {
   final storage = ref.read(localStorageServiceProvider);
   await storage.deleteTrip(tripId);
-  
+
   // Refresh the trips list
   ref.invalidate(savedTripsProvider);
 }
@@ -59,7 +59,7 @@ Future<void> deleteTrip(WidgetRef ref, String tripId) async {
 Future<void> updateTrip(WidgetRef ref, SavedTrip trip) async {
   final storage = ref.read(localStorageServiceProvider);
   await storage.updateTrip(trip);
-  
+
   // Refresh the trips list
   ref.invalidate(savedTripsProvider);
 }

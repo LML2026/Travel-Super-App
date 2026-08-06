@@ -28,8 +28,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
     try {
       await ref.read(authMutationProvider.notifier).sendPasswordReset(
-        email: _emailController.text.trim(),
-      );
+            email: _emailController.text.trim(),
+          );
 
       if (mounted) {
         setState(() => _emailSent = true);

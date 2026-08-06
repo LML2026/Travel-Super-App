@@ -99,8 +99,7 @@ List<RouteBase> buildTripRoutes() {
         final tripId = state.pathParameters['id'];
         if (tripId == null || tripId.isEmpty) {
           return const RouteErrorPage(
-            message:
-                'Trip activities route requires a trip id path parameter.',
+            message: 'Trip activities route requires a trip id path parameter.',
           );
         }
 

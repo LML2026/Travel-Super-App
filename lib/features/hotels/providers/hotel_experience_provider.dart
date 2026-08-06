@@ -7,12 +7,14 @@ final hotelExperienceServiceProvider = Provider<HotelExperienceService>(
   (ref) => HotelExperienceService(),
 );
 
-final nearbyBundleProvider = FutureProvider.family<NearbyBundle, String>((ref, city) async {
+final nearbyBundleProvider =
+    FutureProvider.family<NearbyBundle, String>((ref, city) async {
   final service = ref.read(hotelExperienceServiceProvider);
   return service.getNearbyBundle(city);
 });
 
-final currencyRateProvider = FutureProvider.family<CurrencyRate, String>((ref, target) async {
+final currencyRateProvider =
+    FutureProvider.family<CurrencyRate, String>((ref, target) async {
   final service = ref.read(hotelExperienceServiceProvider);
   return service.getCurrencyRate(target: target);
 });

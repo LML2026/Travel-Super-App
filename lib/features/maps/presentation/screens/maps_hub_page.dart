@@ -173,9 +173,12 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     }
 
     final now = DateTime.now();
-    final upcomingTrips = trips.where((trip) => trip.endDate.isAfter(now)).toList()
+    final upcomingTrips = trips
+        .where((trip) => trip.endDate.isAfter(now))
+        .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
-    final selected = upcomingTrips.isNotEmpty ? upcomingTrips.first : trips.first;
+    final selected =
+        upcomingTrips.isNotEmpty ? upcomingTrips.first : trips.first;
 
     if (_selectedTripId != selected.id) {
       _selectedTripId = selected.id;
@@ -216,7 +219,8 @@ class _EmptyMapsState extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            const Text('Create a trip to see map routes, hotels, airports, and nearby places here.'),
+            const Text(
+                'Create a trip to see map routes, hotels, airports, and nearby places here.'),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onOpenTrips,
@@ -558,7 +562,8 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
                       .toList(growable: false),
                 ),
               ),
-            if (prefill.locationHint != null && prefill.locationHint!.trim().isNotEmpty)
+            if (prefill.locationHint != null &&
+                prefill.locationHint!.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text('Location hint: ${prefill.locationHint}'),
@@ -635,7 +640,8 @@ class _PlacesResultsSection extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,11 +651,14 @@ class _PlacesResultsSection extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   place.name,
-                                  style: const TextStyle(fontWeight: FontWeight.w700),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700),
                                 ),
                               ),
                               if (place.rating != null)
-                                Chip(label: Text(place.rating!.toStringAsFixed(1))),
+                                Chip(
+                                    label:
+                                        Text(place.rating!.toStringAsFixed(1))),
                             ],
                           ),
                           if ((place.address ?? '').isNotEmpty) ...[

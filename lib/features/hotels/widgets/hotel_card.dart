@@ -26,10 +26,12 @@ class _HotelCardState extends ConsumerState<HotelCard> {
   }
 
   Future<void> _toggleSave() async {
-    final isSaved = await ref.read(isHotelSavedProvider(widget.hotel.id).future);
+    final isSaved =
+        await ref.read(isHotelSavedProvider(widget.hotel.id).future);
 
     if (isSaved) {
-      final saveId = await ref.read(getSavedHotelIdProvider(widget.hotel.id).future);
+      final saveId =
+          await ref.read(getSavedHotelIdProvider(widget.hotel.id).future);
       if (saveId != null) {
         await ref.read(removeSavedHotelProvider(saveId).future);
       }
@@ -63,9 +65,8 @@ class _HotelCardState extends ConsumerState<HotelCard> {
   @override
   Widget build(BuildContext context) {
     final isSavedAsync = ref.watch(isHotelSavedProvider(widget.hotel.id));
-    final displayAddress = widget.hotel.address.isEmpty
-        ? widget.hotel.city
-        : widget.hotel.address;
+    final displayAddress =
+        widget.hotel.address.isEmpty ? widget.hotel.city : widget.hotel.address;
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
@@ -167,7 +168,8 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                       child: isSavedAsync.when(
                         data: (isSaved) => AppSecondaryButton(
                           onPressed: _toggleSave,
-                          icon: isSaved ? Icons.favorite : Icons.favorite_border,
+                          icon:
+                              isSaved ? Icons.favorite : Icons.favorite_border,
                           label: 'Save',
                         ),
                         loading: () => OutlinedButton.icon(

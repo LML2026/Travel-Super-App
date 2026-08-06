@@ -77,7 +77,8 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Create Account'));
     await tester.pumpAndSettle();
 
-    expect(find.text('An account already exists for this email.'), findsOneWidget);
+    expect(
+        find.text('An account already exists for this email.'), findsOneWidget);
   });
 
   testWidgets('Forgot password shows mapped message for invalid email',

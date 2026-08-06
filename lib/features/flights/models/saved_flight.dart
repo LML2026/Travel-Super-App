@@ -56,20 +56,20 @@ class SavedFlight {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'flightId': flightId,
-    'airline': airline,
-    'airlineLogo': airlineLogo,
-    'flightNumber': flightNumber,
-    'origin': origin,
-    'destination': destination,
-    'departureAt': departureAt,
-    'arrivalAt': arrivalAt,
-    'duration': duration,
-    'stops': stops,
-    'amount': amount,
-    'currency': currency,
-    'cabinClass': cabinClass,
-    'savedAt': savedAt.toIso8601String(),
-  };
+        'id': id,
+        'flightId': flightId,
+        'airline': airline,
+        'airlineLogo': airlineLogo,
+        'flightNumber': flightNumber,
+        'origin': origin,
+        'destination': destination,
+        'departureAt': departureAt,
+        'arrivalAt': arrivalAt,
+        'duration': duration,
+        'stops': stops,
+        'amount': amount,
+        'currency': currency,
+        'cabinClass': cabinClass,
+        'savedAt': savedAt.toIso8601String(),
+      };
 }

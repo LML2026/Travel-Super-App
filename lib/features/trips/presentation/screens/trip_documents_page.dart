@@ -11,7 +11,8 @@ class TripDocumentsPage extends ConsumerWidget {
 
   final String tripId;
 
-  Future<void> _showAddDocumentDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showAddDocumentDialog(
+      BuildContext context, WidgetRef ref) async {
     final titleController = TextEditingController();
     final typeController = TextEditingController(text: 'General');
     final referenceController = TextEditingController();
@@ -117,7 +118,8 @@ class TripDocumentsPage extends ConsumerWidget {
       ),
       body: documentsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Could not load documents: $error')),
+        error: (error, _) =>
+            Center(child: Text('Could not load documents: $error')),
         data: (documents) {
           if (documents.isEmpty) {
             return const Center(
@@ -140,7 +142,9 @@ class TripDocumentsPage extends ConsumerWidget {
                     tooltip: 'Delete',
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
-                      await ref.read(tripDocumentActionsProvider).deleteDocument(
+                      await ref
+                          .read(tripDocumentActionsProvider)
+                          .deleteDocument(
                             tripId: tripId,
                             documentId: document.id,
                           );

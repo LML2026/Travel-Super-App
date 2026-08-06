@@ -13,7 +13,8 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
   final FirebaseFirestore _firestore;
   final String _userId;
 
-  CollectionReference<Map<String, dynamic>> _transportCollection(String tripId) {
+  CollectionReference<Map<String, dynamic>> _transportCollection(
+      String tripId) {
     return _firestore
         .collection('users')
         .doc(_userId)
@@ -68,7 +69,8 @@ class FirestoreTaxiTransportRepository implements TaxiTransportRepository {
       destinationAddress: data['destinationAddress'] as String? ?? '',
       pickupLatitude: (data['pickupLatitude'] as num?)?.toDouble() ?? 0,
       pickupLongitude: (data['pickupLongitude'] as num?)?.toDouble() ?? 0,
-      destinationLatitude: (data['destinationLatitude'] as num?)?.toDouble() ?? 0,
+      destinationLatitude:
+          (data['destinationLatitude'] as num?)?.toDouble() ?? 0,
       destinationLongitude:
           (data['destinationLongitude'] as num?)?.toDouble() ?? 0,
       scheduledAt: parseDate(data['scheduledAt']),

@@ -93,14 +93,12 @@ class RecentFlightSearchesPage extends StatelessWidget {
               final to = data['to']?.toString() ?? '';
               final passengers =
                   int.tryParse(data['passengers']?.toString() ?? '') ?? 1;
-              final cabinClass =
-                  data['cabinClass']?.toString() ?? 'Economy';
+              final cabinClass = data['cabinClass']?.toString() ?? 'Economy';
 
               final departureDate =
                   _formatDate(data['departureDate']?.toString());
 
-              final returnDate =
-                  _formatDate(data['returnDate']?.toString());
+              final returnDate = _formatDate(data['returnDate']?.toString());
 
               return Card(
                 child: ListTile(
@@ -116,8 +114,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
                   subtitle: Text(
                     [
                       'Departure: $departureDate',
-                      if (returnDate != 'Not selected')
-                        'Return: $returnDate',
+                      if (returnDate != 'Not selected') 'Return: $returnDate',
                       '$passengers passenger${passengers == 1 ? '' : 's'}',
                       cabinClass,
                     ].join('\n'),

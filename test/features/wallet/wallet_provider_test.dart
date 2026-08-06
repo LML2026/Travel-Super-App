@@ -25,7 +25,8 @@ class _FakeWalletRepository implements WalletRepository {
 
   @override
   Stream<Wallet> watchWallet(String userId) {
-    return Stream<Wallet>.value(_wallet.copyWith(userId: userId, id: 'wallet-$userId'));
+    return Stream<Wallet>.value(
+        _wallet.copyWith(userId: userId, id: 'wallet-$userId'));
   }
 
   @override

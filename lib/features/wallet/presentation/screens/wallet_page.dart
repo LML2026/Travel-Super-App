@@ -104,7 +104,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 ),
                 const SizedBox(height: 8),
                 transactionsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, _) => Text(error.toString()),
                   data: (transactions) => _TransactionList(
                     transactions: transactions,
@@ -225,7 +226,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
 
   Future<void> _showSendDialog(BuildContext context) async {
     final amountController = TextEditingController(text: '25');
-    final destinationController = TextEditingController(text: 'wallet-recipient');
+    final destinationController =
+        TextEditingController(text: 'wallet-recipient');
     final wallet = ref.read(walletProvider).valueOrNull;
     final currencies = wallet?.balances.keys.toList() ?? <String>[];
     String selected = currencies.isNotEmpty ? currencies.first : 'GBP';
@@ -316,7 +318,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
               }
 
               _fromCurrency ??= currencies.first;
-              _toCurrency ??= currencies.length > 1 ? currencies[1] : currencies.first;
+              _toCurrency ??=
+                  currencies.length > 1 ? currencies[1] : currencies.first;
 
               final from = _fromCurrency!;
               final to = _toCurrency!;
@@ -435,7 +438,8 @@ class _WalletHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Fintech Wallet', style: Theme.of(context).textTheme.titleLarge),
+            Text('Fintech Wallet',
+                style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 4),
             Text('Base currency: $baseCurrency'),
           ],
@@ -461,7 +465,8 @@ class _CurrencyCard extends ConsumerWidget {
     final money = NumberFormat.currency(symbol: '$currency ');
     final rateAsync = currency == baseCurrency
         ? const AsyncValue<double>.data(1)
-        : ref.watch(fxRateProvider(FxPair(base: baseCurrency, target: currency)));
+        : ref.watch(
+            fxRateProvider(FxPair(base: baseCurrency, target: currency)));
 
     return Card(
       child: Padding(
@@ -476,7 +481,8 @@ class _CurrencyCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(currency, style: Theme.of(context).textTheme.titleMedium),
+                  Text(currency,
+                      style: Theme.of(context).textTheme.titleMedium),
                   Text(money.format(balance)),
                   const SizedBox(height: 2),
                   rateAsync.when(

@@ -68,10 +68,8 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
 
   @override
   Stream<List<TripActivity>> watchActivities(String tripId) {
-    return _collection(tripId)
-        .orderBy('scheduledAt')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
+    return _collection(tripId).orderBy('scheduledAt').snapshots().map(
+        (snapshot) => snapshot.docs
             .map((doc) => _fromMap(doc.data()))
             .toList(growable: false));
   }

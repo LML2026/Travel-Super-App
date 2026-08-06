@@ -27,8 +27,7 @@ class NearbyServiceFilter {
       openNow: openNow ?? this.openNow,
       maxDistanceMeters: maxDistanceMeters ?? this.maxDistanceMeters,
       minRating: minRating ?? this.minRating,
-      wheelchairAccessible:
-          wheelchairAccessible ?? this.wheelchairAccessible,
+      wheelchairAccessible: wheelchairAccessible ?? this.wheelchairAccessible,
       freeOnly: freeOnly ?? this.freeOnly,
       babyChanging: babyChanging ?? this.babyChanging,
     );

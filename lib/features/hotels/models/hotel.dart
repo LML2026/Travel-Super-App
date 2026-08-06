@@ -46,14 +46,16 @@ class Hotel {
 
   factory Hotel.fromJson(Map<String, dynamic> json) {
     final parsedCity = json['city']?.toString() ?? '';
-    final parsedCountry = json['country']?.toString() ?? _defaultCountry(parsedCity);
-    final parsedAddress = json['address']?.toString() ?? _defaultAddress(parsedCity, parsedCountry);
-    final parsedPrice =
-        (json['price'] as num?)?.toDouble() ??
+    final parsedCountry =
+        json['country']?.toString() ?? _defaultCountry(parsedCity);
+    final parsedAddress = json['address']?.toString() ??
+        _defaultAddress(parsedCity, parsedCountry);
+    final parsedPrice = (json['price'] as num?)?.toDouble() ??
         (json['pricePerNight'] as num?)?.toDouble() ??
         0.0;
     final parsedAmenities = (json['amenities'] is List)
-        ? List<String>.from((json['amenities'] as List).map((e) => e.toString()))
+        ? List<String>.from(
+            (json['amenities'] as List).map((e) => e.toString()))
         : _defaultAmenities(parsedCity);
     final coordinates = _defaultCoordinates(parsedCity);
 
@@ -74,12 +76,16 @@ class Hotel {
       freeCancellation: json['freeCancellation'] == null
           ? true
           : json['freeCancellation'] == true,
-      description: json['description']?.toString() ?? _defaultDescription(parsedCity),
+      description:
+          json['description']?.toString() ?? _defaultDescription(parsedCity),
       imageGallery: (json['imageGallery'] is List)
-          ? List<String>.from((json['imageGallery'] as List).map((e) => e.toString()))
+          ? List<String>.from(
+              (json['imageGallery'] as List).map((e) => e.toString()))
           : const ['🏨', '🛏️', '🌇'],
-      latitude: double.tryParse(json['latitude']?.toString() ?? '') ?? coordinates.$1,
-      longitude: double.tryParse(json['longitude']?.toString() ?? '') ?? coordinates.$2,
+      latitude:
+          double.tryParse(json['latitude']?.toString() ?? '') ?? coordinates.$1,
+      longitude: double.tryParse(json['longitude']?.toString() ?? '') ??
+          coordinates.$2,
       nights: int.tryParse(json['nights']?.toString() ?? '') ?? 1,
     );
   }

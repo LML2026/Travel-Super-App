@@ -57,7 +57,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   Widget build(BuildContext context) {
     final documentsAsync = ref.watch(tripDocumentsProvider(_trip.id));
     final hasDocuments =
-      (documentsAsync.valueOrNull ?? const <dynamic>[]).isNotEmpty;
+        (documentsAsync.valueOrNull ?? const <dynamic>[]).isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(

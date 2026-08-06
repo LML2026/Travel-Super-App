@@ -12,7 +12,8 @@ class TripActivitiesPage extends ConsumerWidget {
 
   final String tripId;
 
-  Future<void> _showAddActivityDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showAddActivityDialog(
+      BuildContext context, WidgetRef ref) async {
     final titleController = TextEditingController();
     final locationController = TextEditingController();
     final dateController = TextEditingController();
@@ -74,7 +75,8 @@ class TripActivitiesPage extends ConsumerWidget {
                 if (rawDate.isNotEmpty && parsedDate == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Invalid date format. Use yyyy-mm-dd hh:mm'),
+                      content:
+                          Text('Invalid date format. Use yyyy-mm-dd hh:mm'),
                     ),
                   );
                   return;
@@ -128,7 +130,8 @@ class TripActivitiesPage extends ConsumerWidget {
       ),
       body: activitiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Could not load activities: $error')),
+        error: (error, _) =>
+            Center(child: Text('Could not load activities: $error')),
         data: (activities) {
           if (activities.isEmpty) {
             return const Center(
@@ -157,7 +160,9 @@ class TripActivitiesPage extends ConsumerWidget {
                     tooltip: 'Delete',
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
-                      await ref.read(tripActivityActionsProvider).deleteActivity(
+                      await ref
+                          .read(tripActivityActionsProvider)
+                          .deleteActivity(
                             tripId: tripId,
                             activityId: activity.id,
                           );

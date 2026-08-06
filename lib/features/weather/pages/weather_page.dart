@@ -58,9 +58,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                 ),
               ],
             ),
-
             const SizedBox(height: AppSpacing.xl),
-
             weatherAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => AppEmptyState(
@@ -110,9 +108,18 @@ class _WeatherCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _Stat(label: 'Humidity', value: '${weather.humidity}%', icon: Icons.water_drop),
-              _Stat(label: 'Wind', value: '${weather.windKph.toStringAsFixed(0)} km/h', icon: Icons.air),
-              _Stat(label: 'Feels like', value: '${weather.tempF.toStringAsFixed(0)}°F', icon: Icons.thermostat),
+              _Stat(
+                  label: 'Humidity',
+                  value: '${weather.humidity}%',
+                  icon: Icons.water_drop),
+              _Stat(
+                  label: 'Wind',
+                  value: '${weather.windKph.toStringAsFixed(0)} km/h',
+                  icon: Icons.air),
+              _Stat(
+                  label: 'Feels like',
+                  value: '${weather.tempF.toStringAsFixed(0)}°F',
+                  icon: Icons.thermostat),
             ],
           ),
         ],
@@ -133,7 +140,8 @@ class _Stat extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.primary),
         const SizedBox(height: AppSpacing.xs),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );

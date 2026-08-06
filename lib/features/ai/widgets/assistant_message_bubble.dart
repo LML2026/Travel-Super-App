@@ -14,7 +14,8 @@ class AssistantMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alignment = message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final alignment =
+        message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start;
     final color = message.isUser ? AppColors.primary : AppColors.surface;
     final textColor = message.isUser ? Colors.white : AppColors.textPrimary;
 
@@ -27,7 +28,9 @@ class AssistantMessageBubble extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(16),
-            border: message.isUser ? null : Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+            border: message.isUser
+                ? null
+                : Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
           ),
           child: Text(
             message.text,

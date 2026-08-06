@@ -18,8 +18,18 @@ class RecentHotelSearchesPage extends ConsumerWidget {
 
   String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -102,7 +112,8 @@ class RecentHotelSearchesPage extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(checkInDate),
                       const SizedBox(height: 4),
-                      Text('$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}'),
+                      Text(
+                          '$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}'),
                     ],
                   ),
                   trailing: PopupMenuButton(

@@ -9,7 +9,8 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   return FirestoreExpenseRepository();
 });
 
-final tripExpensesProvider = StreamProvider.family<List<Expense>, String>((ref, tripId) {
+final tripExpensesProvider =
+    StreamProvider.family<List<Expense>, String>((ref, tripId) {
   return ref.watch(expenseRepositoryProvider).watchExpenses(tripId);
 });
 

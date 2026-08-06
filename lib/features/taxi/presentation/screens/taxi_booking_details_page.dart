@@ -99,7 +99,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   Future<void> _openRouteOnMap(BuildContext context) async {
     final query =
         '${args.request.pickupAddress} to ${args.request.destinationAddress}';
-    final uri = Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
+    final uri =
+        Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
 
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
         context.mounted) {
@@ -163,7 +164,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {
-              final provider = _resolveProvider(providers, args.option.providerName);
+              final provider =
+                  _resolveProvider(providers, args.option.providerName);
               if (provider == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Provider is not available.')),
@@ -174,7 +176,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               try {
                 await provider.openBooking(args.request);
                 if (context.mounted) {
-                  ref.read(selectedTaxiProviderNameProvider.notifier).state = provider.name;
+                  ref.read(selectedTaxiProviderNameProvider.notifier).state =
+                      provider.name;
                 }
               } catch (error) {
                 if (context.mounted) {

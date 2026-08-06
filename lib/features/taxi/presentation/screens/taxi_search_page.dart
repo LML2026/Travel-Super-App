@@ -158,9 +158,7 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Pickup date and time'),
                 subtitle: Text(
-                  _pickupTime == null
-                      ? 'ASAP'
-                      : _pickupTime.toString(),
+                  _pickupTime == null ? 'ASAP' : _pickupTime.toString(),
                 ),
                 trailing: IconButton(
                   onPressed: _pickDateTime,

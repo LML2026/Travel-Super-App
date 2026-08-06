@@ -27,7 +27,8 @@ class ExpenseModel extends Expense {
     );
   }
 
-  factory ExpenseModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory ExpenseModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
 
     return ExpenseModel(

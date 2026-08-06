@@ -58,7 +58,8 @@ class TaxiResultsPage extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(option.description),
                       const SizedBox(height: 8),
-                      Text('Estimated pickup: ${option.estimatedPickupMinutes} min'),
+                      Text(
+                          'Estimated pickup: ${option.estimatedPickupMinutes} min'),
                       const SizedBox(height: 16),
                       Row(
                         children: [

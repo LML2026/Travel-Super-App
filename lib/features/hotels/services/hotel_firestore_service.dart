@@ -52,7 +52,8 @@ class HotelFirestoreService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
-          .map((doc) => RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}))
+          .map((doc) =>
+              RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }

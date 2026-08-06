@@ -18,7 +18,11 @@ void main() {
       address: 'Paris, France',
       price: 145.00,
       currency: 'GBP',
-      amenities: const ['Free Wi-Fi', 'Breakfast Included', 'Free cancellation'],
+      amenities: const [
+        'Free Wi-Fi',
+        'Breakfast Included',
+        'Free cancellation'
+      ],
       totalPrice: 435.00,
       beds: 2,
       nights: 3,
@@ -40,9 +44,9 @@ void main() {
       expect(find.text('Luxury Paris Boutique'), findsOneWidget);
 
       // Verify city
-        final hasCity = find.text('Paris').evaluate().isNotEmpty ||
+      final hasCity = find.text('Paris').evaluate().isNotEmpty ||
           find.text('Paris, France').evaluate().isNotEmpty;
-        expect(hasCity, isTrue);
+      expect(hasCity, isTrue);
 
       // Verify rating
       expect(find.text('4.8'), findsOneWidget);
@@ -51,7 +55,8 @@ void main() {
       expect(find.text('GBP 145 / night'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays bed information', (WidgetTester tester) async {
+    testWidgets('HotelCard displays bed information',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -66,7 +71,8 @@ void main() {
       expect(find.text('Free Wi-Fi'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays night information', (WidgetTester tester) async {
+    testWidgets('HotelCard displays night information',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -107,7 +113,8 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 50));
       final hasSaveButton = find.text('Save').evaluate().isNotEmpty;
-      final hasLoading = find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
+      final hasLoading =
+          find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
 
       expect(hasSaveButton || hasLoading, isTrue);
       expect(find.text('Book Now'), findsOneWidget);
@@ -179,7 +186,8 @@ void main() {
       expect(find.text('Economy London Hotel'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays star rating with icon', (WidgetTester tester) async {
+    testWidgets('HotelCard displays star rating with icon',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -197,7 +205,8 @@ void main() {
       expect(find.text('4.8'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays all required icons', (WidgetTester tester) async {
+    testWidgets('HotelCard displays all required icons',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(

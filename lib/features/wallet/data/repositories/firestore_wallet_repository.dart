@@ -72,8 +72,8 @@ class FirestoreWalletRepository implements WalletRepository {
     String fallbackUserId,
     Map<String, dynamic> data,
   ) {
-    final rawBalances = (data['balances'] as Map<String, dynamic>? ??
-        <String, dynamic>{});
+    final rawBalances =
+        (data['balances'] as Map<String, dynamic>? ?? <String, dynamic>{});
     final balances = <String, double>{
       for (final entry in rawBalances.entries)
         entry.key: (entry.value as num).toDouble(),

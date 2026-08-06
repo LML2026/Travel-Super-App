@@ -29,9 +29,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     try {
       await ref.read(authMutationProvider.notifier).register(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -111,9 +111,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         prefixIcon: Icons.lock,
                         validator: (value) =>
                             AuthValidators.validateConfirmPassword(
-                              value,
-                              _passwordController.text,
-                            ),
+                          value,
+                          _passwordController.text,
+                        ),
                         enabled: !_loading,
                       ),
                     ],

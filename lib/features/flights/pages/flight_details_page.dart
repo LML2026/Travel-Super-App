@@ -25,8 +25,8 @@ class FlightDetailsPage extends ConsumerWidget {
   }
 
   String _getStopsText() {
-    return flight.stops == 0 
-        ? '🟢 Direct Flight' 
+    return flight.stops == 0
+        ? '🟢 Direct Flight'
         : '🟠 ${flight.stops} Stop${flight.stops > 1 ? 's' : ''}';
   }
 
@@ -58,7 +58,7 @@ class FlightDetailsPage extends ConsumerWidget {
                           flight.airlineLogo,
                           width: 60,
                           height: 60,
-                          errorBuilder: (_, __, ___) => 
+                          errorBuilder: (_, __, ___) =>
                               const Icon(Icons.flight, size: 60),
                         )
                       else
@@ -88,10 +88,11 @@ class FlightDetailsPage extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Price
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2),
                       borderRadius: BorderRadius.circular(8),
@@ -227,11 +228,13 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'From',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
                                   ),
                                 ],
                               ),
-                              const Icon(Icons.arrow_forward, size: 32, color: Color(0xFF1976D2)),
+                              const Icon(Icons.arrow_forward,
+                                  size: 32, color: Color(0xFF1976D2)),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
@@ -245,7 +248,8 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'To',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -267,9 +271,13 @@ class FlightDetailsPage extends ConsumerWidget {
                           data: (isSaved) => OutlinedButton.icon(
                             onPressed: () {
                               if (isSaved) {
-                                ref.read(getSavedFlightIdProvider(flight.id).future).then((saveId) {
+                                ref
+                                    .read(getSavedFlightIdProvider(flight.id)
+                                        .future)
+                                    .then((saveId) {
                                   if (saveId != null) {
-                                    ref.read(removeSavedFlightProvider(saveId).future);
+                                    ref.read(removeSavedFlightProvider(saveId)
+                                        .future);
                                   }
                                 });
                               } else {
@@ -290,7 +298,8 @@ class FlightDetailsPage extends ConsumerWidget {
                                   cabinClass: 'economy',
                                   savedAt: DateTime.now(),
                                 );
-                                ref.read(saveFlightProvider(savedFlight).future);
+                                ref.read(
+                                    saveFlightProvider(savedFlight).future);
                               }
                             },
                             icon: Icon(
@@ -315,16 +324,17 @@ class FlightDetailsPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(width: 12),
-                      
+
                       // Book button
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Booking ${flight.flightNumber} - Coming soon!'),
+                                content: Text(
+                                    'Booking ${flight.flightNumber} - Coming soon!'),
                               ),
                             );
                           },

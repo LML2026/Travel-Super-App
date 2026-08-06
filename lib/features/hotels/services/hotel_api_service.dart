@@ -7,7 +7,8 @@ import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
 
 class HotelApiService {
-  HotelApiService({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  HotelApiService({ApiClient? apiClient})
+      : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
 
@@ -15,13 +16,16 @@ class HotelApiService {
     try {
       appLogger.i('Searching hotels for ${request.city}...');
 
-      final response = await _apiClient.post(
+      final response = await _apiClient
+          .post(
         ApiEndpoints.hotelsSearch,
         data: jsonEncode(request.toJson()),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 15),
         onTimeout: () {
-          throw _SearchTimeoutException('Hotel search timed out. Please try again.');
+          throw _SearchTimeoutException(
+              'Hotel search timed out. Please try again.');
         },
       );
 

@@ -21,7 +21,8 @@ final hotelRepositoryProvider = Provider<HotelRepository>((ref) {
 
 // Hotel Search provider with family parameter
 final hotelSearchProvider =
-    FutureProvider.family<List<Hotel>, HotelSearchRequest>((ref, request) async {
+    FutureProvider.family<List<Hotel>, HotelSearchRequest>(
+        (ref, request) async {
   final repository = ref.watch(hotelRepositoryProvider);
   final result = await repository.searchHotels(request);
 
@@ -38,7 +39,8 @@ final hotelFirestoreServiceProvider = Provider<HotelFirestoreService>(
 
 // ── Recent Searches provider ───────────────────────────────────────────────
 /// Stream of recent hotel searches ordered by newest first
-final recentHotelSearchesProvider = StreamProvider<List<RecentHotelSearch>>((ref) {
+final recentHotelSearchesProvider =
+    StreamProvider<List<RecentHotelSearch>>((ref) {
   return ref.read(hotelFirestoreServiceProvider).getRecentSearches();
 });
 
@@ -47,12 +49,12 @@ final recentHotelSearchesProvider = StreamProvider<List<RecentHotelSearch>>((ref
 final saveRecentHotelSearchProvider =
     FutureProvider.family<void, HotelSearchRequest>((ref, request) async {
   await ref.read(hotelFirestoreServiceProvider).saveRecentSearch(
-    city: request.city,
-    checkInDate: request.checkInDate.toString().split(' ')[0],
-    checkOutDate: request.checkOutDate.toString().split(' ')[0],
-    guests: request.guests,
-    rooms: request.rooms,
-  );
+        city: request.city,
+        checkInDate: request.checkInDate.toString().split(' ')[0],
+        checkOutDate: request.checkOutDate.toString().split(' ')[0],
+        guests: request.guests,
+        rooms: request.rooms,
+      );
   // Invalidate the recent searches stream to refetch
   ref.invalidate(recentHotelSearchesProvider);
 });
@@ -74,25 +76,26 @@ final savedHotelsProvider = StreamProvider<List<SavedHotel>>((ref) {
 
 // ── Save Hotel provider ────────────────────────────────────────────────────
 /// Mutation provider to save a hotel
-final saveHotelProvider = FutureProvider.family<void, SavedHotel>((ref, savedHotel) async {
+final saveHotelProvider =
+    FutureProvider.family<void, SavedHotel>((ref, savedHotel) async {
   await ref.read(hotelFirestoreServiceProvider).saveHotel(
-    hotelId: savedHotel.hotelId,
-    name: savedHotel.name,
-    city: savedHotel.city,
-    country: savedHotel.country,
-    address: savedHotel.address,
-    currency: savedHotel.currency,
-    rating: savedHotel.rating,
-    pricePerNight: savedHotel.pricePerNight,
-    totalPrice: savedHotel.totalPrice,
-    beds: savedHotel.beds,
-    roomType: savedHotel.roomType,
-    amenities: savedHotel.amenities,
-    freeCancellation: savedHotel.freeCancellation,
-    description: savedHotel.description,
-    image: savedHotel.image,
-    nights: savedHotel.nights,
-  );
+        hotelId: savedHotel.hotelId,
+        name: savedHotel.name,
+        city: savedHotel.city,
+        country: savedHotel.country,
+        address: savedHotel.address,
+        currency: savedHotel.currency,
+        rating: savedHotel.rating,
+        pricePerNight: savedHotel.pricePerNight,
+        totalPrice: savedHotel.totalPrice,
+        beds: savedHotel.beds,
+        roomType: savedHotel.roomType,
+        amenities: savedHotel.amenities,
+        freeCancellation: savedHotel.freeCancellation,
+        description: savedHotel.description,
+        image: savedHotel.image,
+        nights: savedHotel.nights,
+      );
   // Invalidate the saved hotels stream to refetch
   ref.invalidate(savedHotelsProvider);
 });
@@ -108,12 +111,14 @@ final removeSavedHotelProvider =
 
 // ── Check if Hotel is Saved provider ───────────────────────────────────────
 /// Check if a specific hotel is saved
-final isHotelSavedProvider = FutureProvider.family<bool, String>((ref, hotelId) async {
+final isHotelSavedProvider =
+    FutureProvider.family<bool, String>((ref, hotelId) async {
   return ref.read(hotelFirestoreServiceProvider).isHotelSaved(hotelId);
 });
 
 // ── Get Save ID provider ───────────────────────────────────────────────────
 /// Get the save document ID for a hotel
-final getSavedHotelIdProvider = FutureProvider.family<String?, String>((ref, hotelId) async {
+final getSavedHotelIdProvider =
+    FutureProvider.family<String?, String>((ref, hotelId) async {
   return ref.read(hotelFirestoreServiceProvider).getSavedHotelId(hotelId);
 });

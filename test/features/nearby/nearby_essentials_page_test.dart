@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_super_app/features/nearby/presentation/nearby_essentials_page.dart';
 
 void main() {
-  testWidgets('nearby essentials page renders hub services and state foundations',
+  testWidgets(
+      'nearby essentials page renders hub services and state foundations',
       (tester) async {
     await tester.pumpWidget(
       const MaterialApp(

@@ -133,211 +133,217 @@ class TripDetailsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-              Text(
-                trip.destination,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '${dateFormatter.format(trip.departureDate)} -> ${dateFormatter.format(trip.returnDate)}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const _SectionDivider(),
-              _TripWorkspaceSection(
-                hasFlight: linkedFlight != null,
-                hasHotel: linkedHotel != null,
-                hasTransport: rides.isNotEmpty,
-                hasExpenses: expenses.isNotEmpty,
-                hasWeather: hasWeather,
-                hasNotes: (trip.notes ?? '').trim().isNotEmpty,
-                hasDocuments: documents.isNotEmpty,
-                onOpenFlights: () => context.pushFlights(),
-                onOpenHotels: () => context.pushHotels(),
-                onOpenTransport: () => context.pushTransport(),
-                onOpenWallet: () => context.pushWallet(),
-                onOpenNotes: () => context.pushTripNotes(trip.id),
-                onOpenDocuments: () => context.pushTripDocuments(trip.id),
-                onOpenAi: () => context.pushAiAssistant(),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.wb_sunny_outlined,
-                title: 'Weather',
-                child: weatherAsync.when(
-                  loading: () => const Text('Loading weather...'),
-                  error: (_, __) => const Text('Weather unavailable.'),
-                  data: (weather) => _WeatherLine(weather: weather),
-                ),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.flight_takeoff,
-                title: 'Flights',
-                child: linkedFlight == null
-                    ? const Text('No linked flight yet.')
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            linkedFlight.flightNumber,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                              '${linkedFlight.origin} -> ${linkedFlight.destination}'),
-                          Text(
-                              'Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}'),
-                        ],
+                Text(
+                  trip.destination,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.hotel,
-                title: 'Hotel',
-                child: linkedHotel == null
-                    ? const Text('No linked hotel yet.')
-                    : Column(
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${dateFormatter.format(trip.departureDate)} -> ${dateFormatter.format(trip.returnDate)}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const _SectionDivider(),
+                _TripWorkspaceSection(
+                  hasFlight: linkedFlight != null,
+                  hasHotel: linkedHotel != null,
+                  hasTransport: rides.isNotEmpty,
+                  hasExpenses: expenses.isNotEmpty,
+                  hasWeather: hasWeather,
+                  hasNotes: (trip.notes ?? '').trim().isNotEmpty,
+                  hasDocuments: documents.isNotEmpty,
+                  onOpenFlights: () => context.pushFlights(),
+                  onOpenHotels: () => context.pushHotels(),
+                  onOpenTransport: () => context.pushTransport(),
+                  onOpenWallet: () => context.pushWallet(),
+                  onOpenNotes: () => context.pushTripNotes(trip.id),
+                  onOpenDocuments: () => context.pushTripDocuments(trip.id),
+                  onOpenAi: () => context.pushAiAssistant(),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.wb_sunny_outlined,
+                  title: 'Weather',
+                  child: weatherAsync.when(
+                    loading: () => const Text('Loading weather...'),
+                    error: (_, __) => const Text('Weather unavailable.'),
+                    data: (weather) => _WeatherLine(weather: weather),
+                  ),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.flight_takeoff,
+                  title: 'Flights',
+                  child: linkedFlight == null
+                      ? const Text('No linked flight yet.')
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              linkedFlight.flightNumber,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                                '${linkedFlight.origin} -> ${linkedFlight.destination}'),
+                            Text(
+                                'Departure: ${_formatIsoDateTime(linkedFlight.departureAt)}'),
+                          ],
+                        ),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.hotel,
+                  title: 'Hotel',
+                  child: linkedHotel == null
+                      ? const Text('No linked hotel yet.')
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              linkedHotel.name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              linkedHotel.address.isEmpty
+                                  ? '${linkedHotel.city}${linkedHotel.country.isEmpty ? '' : ', ${linkedHotel.country}'}'
+                                  : linkedHotel.address,
+                            ),
+                            Text(
+                                'Rating: ${linkedHotel.rating.toStringAsFixed(1)}'),
+                          ],
+                        ),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.payments_outlined,
+                  title: 'Budget',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          '${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
+                      const SizedBox(height: 4),
+                      Text(
+                          'Spent ${trip.currency} ${spent.toStringAsFixed(2)}'),
+                      Text(
+                          'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
+                    ],
+                  ),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.event_note,
+                  title: 'Itinerary',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _buildDayItems(_tripDays(trip)),
+                  ),
+                ),
+                const _SectionDivider(),
+                _DashboardSection(
+                  icon: Icons.alt_route,
+                  title: 'Transport Timeline',
+                  child: ridesAsync.when(
+                    loading: () => const Text('Loading transport rides...'),
+                    error: (error, _) => Text('Could not load rides: $error'),
+                    data: (rides) {
+                      if (rides.isEmpty) {
+                        return const Text('No saved transport rides yet.');
+                      }
+
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            linkedHotel.name,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            linkedHotel.address.isEmpty
-                                ? '${linkedHotel.city}${linkedHotel.country.isEmpty ? '' : ', ${linkedHotel.country}'}'
-                                : linkedHotel.address,
-                          ),
-                          Text(
-                              'Rating: ${linkedHotel.rating.toStringAsFixed(1)}'),
-                        ],
-                      ),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.payments_outlined,
-                title: 'Budget',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
-                    const SizedBox(height: 4),
-                    Text('Spent ${trip.currency} ${spent.toStringAsFixed(2)}'),
-                    Text(
-                        'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
-                  ],
+                        children: rides
+                            .map((ride) => _TransportRideLine(
+                                  ride: ride,
+                                  onBookReturnRide: () {
+                                    final returnRequest = TaxiRideRequest(
+                                      pickupLatitude: ride.destinationLatitude,
+                                      pickupLongitude:
+                                          ride.destinationLongitude,
+                                      pickupAddress: ride.destinationAddress,
+                                      destinationLatitude: ride.pickupLatitude,
+                                      destinationLongitude:
+                                          ride.pickupLongitude,
+                                      destinationAddress: ride.pickupAddress,
+                                      pickupTime: ride.scheduledAt,
+                                      passengers: ride.passengers,
+                                      luggage: ride.luggage,
+                                    );
+
+                                    context.pushTaxiResults(returnRequest);
+                                  },
+                                ))
+                            .toList(growable: false),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.event_note,
-                title: 'Itinerary',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _buildDayItems(_tripDays(trip)),
+                if (linkedFlight != null) ...[
+                  const _SectionDivider(),
+                  _AiArrivalSuggestionCard(
+                    flight: linkedFlight,
+                    trip: trip,
+                    linkedHotel: linkedHotel,
+                  ),
+                ],
+                const _SectionDivider(),
+                const _DashboardSection(
+                  icon: Icons.map_outlined,
+                  title: 'Map',
+                  child: Text('Map integration coming next.'),
                 ),
-              ),
-              const _SectionDivider(),
-              _DashboardSection(
-                icon: Icons.alt_route,
-                title: 'Transport Timeline',
-                child: ridesAsync.when(
-                  loading: () => const Text('Loading transport rides...'),
-                  error: (error, _) => Text('Could not load rides: $error'),
-                  data: (rides) {
-                    if (rides.isEmpty) {
-                      return const Text('No saved transport rides yet.');
+                const _SectionDivider(),
+                const _DashboardSection(
+                  icon: Icons.description_outlined,
+                  title: 'Documents',
+                  child: Text('Travel documents module coming next.'),
+                ),
+                const _SectionDivider(),
+                const _DashboardSection(
+                  icon: Icons.translate_outlined,
+                  title: 'Translator',
+                  child: Text('AI translator module coming next.'),
+                ),
+                const _SectionDivider(),
+                const _DashboardSection(
+                  icon: Icons.smart_toy_outlined,
+                  title: 'AI Assistant',
+                  child: Text('Trip AI assistant coming next.'),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit Trip'),
+                  onPressed: () {
+                    final router = GoRouter.maybeOf(context);
+                    if (router != null) {
+                      context.pushEditTrip(trip.id, initialTrip: trip);
+                      return;
                     }
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: rides
-                          .map((ride) => _TransportRideLine(
-                                ride: ride,
-                                onBookReturnRide: () {
-                                  final returnRequest = TaxiRideRequest(
-                                    pickupLatitude: ride.destinationLatitude,
-                                    pickupLongitude: ride.destinationLongitude,
-                                    pickupAddress: ride.destinationAddress,
-                                    destinationLatitude: ride.pickupLatitude,
-                                    destinationLongitude: ride.pickupLongitude,
-                                    destinationAddress: ride.pickupAddress,
-                                    pickupTime: ride.scheduledAt,
-                                    passengers: ride.passengers,
-                                    luggage: ride.luggage,
-                                  );
-
-                                  context.pushTaxiResults(returnRequest);
-                                },
-                              ))
-                          .toList(growable: false),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditTripPage(trip: trip),
+                      ),
                     );
                   },
                 ),
-              ),
-              if (linkedFlight != null) ...[
-                const _SectionDivider(),
-                _AiArrivalSuggestionCard(
-                  flight: linkedFlight,
-                  trip: trip,
-                  linkedHotel: linkedHotel,
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.delete),
+                  label: const Text('Delete Trip'),
+                  onPressed: () => _confirmDelete(context, ref, trip),
                 ),
               ],
-              const _SectionDivider(),
-              const _DashboardSection(
-                icon: Icons.map_outlined,
-                title: 'Map',
-                child: Text('Map integration coming next.'),
-              ),
-              const _SectionDivider(),
-              const _DashboardSection(
-                icon: Icons.description_outlined,
-                title: 'Documents',
-                child: Text('Travel documents module coming next.'),
-              ),
-              const _SectionDivider(),
-              const _DashboardSection(
-                icon: Icons.translate_outlined,
-                title: 'Translator',
-                child: Text('AI translator module coming next.'),
-              ),
-              const _SectionDivider(),
-              const _DashboardSection(
-                icon: Icons.smart_toy_outlined,
-                title: 'AI Assistant',
-                child: Text('Trip AI assistant coming next.'),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.edit),
-                label: const Text('Edit Trip'),
-                onPressed: () {
-                  final router = GoRouter.maybeOf(context);
-                  if (router != null) {
-                    context.pushEditTrip(trip.id, initialTrip: trip);
-                    return;
-                  }
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditTripPage(trip: trip),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.delete),
-                label: const Text('Delete Trip'),
-                onPressed: () => _confirmDelete(context, ref, trip),
-              ),
-            ],
+            ),
           ),
-        ),
         );
       },
     );
@@ -474,7 +480,8 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
         ? flight.arrivalAt
         : DateFormat('HH:mm').format(arrival);
 
-    final isLateArrival = arrival != null && (arrival.hour >= 21 || arrival.hour <= 5);
+    final isLateArrival =
+        arrival != null && (arrival.hour >= 21 || arrival.hour <= 5);
 
     final destinationAddress = _resolveHotelDestination();
 
@@ -544,7 +551,8 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Receipt capture assistant is queued for next step.'),
+                      content: Text(
+                          'Receipt capture assistant is queued for next step.'),
                     ),
                   );
                 },
@@ -721,7 +729,8 @@ class _WorkspaceItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text(label,
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(completed ? completedText : pendingText),
               ],

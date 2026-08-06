@@ -41,7 +41,8 @@ class SavedHotelsPage extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, size: 64, color: Colors.grey[300]),
+                  Icon(Icons.favorite_border,
+                      size: 64, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   Text(
                     'No saved hotels yet.',
@@ -106,25 +107,30 @@ class SavedHotelsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                                      const Icon(Icons.location_on,
+                                          size: 14, color: Colors.grey),
                                       const SizedBox(width: 4),
                                       Text(
                                         saved.address.isEmpty
                                             ? '${saved.city}${saved.country.isEmpty ? '' : ', ${saved.country}'}'
                                             : saved.address,
-                                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[700]),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     saved.roomType,
-                                    style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.star, size: 14, color: Colors.amber),
+                                      const Icon(Icons.star,
+                                          size: 14, color: Colors.amber),
                                       const SizedBox(width: 4),
                                       Text(
                                         saved.rating.toStringAsFixed(1),
@@ -140,9 +146,9 @@ class SavedHotelsPage extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         // Price and details
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,7 +166,8 @@ class SavedHotelsPage extends ConsumerWidget {
                                 ),
                                 Text(
                                   '${_currencySymbol(saved.currency)}${saved.pricePerNight.toStringAsFixed(0)} / night',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey[600]),
                                 ),
                               ],
                             ),
@@ -169,19 +176,21 @@ class SavedHotelsPage extends ConsumerWidget {
                               children: [
                                 Text(
                                   '${saved.beds} bed${saved.beds > 1 ? 's' : ''}',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey[700]),
                                 ),
                                 Text(
                                   '${saved.nights} night${saved.nights > 1 ? 's' : ''}',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey[700]),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         // Remove button
                         SizedBox(
                           width: double.infinity,
@@ -190,7 +199,8 @@ class SavedHotelsPage extends ConsumerWidget {
                               ref.read(removeSavedHotelProvider(saved.id));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('${saved.name} removed from saved hotels'),
+                                  content: Text(
+                                      '${saved.name} removed from saved hotels'),
                                 ),
                               );
                             },

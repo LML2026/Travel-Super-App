@@ -38,10 +38,8 @@ class FirestoreExpenseRepository implements ExpenseRepository {
       return Stream.value(const <Expense>[]);
     }
 
-    return _expenseCollection(tripId)
-      .orderBy('date')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
+    return _expenseCollection(tripId).orderBy('date').snapshots().map(
+        (snapshot) => snapshot.docs
             .map((doc) => ExpenseModel.fromFirestore(doc))
             .toList());
   }
