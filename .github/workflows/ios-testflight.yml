@@ -37,10 +37,22 @@ jobs:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
         run: |
           set -euo pipefail
-          test -n "$APP_STORE_CONNECT_KEY_ID"
-          test -n "$APP_STORE_CONNECT_ISSUER_ID"
-          test -n "$APP_STORE_CONNECT_API_KEY_P8"
-          test -n "$IOS_BUNDLE_ID"
+          missing=0
+          for name in \
+            APP_STORE_CONNECT_KEY_ID \
+            APP_STORE_CONNECT_ISSUER_ID \
+            APP_STORE_CONNECT_API_KEY_P8 \
+            IOS_BUNDLE_ID; do
+            value="${!name:-}"
+            if [ -z "$value" ]; then
+              echo "::error::Missing required secret: $name"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Check optional signing secrets
         id: signing
