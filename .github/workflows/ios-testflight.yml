@@ -35,10 +35,6 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
-          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
-          IOS_SIGNING_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
-          IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
-          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
           missing=0
@@ -46,11 +42,7 @@ jobs:
             APP_STORE_CONNECT_KEY_ID \
             APP_STORE_CONNECT_ISSUER_ID \
             APP_STORE_CONNECT_API_KEY_P8 \
-            IOS_BUNDLE_ID \
-            IOS_DEVELOPMENT_TEAM \
-            IOS_SIGNING_CERTIFICATE_P12_BASE64 \
-            IOS_SIGNING_CERTIFICATE_PASSWORD \
-            IOS_PROVISIONING_PROFILE_BASE64; do
+            IOS_BUNDLE_ID; do
             value="${!name:-}"
             if [ -z "$value" ]; then
               echo "::error::Missing required secret: $name"
@@ -62,7 +54,29 @@ jobs:
             exit 1
           fi
 
+      - name: Check optional signing secrets
+        id: signing
+        env:
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_SIGNING_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
+          IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          MISSING=()
+          [ -n "$IOS_DEVELOPMENT_TEAM" ] || MISSING+=("IOS_DEVELOPMENT_TEAM")
+          [ -n "$IOS_SIGNING_CERTIFICATE_P12_BASE64" ] || MISSING+=("IOS_SIGNING_CERTIFICATE_P12_BASE64")
+          [ -n "$IOS_SIGNING_CERTIFICATE_PASSWORD" ] || MISSING+=("IOS_SIGNING_CERTIFICATE_PASSWORD")
+          [ -n "$IOS_PROVISIONING_PROFILE_BASE64" ] || MISSING+=("IOS_PROVISIONING_PROFILE_BASE64")
+          if [ "${#MISSING[@]}" -gt 0 ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Skipping signed IPA/TestFlight upload because signing secrets are missing: ${MISSING[*]}"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Configure Runner bundle identifier
+        if: steps.signing.outputs.enabled == 'true'
         env:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
@@ -71,12 +85,14 @@ jobs:
           ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
 
       - name: Import iOS signing certificate
+        if: steps.signing.outputs.enabled == 'true'
         uses: apple-actions/import-codesign-certs@v3
         with:
           p12-file-base64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
           p12-password: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
 
       - name: Install provisioning profile
+        if: steps.signing.outputs.enabled == 'true'
         env:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
@@ -98,6 +114,7 @@ jobs:
           pod install --repo-update
 
       - name: Build iOS IPA
+        if: steps.signing.outputs.enabled == 'true'
         env:
           BUILD_NAME: ${{ github.event.inputs.build_name }}
           BUILD_NUMBER: ${{ github.event.inputs.build_number }}
@@ -115,12 +132,14 @@ jobs:
           flutter build ipa --release --export-options-plist=ios/ExportOptionsAppStore.plist $BUILD_ARGS
 
       - name: Upload IPA artifact
+        if: steps.signing.outputs.enabled == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: build/ios/ipa/*.ipa
 
       - name: Write App Store Connect API key
+        if: steps.signing.outputs.enabled == 'true'
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
@@ -130,6 +149,7 @@ jobs:
           printf "%s" "$APP_STORE_CONNECT_API_KEY_P8" > "private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
 
       - name: Upload build to TestFlight
+        if: steps.signing.outputs.enabled == 'true'
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}

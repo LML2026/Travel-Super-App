@@ -25,6 +25,7 @@ Ship each release candidate to TestFlight internal testers and run smoke checks 
    - `IOS_SIGNING_CERTIFICATE_P12_BASE64` (base64-encoded iOS distribution certificate .p12)
    - `IOS_SIGNING_CERTIFICATE_PASSWORD` (password for the .p12)
    - `IOS_PROVISIONING_PROFILE_BASE64` (base64-encoded App Store provisioning profile .mobileprovision)
+   - If the four iOS signing secrets above are missing, the workflow now exits successfully after setup and skips signed IPA/TestFlight upload with a warning.
 5. iOS workflow present: [iOS TestFlight workflow](../../.github/workflows/ios-testflight.yml)
 6. Export options present: [Export options plist](../../ios/ExportOptionsAppStore.plist)
 
