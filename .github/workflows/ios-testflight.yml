@@ -35,19 +35,44 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_SIGNING_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
+          IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
           test -n "$APP_STORE_CONNECT_KEY_ID"
           test -n "$APP_STORE_CONNECT_ISSUER_ID"
           test -n "$APP_STORE_CONNECT_API_KEY_P8"
           test -n "$IOS_BUNDLE_ID"
+          test -n "$IOS_DEVELOPMENT_TEAM"
+          test -n "$IOS_SIGNING_CERTIFICATE_P12_BASE64"
+          test -n "$IOS_SIGNING_CERTIFICATE_PASSWORD"
+          test -n "$IOS_PROVISIONING_PROFILE_BASE64"
 
       - name: Configure Runner bundle identifier
         env:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
         run: |
           set -euo pipefail
-          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};")' ios/Runner.xcodeproj/project.pbxproj
+          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
+
+      - name: Import iOS signing certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
+
+      - name: Install provisioning profile
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/Runner.mobileprovision"
+          echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH" || \
+            echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -D > "$PROFILE_PATH"
 
       - name: Create placeholder .env for Flutter asset bundle
         run: touch .env

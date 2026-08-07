@@ -21,6 +21,10 @@ Ship each release candidate to TestFlight internal testers and run smoke checks 
    - `APP_STORE_CONNECT_ISSUER_ID`
    - `APP_STORE_CONNECT_API_KEY_P8`
    - `IOS_BUNDLE_ID` (example: `com.lml2026.travelsuperapp`)
+   - `IOS_DEVELOPMENT_TEAM` (Apple Developer Team ID)
+   - `IOS_SIGNING_CERTIFICATE_P12_BASE64` (base64-encoded iOS distribution certificate .p12)
+   - `IOS_SIGNING_CERTIFICATE_PASSWORD` (password for the .p12)
+   - `IOS_PROVISIONING_PROFILE_BASE64` (base64-encoded App Store provisioning profile .mobileprovision)
 5. iOS workflow present: [iOS TestFlight workflow](../../.github/workflows/ios-testflight.yml)
 6. Export options present: [Export options plist](../../ios/ExportOptionsAppStore.plist)
 
