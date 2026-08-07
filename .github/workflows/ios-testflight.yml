@@ -47,7 +47,7 @@ jobs:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
         run: |
           set -euo pipefail
-          ruby -pi -e "gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\\.example\\.travelSuperApp;/, \"PRODUCT_BUNDLE_IDENTIFIER = ${ENV['IOS_BUNDLE_ID']};\")" ios/Runner.xcodeproj/project.pbxproj
+          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};")' ios/Runner.xcodeproj/project.pbxproj
 
       - name: Create placeholder .env for Flutter asset bundle
         run: touch .env
