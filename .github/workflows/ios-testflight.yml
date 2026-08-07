@@ -50,13 +50,36 @@ jobs:
           test -n "$IOS_SIGNING_CERTIFICATE_PASSWORD"
           test -n "$IOS_PROVISIONING_PROFILE_BASE64"
 
-      - name: Configure Runner bundle identifier
+      - name: Configure Runner bundle identifier and code signing
         env:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
         run: |
           set -euo pipefail
-          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
+          PBXPROJ="ios/Runner.xcodeproj/project.pbxproj"
+          # Replace bundle identifier
+          sed -i '' "s/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/PRODUCT_BUNDLE_IDENTIFIER = ${IOS_BUNDLE_ID};/g" "$PBXPROJ"
+          # Set development team on all build configurations
+          sed -i '' "s/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g" "$PBXPROJ"
+          # Add DEVELOPMENT_TEAM after each CODE_SIGN_STYLE = Manual; line using Python for reliable multi-line edit
+          python3 - <<'PYEOF'
+import os, re
+path = "ios/Runner.xcodeproj/project.pbxproj"
+team = os.environ["IOS_DEVELOPMENT_TEAM"]
+with open(path, "r") as f:
+    content = f.read()
+# Insert DEVELOPMENT_TEAM after CODE_SIGN_STYLE = Manual; if not already present
+content = re.sub(
+    r'(CODE_SIGN_STYLE = Manual;)(\s*)(?!DEVELOPMENT_TEAM)',
+    lambda m: m.group(1) + m.group(2) + '\t\t\t\tDEVELOPMENT_TEAM = ' + team + ';\n',
+    content
+)
+with open(path, "w") as f:
+    f.write(content)
+PYEOF
+          # Patch ExportOptionsAppStore.plist with real teamID and bundle ID
+          sed -i '' "s/TEAM_ID_PLACEHOLDER/${IOS_DEVELOPMENT_TEAM}/g" ios/ExportOptionsAppStore.plist
+          sed -i '' "s/BUNDLE_ID_PLACEHOLDER/${IOS_BUNDLE_ID}/g" ios/ExportOptionsAppStore.plist
 
       - name: Import iOS signing certificate
         uses: apple-actions/import-codesign-certs@v3
