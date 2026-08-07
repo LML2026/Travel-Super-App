@@ -62,13 +62,14 @@ jobs:
             exit 1
           fi
 
-      - name: Configure Runner bundle identifier
+      - name: Configure Runner bundle identifier and signing mode
         env:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
         run: |
           set -euo pipefail
-          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
+          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Manual;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
+          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub("BUNDLE_ID_PLACEHOLDER", bundle); gsub("TEAM_ID_PLACEHOLDER", team)' ios/ExportOptionsAppStore.plist
 
       - name: Import iOS signing certificate
         uses: apple-actions/import-codesign-certs@v3
