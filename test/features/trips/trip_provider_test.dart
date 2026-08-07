@@ -72,7 +72,7 @@ void main() {
     expect(trips.first.destination, 'Paris');
   });
 
-  test('createTrip helper delegates to repository create', () async {
+  test('createTripProvider.notifier.create delegates to repository create', () async {
     final fakeRepo = _FakeTripRepository(const <Trip>[]);
     final container = ProviderContainer(
       overrides: [
@@ -87,7 +87,7 @@ void main() {
     expect(fakeRepo.createdTrips.single.id, 'new-trip');
   });
 
-  test('updateTrip helper delegates to repository update', () async {
+  test('createTripProvider.notifier.update delegates to repository update', () async {
     final fakeRepo = _FakeTripRepository(const <Trip>[]);
     final container = ProviderContainer(
       overrides: [
@@ -102,7 +102,7 @@ void main() {
     expect(fakeRepo.updatedTrips.single.id, 'edit-trip');
   });
 
-  test('deleteTrip helper delegates to repository delete', () async {
+  test('createTripProvider.notifier.delete delegates to repository delete', () async {
     final fakeRepo = _FakeTripRepository(const <Trip>[]);
     final container = ProviderContainer(
       overrides: [
