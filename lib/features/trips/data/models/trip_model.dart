@@ -2,106 +2,131 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/trip.dart';
 
-class TripModel {
-	const TripModel({
-		required this.id,
-		required this.destination,
-		required this.departureDate,
-		required this.returnDate,
-		required this.budget,
-		required this.currency,
-		required this.travellers,
-		required this.notes,
-	});
+class TripModel extends Trip {
+  TripModel({
+    required String id,
+    required String title,
+    required String destination,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? departureDate,
+    DateTime? returnDate,
+    required double budget,
+    String? notes,
+    String? imageUrl,
+    String? currency,
+    int? travellers,
+    String? selectedFlightId,
+    String? selectedHotelId,
+    Map<String, dynamic>? weatherSnapshot,
+    DateTime? weatherSnapshotCapturedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? status,
+  }) : super(
+          id: id,
+          title: title,
+          destination: destination,
+          startDate: startDate,
+          endDate: endDate,
+          departureDate: departureDate,
+          returnDate: returnDate,
+          budget: budget,
+          notes: notes,
+          imageUrl: imageUrl,
+          currency: currency,
+          travellers: travellers,
+          selectedFlightId: selectedFlightId,
+          selectedHotelId: selectedHotelId,
+          weatherSnapshot: weatherSnapshot,
+          weatherSnapshotCapturedAt: weatherSnapshotCapturedAt,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          status: status,
+        );
 
-	final String id;
-	final String destination;
-	final DateTime departureDate;
-	final DateTime returnDate;
-	final double budget;
-	final String currency;
-	final int travellers;
-	final String notes;
+  factory TripModel.fromJson(Map<String, dynamic> json) {
+    DateTime? toDate(dynamic value) {
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      if (value is DateTime) {
+        return value;
+      }
+      if (value == null) {
+        return null;
+      }
+      return DateTime.tryParse(value.toString());
+    }
 
-	factory TripModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-		final data = doc.data() ?? const <String, dynamic>{};
+    return TripModel(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      destination: json['destination'] as String,
+      startDate: toDate(json['startDate']) ?? toDate(json['departureDate']),
+      endDate: toDate(json['endDate']) ?? toDate(json['returnDate']),
+      budget: (json['budget'] as num).toDouble(),
+      notes: json['notes'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      currency: json['currency'] as String?,
+      travellers: (json['travellers'] as num?)?.toInt(),
+      selectedFlightId: json['selectedFlightId'] as String?,
+      selectedHotelId: json['selectedHotelId'] as String?,
+      weatherSnapshot: json['weatherSnapshot'] as Map<String, dynamic>?,
+      weatherSnapshotCapturedAt: toDate(json['weatherSnapshotCapturedAt']),
+      createdAt: toDate(json['createdAt']),
+      updatedAt: toDate(json['updatedAt']),
+      status: json['status'] as String?,
+    );
+  }
 
-		DateTime readDate(dynamic raw) {
-			if (raw is Timestamp) {
-				return raw.toDate();
-			}
-			if (raw is DateTime) {
-				return raw;
-			}
-			if (raw is String) {
-				return DateTime.tryParse(raw) ?? DateTime.now();
-			}
-			return DateTime.now();
-		}
+  factory TripModel.fromEntity(Trip trip) {
+    return TripModel(
+      id: trip.id,
+      title: trip.title,
+      destination: trip.destination,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      departureDate: trip.departureDate,
+      returnDate: trip.returnDate,
+      budget: trip.budget,
+      notes: trip.notes,
+      imageUrl: trip.imageUrl,
+      currency: trip.currency,
+      travellers: trip.travellers,
+      selectedFlightId: trip.selectedFlightId,
+      selectedHotelId: trip.selectedHotelId,
+      weatherSnapshot: trip.weatherSnapshot,
+      weatherSnapshotCapturedAt: trip.weatherSnapshotCapturedAt,
+      createdAt: trip.createdAt,
+      updatedAt: trip.updatedAt,
+      status: trip.status,
+    );
+  }
 
-		return TripModel(
-			id: doc.id,
-			destination: (data['destination'] ?? '').toString(),
-			departureDate: readDate(data['departureDate']),
-			returnDate: readDate(data['returnDate']),
-			budget: (data['budget'] as num?)?.toDouble() ?? 0,
-			currency: (data['currency'] ?? 'GBP').toString(),
-			travellers: (data['travellers'] as num?)?.toInt() ?? 1,
-			notes: (data['notes'] ?? '').toString(),
-		);
-	}
-
-	factory TripModel.fromEntity(Trip entity) {
-		return TripModel(
-			id: entity.id,
-			destination: entity.destination,
-			departureDate: entity.departureDate,
-			returnDate: entity.returnDate,
-			budget: entity.budget,
-			currency: entity.currency,
-			travellers: entity.travellers,
-			notes: entity.notes,
-		);
-	}
-
-	Trip toEntity() {
-		return Trip(
-			id: id,
-			destination: destination,
-			departureDate: departureDate,
-			returnDate: returnDate,
-			budget: budget,
-			currency: currency,
-			travellers: travellers,
-			notes: notes,
-			createdAt: DateTime.now(),
-		);
-	}
-
-	Map<String, dynamic> toCreateMap() {
-		return <String, dynamic>{
-			'destination': destination,
-			'departureDate': Timestamp.fromDate(departureDate),
-			'returnDate': Timestamp.fromDate(returnDate),
-			'budget': budget,
-			'currency': currency,
-			'travellers': travellers,
-			'notes': notes,
-			'createdAt': FieldValue.serverTimestamp(),
-			'updatedAt': FieldValue.serverTimestamp(),
-		};
-	}
-
-	Map<String, dynamic> toUpdateMap() {
-		return <String, dynamic>{
-			'destination': destination,
-			'departureDate': Timestamp.fromDate(departureDate),
-			'returnDate': Timestamp.fromDate(returnDate),
-			'budget': budget,
-			'currency': currency,
-			'travellers': travellers,
-			'notes': notes,
-			'updatedAt': FieldValue.serverTimestamp(),
-		};
-	}
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'destination': destination,
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'departureDate': Timestamp.fromDate(departureDate),
+      'returnDate': Timestamp.fromDate(returnDate),
+      'budget': budget,
+      'notes': notes,
+      'imageUrl': imageUrl,
+      'currency': currency,
+      'travellers': travellers,
+      'selectedFlightId': selectedFlightId,
+      'selectedHotelId': selectedHotelId,
+      'weatherSnapshot': weatherSnapshot,
+      'weatherSnapshotCapturedAt': weatherSnapshotCapturedAt == null
+          ? null
+          : Timestamp.fromDate(weatherSnapshotCapturedAt!),
+      'createdAt': createdAt == null ? null : Timestamp.fromDate(createdAt!),
+      'updatedAt': updatedAt == null ? null : Timestamp.fromDate(updatedAt!),
+      'status': status,
+    };
+  }
 }

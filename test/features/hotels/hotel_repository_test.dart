@@ -1,12 +1,38 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:travel_super_app/core/utils/result.dart';
 import 'package:travel_super_app/features/hotels/models/hotel.dart';
 import 'package:travel_super_app/features/hotels/models/hotel_search_request.dart';
 import 'package:travel_super_app/features/hotels/repositories/hotel_repository.dart';
-import 'package:travel_super_app/features/hotels/services/hotel_service.dart';
-import 'package:travel_super_app/core/utils/result.dart';
+import 'package:travel_super_app/features/hotels/services/hotel_api_service.dart';
 
-class MockHotelService extends Mock implements HotelService {}
+class MockHotelService extends Mock implements HotelApiService {}
+
+Hotel _hotel({
+  required String id,
+  required String name,
+  required String city,
+  required double rating,
+  required double price,
+  required double totalPrice,
+  required int beds,
+  required int nights,
+}) {
+  return Hotel(
+    id: id,
+    name: name,
+    image: 'https://example.com/hotel.jpg',
+    city: city,
+    rating: rating,
+    address: '$city City Center',
+    price: price,
+    currency: 'GBP',
+    amenities: const ['Free Wi-Fi', 'Breakfast Included'],
+    totalPrice: totalPrice,
+    beds: beds,
+    nights: nights,
+  );
+}
 
 void main() {
   late MockHotelService mockHotelService;
@@ -29,32 +55,24 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Luxury Hotel',
           city: 'Paris',
           rating: 4.8,
           price: 145.00,
-          currency: 'GBP',
-          address: 'Paris, France',
-          amenities: const ['Free Wi-Fi', 'Breakfast Included'],
           totalPrice: 435.00,
           beds: 2,
-          image: '🏨',
           nights: 3,
         ),
-        Hotel(
+        _hotel(
           id: 'h2',
           name: 'Budget Hotel',
           city: 'Paris',
           rating: 4.0,
           price: 85.00,
-          currency: 'GBP',
-          address: 'Paris, France',
-          amenities: const ['Free Wi-Fi'],
           totalPrice: 255.00,
           beds: 1,
-          image: '🏨',
           nights: 3,
         ),
       ];
@@ -66,13 +84,16 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success<List<Hotel>>>());
-
-      final success = result as Success<List<Hotel>>;
-      expect(success.data, mockHotels);
-      expect(success.data.length, 2);
-      expect(success.data[0].name, 'Luxury Hotel');
-      expect(success.data[1].name, 'Budget Hotel');
+      expect(result, isA<Success>());
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, mockHotels);
+          expect(data.length, 2);
+          expect(data[0].name, 'Luxury Hotel');
+          expect(data[1].name, 'Budget Hotel');
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
+      }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -94,10 +115,13 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Failure<List<Hotel>>>());
-
-      final failure = result as Failure<List<Hotel>>;
-      expect(failure.message, contains('Network error'));
+      expect(result, isA<Failure>());
+      switch (result) {
+        case Failure<List<Hotel>>(:final message):
+          expect(message, contains('Network error'));
+        case Success<List<Hotel>>(:final data):
+          fail('Expected Failure but got Success with ${data.length} hotels');
+      }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -150,10 +174,13 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success<List<Hotel>>>());
-
-      final success = result as Success<List<Hotel>>;
-      expect(success.data, isEmpty);
+      expect(result, isA<Success>());
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, isEmpty);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
+      }
     });
 
     test('searchHotels with large guest count', () async {
@@ -167,18 +194,14 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Large Group Hotel',
           city: 'Paris',
           rating: 4.5,
           price: 300.00,
-          currency: 'GBP',
-          address: 'Paris, France',
-          amenities: const ['Free Wi-Fi'],
           totalPrice: 900.00,
           beds: 2,
-          image: '🏨',
           nights: 3,
         ),
       ];
@@ -190,10 +213,13 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success<List<Hotel>>>());
-
-      final success = result as Success<List<Hotel>>;
-      expect(success.data, mockHotels);
+      expect(result, isA<Success>());
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data, mockHotels);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
+      }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
@@ -209,18 +235,14 @@ void main() {
       );
 
       final mockHotels = [
-        Hotel(
+        _hotel(
           id: 'h1',
           name: 'Week Stay Hotel',
           city: 'London',
           rating: 4.6,
           price: 120.00,
-          currency: 'GBP',
-          address: 'London, United Kingdom',
-          amenities: const ['Free Wi-Fi', 'Late Check-in'],
           totalPrice: 840.00,
           beds: 2,
-          image: '🏨',
           nights: 7,
         ),
       ];
@@ -232,10 +254,13 @@ void main() {
       final result = await hotelRepository.searchHotels(request);
 
       // Assert
-      expect(result, isA<Success<List<Hotel>>>());
-
-      final success = result as Success<List<Hotel>>;
-      expect(success.data[0].nights, 7);
+      expect(result, isA<Success>());
+      switch (result) {
+        case Success<List<Hotel>>(:final data):
+          expect(data[0].nights, 7);
+        case Failure<List<Hotel>>(:final message):
+          fail('Expected Success but got Failure: $message');
+      }
 
       verify(() => mockHotelService.searchHotels(request)).called(1);
     });
