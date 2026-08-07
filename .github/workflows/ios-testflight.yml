@@ -1,0 +1,106 @@
+name: iOS TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: "iOS CFBundleShortVersionString (e.g., 1.0.1)"
+        required: false
+      build_number:
+        description: "iOS CFBundleVersion (numeric)"
+        required: false
+
+jobs:
+  build-and-upload-testflight:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Validate required secrets
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$APP_STORE_CONNECT_KEY_ID"
+          test -n "$APP_STORE_CONNECT_ISSUER_ID"
+          test -n "$APP_STORE_CONNECT_API_KEY_P8"
+          test -n "$IOS_BUNDLE_ID"
+
+      - name: Configure Runner bundle identifier
+        env:
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+        run: |
+          set -euo pipefail
+          ruby -pi -e "gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\\.example\\.travelSuperApp;/, \"PRODUCT_BUNDLE_IDENTIFIER = ${ENV['IOS_BUNDLE_ID']};\")" ios/Runner.xcodeproj/project.pbxproj
+
+      - name: Create placeholder .env for Flutter asset bundle
+        run: touch .env
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: CocoaPods install
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Build iOS IPA
+        env:
+          BUILD_NAME: ${{ github.event.inputs.build_name }}
+          BUILD_NUMBER: ${{ github.event.inputs.build_number }}
+        run: |
+          set -euo pipefail
+          BUILD_ARGS=""
+          if [ -n "${BUILD_NAME:-}" ]; then
+            BUILD_ARGS="$BUILD_ARGS --build-name=$BUILD_NAME"
+          fi
+          if [ -n "${BUILD_NUMBER:-}" ]; then
+            BUILD_ARGS="$BUILD_ARGS --build-number=$BUILD_NUMBER"
+          else
+            BUILD_ARGS="$BUILD_ARGS --build-number=${GITHUB_RUN_NUMBER}"
+          fi
+          flutter build ipa --release --export-options-plist=ios/ExportOptionsAppStore.plist $BUILD_ARGS
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+
+      - name: Write App Store Connect API key
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          mkdir -p private_keys
+          printf "%s" "$APP_STORE_CONNECT_API_KEY_P8" > "private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+
+      - name: Upload build to TestFlight
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          IPA_PATH=$(ls build/ios/ipa/*.ipa | head -n 1)
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
