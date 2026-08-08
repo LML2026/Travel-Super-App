@@ -10,6 +10,31 @@ on:
   pull_request:
 
 jobs:
+  firestore-security-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install functions dependencies
+        working-directory: functions
+        run: npm ci
+
+      - name: Firestore rules security tests
+        working-directory: functions
+        run: npm run test:firestore-rules
+
   architecture-and-backend:
     runs-on: ubuntu-latest
     steps:
@@ -64,6 +89,9 @@ jobs:
 
       - name: Flutter analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Flutter auth tests
+        run: flutter test test/features/auth test/features/authentication -r compact
 
       - name: Flutter trips tests
         run: flutter test test/features/trips -r compact

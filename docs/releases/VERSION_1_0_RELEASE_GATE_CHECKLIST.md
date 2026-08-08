@@ -144,3 +144,19 @@ From feature freeze onward:
 - performance improvements driven by measurement
 - UX polish and reliability hardening
 - launch readiness and distribution tasks
+
+## Launch Gate #1 - Authentication + Firestore Security Proof
+
+Status: Implemented locally, CI verification pending
+Date: 2026-08-08
+
+Evidence captured:
+- Firestore rules enforce per-user ownership under users/{userId}/**
+- Firestore emulator rules suite passes (5/5) via functions test/firestore.rules.test.js
+- Auth-focused Flutter tests pass (10/10) across test/features/auth and test/features/authentication
+- CI workflow now includes:
+	- Firestore security gate job (Java 21 + emulator rules tests)
+	- Auth-focused Flutter test step in flutter-quality
+
+Final decision rule for Gate #1:
+- Mark Gate #1 PASS only after the new CI checks are green on the pushed commit.
