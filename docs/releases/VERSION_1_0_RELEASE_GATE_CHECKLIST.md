@@ -160,3 +160,23 @@ Evidence captured:
 
 Final decision rule for Gate #1:
 - Mark Gate #1 PASS only after the new CI checks are green on the pushed commit.
+
+## Launch Gate #2 - Production Configuration + Backend Security Hardening
+
+Status: Implemented locally, CI verification pending
+Date: 2026-08-08
+
+Evidence captured:
+- Backend CORS allowlist enforcement with production guard (`CORS_ALLOWED_ORIGINS` required in production)
+- Backend rate limiting enabled on `/api` routes
+- Route-scoped Firebase bearer auth with configurable protected prefixes (`AUTH_PROTECTED_PATHS`)
+- Flight upstream timeout/retry handling hardened
+- Backend env template added (`backend/.env.example`) and setup docs wired
+- Local validation passed:
+	- `node ../tools/check-openapi-contracts.mjs`
+	- `node ../tools/check-api-spec-coverage.mjs`
+	- `npm run test:contracts`
+	- `node --check server.js`
+
+Final decision rule for Gate #2:
+- Mark Gate #2 PASS only after CI is green on the pushed commit and production environment variables are configured.

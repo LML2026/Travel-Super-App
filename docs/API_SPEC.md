@@ -4,8 +4,13 @@ Base URL:
 - Local: http://localhost:5000
 
 ## Authentication
-Current backend routes do not enforce bearer auth directly.
-Application security currently relies on client-side Firebase Auth and user-scoped Firestore rules.
+Authentication behavior:
+- Production default: bearer auth enabled (`AUTH_REQUIRED=true`) for configured protected routes.
+- Default protected route prefixes: `/api/flights`, `/api/hotels`, `/api/ai`.
+- Override protected routes with `AUTH_PROTECTED_PATHS` (comma-separated prefixes).
+- Global toggle for local/dev workflows: `AUTH_REQUIRED=false`.
+
+When auth is required, send `Authorization: Bearer <Firebase ID token>`.
 
 ## Error Format
 Common error payload:
@@ -140,8 +145,20 @@ Errors:
 - 404 returns route not found payload with method and path.
 - 500 returns internal server error with details when available.
 
+## Runtime Environment Variables
+- `PORT` (default `5000`)
+- `NODE_ENV` (`development` or `production`)
+- `CORS_ALLOWED_ORIGINS` (required in production; comma-separated)
+- `AUTH_REQUIRED` (optional; defaults to `true` in production)
+- `AUTH_PROTECTED_PATHS` (optional; comma-separated route prefixes)
+- `FIREBASE_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT` (recommended for token verification context)
+- `DUFFEL_API_KEY` (required for flights)
+- `OPENAI_API_KEY` (optional; AI falls back locally when absent)
+- `OPENAI_MODEL` (optional; default `gpt-4o-mini`)
+- `RATE_LIMIT_WINDOW_MS` (optional; default 900000)
+- `RATE_LIMIT_MAX` (optional; default 120)
+
 ## Next API Hardening Steps
 - Add OpenAPI 3.1 schema and generated validators.
-- Add authentication middleware for user routes.
-- Add rate limiting and request IDs.
+- Add request IDs and structured logging.
 - Add contract tests for every endpoint.

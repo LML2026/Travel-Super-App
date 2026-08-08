@@ -1,5 +1,57 @@
 const https = require('https');
 
+const REQUEST_TIMEOUT_MS = 12000;
+const FLIGHT_UPSTREAM_RETRIES = 1;
+
+const isRetryableNetworkError = (error) => {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  return [
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'EAI_AGAIN',
+    'ECONNABORTED',
+  ].includes(error.code);
+};
+
+const sendDuffelRequest = (options, body, retries = 0) => new Promise((resolve, reject) => {
+  const proxyReq = https.request(
+    {
+      ...options,
+      family: 4,
+      timeout: REQUEST_TIMEOUT_MS,
+    },
+    (proxyRes) => {
+      let data = '';
+
+      proxyRes.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      proxyRes.on('end', () => {
+        resolve({ statusCode: proxyRes.statusCode, body: data });
+      });
+    },
+  );
+
+  proxyReq.on('timeout', () => {
+    proxyReq.destroy(Object.assign(new Error('Request timed out'), { code: 'ETIMEDOUT' }));
+  });
+
+  proxyReq.on('error', (error) => {
+    if (retries > 0 && isRetryableNetworkError(error)) {
+      resolve(sendDuffelRequest(options, body, retries - 1));
+      return;
+    }
+    reject(error);
+  });
+
+  proxyReq.write(JSON.stringify(body));
+  proxyReq.end();
+});
+
 const createHandleFlightSearch = ({ DUFFEL_API_KEY, flightCache, CACHE_TTL }) => {
   return async (req, res, next) => {
     try {
@@ -78,93 +130,80 @@ const createHandleFlightSearch = ({ DUFFEL_API_KEY, flightCache, CACHE_TTL }) =>
           Accept: 'application/json',
         },
       };
+      const { statusCode, body } = await sendDuffelRequest(options, duffelBody, FLIGHT_UPSTREAM_RETRIES);
 
-      const proxyReq = https.request(options, (proxyRes) => {
-        let data = '';
+      if (statusCode === 200 || statusCode === 201) {
+        try {
+          const parsedData = JSON.parse(body);
+          const offers = parsedData.data?.offers || [];
 
-        proxyRes.on('data', (chunk) => {
-          data += chunk;
-        });
+          const flights = offers.map((offer) => {
+            const outboundSlice = offer.slices?.[0];
+            const segments = outboundSlice?.segments ?? [];
 
-        proxyRes.on('end', () => {
-          if (proxyRes.statusCode === 200 || proxyRes.statusCode === 201) {
-            try {
-              const parsedData = JSON.parse(data);
-              const offers = parsedData.data?.offers || [];
+            const firstSegment = segments[0];
+            const lastSegment = segments[segments.length - 1];
 
-              const flights = offers.map((offer) => {
-                const outboundSlice = offer.slices?.[0];
-                const segments = outboundSlice?.segments ?? [];
+            const airline =
+              offer.owner?.name ??
+              firstSegment?.marketing_carrier?.name ??
+              'Unknown airline';
 
-                const firstSegment = segments[0];
-                const lastSegment = segments[segments.length - 1];
+            const airlineCode =
+              firstSegment?.marketing_carrier?.iata_code ?? '';
 
-                const airline =
-                  offer.owner?.name ??
-                  firstSegment?.marketing_carrier?.name ??
-                  'Unknown airline';
+            const airlineFlightNumber =
+              firstSegment?.marketing_carrier_flight_number ?? '';
 
-                const airlineCode =
-                  firstSegment?.marketing_carrier?.iata_code ?? '';
+            return {
+              id: offer.id ?? '',
+              airline,
+              airlineLogo: offer.owner?.logo_symbol_url ?? '',
+              flightNumber: `${airlineCode}${airlineFlightNumber}`,
+              origin:
+                outboundSlice?.origin?.iata_code ??
+                firstSegment?.origin?.iata_code ??
+                '',
+              destination:
+                outboundSlice?.destination?.iata_code ??
+                lastSegment?.destination?.iata_code ??
+                '',
+              departureAt: firstSegment?.departing_at ?? '',
+              arrivalAt: lastSegment?.arriving_at ?? '',
+              duration: outboundSlice?.duration ?? '',
+              stops: Math.max(segments.length - 1, 0),
+              amount: offer.total_amount ?? '0',
+              currency: offer.total_currency ?? 'GBP',
+            };
+          });
 
-                const airlineFlightNumber =
-                  firstSegment?.marketing_carrier_flight_number ?? '';
+          const limitedFlights = flights
+            .filter((flight) => Number.isFinite(Number(flight.amount)))
+            .sort((a, b) => Number(a.amount) - Number(b.amount))
+            .slice(0, 30);
 
-                return {
-                  id: offer.id ?? '',
-                  airline,
-                  airlineLogo: offer.owner?.logo_symbol_url ?? '',
-                  flightNumber: `${airlineCode}${airlineFlightNumber}`,
-                  origin:
-                    outboundSlice?.origin?.iata_code ??
-                    firstSegment?.origin?.iata_code ??
-                    '',
-                  destination:
-                    outboundSlice?.destination?.iata_code ??
-                    lastSegment?.destination?.iata_code ??
-                    '',
-                  departureAt: firstSegment?.departing_at ?? '',
-                  arrivalAt: lastSegment?.arriving_at ?? '',
-                  duration: outboundSlice?.duration ?? '',
-                  stops: Math.max(segments.length - 1, 0),
-                  amount: offer.total_amount ?? '0',
-                  currency: offer.total_currency ?? 'GBP',
-                };
-              });
+          flightCache.set(cacheKey, {
+            timestamp: Date.now(),
+            flights: limitedFlights,
+          });
 
-              const limitedFlights = flights
-                .filter((flight) => Number.isFinite(Number(flight.amount)))
-                .sort((a, b) => Number(a.amount) - Number(b.amount))
-                .slice(0, 30);
-
-              flightCache.set(cacheKey, {
-                timestamp: Date.now(),
-                flights: limitedFlights,
-              });
-
-              res.json({
-                flights: limitedFlights,
-                totalFound: flights.length,
-                cached: false,
-              });
-            } catch (error) {
-              res.status(500).json({ error: 'Failed to parse response', details: error.message });
-            }
-          } else if (proxyRes.statusCode === 422) {
-            res.status(422).json({ error: 'Invalid search parameters', details: data });
-          } else {
-            res.status(proxyRes.statusCode).json({ error: `API Error ${proxyRes.statusCode}`, details: data });
-          }
-        });
-      });
-
-      proxyReq.on('error', (error) => {
-        res.status(500).json({ error: 'Failed to connect to Duffel API', details: error.message });
-      });
-
-      proxyReq.write(JSON.stringify(duffelBody));
-      proxyReq.end();
+          res.json({
+            flights: limitedFlights,
+            totalFound: flights.length,
+            cached: false,
+          });
+        } catch (error) {
+          res.status(500).json({ error: 'Failed to parse response', details: error.message });
+        }
+      } else if (statusCode === 422) {
+        res.status(422).json({ error: 'Invalid search parameters', details: body });
+      } else {
+        res.status(statusCode || 502).json({ error: `API Error ${statusCode}`, details: body });
+      }
     } catch (error) {
+      if (isRetryableNetworkError(error)) {
+        return res.status(502).json({ error: 'Flight provider timeout or network error', details: error.message });
+      }
       next(error);
     }
   };

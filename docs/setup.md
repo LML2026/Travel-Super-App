@@ -13,7 +13,8 @@
 ## Backend Setup
 1. cd backend
 2. npm install
-3. configure .env values (DUFFEL_API_KEY, OPENAI_API_KEY optional)
+3. copy backend/.env.example to backend/.env and configure values
+4. set production-safe values before release (CORS_ALLOWED_ORIGINS, AUTH_REQUIRED, AUTH_PROTECTED_PATHS, FIREBASE_PROJECT_ID)
 4. node server.js
 
 ## Recommended Validation
