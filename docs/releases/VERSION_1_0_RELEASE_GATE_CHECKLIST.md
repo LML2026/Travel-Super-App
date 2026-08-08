@@ -180,3 +180,24 @@ Evidence captured:
 
 Final decision rule for Gate #2:
 - Mark Gate #2 PASS only after CI is green on the pushed commit and production environment variables are configured.
+
+## Launch Gate #3 - Signing + Store Submission Readiness
+
+Status: FAIL (blocking)
+Date: 2026-08-08
+
+Evidence captured:
+- Release bundle is buildable locally (`build/app/outputs/bundle/release/app-release.aab` present)
+- `android/key.properties` exists locally but still contains placeholder credentials
+- `storeFile` points to `../keystore/upload-keystore.jks` and the keystore file is missing
+- Build guard hardened to reject placeholder signing credentials and missing keystore file
+- Secret hygiene guard added: `android/key.properties` and `keystore/*.jks` explicitly ignored in git
+
+Blocking action items:
+- Generate/import a real upload keystore at `keystore/upload-keystore.jks`
+- Replace placeholder signing values in local `android/key.properties`
+- Re-run release bundle build and record SHA-256 for the artifact
+- Verify Play Console metadata links are live: privacy policy, terms, support
+
+Final decision rule for Gate #3:
+- Mark Gate #3 PASS only after a signed release AAB is produced with non-placeholder signing credentials, keystore presence is verified, and store policy/support URLs are confirmed live.

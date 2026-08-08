@@ -65,3 +65,10 @@ app.*.map.json
 .env
 .env.*
 *.env
+
+# Local extraction artifact (should never be committed)
+_uploaded_extract/
+
+# Local Android signing material
+android/key.properties
+keystore/*.jks

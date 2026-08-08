@@ -1,11 +1,40 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val appId = (project.findProperty("APP_ID") as String?) ?: "com.example.travel_super_app"
+
+val keyProperties = Properties()
+val keyPropertiesFile = rootProject.file("key.properties")
+if (keyPropertiesFile.exists()) {
+    keyProperties.load(FileInputStream(keyPropertiesFile))
+}
+
+val storeFilePath = keyProperties.getProperty("storeFile")
+val storePasswordValue = keyProperties.getProperty("storePassword")
+val keyAliasValue = keyProperties.getProperty("keyAlias")
+val keyPasswordValue = keyProperties.getProperty("keyPassword")
+val storeFileResolved = if (storeFilePath.isNullOrBlank()) null else file(storeFilePath)
+
+val hasConfiguredReleaseSigning = keyPropertiesFile.exists() &&
+    !storeFilePath.isNullOrBlank() &&
+    !storePasswordValue.isNullOrBlank() &&
+    !keyAliasValue.isNullOrBlank() &&
+    !keyPasswordValue.isNullOrBlank() &&
+    storePasswordValue != "CHANGE_ME" &&
+    keyPasswordValue != "CHANGE_ME" &&
+    keyAliasValue != "CHANGE_ME" &&
+    storeFileResolved?.exists() == true
+
 android {
-    namespace = "com.example.travel_super_app"
+    namespace = appId
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,8 +45,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.travel_super_app"
+        applicationId = appId
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -26,11 +54,26 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (hasConfiguredReleaseSigning) {
+                storeFile = file(storeFilePath!!)
+                storePassword = storePasswordValue
+                keyAlias = keyAliasValue
+                keyPassword = keyPasswordValue
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasConfiguredReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                throw GradleException(
+                    "Invalid Android release signing configuration. Create android/key.properties from android/key.properties.example, replace placeholder values, and ensure the keystore file exists."
+                )
+            }
         }
     }
 }
