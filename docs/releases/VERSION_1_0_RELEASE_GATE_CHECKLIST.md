@@ -183,8 +183,8 @@ Final decision rule for Gate #2:
 
 ## Launch Gate #3 - Signing + Store Submission Readiness
 
-Status: PARTIAL (one blocker remaining)
-Date: 2026-08-08
+Status: PASS
+Date: 2026-08-09
 
 Evidence captured:
 - Build guard rejects placeholder signing credentials and missing keystore file
@@ -193,9 +193,13 @@ Evidence captured:
 - Current signed artifact checksum:
 	- `build/app/outputs/bundle/release/app-release.aab`
 	- `SHA-256: B7F806402F571BA62843238FE26CE9272BEFAB53CD0EE54974DC9AE93657B9DD`
+- Live policy/support URLs confirmed:
+	- Privacy policy: https://lml2026.github.io/Travel-Super-App/privacy/
+	- Terms of service: https://lml2026.github.io/Travel-Super-App/terms/
+	- Support: https://lml2026.github.io/Travel-Super-App/support/
 
 Blocking action items:
-- Verify Play Console metadata links are live: privacy policy, terms, support (live HTTPS URLs not yet present in docs)
+- None
 
 Final decision rule for Gate #3:
 - Mark Gate #3 PASS only after a signed release AAB is produced with non-placeholder signing credentials, keystore presence is verified, and store policy/support URLs are confirmed live.

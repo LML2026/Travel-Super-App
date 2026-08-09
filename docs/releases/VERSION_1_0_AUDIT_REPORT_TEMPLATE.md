@@ -73,11 +73,11 @@ Decision: GO / CONDITIONAL GO / NO-GO
 - Screenshots:
 - Feature graphic:
 - Icon:
-- Privacy policy:
-- Terms:
-- Support page:
+- Privacy policy: https://lml2026.github.io/Travel-Super-App/privacy/
+- Terms: https://lml2026.github.io/Travel-Super-App/terms/
+- Support page: https://lml2026.github.io/Travel-Super-App/support/
 - FAQ:
-- Contact email:
+- Contact email: levanlabartkava2@gmail.com
 
 ## 8. Monitoring Readiness
 Can we answer:
