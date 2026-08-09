@@ -203,3 +203,35 @@ Blocking action items:
 
 Final decision rule for Gate #3:
 - Mark Gate #3 PASS only after a signed release AAB is produced with non-placeholder signing credentials, keystore presence is verified, and store policy/support URLs are confirmed live.
+
+## Launch Gate #4 - Internal Testing Distribution + Production Smoke
+
+Status: FAIL (external execution pending)
+Date: 2026-08-09
+
+Evidence captured:
+- Signed release artifact available:
+	- `build/app/outputs/bundle/release/app-release.aab`
+	- `SHA-256: B7F806402F571BA62843238FE26CE9272BEFAB53CD0EE54974DC9AE93657B9DD`
+- Public policy/support URLs are live and documented:
+	- Privacy policy: https://lml2026.github.io/Travel-Super-App/privacy/
+	- Terms of service: https://lml2026.github.io/Travel-Super-App/terms/
+	- Support: https://lml2026.github.io/Travel-Super-App/support/
+- CI guard remains green after Gate #3 closure:
+	- Run `31329137830` -> `success`
+	- Jobs: `firestore-security-gate`, `architecture-and-backend`, `flutter-quality`
+- Internal testing runbooks/templates are present:
+	- `docs/releases/BC1_INTERNAL_TESTING_HANDOFF.md`
+	- `docs/releases/BC1_INTERNAL_TESTING_RUNBOOK.md`
+	- `docs/releases/IOS_TESTFLIGHT_INTERNAL_BETA_RUNBOOK.md`
+	- `docs/releases/IOS_TESTFLIGHT_SMOKE_REPORT_TEMPLATE.md`
+
+Blocking action items:
+- Create Play Internal Testing release and upload signed AAB; confirm no blocking Play policy/declaration errors.
+- Add testers and validate install from Play opt-in flow.
+- Execute one full production smoke journey on store-installed build and record result.
+- Capture production integration evidence (Auth/Firestore, Maps permissions, AI/backend calls, notifications, Crashlytics signal).
+- Record outcomes in handoff/smoke report docs and attach console/dashboard evidence links.
+
+Final decision rule for Gate #4:
+- Mark Gate #4 PASS only after store distribution, smoke journey, and production integration evidence are all captured with no unresolved P0/P1 blockers.
