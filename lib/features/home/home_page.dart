@@ -19,7 +19,7 @@ class HomePage extends ConsumerWidget {
     final walletAsync = ref.watch(walletProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Travel Super App')),
+      appBar: AppBar(title: const Text('ITAREVO')),
       body: summaryAsync.when(
         loading: () => const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(

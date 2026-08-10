@@ -13,7 +13,7 @@ class TravelSuperApp extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Travel Super App',
+      title: 'ITAREVO',
       theme: AppTheme.light(),
       routerConfig: appRouter,
     );

@@ -1,4 +1,4 @@
-# Travel Super App
+# ITAREVO
 
 This board is the high-level product execution tracker.
 Detailed scope, owners, and status notes remain in docs/PROJECT_BOARD.md and sprint boards.

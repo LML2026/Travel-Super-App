@@ -1,8 +1,8 @@
-# Travel Super App Roadmap
+# ITAREVO Roadmap
 
 ## Goal
 
-Build a production-ready Travel Super App from the ground up with professional engineering practices.
+Build a production-ready ITAREVO from the ground up with professional engineering practices.
 
 ## Phase 1 - Core Platform (Weeks 1-4)
 

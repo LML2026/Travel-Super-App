@@ -28,7 +28,7 @@ class HomeHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Travel Super App",
+              "ITAREVO",
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 16,

@@ -52,7 +52,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             ),
             SizedBox(height: 30),
             Text(
-              "Travel Super App",
+              "ITAREVO",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 34,

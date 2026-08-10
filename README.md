@@ -1,6 +1,6 @@
-# Travel Super App
+# ITAREVO
 
-Travel Super App is a Flutter-first travel platform with a Node.js backend, Firebase data layer, and milestone-driven product roadmap.
+ITAREVO is a Flutter-first travel platform with a Node.js backend, Firebase data layer, and milestone-driven product roadmap.
 
 ## Product Direction
 - Milestone plan: [docs/PRODUCT_ROADMAP.md](docs/PRODUCT_ROADMAP.md)

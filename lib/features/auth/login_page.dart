@@ -113,7 +113,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Travel Super App',
+                    'ITAREVO',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 30,

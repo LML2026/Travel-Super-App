@@ -1,4 +1,4 @@
-# Travel Super App Product Roadmap
+# ITAREVO Product Roadmap
 
 ## Vision
 Build a production-grade travel super app, not a collection of demos.
@@ -24,7 +24,7 @@ A traveller should be able to:
 Everything in active development should contribute to this goal.
 
 ## Product Platform Structure
-Travel Super App
+ITAREVO
 - Core Platform
 - Identity
 - Finance
