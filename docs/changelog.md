@@ -9,6 +9,7 @@
 - Wallet domain and in-memory repository scaffolding required by current provider wiring.
 
 ### Changed
+- Phase 1 branding transition completed: user-visible app and documentation branding updated from Travel Super App to ITAREVO, while package, bundle, Firebase, signing, and release identifiers remain unchanged.
 - Splash authentication check now uses Riverpod auth provider instead of direct auth service instance.
 - Login flow now includes explicit social sign-in actions and error handling.
 - Router/trip provider unblock updates to restore buildability on auth branch.
