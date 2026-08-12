@@ -1,0 +1,69 @@
+class Trip {
+  final String id;
+  final String destination;
+  final DateTime departureDate;
+  final DateTime returnDate;
+  final int travellers;
+  final String notes;
+  final double budget;
+  final String currency;
+
+  const Trip({
+    required this.id,
+    required this.destination,
+    required this.departureDate,
+    required this.returnDate,
+    required this.travellers,
+    required this.notes,
+    required this.budget,
+    required this.currency,
+  });
+
+  Trip copyWith({
+    String? id,
+    String? destination,
+    DateTime? departureDate,
+    DateTime? returnDate,
+    int? travellers,
+    String? notes,
+    double? budget,
+    String? currency,
+  }) {
+    return Trip(
+      id: id ?? this.id,
+      destination: destination ?? this.destination,
+      departureDate: departureDate ?? this.departureDate,
+      returnDate: returnDate ?? this.returnDate,
+      travellers: travellers ?? this.travellers,
+      notes: notes ?? this.notes,
+      budget: budget ?? this.budget,
+      currency: currency ?? this.currency,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'destination': destination,
+      'departureDate': departureDate.toIso8601String(),
+      'returnDate': returnDate.toIso8601String(),
+      'travellers': travellers,
+      'notes': notes,
+      'budget': budget,
+      'currency': currency,
+    };
+  }
+
+  factory Trip.fromMap(Map<String, dynamic> map) {
+    return Trip(
+      id: map['id'] as String,
+      destination: map['destination'] as String,
+      departureDate: DateTime.parse(map['departureDate'] as String),
+      returnDate: DateTime.parse(map['returnDate'] as String),
+      travellers: map['travellers'] as int,
+      notes: map['notes'] as String,
+      budget: (map['budget'] as num).toDouble(),
+      currency: map['currency'] as String,
+    );
+  }
+}
