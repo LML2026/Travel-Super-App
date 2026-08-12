@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import '../models/trip.dart';
 
 class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({super.key});
@@ -63,16 +64,27 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Trip to  is ready to save.'),
-      ),
+    final trip = Trip(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      destination: _destinationController.text.trim(),
+      departureDate: _departureDate!,
+      returnDate: _returnDate!,
+      travellers: int.parse(_travellersController.text),
+      notes: _notesController.text.trim(),
+      budget: double.tryParse(_budgetController.text) ?? 0,
+      currency: _currency,
     );
+
+    Navigator.of(context).pop(trip);
   }
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'Select date';
-    return '//';
+
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+
+    return '$day/$month/${date.year}';
   }
 
   @override
@@ -202,3 +214,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     );
   }
 }
+
+
+
+
