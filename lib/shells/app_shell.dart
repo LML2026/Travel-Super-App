@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../features/home/screens/home_screen.dart';
+import 'travel/travel_shell.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const HomeScreen();
+    return const TravelShell();
   }
 }
