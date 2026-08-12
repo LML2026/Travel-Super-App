@@ -12,6 +12,9 @@ class ItineraryItem {
   final double? estimatedCost;
   final String currency;
   final bool isBooked;
+  final double? latitude;
+  final double? longitude;
+  final int? travelMinutesToNext;
 
   const ItineraryItem({
     required this.id,
@@ -25,6 +28,9 @@ class ItineraryItem {
     this.estimatedCost,
     required this.currency,
     required this.isBooked,
+    this.latitude,
+    this.longitude,
+    this.travelMinutesToNext,
   });
 
   ItineraryItem copyWith({
@@ -37,6 +43,9 @@ class ItineraryItem {
     double? estimatedCost,
     String? currency,
     bool? isBooked,
+    double? latitude,
+    double? longitude,
+    int? travelMinutesToNext,
   }) {
     return ItineraryItem(
       id: id,
@@ -50,6 +59,9 @@ class ItineraryItem {
       estimatedCost: estimatedCost ?? this.estimatedCost,
       currency: currency ?? this.currency,
       isBooked: isBooked ?? this.isBooked,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      travelMinutesToNext: travelMinutesToNext ?? this.travelMinutesToNext,
     );
   }
 
@@ -66,6 +78,9 @@ class ItineraryItem {
       'estimatedCost': estimatedCost,
       'currency': currency,
       'isBooked': isBooked,
+      'latitude': latitude,
+      'longitude': longitude,
+      'travelMinutesToNext': travelMinutesToNext,
     };
   }
 
@@ -82,6 +97,9 @@ class ItineraryItem {
       estimatedCost: (map['estimatedCost'] as num?)?.toDouble(),
       currency: map['currency'] as String,
       isBooked: map['isBooked'] as bool,
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
+      travelMinutesToNext: (map['travelMinutesToNext'] as num?)?.toInt(),
     );
   }
 
@@ -92,3 +110,4 @@ class ItineraryItem {
         jsonDecode(source) as Map<String, dynamic>,
       );
 }
+

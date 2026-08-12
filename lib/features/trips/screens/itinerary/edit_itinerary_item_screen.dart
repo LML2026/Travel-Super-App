@@ -25,6 +25,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
   late final TextEditingController _locationController;
   late final TextEditingController _costController;
   late final TextEditingController _notesController;
+  late final TextEditingController _latitudeController;
+  late final TextEditingController _longitudeController;
 
   late DateTime _date;
   TimeOfDay? _time;
@@ -41,6 +43,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       text: widget.item.estimatedCost?.toString() ?? '',
     );
     _notesController = TextEditingController(text: widget.item.notes);
+    _latitudeController = TextEditingController(text: widget.item.latitude?.toString() ?? '');
+    _longitudeController = TextEditingController(text: widget.item.longitude?.toString() ?? '');
 
     _date = widget.item.date;
     _category = widget.item.category;
@@ -68,6 +72,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     _locationController.dispose();
     _costController.dispose();
     _notesController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
   }
 
@@ -110,6 +116,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       estimatedCost: double.tryParse(_costController.text.trim()),
       currency: widget.trip.currency,
       isBooked: _isBooked,
+      latitude: double.tryParse(_latitudeController.text.trim()),
+      longitude: double.tryParse(_longitudeController.text.trim()),
     );
 
     Navigator.of(context).pop(updatedItem);
@@ -169,6 +177,40 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                 prefixIcon: Icon(Icons.location_on_outlined),
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _latitudeController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Latitude',
+                      prefixIcon: Icon(Icons.my_location_outlined),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _longitudeController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Longitude',
+                      prefixIcon: Icon(Icons.explore_outlined),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -253,3 +295,4 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     );
   }
 }
+

@@ -5,6 +5,7 @@ import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 import 'add_itinerary_item_screen.dart';
 import 'edit_itinerary_item_screen.dart';
+import '../map/trip_map_screen.dart';
 
 class ItineraryScreen extends StatefulWidget {
   final Trip trip;
@@ -251,6 +252,22 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         title: Text(
           '${widget.trip.destination} Itinerary',
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Trip Map',
+            icon: const Icon(Icons.map_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => TripMapScreen(
+                    trip: widget.trip,
+                    items: List<ItineraryItem>.from(_items),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton:
           FloatingActionButton.extended(
@@ -602,3 +619,4 @@ class _SummaryValue extends StatelessWidget {
     );
   }
 }
+
