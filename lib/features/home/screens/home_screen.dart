@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../trips/screens/create_trip_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -90,11 +91,18 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.25,
-                children: const [
+                children: [
                   _FeatureTile(
                     icon: Icons.map_outlined,
                     title: 'Trips',
                     subtitle: 'Plan your journey',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CreateTripScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _FeatureTile(
                     icon: Icons.flight_outlined,
@@ -135,11 +143,13 @@ class _FeatureTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   const _FeatureTile({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 
   @override
@@ -147,7 +157,7 @@ class _FeatureTile extends StatelessWidget {
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(
