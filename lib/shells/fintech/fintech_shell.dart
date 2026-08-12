@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ï»¿import 'package:flutter/material.dart';
 
 class FintechShell extends StatelessWidget {
   const FintechShell({super.key});
@@ -20,10 +20,11 @@ class FintechShell extends StatelessWidget {
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Wallet • Payments • Exchange • Cards • Transactions'),
+            Text('Wallet â€¢ Payments â€¢ Exchange â€¢ Cards â€¢ Transactions'),
           ],
         ),
       ),
     );
   }
 }
+
