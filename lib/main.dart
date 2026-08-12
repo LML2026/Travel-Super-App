@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/home/screens/home_screen.dart';
+import 'shells/app_shell.dart';
 
 void main() {
   runApp(const ItarevoApp());
@@ -16,7 +16,7 @@ class ItarevoApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ITAREVO',
       theme: AppTheme.lightTheme,
-      home: const HomeScreen(),
+      home: const AppShell(),
     );
   }
 }
