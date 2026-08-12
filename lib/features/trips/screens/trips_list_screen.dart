@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../models/trip.dart';
 import 'create_trip_screen.dart';
+import 'trip_details_screen.dart';
 
 class TripsListScreen extends StatefulWidget {
   const TripsListScreen({super.key});
@@ -102,7 +103,13 @@ class _TripsListScreenState extends State<TripsListScreen> {
                       ),
                     ),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => TripDetailsScreen(trip: trip),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
@@ -110,4 +117,5 @@ class _TripsListScreenState extends State<TripsListScreen> {
     );
   }
 }
+
 
