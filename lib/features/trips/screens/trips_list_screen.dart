@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../../core/storage/trip_storage_service.dart';
 import '../models/trip.dart';
 import 'create_trip_screen.dart';
 import 'trip_details_screen.dart';
@@ -12,6 +13,31 @@ class TripsListScreen extends StatefulWidget {
 
 class _TripsListScreenState extends State<TripsListScreen> {
   final List<Trip> _trips = [];
+  final TripStorageService _storage = TripStorageService();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTrips();
+  }
+
+  Future<void> _loadTrips() async {
+    final trips = await _storage.loadTrips();
+
+    if (!mounted) return;
+
+    setState(() {
+      _trips
+        ..clear()
+        ..addAll(trips);
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _persistTrips() async {
+    await _storage.saveTrips(_trips);
+  }
 
   Future<void> _createTrip() async {
     final trip = await Navigator.of(context).push<Trip>(
@@ -24,6 +50,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
       setState(() {
         _trips.add(trip);
       });
+      await _persistTrips();
     }
   }
 
@@ -44,7 +71,9 @@ class _TripsListScreenState extends State<TripsListScreen> {
         icon: const Icon(Icons.add),
         label: const Text('New Trip'),
       ),
-      body: _trips.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _trips.isEmpty
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -129,6 +158,9 @@ class _TripsListScreenState extends State<TripsListScreen> {
     );
   }
 }
+
+
+
 
 
 

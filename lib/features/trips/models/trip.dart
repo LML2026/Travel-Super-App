@@ -1,4 +1,6 @@
-﻿class Trip {
+﻿import 'dart:convert';
+
+class Trip {
   final String id;
   final String destination;
   final DateTime departureDate;
@@ -39,4 +41,35 @@
       currency: currency ?? this.currency,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'destination': destination,
+      'departureDate': departureDate.toIso8601String(),
+      'returnDate': returnDate.toIso8601String(),
+      'travellers': travellers,
+      'notes': notes,
+      'budget': budget,
+      'currency': currency,
+    };
+  }
+
+  factory Trip.fromMap(Map<String, dynamic> map) {
+    return Trip(
+      id: map['id'] as String,
+      destination: map['destination'] as String,
+      departureDate: DateTime.parse(map['departureDate'] as String),
+      returnDate: DateTime.parse(map['returnDate'] as String),
+      travellers: map['travellers'] as int,
+      notes: map['notes'] as String,
+      budget: (map['budget'] as num).toDouble(),
+      currency: map['currency'] as String,
+    );
+  }
+
+  String toJson() => jsonEncode(toMap());
+
+  factory Trip.fromJson(String source) =>
+      Trip.fromMap(jsonDecode(source) as Map<String, dynamic>);
 }
