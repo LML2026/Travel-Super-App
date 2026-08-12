@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../models/trip.dart';
+import 'edit_trip_screen.dart';
 
 class TripDetailsScreen extends StatelessWidget {
   final Trip trip;
@@ -20,6 +21,22 @@ class TripDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(trip.destination),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () async {
+              final updatedTrip = await Navigator.of(context).push<Trip>(
+                MaterialPageRoute(
+                  builder: (_) => EditTripScreen(trip: trip),
+                ),
+              );
+
+              if (updatedTrip != null && context.mounted) {
+                Navigator.of(context).pop(updatedTrip);
+              }
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
@@ -89,3 +106,4 @@ class _DetailTile extends StatelessWidget {
     );
   }
 }
+

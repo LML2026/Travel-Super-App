@@ -103,12 +103,18 @@ class _TripsListScreenState extends State<TripsListScreen> {
                       ),
                     ),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.of(context).push(
+                    onTap: () async {
+                      final updatedTrip = await Navigator.of(context).push<Trip>(
                         MaterialPageRoute(
                           builder: (_) => TripDetailsScreen(trip: trip),
                         ),
                       );
+
+                      if (updatedTrip != null && mounted) {
+                        setState(() {
+                          _trips[index] = updatedTrip;
+                        });
+                      }
                     },
                   ),
                 );
@@ -117,5 +123,6 @@ class _TripsListScreenState extends State<TripsListScreen> {
     );
   }
 }
+
 
 
