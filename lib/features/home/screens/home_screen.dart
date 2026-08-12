@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import '../../trips/screens/create_trip_screen.dart';
+﻿import 'package:flutter/material.dart';
+import '../../trips/screens/trips_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const CreateTripScreen(),
+                          builder: (_) => const TripsListScreen(),
                         ),
                       );
                     },
@@ -192,3 +192,4 @@ class _FeatureTile extends StatelessWidget {
     );
   }
 }
+
