@@ -104,15 +104,21 @@ class _TripsListScreenState extends State<TripsListScreen> {
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
-                      final updatedTrip = await Navigator.of(context).push<Trip>(
+                      final result = await Navigator.of(context).push<Object?>(
                         MaterialPageRoute(
                           builder: (_) => TripDetailsScreen(trip: trip),
                         ),
                       );
 
-                      if (updatedTrip != null && mounted) {
+                      if (!mounted) return;
+
+                      if (result == 'delete') {
                         setState(() {
-                          _trips[index] = updatedTrip;
+                          _trips.removeAt(index);
+                        });
+                      } else if (result is Trip) {
+                        setState(() {
+                          _trips[index] = result;
                         });
                       }
                     },
@@ -123,6 +129,9 @@ class _TripsListScreenState extends State<TripsListScreen> {
     );
   }
 }
+
+
+
 
 
 

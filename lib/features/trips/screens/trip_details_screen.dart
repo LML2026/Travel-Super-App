@@ -36,6 +36,34 @@ class TripDetailsScreen extends StatelessWidget {
               }
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () async {
+              final shouldDelete = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete trip?'),
+                  content: Text(
+                    'Are you sure you want to delete the trip to ${trip.destination}?'
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (shouldDelete == true && context.mounted) {
+                Navigator.of(context).pop('delete');
+              }
+            },
+          ),
         ],
       ),
       body: ListView(
@@ -106,4 +134,3 @@ class _DetailTile extends StatelessWidget {
     );
   }
 }
-
