@@ -170,6 +170,55 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                               const Chip(
                                 label: Text('Booked'),
                               ),
+                        IconButton(
+                          tooltip: 'Delete item',
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () async {
+                            final shouldDelete = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete itinerary item?'),
+                                content: Text(
+                                  'Delete "${item.title}" from this itinerary?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (shouldDelete == true && mounted) {
+                              final updatedItems = _items
+                                  .where(
+                                    (existingItem) =>
+                                        existingItem.id != item.id,
+                                  )
+                                  .toList();
+
+                              await _storage.saveItems(
+                                widget.trip.id,
+                                updatedItems,
+                              );
+
+                              if (!mounted) return;
+
+                              setState(() {
+                                _items
+                                  ..clear()
+                                  ..addAll(updatedItems);
+                              });
+                            }
+                          },
+                        ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -214,6 +263,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     );
   }
 }
+
+
 
 
 
