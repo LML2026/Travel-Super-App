@@ -5,6 +5,7 @@ import '../../../../core/storage/itinerary_storage_service.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 import 'add_itinerary_item_screen.dart';
+import 'edit_itinerary_item_screen.dart';
 
 class ItineraryScreen extends StatefulWidget {
   final Trip trip;
@@ -124,7 +125,32 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                 final item = _items[index];
 
                 return Card(
-                  child: Padding(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () async {
+                      final updatedItem = await Navigator.of(context).push<ItineraryItem>(
+                        MaterialPageRoute(
+                          builder: (_) => EditItineraryItemScreen(
+                            trip: widget.trip,
+                            item: item,
+                          ),
+                        ),
+                      );
+
+                      if (updatedItem != null && mounted) {
+                        setState(() {
+                          _items[index] = updatedItem;
+                          _items.sort((a, b) {
+                            final dateCompare = a.date.compareTo(b.date);
+                            if (dateCompare != 0) return dateCompare;
+                            return (a.time ?? '').compareTo(b.time ?? '');
+                          });
+                        });
+
+                        await _persistItems();
+                      }
+                    },
+                    child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,11 +207,15 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                       ],
                     ),
                   ),
+                ),
                 );
               },
             ),
     );
   }
 }
+
+
+
 
 
