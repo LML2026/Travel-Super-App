@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../models/trip.dart';
 import 'edit_trip_screen.dart';
+import 'itinerary/itinerary_screen.dart';
 
 class TripDetailsScreen extends StatelessWidget {
   final Trip trip;
@@ -76,6 +77,18 @@ class TripDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ItineraryScreen(trip: trip),
+                ),
+              );
+            },
+            icon: const Icon(Icons.route_outlined),
+            label: const Text('Itinerary'),
+          ),
+          const SizedBox(height: 24),
           _DetailTile(
             icon: Icons.flight_takeoff,
             label: 'Departure',
@@ -134,3 +147,6 @@ class _DetailTile extends StatelessWidget {
     );
   }
 }
+
+
+
