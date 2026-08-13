@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../nearby/nearby_essentials_screen.dart';
@@ -9,11 +9,7 @@ class TripMapScreen extends StatefulWidget {
   final Trip trip;
   final List<ItineraryItem> items;
 
-  const TripMapScreen({
-    super.key,
-    required this.trip,
-    required this.items,
-  });
+  const TripMapScreen({super.key, required this.trip, required this.items});
 
   @override
   State<TripMapScreen> createState() => _TripMapScreenState();
@@ -24,11 +20,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
 
   List<ItineraryItem> get _locatedItems {
     return widget.items
-        .where(
-          (item) =>
-              item.latitude != null &&
-              item.longitude != null,
-        )
+        .where((item) => item.latitude != null && item.longitude != null)
         .toList();
   }
 
@@ -39,10 +31,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
       for (var i = 0; i < items.length; i++)
         Marker(
           markerId: MarkerId(items[i].id),
-          position: LatLng(
-            items[i].latitude!,
-            items[i].longitude!,
-          ),
+          position: LatLng(items[i].latitude!, items[i].longitude!),
           infoWindow: InfoWindow(
             title: '${i + 1}. ${items[i].title}',
             snippet: items[i].location.isEmpty
@@ -57,10 +46,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
     final items = _locatedItems;
 
     if (items.isNotEmpty) {
-      return LatLng(
-        items.first.latitude!,
-        items.first.longitude!,
-      );
+      return LatLng(items.first.latitude!, items.first.longitude!);
     }
 
     return const LatLng(48.8566, 2.3522);
@@ -70,15 +56,12 @@ class _TripMapScreenState extends State<TripMapScreen> {
     final controller = _mapController;
     final items = _locatedItems;
 
-    if (controller == null || items.isEmpty) return;
+    if (!mounted || controller == null || items.isEmpty) return;
 
     if (items.length == 1) {
       await controller.animateCamera(
         CameraUpdate.newLatLngZoom(
-          LatLng(
-            items.first.latitude!,
-            items.first.longitude!,
-          ),
+          LatLng(items.first.latitude!, items.first.longitude!),
           14,
         ),
       );
@@ -99,6 +82,8 @@ class _TripMapScreenState extends State<TripMapScreen> {
       if (lng < minLng) minLng = lng;
       if (lng > maxLng) maxLng = lng;
     }
+
+    if (!mounted || _mapController != controller) return;
 
     await controller.animateCamera(
       CameraUpdate.newLatLngBounds(
@@ -130,7 +115,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
+    _mapController = null;
     super.dispose();
   }
 
@@ -198,10 +183,8 @@ class _TripMapScreenState extends State<TripMapScreen> {
                         locatedItems.isEmpty
                             ? 'No mapped itinerary stops yet'
                             : '${locatedItems.length} mapped '
-                                '${locatedItems.length == 1 ? 'stop' : 'stops'}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                                  '${locatedItems.length == 1 ? 'stop' : 'stops'}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],

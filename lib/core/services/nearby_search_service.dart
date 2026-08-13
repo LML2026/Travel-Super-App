@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import '../nearby_search_bridge.dart';
 
@@ -39,20 +39,23 @@ class NearbySearchService {
     required double longitude,
     required String placeType,
   }) async {
-    final source = await nearbySearchJson(
-      latitude,
-      longitude,
-      placeType,
-    );
+    final source = await nearbySearchJson(latitude, longitude, placeType);
 
     final decoded = jsonDecode(source) as List<dynamic>;
 
     return decoded
-        .map(
-          (item) => NearbyPlace.fromMap(
-            item as Map<String, dynamic>,
-          ),
-        )
+        .map((item) => NearbyPlace.fromMap(item as Map<String, dynamic>))
         .toList();
+  }
+
+  static Future<bool> openDirections(NearbyPlace place) {
+    final queryParameters = <String, String>{
+      'api': '1',
+      'destination': '${place.latitude},${place.longitude}',
+      if (place.id.isNotEmpty) 'destination_place_id': place.id,
+    };
+    final url = Uri.https('www.google.com', '/maps/dir/', queryParameters);
+
+    return openDirectionsUrl(url.toString());
   }
 }

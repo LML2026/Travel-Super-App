@@ -1,4 +1,4 @@
-﻿import 'dart:js_interop';
+import 'dart:js_interop';
 
 @JS('itarevoNearbySearch')
 external JSPromise<JSString> _itarevoNearbySearch(
@@ -6,6 +6,9 @@ external JSPromise<JSString> _itarevoNearbySearch(
   JSNumber longitude,
   JSString placeType,
 );
+
+@JS('window.open')
+external void _openWindow(JSString url, JSString target, JSString features);
 
 Future<String> nearbySearchJson(
   double latitude,
@@ -19,4 +22,10 @@ Future<String> nearbySearchJson(
   ).toDart;
 
   return result.toDart;
+}
+
+Future<bool> openDirectionsUrl(String url) async {
+  _openWindow(url.toJS, '_blank'.toJS, 'noopener,noreferrer'.toJS);
+
+  return true;
 }
