@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../nearby/nearby_essentials_screen.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 
@@ -62,7 +63,6 @@ class _TripMapScreenState extends State<TripMapScreen> {
       );
     }
 
-    // Neutral European starting position.
     return const LatLng(48.8566, 2.3522);
   }
 
@@ -111,6 +111,23 @@ class _TripMapScreenState extends State<TripMapScreen> {
     );
   }
 
+  void _openNearby() {
+    final items = _locatedItems;
+
+    if (items.isEmpty) return;
+
+    final centre = items.first;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NearbyEssentialsScreen(
+          latitude: centre.latitude!,
+          longitude: centre.longitude!,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _mapController?.dispose();
@@ -125,6 +142,12 @@ class _TripMapScreenState extends State<TripMapScreen> {
       appBar: AppBar(
         title: Text('${widget.trip.destination} Map'),
         actions: [
+          if (locatedItems.isNotEmpty)
+            IconButton(
+              tooltip: 'Nearby Essentials',
+              icon: const Icon(Icons.near_me_outlined),
+              onPressed: _openNearby,
+            ),
           if (locatedItems.isNotEmpty)
             IconButton(
               tooltip: 'Show all stops',
@@ -186,38 +209,6 @@ class _TripMapScreenState extends State<TripMapScreen> {
               ),
             ),
           ),
-          if (locatedItems.isEmpty)
-            Center(
-              child: Card(
-                margin: const EdgeInsets.all(32),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.add_location_alt_outlined,
-                        size: 48,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'No mapped stops',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Add latitude and longitude to an itinerary item '
-                        'and it will appear here.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

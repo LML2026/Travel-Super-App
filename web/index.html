@@ -31,7 +31,7 @@
 
   <title>itarevo</title>
   <link rel="manifest" href="manifest.json">
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_9EfIUvNM-Ts0TUmBDzH2Gakg4w_O2NQ&libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzrWS8FbWVW8raVOLezNlgIb_Idge7b98&libraries=places"></script>
 </head>
 <body>
   <!--
@@ -167,7 +167,54 @@
     });
   };
 </script>
+<script>
+  window.itarevoNearbySearch = async function(lat, lng, placeType) {
+    try {
+      const { Place, SearchNearbyRankPreference } =
+          await google.maps.importLibrary('places');
+
+      const request = {
+        fields: [
+          'id',
+          'displayName',
+          'formattedAddress',
+          'location',
+          'googleMapsURI'
+        ],
+        locationRestriction: {
+          center: {
+            lat: Number(lat),
+            lng: Number(lng)
+          },
+          radius: 3000
+        },
+        includedPrimaryTypes: [placeType],
+        maxResultCount: 12,
+        rankPreference: SearchNearbyRankPreference.DISTANCE
+      };
+
+      const { places } = await Place.searchNearby(request);
+
+      return JSON.stringify(
+        places
+          .filter(place => place.location)
+          .map(place => ({
+            id: place.id || '',
+            name: place.displayName || '',
+            address: place.formattedAddress || '',
+            latitude: place.location.lat(),
+            longitude: place.location.lng(),
+            googleMapsUrl: place.googleMapsURI || ''
+          }))
+      );
+    } catch (error) {
+      console.error('ITAREVO Nearby Search error', error);
+      return '[]';
+    }
+  };
+</script>
 </body>
 </html>
+
 
 
