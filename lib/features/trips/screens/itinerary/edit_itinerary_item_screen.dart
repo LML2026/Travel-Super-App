@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -26,8 +26,6 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
   late final TextEditingController _locationController;
   late final TextEditingController _costController;
   late final TextEditingController _notesController;
-  late final TextEditingController _latitudeController;
-  late final TextEditingController _longitudeController;
 
   late DateTime _date;
   TimeOfDay? _time;
@@ -46,8 +44,6 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       text: widget.item.estimatedCost?.toString() ?? '',
     );
     _notesController = TextEditingController(text: widget.item.notes);
-    _latitudeController = TextEditingController(text: widget.item.latitude?.toString() ?? '');
-    _longitudeController = TextEditingController(text: widget.item.longitude?.toString() ?? '');
 
     _date = widget.item.date;
     _category = widget.item.category;
@@ -63,10 +59,7 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       final minute = int.tryParse(parts[1]);
 
       if (hour != null && minute != null) {
-        _time = TimeOfDay(
-          hour: hour,
-          minute: minute,
-        );
+        _time = TimeOfDay(hour: hour, minute: minute);
       }
     }
   }
@@ -77,8 +70,6 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     _locationController.dispose();
     _costController.dispose();
     _notesController.dispose();
-    _latitudeController.dispose();
-    _longitudeController.dispose();
     super.dispose();
   }
 
@@ -121,8 +112,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       estimatedCost: double.tryParse(_costController.text.trim()),
       currency: widget.trip.currency,
       isBooked: _isBooked,
-      latitude: _selectedLatitude ?? double.tryParse(_latitudeController.text.trim()),
-      longitude: _selectedLongitude ?? double.tryParse(_longitudeController.text.trim()),
+      latitude: _selectedLatitude,
+      longitude: _selectedLongitude,
     );
 
     Navigator.of(context).pop(updatedItem);
@@ -137,9 +128,7 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Itinerary Item'),
-      ),
+      appBar: AppBar(title: const Text('Edit Itinerary Item')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -193,49 +182,11 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                     _locationController.text = place.address;
                     _selectedLatitude = place.latitude;
                     _selectedLongitude = place.longitude;
-                    _latitudeController.text =
-                        place.latitude.toStringAsFixed(6);
-                    _longitudeController.text =
-                        place.longitude.toStringAsFixed(6);
                   });
                 }
               },
               icon: const Icon(Icons.search),
               label: const Text('Search location'),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _latitudeController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'Latitude',
-                      prefixIcon: Icon(Icons.my_location_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _longitudeController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'Longitude',
-                      prefixIcon: Icon(Icons.explore_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -245,10 +196,7 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                 border: OutlineInputBorder(),
               ),
               items: const [
-                DropdownMenuItem(
-                  value: 'Activity',
-                  child: Text('Activity'),
-                ),
+                DropdownMenuItem(value: 'Activity', child: Text('Activity')),
                 DropdownMenuItem(
                   value: 'Attraction',
                   child: Text('Attraction'),
@@ -257,18 +205,9 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                   value: 'Restaurant',
                   child: Text('Restaurant'),
                 ),
-                DropdownMenuItem(
-                  value: 'Transport',
-                  child: Text('Transport'),
-                ),
-                DropdownMenuItem(
-                  value: 'Hotel',
-                  child: Text('Hotel'),
-                ),
-                DropdownMenuItem(
-                  value: 'Shopping',
-                  child: Text('Shopping'),
-                ),
+                DropdownMenuItem(value: 'Transport', child: Text('Transport')),
+                DropdownMenuItem(value: 'Hotel', child: Text('Hotel')),
+                DropdownMenuItem(value: 'Shopping', child: Text('Shopping')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -279,8 +218,9 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _costController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: 'Estimated cost',
                 prefixIcon: const Icon(Icons.payments_outlined),
@@ -320,5 +260,3 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     );
   }
 }
-
-

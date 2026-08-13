@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -7,14 +7,10 @@ import '../../../../core/services/place_search_service.dart';
 class AddItineraryItemScreen extends StatefulWidget {
   final Trip trip;
 
-  const AddItineraryItemScreen({
-    super.key,
-    required this.trip,
-  });
+  const AddItineraryItemScreen({super.key, required this.trip});
 
   @override
-  State<AddItineraryItemScreen> createState() =>
-      _AddItineraryItemScreenState();
+  State<AddItineraryItemScreen> createState() => _AddItineraryItemScreenState();
 }
 
 class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
@@ -23,8 +19,6 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
   final _locationController = TextEditingController();
   final _costController = TextEditingController();
   final _notesController = TextEditingController();
-  final _latitudeController = TextEditingController();
-  final _longitudeController = TextEditingController();
 
   double? _selectedLatitude;
   double? _selectedLongitude;
@@ -46,8 +40,6 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
     _locationController.dispose();
     _costController.dispose();
     _notesController.dispose();
-    _latitudeController.dispose();
-    _longitudeController.dispose();
     super.dispose();
   }
 
@@ -92,8 +84,8 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
       estimatedCost: double.tryParse(_costController.text.trim()),
       currency: widget.trip.currency,
       isBooked: _isBooked,
-      latitude: _selectedLatitude ?? double.tryParse(_latitudeController.text.trim()),
-      longitude: _selectedLongitude ?? double.tryParse(_longitudeController.text.trim()),
+      latitude: _selectedLatitude,
+      longitude: _selectedLongitude,
     );
 
     Navigator.of(context).pop(item);
@@ -108,9 +100,7 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Itinerary Item'),
-      ),
+      appBar: AppBar(title: const Text('Add Itinerary Item')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -164,49 +154,11 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
                     _locationController.text = place.address;
                     _selectedLatitude = place.latitude;
                     _selectedLongitude = place.longitude;
-                    _latitudeController.text =
-                        place.latitude.toStringAsFixed(6);
-                    _longitudeController.text =
-                        place.longitude.toStringAsFixed(6);
                   });
                 }
               },
               icon: const Icon(Icons.search),
               label: const Text('Search location'),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _latitudeController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'Latitude',
-                      prefixIcon: Icon(Icons.my_location_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _longitudeController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'Longitude',
-                      prefixIcon: Icon(Icons.explore_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -216,10 +168,7 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
                 border: OutlineInputBorder(),
               ),
               items: const [
-                DropdownMenuItem(
-                  value: 'Activity',
-                  child: Text('Activity'),
-                ),
+                DropdownMenuItem(value: 'Activity', child: Text('Activity')),
                 DropdownMenuItem(
                   value: 'Attraction',
                   child: Text('Attraction'),
@@ -228,18 +177,9 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
                   value: 'Restaurant',
                   child: Text('Restaurant'),
                 ),
-                DropdownMenuItem(
-                  value: 'Transport',
-                  child: Text('Transport'),
-                ),
-                DropdownMenuItem(
-                  value: 'Hotel',
-                  child: Text('Hotel'),
-                ),
-                DropdownMenuItem(
-                  value: 'Shopping',
-                  child: Text('Shopping'),
-                ),
+                DropdownMenuItem(value: 'Transport', child: Text('Transport')),
+                DropdownMenuItem(value: 'Hotel', child: Text('Hotel')),
+                DropdownMenuItem(value: 'Shopping', child: Text('Shopping')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -250,8 +190,9 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _costController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: 'Estimated cost',
                 prefixIcon: const Icon(Icons.payments_outlined),
@@ -291,5 +232,3 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
     );
   }
 }
-
-
