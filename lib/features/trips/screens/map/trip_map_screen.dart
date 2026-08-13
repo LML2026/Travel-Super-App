@@ -1,9 +1,10 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 
-class TripMapScreen extends StatelessWidget {
+class TripMapScreen extends StatefulWidget {
   final Trip trip;
   final List<ItineraryItem> items;
 
@@ -13,8 +14,15 @@ class TripMapScreen extends StatelessWidget {
     required this.items,
   });
 
+  @override
+  State<TripMapScreen> createState() => _TripMapScreenState();
+}
+
+class _TripMapScreenState extends State<TripMapScreen> {
+  GoogleMapController? _mapController;
+
   List<ItineraryItem> get _locatedItems {
-    return items
+    return widget.items
         .where(
           (item) =>
               item.latitude != null &&
@@ -23,48 +31,154 @@ class TripMapScreen extends StatelessWidget {
         .toList();
   }
 
+  Set<Marker> get _markers {
+    final items = _locatedItems;
+
+    return {
+      for (var i = 0; i < items.length; i++)
+        Marker(
+          markerId: MarkerId(items[i].id),
+          position: LatLng(
+            items[i].latitude!,
+            items[i].longitude!,
+          ),
+          infoWindow: InfoWindow(
+            title: '${i + 1}. ${items[i].title}',
+            snippet: items[i].location.isEmpty
+                ? items[i].category
+                : items[i].location,
+          ),
+        ),
+    };
+  }
+
+  LatLng get _initialPosition {
+    final items = _locatedItems;
+
+    if (items.isNotEmpty) {
+      return LatLng(
+        items.first.latitude!,
+        items.first.longitude!,
+      );
+    }
+
+    // Neutral European starting position.
+    return const LatLng(48.8566, 2.3522);
+  }
+
+  Future<void> _fitAllMarkers() async {
+    final controller = _mapController;
+    final items = _locatedItems;
+
+    if (controller == null || items.isEmpty) return;
+
+    if (items.length == 1) {
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(
+            items.first.latitude!,
+            items.first.longitude!,
+          ),
+          14,
+        ),
+      );
+      return;
+    }
+
+    var minLat = items.first.latitude!;
+    var maxLat = items.first.latitude!;
+    var minLng = items.first.longitude!;
+    var maxLng = items.first.longitude!;
+
+    for (final item in items.skip(1)) {
+      final lat = item.latitude!;
+      final lng = item.longitude!;
+
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+    }
+
+    await controller.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        70,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final locatedItems = _locatedItems;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${trip.destination} Map'),
+        title: Text('${widget.trip.destination} Map'),
+        actions: [
+          if (locatedItems.isNotEmpty)
+            IconButton(
+              tooltip: 'Show all stops',
+              icon: const Icon(Icons.center_focus_strong),
+              onPressed: _fitAllMarkers,
+            ),
+        ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _initialPosition,
+              zoom: locatedItems.isEmpty ? 4 : 13,
+            ),
+            markers: _markers,
+            mapType: MapType.normal,
+            compassEnabled: true,
+            zoomControlsEnabled: true,
+            myLocationButtonEnabled: false,
+            onMapCreated: (controller) {
+              _mapController = controller;
+
+              if (locatedItems.isNotEmpty) {
+                Future.delayed(
+                  const Duration(milliseconds: 500),
+                  _fitAllMarkers,
+                );
+              }
+            },
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            top: 16,
             child: Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      child: Icon(Icons.map_outlined),
-                    ),
-                    const SizedBox(width: 16),
+                    const Icon(Icons.route_outlined),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            trip.destination,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${locatedItems.length} mapped itinerary stops',
-                          ),
-                        ],
+                      child: Text(
+                        locatedItems.isEmpty
+                            ? 'No mapped itinerary stops yet'
+                            : '${locatedItems.length} mapped '
+                                '${locatedItems.length == 1 ? 'stop' : 'stops'}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -72,93 +186,39 @@ class TripMapScreen extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: locatedItems.isEmpty
-                ? const _EmptyMapState()
-                : ListView.separated(
-                    padding:
-                        const EdgeInsets.fromLTRB(
-                      20,
-                      0,
-                      20,
-                      30,
-                    ),
-                    itemCount: locatedItems.length,
-                    separatorBuilder: (_, _) =>
-                        const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final item =
-                          locatedItems[index];
-
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Text(
-                              '${index + 1}',
-                            ),
-                          ),
-                          title: Text(item.title),
-                          subtitle: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              if (item.location
-                                  .isNotEmpty)
-                                Text(item.location),
-                              Text(
-                                '${item.latitude!.toStringAsFixed(5)}, '
-                                '${item.longitude!.toStringAsFixed(5)}',
-                              ),
-                            ],
-                          ),
-                          trailing: const Icon(
-                            Icons
-                                .location_on_outlined,
-                          ),
+          if (locatedItems.isEmpty)
+            Center(
+              child: Card(
+                margin: const EdgeInsets.all(32),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.add_location_alt_outlined,
+                        size: 48,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No mapped stops',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Add latitude and longitude to an itinerary item '
+                        'and it will appear here.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-          ),
+                ),
+              ),
+            ),
         ],
-      ),
-    );
-  }
-}
-
-class _EmptyMapState extends StatelessWidget {
-  const _EmptyMapState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.map_outlined,
-              size: 72,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'No mapped stops yet',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Locations with coordinates will appear here and will later become interactive map markers.',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }
