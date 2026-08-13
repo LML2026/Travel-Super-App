@@ -2,6 +2,7 @@
 
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
+import '../../../../core/services/place_search_service.dart';
 
 class EditItineraryItemScreen extends StatefulWidget {
   final Trip trip;
@@ -32,6 +33,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
   TimeOfDay? _time;
   late String _category;
   late bool _isBooked;
+  double? _selectedLatitude;
+  double? _selectedLongitude;
 
   @override
   void initState() {
@@ -49,6 +52,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     _date = widget.item.date;
     _category = widget.item.category;
     _isBooked = widget.item.isBooked;
+    _selectedLatitude = widget.item.latitude;
+    _selectedLongitude = widget.item.longitude;
 
     final storedTime = widget.item.time;
 
@@ -116,8 +121,8 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
       estimatedCost: double.tryParse(_costController.text.trim()),
       currency: widget.trip.currency,
       isBooked: _isBooked,
-      latitude: double.tryParse(_latitudeController.text.trim()),
-      longitude: double.tryParse(_longitudeController.text.trim()),
+      latitude: _selectedLatitude ?? double.tryParse(_latitudeController.text.trim()),
+      longitude: _selectedLongitude ?? double.tryParse(_longitudeController.text.trim()),
     );
 
     Navigator.of(context).pop(updatedItem);
@@ -177,6 +182,26 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                 prefixIcon: Icon(Icons.location_on_outlined),
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                final place = await PlaceSearchService.pickPlace();
+
+                if (place != null && mounted) {
+                  setState(() {
+                    _locationController.text = place.address;
+                    _selectedLatitude = place.latitude;
+                    _selectedLongitude = place.longitude;
+                    _latitudeController.text =
+                        place.latitude.toStringAsFixed(6);
+                    _longitudeController.text =
+                        place.longitude.toStringAsFixed(6);
+                  });
+                }
+              },
+              icon: const Icon(Icons.search),
+              label: const Text('Search location'),
             ),
             const SizedBox(height: 16),
             Row(
@@ -295,4 +320,5 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
     );
   }
 }
+
 

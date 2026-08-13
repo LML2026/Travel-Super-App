@@ -2,6 +2,7 @@
 
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
+import '../../../../core/services/place_search_service.dart';
 
 class AddItineraryItemScreen extends StatefulWidget {
   final Trip trip;
@@ -24,6 +25,9 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
   final _notesController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
+
+  double? _selectedLatitude;
+  double? _selectedLongitude;
 
   late DateTime _date;
   TimeOfDay? _time;
@@ -88,8 +92,8 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
       estimatedCost: double.tryParse(_costController.text.trim()),
       currency: widget.trip.currency,
       isBooked: _isBooked,
-      latitude: double.tryParse(_latitudeController.text.trim()),
-      longitude: double.tryParse(_longitudeController.text.trim()),
+      latitude: _selectedLatitude ?? double.tryParse(_latitudeController.text.trim()),
+      longitude: _selectedLongitude ?? double.tryParse(_longitudeController.text.trim()),
     );
 
     Navigator.of(context).pop(item);
@@ -149,6 +153,26 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
                 prefixIcon: Icon(Icons.location_on_outlined),
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                final place = await PlaceSearchService.pickPlace();
+
+                if (place != null && mounted) {
+                  setState(() {
+                    _locationController.text = place.address;
+                    _selectedLatitude = place.latitude;
+                    _selectedLongitude = place.longitude;
+                    _latitudeController.text =
+                        place.latitude.toStringAsFixed(6);
+                    _longitudeController.text =
+                        place.longitude.toStringAsFixed(6);
+                  });
+                }
+              },
+              icon: const Icon(Icons.search),
+              label: const Text('Search location'),
             ),
             const SizedBox(height: 16),
             Row(
@@ -267,4 +291,5 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
     );
   }
 }
+
 
