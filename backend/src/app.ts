@@ -19,6 +19,7 @@ export function createApp(dependencies: AppDependencies) {
   app.use(createCorsMiddleware(dependencies.allowedOrigins ?? configuredOrigins()));
   app.use(express.json({ limit: "16kb", strict: true }));
   app.get("/healthz", (_request, response) => response.status(200).json({ status: "ok" }));
+  app.get("/health", (_request, response) => response.status(200).json({ status: "ok" }));
   app.use(
     createTranslationRouter({
       tokenVerifier: dependencies.tokenVerifier,

@@ -112,6 +112,12 @@ test("healthz is public, sanitized, and does not invoke auth or provider", async
   assert.deepEqual(await response.json(), { status: "ok" });
 });
 
+test("health is public, sanitized, and does not invoke auth or provider", async () => {
+  const response = await request("/health");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { status: "ok" });
+});
+
 test("approved browser origin receives CORS headers", async () => {
   const response = await requestWithApp(
     createApp({
