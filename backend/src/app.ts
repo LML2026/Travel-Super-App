@@ -10,13 +10,15 @@ export interface AppDependencies {
   tokenVerifier: TokenVerifier;
   provider?: TranslationProvider;
   rateLimiter?: RateLimiter;
+  allowedOrigins?: string[];
 }
 
 export function createApp(dependencies: AppDependencies) {
   const app = express();
   app.disable("x-powered-by");
+  app.use(createCorsMiddleware(dependencies.allowedOrigins ?? configuredOrigins()));
   app.use(express.json({ limit: "16kb", strict: true }));
-  app.get("/healthz", (_request, response) => response.status(200).json({ ok: true }));
+  app.get("/healthz", (_request, response) => response.status(200).json({ status: "ok" }));
   app.use(
     createTranslationRouter({
       tokenVerifier: dependencies.tokenVerifier,
@@ -56,4 +58,40 @@ function isBodyParseOrSizeError(error: unknown): error is { type: string } {
     ((error as { type?: unknown }).type === "entity.parse.failed" ||
       (error as { type?: unknown }).type === "entity.too.large")
   );
+}
+
+function configuredOrigins(): string[] {
+  return (process.env.ITAREVO_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+function createCorsMiddleware(allowedOrigins: string[]): express.RequestHandler {
+  const allowed = new Set(allowedOrigins);
+  return (request, response, next) => {
+    const origin = request.header("origin");
+
+    if (!origin) {
+      next();
+      return;
+    }
+
+    if (!allowed.has(origin)) {
+      response.status(403).json(publicErrorResponse("unauthorized"));
+      return;
+    }
+
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Vary", "Origin");
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+
+    if (request.method === "OPTIONS") {
+      response.status(204).end();
+      return;
+    }
+
+    next();
+  };
 }

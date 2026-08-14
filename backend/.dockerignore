@@ -1,0 +1,15 @@
+node_modules
+dist
+test
+coverage
+.git
+.env*
+*.log
+npm-debug.log*
+service-account*.json
+*service-account*.json
+credentials*.json
+*credentials*.json
+.vscode
+.idea
+.DS_Store

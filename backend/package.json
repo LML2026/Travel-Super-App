@@ -4,6 +4,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc",
+    "build:prod": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test dist/test/*.test.js",
     "start": "node dist/src/server.js"

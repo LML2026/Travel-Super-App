@@ -106,6 +106,68 @@ test("missing authorization is unauthorized", async () => {
   assert.deepEqual(await response.json(), { error: { code: "unauthorized" } });
 });
 
+test("healthz is public, sanitized, and does not invoke auth or provider", async () => {
+  const response = await request("/healthz");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { status: "ok" });
+});
+
+test("approved browser origin receives CORS headers", async () => {
+  const response = await requestWithApp(
+    createApp({
+      tokenVerifier: verifier,
+      provider: new FakeProvider(),
+      allowedOrigins: ["http://localhost:8080"],
+    }),
+    {
+      method: "POST",
+      headers: { ...authHeaders, Origin: "http://localhost:8080" },
+      body: body(),
+    },
+  );
+  assert.equal(response.headers.get("access-control-allow-origin"), "http://localhost:8080");
+  assert.equal(response.status, 200);
+});
+
+test("unapproved browser origin is rejected", async () => {
+  const response = await requestWithApp(
+    createApp({
+      tokenVerifier: verifier,
+      provider: new FakeProvider(),
+      allowedOrigins: ["http://localhost:8080"],
+    }),
+    {
+      method: "POST",
+      headers: { ...authHeaders, Origin: "https://unapproved.example" },
+      body: body(),
+    },
+  );
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), { error: { code: "unauthorized" } });
+});
+
+test("approved CORS preflight allows authorization and content type", async () => {
+  const response = await requestWithApp(
+    createApp({
+      tokenVerifier: verifier,
+      provider: new FakeProvider(),
+      allowedOrigins: ["http://localhost:8080"],
+    }),
+    {
+      method: "OPTIONS",
+      headers: {
+        Origin: "http://localhost:8080",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "Authorization, Content-Type",
+      },
+    },
+  );
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("access-control-allow-origin"), "http://localhost:8080");
+  assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
+  assert.equal(response.headers.get("access-control-allow-headers"), "Authorization, Content-Type");
+});
+
 test("invalid token is unauthorized", async () => {
   const response = await request("/translate", {
     method: "POST",
