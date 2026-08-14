@@ -12,8 +12,12 @@ class TranslationRequest {
 
 class TranslationResult {
   final String translatedText;
+  final String? detectedSourceLanguage;
 
-  const TranslationResult({required this.translatedText});
+  const TranslationResult({
+    required this.translatedText,
+    this.detectedSourceLanguage,
+  });
 }
 
 abstract interface class TranslationService {
