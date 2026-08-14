@@ -225,4 +225,93 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get settings => 'सेटिंग्स';
+
+  @override
+  String get translatorTitle => 'यात्रा अनुवादक';
+
+  @override
+  String get translatorSubtitle =>
+      'अपनी यात्रा के उपयोगी वाक्यों का अनुवाद करें।';
+
+  @override
+  String get sourceLanguage => 'स्रोत भाषा';
+
+  @override
+  String get targetLanguage => 'लक्ष्य भाषा';
+
+  @override
+  String get autoDetect => 'स्वचालित पहचान';
+
+  @override
+  String get swapLanguages => 'भाषाएँ बदलें';
+
+  @override
+  String get sourceText => 'अनुवाद के लिए पाठ';
+
+  @override
+  String get sourceTextHint => 'उपयोगी वाक्य लिखें या चुनें';
+
+  @override
+  String get translate => 'अनुवाद करें';
+
+  @override
+  String get clear => 'साफ़ करें';
+
+  @override
+  String get translationResult => 'अनुवाद';
+
+  @override
+  String get copyTranslation => 'अनुवाद कॉपी करें';
+
+  @override
+  String get translationResultHint => 'आपका अनुवाद यहाँ दिखाई देगा।';
+
+  @override
+  String get translationProviderUnavailable =>
+      'अनुवाद अभी कॉन्फ़िगर नहीं किया गया है।';
+
+  @override
+  String get translationFailed => 'अनुवाद पूरा नहीं हो सका।';
+
+  @override
+  String get enterTextToTranslate => 'अनुवाद के लिए पाठ दर्ज करें।';
+
+  @override
+  String get chooseDifferentLanguages => 'अलग स्रोत और लक्ष्य भाषाएँ चुनें।';
+
+  @override
+  String get translationCopied => 'अनुवाद कॉपी हो गया।';
+
+  @override
+  String get travelPhrases => 'उपयोगी यात्रा वाक्य';
+
+  @override
+  String get phraseHello => 'नमस्ते';
+
+  @override
+  String get phraseThankYou => 'धन्यवाद';
+
+  @override
+  String get phrasePlease => 'कृपया';
+
+  @override
+  String get phraseBathroom => 'बाथरूम कहाँ है?';
+
+  @override
+  String get phraseCost => 'इसकी कीमत कितनी है?';
+
+  @override
+  String get phraseHelp => 'मुझे मदद चाहिए।';
+
+  @override
+  String get phraseTrain => 'ट्रेन स्टेशन कहाँ है?';
+
+  @override
+  String get phraseTaxi => 'क्या आप टैक्सी बुला सकते हैं?';
+
+  @override
+  String get phraseReservation => 'मेरी बुकिंग है।';
+
+  @override
+  String get phraseDontUnderstand => 'मैं समझ नहीं पा रहा हूँ।';
 }

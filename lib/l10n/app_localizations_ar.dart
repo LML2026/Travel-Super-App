@@ -224,4 +224,91 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settings => 'الإعدادات';
+
+  @override
+  String get translatorTitle => 'مترجم السفر';
+
+  @override
+  String get translatorSubtitle => 'ترجم العبارات المفيدة لرحلتك.';
+
+  @override
+  String get sourceLanguage => 'اللغة المصدر';
+
+  @override
+  String get targetLanguage => 'اللغة الهدف';
+
+  @override
+  String get autoDetect => 'اكتشاف تلقائي';
+
+  @override
+  String get swapLanguages => 'تبديل اللغات';
+
+  @override
+  String get sourceText => 'النص المراد ترجمته';
+
+  @override
+  String get sourceTextHint => 'اكتب عبارة مفيدة أو اخترها';
+
+  @override
+  String get translate => 'ترجمة';
+
+  @override
+  String get clear => 'مسح';
+
+  @override
+  String get translationResult => 'الترجمة';
+
+  @override
+  String get copyTranslation => 'نسخ الترجمة';
+
+  @override
+  String get translationResultHint => 'ستظهر الترجمة هنا.';
+
+  @override
+  String get translationProviderUnavailable => 'الترجمة غير مُعدّة بعد.';
+
+  @override
+  String get translationFailed => 'تعذّرت الترجمة.';
+
+  @override
+  String get enterTextToTranslate => 'أدخل النص المراد ترجمته.';
+
+  @override
+  String get chooseDifferentLanguages => 'اختر لغتين مختلفتين للمصدر والهدف.';
+
+  @override
+  String get translationCopied => 'تم نسخ الترجمة.';
+
+  @override
+  String get travelPhrases => 'عبارات مفيدة للسفر';
+
+  @override
+  String get phraseHello => 'مرحباً';
+
+  @override
+  String get phraseThankYou => 'شكراً';
+
+  @override
+  String get phrasePlease => 'من فضلك';
+
+  @override
+  String get phraseBathroom => 'أين الحمام؟';
+
+  @override
+  String get phraseCost => 'كم تبلغ تكلفة هذا؟';
+
+  @override
+  String get phraseHelp => 'أحتاج إلى مساعدة.';
+
+  @override
+  String get phraseTrain => 'أين محطة القطار؟';
+
+  @override
+  String get phraseTaxi => 'هل يمكنك طلب سيارة أجرة؟';
+
+  @override
+  String get phraseReservation => 'لدي حجز.';
+
+  @override
+  String get phraseDontUnderstand => 'لا أفهم.';
 }

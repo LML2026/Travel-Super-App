@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/localization/app_locale.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../translator/screens/travel_translator_screen.dart';
 import '../../trips/screens/trips_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -182,6 +183,13 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.translate,
                     title: l10n.translator,
                     subtitle: l10n.speakAnywhere,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const TravelTranslatorScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _FeatureTile(
                     icon: Icons.account_balance_wallet_outlined,

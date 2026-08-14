@@ -225,4 +225,93 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settings => 'Ustawienia';
+
+  @override
+  String get translatorTitle => 'Tłumacz podróżny';
+
+  @override
+  String get translatorSubtitle => 'Tłumacz przydatne zwroty na podróż.';
+
+  @override
+  String get sourceLanguage => 'Język źródłowy';
+
+  @override
+  String get targetLanguage => 'Język docelowy';
+
+  @override
+  String get autoDetect => 'Wykryj automatycznie';
+
+  @override
+  String get swapLanguages => 'Zamień języki';
+
+  @override
+  String get sourceText => 'Tekst do przetłumaczenia';
+
+  @override
+  String get sourceTextHint => 'Wpisz lub wybierz przydatny zwrot';
+
+  @override
+  String get translate => 'Tłumacz';
+
+  @override
+  String get clear => 'Wyczyść';
+
+  @override
+  String get translationResult => 'Tłumaczenie';
+
+  @override
+  String get copyTranslation => 'Kopiuj tłumaczenie';
+
+  @override
+  String get translationResultHint => 'Tłumaczenie pojawi się tutaj.';
+
+  @override
+  String get translationProviderUnavailable =>
+      'Tłumaczenie nie jest jeszcze skonfigurowane.';
+
+  @override
+  String get translationFailed => 'Nie udało się wykonać tłumaczenia.';
+
+  @override
+  String get enterTextToTranslate => 'Wpisz tekst do przetłumaczenia.';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'Wybierz różne języki źródłowy i docelowy.';
+
+  @override
+  String get translationCopied => 'Tłumaczenie skopiowane.';
+
+  @override
+  String get travelPhrases => 'Przydatne zwroty w podróży';
+
+  @override
+  String get phraseHello => 'Cześć';
+
+  @override
+  String get phraseThankYou => 'Dziękuję';
+
+  @override
+  String get phrasePlease => 'Proszę';
+
+  @override
+  String get phraseBathroom => 'Gdzie jest toaleta?';
+
+  @override
+  String get phraseCost => 'Ile to kosztuje?';
+
+  @override
+  String get phraseHelp => 'Potrzebuję pomocy.';
+
+  @override
+  String get phraseTrain => 'Gdzie jest dworzec?';
+
+  @override
+  String get phraseTaxi => 'Czy możesz wezwać taksówkę?';
+
+  @override
+  String get phraseReservation => 'Mam rezerwację.';
+
+  @override
+  String get phraseDontUnderstand => 'Nie rozumiem.';
 }

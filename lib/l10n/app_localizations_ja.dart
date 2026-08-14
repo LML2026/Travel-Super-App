@@ -222,4 +222,91 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings => '設定';
+
+  @override
+  String get translatorTitle => '旅行翻訳';
+
+  @override
+  String get translatorSubtitle => '旅に役立つフレーズを翻訳します。';
+
+  @override
+  String get sourceLanguage => '原文の言語';
+
+  @override
+  String get targetLanguage => '翻訳先の言語';
+
+  @override
+  String get autoDetect => '自動検出';
+
+  @override
+  String get swapLanguages => '言語を入れ替え';
+
+  @override
+  String get sourceText => '翻訳するテキスト';
+
+  @override
+  String get sourceTextHint => '入力するか便利なフレーズを選択';
+
+  @override
+  String get translate => '翻訳';
+
+  @override
+  String get clear => 'クリア';
+
+  @override
+  String get translationResult => '翻訳結果';
+
+  @override
+  String get copyTranslation => '翻訳をコピー';
+
+  @override
+  String get translationResultHint => 'ここに翻訳が表示されます。';
+
+  @override
+  String get translationProviderUnavailable => '翻訳機能はまだ設定されていません。';
+
+  @override
+  String get translationFailed => '翻訳を完了できませんでした。';
+
+  @override
+  String get enterTextToTranslate => '翻訳するテキストを入力してください。';
+
+  @override
+  String get chooseDifferentLanguages => '異なる原文と言語を選択してください。';
+
+  @override
+  String get translationCopied => '翻訳をコピーしました。';
+
+  @override
+  String get travelPhrases => '旅行で役立つフレーズ';
+
+  @override
+  String get phraseHello => 'こんにちは';
+
+  @override
+  String get phraseThankYou => 'ありがとう';
+
+  @override
+  String get phrasePlease => 'お願いします';
+
+  @override
+  String get phraseBathroom => 'トイレはどこですか？';
+
+  @override
+  String get phraseCost => 'これはいくらですか？';
+
+  @override
+  String get phraseHelp => '助けが必要です。';
+
+  @override
+  String get phraseTrain => '駅はどこですか？';
+
+  @override
+  String get phraseTaxi => 'タクシーを呼んでもらえますか？';
+
+  @override
+  String get phraseReservation => '予約があります。';
+
+  @override
+  String get phraseDontUnderstand => '分かりません。';
 }

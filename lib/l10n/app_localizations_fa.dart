@@ -225,4 +225,92 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get settings => 'تنظیمات';
+
+  @override
+  String get translatorTitle => 'مترجم سفر';
+
+  @override
+  String get translatorSubtitle => 'عبارت‌های کاربردی سفر را ترجمه کنید.';
+
+  @override
+  String get sourceLanguage => 'زبان مبدأ';
+
+  @override
+  String get targetLanguage => 'زبان مقصد';
+
+  @override
+  String get autoDetect => 'تشخیص خودکار';
+
+  @override
+  String get swapLanguages => 'جابه‌جایی زبان‌ها';
+
+  @override
+  String get sourceText => 'متن برای ترجمه';
+
+  @override
+  String get sourceTextHint => 'یک عبارت کاربردی بنویسید یا انتخاب کنید';
+
+  @override
+  String get translate => 'ترجمه';
+
+  @override
+  String get clear => 'پاک کردن';
+
+  @override
+  String get translationResult => 'ترجمه';
+
+  @override
+  String get copyTranslation => 'کپی ترجمه';
+
+  @override
+  String get translationResultHint => 'ترجمه شما اینجا نمایش داده می‌شود.';
+
+  @override
+  String get translationProviderUnavailable => 'ترجمه هنوز پیکربندی نشده است.';
+
+  @override
+  String get translationFailed => 'ترجمه انجام نشد.';
+
+  @override
+  String get enterTextToTranslate => 'متن موردنظر برای ترجمه را وارد کنید.';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'زبان مبدأ و مقصد متفاوتی انتخاب کنید.';
+
+  @override
+  String get translationCopied => 'ترجمه کپی شد.';
+
+  @override
+  String get travelPhrases => 'عبارت‌های کاربردی سفر';
+
+  @override
+  String get phraseHello => 'سلام';
+
+  @override
+  String get phraseThankYou => 'متشکرم';
+
+  @override
+  String get phrasePlease => 'لطفاً';
+
+  @override
+  String get phraseBathroom => 'دستشویی کجاست؟';
+
+  @override
+  String get phraseCost => 'این چقدر قیمت دارد؟';
+
+  @override
+  String get phraseHelp => 'کمک لازم دارم.';
+
+  @override
+  String get phraseTrain => 'ایستگاه قطار کجاست؟';
+
+  @override
+  String get phraseTaxi => 'می‌توانید تاکسی خبر کنید؟';
+
+  @override
+  String get phraseReservation => 'رزرو دارم.';
+
+  @override
+  String get phraseDontUnderstand => 'متوجه نمی‌شوم.';
 }

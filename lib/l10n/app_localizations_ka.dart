@@ -225,4 +225,93 @@ class AppLocalizationsKa extends AppLocalizations {
 
   @override
   String get settings => 'პარამეტრები';
+
+  @override
+  String get translatorTitle => 'მოგზაურობის თარჯიმანი';
+
+  @override
+  String get translatorSubtitle => 'თარგმნეთ მოგზაურობისთვის საჭირო ფრაზები.';
+
+  @override
+  String get sourceLanguage => 'საწყისი ენა';
+
+  @override
+  String get targetLanguage => 'სამიზნე ენა';
+
+  @override
+  String get autoDetect => 'ავტომატური ამოცნობა';
+
+  @override
+  String get swapLanguages => 'ენების გაცვლა';
+
+  @override
+  String get sourceText => 'სათარგმნი ტექსტი';
+
+  @override
+  String get sourceTextHint => 'შეიყვანეთ ან აირჩიეთ სასარგებლო ფრაზა';
+
+  @override
+  String get translate => 'თარგმნა';
+
+  @override
+  String get clear => 'გასუფთავება';
+
+  @override
+  String get translationResult => 'თარგმანი';
+
+  @override
+  String get copyTranslation => 'თარგმანის კოპირება';
+
+  @override
+  String get translationResultHint => 'თარგმანი აქ გამოჩნდება.';
+
+  @override
+  String get translationProviderUnavailable =>
+      'თარგმანი ჯერ არ არის კონფიგურირებული.';
+
+  @override
+  String get translationFailed => 'თარგმნა ვერ შესრულდა.';
+
+  @override
+  String get enterTextToTranslate => 'შეიყვანეთ სათარგმნი ტექსტი.';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'აირჩიეთ განსხვავებული საწყისი და სამიზნე ენები.';
+
+  @override
+  String get translationCopied => 'თარგმანი დაკოპირდა.';
+
+  @override
+  String get travelPhrases => 'სასარგებლო სამოგზაურო ფრაზები';
+
+  @override
+  String get phraseHello => 'გამარჯობა';
+
+  @override
+  String get phraseThankYou => 'მადლობა';
+
+  @override
+  String get phrasePlease => 'გთხოვთ';
+
+  @override
+  String get phraseBathroom => 'სად არის საპირფარეშო?';
+
+  @override
+  String get phraseCost => 'რა ღირს ეს?';
+
+  @override
+  String get phraseHelp => 'დახმარება მჭირდება.';
+
+  @override
+  String get phraseTrain => 'სად არის მატარებლის სადგური?';
+
+  @override
+  String get phraseTaxi => 'შეგიძლიათ ტაქსი გამოიძახოთ?';
+
+  @override
+  String get phraseReservation => 'ჯავშანი მაქვს.';
+
+  @override
+  String get phraseDontUnderstand => 'ვერ ვიგებ.';
 }

@@ -225,4 +225,92 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings => 'Ayarlar';
+
+  @override
+  String get translatorTitle => 'Seyahat çevirmeni';
+
+  @override
+  String get translatorSubtitle =>
+      'Seyahatiniz için kullanışlı ifadeleri çevirin.';
+
+  @override
+  String get sourceLanguage => 'Kaynak dil';
+
+  @override
+  String get targetLanguage => 'Hedef dil';
+
+  @override
+  String get autoDetect => 'Otomatik algıla';
+
+  @override
+  String get swapLanguages => 'Dilleri değiştir';
+
+  @override
+  String get sourceText => 'Çevrilecek metin';
+
+  @override
+  String get sourceTextHint => 'Kullanışlı bir ifade yazın veya seçin';
+
+  @override
+  String get translate => 'Çevir';
+
+  @override
+  String get clear => 'Temizle';
+
+  @override
+  String get translationResult => 'Çeviri';
+
+  @override
+  String get copyTranslation => 'Çeviriyi kopyala';
+
+  @override
+  String get translationResultHint => 'Çeviriniz burada görünecek.';
+
+  @override
+  String get translationProviderUnavailable => 'Çeviri henüz yapılandırılmadı.';
+
+  @override
+  String get translationFailed => 'Çeviri tamamlanamadı.';
+
+  @override
+  String get enterTextToTranslate => 'Çevrilecek metni girin.';
+
+  @override
+  String get chooseDifferentLanguages => 'Farklı kaynak ve hedef diller seçin.';
+
+  @override
+  String get translationCopied => 'Çeviri kopyalandı.';
+
+  @override
+  String get travelPhrases => 'Yararlı seyahat ifadeleri';
+
+  @override
+  String get phraseHello => 'Merhaba';
+
+  @override
+  String get phraseThankYou => 'Teşekkürler';
+
+  @override
+  String get phrasePlease => 'Lütfen';
+
+  @override
+  String get phraseBathroom => 'Tuvalet nerede?';
+
+  @override
+  String get phraseCost => 'Bu ne kadar?';
+
+  @override
+  String get phraseHelp => 'Yardıma ihtiyacım var.';
+
+  @override
+  String get phraseTrain => 'Tren istasyonu nerede?';
+
+  @override
+  String get phraseTaxi => 'Taksi çağırabilir misiniz?';
+
+  @override
+  String get phraseReservation => 'Rezervasyonum var.';
+
+  @override
+  String get phraseDontUnderstand => 'Anlamıyorum.';
 }

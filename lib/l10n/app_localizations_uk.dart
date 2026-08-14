@@ -225,4 +225,92 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settings => 'Налаштування';
+
+  @override
+  String get translatorTitle => 'Перекладач для подорожей';
+
+  @override
+  String get translatorSubtitle => 'Перекладайте корисні фрази для подорожі.';
+
+  @override
+  String get sourceLanguage => 'Мова оригіналу';
+
+  @override
+  String get targetLanguage => 'Мова перекладу';
+
+  @override
+  String get autoDetect => 'Визначати автоматично';
+
+  @override
+  String get swapLanguages => 'Поміняти мови';
+
+  @override
+  String get sourceText => 'Текст для перекладу';
+
+  @override
+  String get sourceTextHint => 'Введіть або виберіть корисну фразу';
+
+  @override
+  String get translate => 'Перекласти';
+
+  @override
+  String get clear => 'Очистити';
+
+  @override
+  String get translationResult => 'Переклад';
+
+  @override
+  String get copyTranslation => 'Копіювати переклад';
+
+  @override
+  String get translationResultHint => 'Тут з\'явиться переклад.';
+
+  @override
+  String get translationProviderUnavailable => 'Переклад ще не налаштовано.';
+
+  @override
+  String get translationFailed => 'Не вдалося виконати переклад.';
+
+  @override
+  String get enterTextToTranslate => 'Введіть текст для перекладу.';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'Виберіть різні мови оригіналу та перекладу.';
+
+  @override
+  String get translationCopied => 'Переклад скопійовано.';
+
+  @override
+  String get travelPhrases => 'Корисні фрази для подорожей';
+
+  @override
+  String get phraseHello => 'Привіт';
+
+  @override
+  String get phraseThankYou => 'Дякую';
+
+  @override
+  String get phrasePlease => 'Будь ласка';
+
+  @override
+  String get phraseBathroom => 'Де туалет?';
+
+  @override
+  String get phraseCost => 'Скільки це коштує?';
+
+  @override
+  String get phraseHelp => 'Мені потрібна допомога.';
+
+  @override
+  String get phraseTrain => 'Де залізничний вокзал?';
+
+  @override
+  String get phraseTaxi => 'Можете викликати таксі?';
+
+  @override
+  String get phraseReservation => 'У мене є бронювання.';
+
+  @override
+  String get phraseDontUnderstand => 'Я не розумію.';
 }

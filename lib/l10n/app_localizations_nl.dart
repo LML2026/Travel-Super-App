@@ -225,4 +225,93 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get settings => 'Instellingen';
+
+  @override
+  String get translatorTitle => 'Reisvertaler';
+
+  @override
+  String get translatorSubtitle => 'Vertaal handige zinnen voor je reis.';
+
+  @override
+  String get sourceLanguage => 'Brontaal';
+
+  @override
+  String get targetLanguage => 'Doeltaal';
+
+  @override
+  String get autoDetect => 'Automatisch detecteren';
+
+  @override
+  String get swapLanguages => 'Talen omwisselen';
+
+  @override
+  String get sourceText => 'Te vertalen tekst';
+
+  @override
+  String get sourceTextHint => 'Typ of kies een handige zin';
+
+  @override
+  String get translate => 'Vertalen';
+
+  @override
+  String get clear => 'Wissen';
+
+  @override
+  String get translationResult => 'Vertaling';
+
+  @override
+  String get copyTranslation => 'Vertaling kopiëren';
+
+  @override
+  String get translationResultHint => 'Je vertaling verschijnt hier.';
+
+  @override
+  String get translationProviderUnavailable =>
+      'Vertaling is nog niet ingesteld.';
+
+  @override
+  String get translationFailed => 'De vertaling kon niet worden voltooid.';
+
+  @override
+  String get enterTextToTranslate => 'Voer tekst in om te vertalen.';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'Kies verschillende bron- en doeltalen.';
+
+  @override
+  String get translationCopied => 'Vertaling gekopieerd.';
+
+  @override
+  String get travelPhrases => 'Handige reiszinnen';
+
+  @override
+  String get phraseHello => 'Hallo';
+
+  @override
+  String get phraseThankYou => 'Bedankt';
+
+  @override
+  String get phrasePlease => 'Alsjeblieft';
+
+  @override
+  String get phraseBathroom => 'Waar is het toilet?';
+
+  @override
+  String get phraseCost => 'Hoeveel kost dit?';
+
+  @override
+  String get phraseHelp => 'Ik heb hulp nodig.';
+
+  @override
+  String get phraseTrain => 'Waar is het treinstation?';
+
+  @override
+  String get phraseTaxi => 'Kun je een taxi bellen?';
+
+  @override
+  String get phraseReservation => 'Ik heb een reservering.';
+
+  @override
+  String get phraseDontUnderstand => 'Ik begrijp het niet.';
 }

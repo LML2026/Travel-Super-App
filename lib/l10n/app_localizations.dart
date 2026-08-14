@@ -558,6 +558,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// No description provided for @translatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel Translator'**
+  String get translatorTitle;
+
+  /// No description provided for @translatorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate useful phrases for your journey.'**
+  String get translatorSubtitle;
+
+  /// No description provided for @sourceLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Source language'**
+  String get sourceLanguage;
+
+  /// No description provided for @targetLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Target language'**
+  String get targetLanguage;
+
+  /// No description provided for @autoDetect.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detect'**
+  String get autoDetect;
+
+  /// No description provided for @swapLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap languages'**
+  String get swapLanguages;
+
+  /// No description provided for @sourceText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text to translate'**
+  String get sourceText;
+
+  /// No description provided for @sourceTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type or choose a useful phrase'**
+  String get sourceTextHint;
+
+  /// No description provided for @translate.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translate;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @translationResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation'**
+  String get translationResult;
+
+  /// No description provided for @copyTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy translation'**
+  String get copyTranslation;
+
+  /// No description provided for @translationResultHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your translation will appear here.'**
+  String get translationResultHint;
+
+  /// No description provided for @translationProviderUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation is not configured yet.'**
+  String get translationProviderUnavailable;
+
+  /// No description provided for @translationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation could not be completed.'**
+  String get translationFailed;
+
+  /// No description provided for @enterTextToTranslate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter text to translate.'**
+  String get enterTextToTranslate;
+
+  /// No description provided for @chooseDifferentLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose different source and target languages.'**
+  String get chooseDifferentLanguages;
+
+  /// No description provided for @translationCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation copied.'**
+  String get translationCopied;
+
+  /// No description provided for @travelPhrases.
+  ///
+  /// In en, this message translates to:
+  /// **'Useful travel phrases'**
+  String get travelPhrases;
+
+  /// No description provided for @phraseHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get phraseHello;
+
+  /// No description provided for @phraseThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you'**
+  String get phraseThankYou;
+
+  /// No description provided for @phrasePlease.
+  ///
+  /// In en, this message translates to:
+  /// **'Please'**
+  String get phrasePlease;
+
+  /// No description provided for @phraseBathroom.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is the bathroom?'**
+  String get phraseBathroom;
+
+  /// No description provided for @phraseCost.
+  ///
+  /// In en, this message translates to:
+  /// **'How much does this cost?'**
+  String get phraseCost;
+
+  /// No description provided for @phraseHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'I need help.'**
+  String get phraseHelp;
+
+  /// No description provided for @phraseTrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is the train station?'**
+  String get phraseTrain;
+
+  /// No description provided for @phraseTaxi.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you call a taxi?'**
+  String get phraseTaxi;
+
+  /// No description provided for @phraseReservation.
+  ///
+  /// In en, this message translates to:
+  /// **'I have a reservation.'**
+  String get phraseReservation;
+
+  /// No description provided for @phraseDontUnderstand.
+  ///
+  /// In en, this message translates to:
+  /// **'I don\'t understand.'**
+  String get phraseDontUnderstand;
 }
 
 class _AppLocalizationsDelegate

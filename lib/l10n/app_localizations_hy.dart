@@ -225,4 +225,95 @@ class AppLocalizationsHy extends AppLocalizations {
 
   @override
   String get settings => 'Կարգավորումներ';
+
+  @override
+  String get translatorTitle => 'Ճամփորդական թարգմանիչ';
+
+  @override
+  String get translatorSubtitle =>
+      'Թարգմանեք ձեր ուղևորության համար օգտակար արտահայտությունները։';
+
+  @override
+  String get sourceLanguage => 'Ելակետային լեզու';
+
+  @override
+  String get targetLanguage => 'Նպատակային լեզու';
+
+  @override
+  String get autoDetect => 'Ավտոմատ հայտնաբերում';
+
+  @override
+  String get swapLanguages => 'Փոխել լեզուները';
+
+  @override
+  String get sourceText => 'Թարգմանվող տեքստ';
+
+  @override
+  String get sourceTextHint => 'Մուտքագրեք կամ ընտրեք օգտակար արտահայտություն';
+
+  @override
+  String get translate => 'Թարգմանել';
+
+  @override
+  String get clear => 'Մաքրել';
+
+  @override
+  String get translationResult => 'Թարգմանություն';
+
+  @override
+  String get copyTranslation => 'Պատճենել թարգմանությունը';
+
+  @override
+  String get translationResultHint => 'Թարգմանությունը կհայտնվի այստեղ։';
+
+  @override
+  String get translationProviderUnavailable =>
+      'Թարգմանությունը դեռ կարգավորված չէ։';
+
+  @override
+  String get translationFailed => 'Չհաջողվեց կատարել թարգմանությունը։';
+
+  @override
+  String get enterTextToTranslate => 'Մուտքագրեք թարգմանվող տեքստը։';
+
+  @override
+  String get chooseDifferentLanguages =>
+      'Ընտրեք տարբեր ելակետային և նպատակային լեզուներ։';
+
+  @override
+  String get translationCopied => 'Թարգմանությունը պատճենվեց։';
+
+  @override
+  String get travelPhrases =>
+      'Օգտակար արտահայտություններ ճանապարհորդության համար';
+
+  @override
+  String get phraseHello => 'Բարև';
+
+  @override
+  String get phraseThankYou => 'Շնորհակալություն';
+
+  @override
+  String get phrasePlease => 'Խնդրում եմ';
+
+  @override
+  String get phraseBathroom => 'Որտե՞ղ է զուգարանը։';
+
+  @override
+  String get phraseCost => 'Որքա՞ն արժե սա։';
+
+  @override
+  String get phraseHelp => 'Օգնության կարիք ունեմ։';
+
+  @override
+  String get phraseTrain => 'Որտե՞ղ է երկաթուղային կայարանը։';
+
+  @override
+  String get phraseTaxi => 'Կարո՞ղ եք տաքսի կանչել։';
+
+  @override
+  String get phraseReservation => 'Ես ամրագրում ունեմ։';
+
+  @override
+  String get phraseDontUnderstand => 'Ես չեմ հասկանում։';
 }

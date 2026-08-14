@@ -222,6 +222,93 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings => '设置';
+
+  @override
+  String get translatorTitle => '旅行翻译';
+
+  @override
+  String get translatorSubtitle => '翻译旅途中有用的短语。';
+
+  @override
+  String get sourceLanguage => '源语言';
+
+  @override
+  String get targetLanguage => '目标语言';
+
+  @override
+  String get autoDetect => '自动检测';
+
+  @override
+  String get swapLanguages => '交换语言';
+
+  @override
+  String get sourceText => '待翻译文本';
+
+  @override
+  String get sourceTextHint => '输入或选择实用短语';
+
+  @override
+  String get translate => '翻译';
+
+  @override
+  String get clear => '清除';
+
+  @override
+  String get translationResult => '译文';
+
+  @override
+  String get copyTranslation => '复制译文';
+
+  @override
+  String get translationResultHint => '译文会显示在这里。';
+
+  @override
+  String get translationProviderUnavailable => '翻译功能尚未配置。';
+
+  @override
+  String get translationFailed => '翻译未能完成。';
+
+  @override
+  String get enterTextToTranslate => '请输入要翻译的文本。';
+
+  @override
+  String get chooseDifferentLanguages => '请选择不同的源语言和目标语言。';
+
+  @override
+  String get translationCopied => '译文已复制。';
+
+  @override
+  String get travelPhrases => '实用旅行短语';
+
+  @override
+  String get phraseHello => '你好';
+
+  @override
+  String get phraseThankYou => '谢谢';
+
+  @override
+  String get phrasePlease => '请';
+
+  @override
+  String get phraseBathroom => '洗手间在哪里？';
+
+  @override
+  String get phraseCost => '这个多少钱？';
+
+  @override
+  String get phraseHelp => '我需要帮助。';
+
+  @override
+  String get phraseTrain => '火车站在哪里？';
+
+  @override
+  String get phraseTaxi => '可以帮我叫出租车吗？';
+
+  @override
+  String get phraseReservation => '我有预订。';
+
+  @override
+  String get phraseDontUnderstand => '我不明白。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -442,4 +529,91 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get settings => '设置';
+
+  @override
+  String get translatorTitle => '旅行翻译';
+
+  @override
+  String get translatorSubtitle => '翻译旅途中有用的短语。';
+
+  @override
+  String get sourceLanguage => '源语言';
+
+  @override
+  String get targetLanguage => '目标语言';
+
+  @override
+  String get autoDetect => '自动检测';
+
+  @override
+  String get swapLanguages => '交换语言';
+
+  @override
+  String get sourceText => '待翻译文本';
+
+  @override
+  String get sourceTextHint => '输入或选择实用短语';
+
+  @override
+  String get translate => '翻译';
+
+  @override
+  String get clear => '清除';
+
+  @override
+  String get translationResult => '译文';
+
+  @override
+  String get copyTranslation => '复制译文';
+
+  @override
+  String get translationResultHint => '译文会显示在这里。';
+
+  @override
+  String get translationProviderUnavailable => '翻译功能尚未配置。';
+
+  @override
+  String get translationFailed => '翻译未能完成。';
+
+  @override
+  String get enterTextToTranslate => '请输入要翻译的文本。';
+
+  @override
+  String get chooseDifferentLanguages => '请选择不同的源语言和目标语言。';
+
+  @override
+  String get translationCopied => '译文已复制。';
+
+  @override
+  String get travelPhrases => '实用旅行短语';
+
+  @override
+  String get phraseHello => '你好';
+
+  @override
+  String get phraseThankYou => '谢谢';
+
+  @override
+  String get phrasePlease => '请';
+
+  @override
+  String get phraseBathroom => '洗手间在哪里？';
+
+  @override
+  String get phraseCost => '这个多少钱？';
+
+  @override
+  String get phraseHelp => '我需要帮助。';
+
+  @override
+  String get phraseTrain => '火车站在哪里？';
+
+  @override
+  String get phraseTaxi => '可以帮我叫出租车吗？';
+
+  @override
+  String get phraseReservation => '我有预订。';
+
+  @override
+  String get phraseDontUnderstand => '我不明白。';
 }

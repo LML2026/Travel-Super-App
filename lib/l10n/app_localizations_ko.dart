@@ -222,4 +222,91 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings => '설정';
+
+  @override
+  String get translatorTitle => '여행 번역기';
+
+  @override
+  String get translatorSubtitle => '여행에 유용한 문장을 번역하세요.';
+
+  @override
+  String get sourceLanguage => '원본 언어';
+
+  @override
+  String get targetLanguage => '대상 언어';
+
+  @override
+  String get autoDetect => '자동 감지';
+
+  @override
+  String get swapLanguages => '언어 바꾸기';
+
+  @override
+  String get sourceText => '번역할 텍스트';
+
+  @override
+  String get sourceTextHint => '입력하거나 유용한 문장을 선택하세요';
+
+  @override
+  String get translate => '번역';
+
+  @override
+  String get clear => '지우기';
+
+  @override
+  String get translationResult => '번역 결과';
+
+  @override
+  String get copyTranslation => '번역 복사';
+
+  @override
+  String get translationResultHint => '번역 결과가 여기에 표시됩니다.';
+
+  @override
+  String get translationProviderUnavailable => '번역 기능이 아직 설정되지 않았습니다.';
+
+  @override
+  String get translationFailed => '번역을 완료할 수 없습니다.';
+
+  @override
+  String get enterTextToTranslate => '번역할 텍스트를 입력하세요.';
+
+  @override
+  String get chooseDifferentLanguages => '서로 다른 원본 언어와 대상 언어를 선택하세요.';
+
+  @override
+  String get translationCopied => '번역이 복사되었습니다.';
+
+  @override
+  String get travelPhrases => '유용한 여행 문장';
+
+  @override
+  String get phraseHello => '안녕하세요';
+
+  @override
+  String get phraseThankYou => '감사합니다';
+
+  @override
+  String get phrasePlease => '부탁합니다';
+
+  @override
+  String get phraseBathroom => '화장실이 어디예요?';
+
+  @override
+  String get phraseCost => '이것은 얼마예요?';
+
+  @override
+  String get phraseHelp => '도움이 필요해요.';
+
+  @override
+  String get phraseTrain => '기차역이 어디예요?';
+
+  @override
+  String get phraseTaxi => '택시를 불러 주실 수 있나요?';
+
+  @override
+  String get phraseReservation => '예약이 있습니다.';
+
+  @override
+  String get phraseDontUnderstand => '이해하지 못했어요.';
 }
