@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../../core/itinerary_ordering.dart';
 import '../../../../core/services/route_service.dart';
+import '../../../../core/services/trip_map_projection.dart';
 import '../../../nearby/nearby_essentials_screen.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -26,18 +26,16 @@ class TripMapScreen extends StatefulWidget {
 class _TripMapScreenState extends State<TripMapScreen> {
   GoogleMapController? _mapController;
   final Map<String, RouteResult> _routes = {};
+  late final TripMapProjection _projection;
 
   @override
   void initState() {
     super.initState();
+    _projection = TripMapProjection.fromItems(widget.items);
     _loadRoutes();
   }
 
-  List<ItineraryItem> get _locatedItems {
-    return orderItineraryItems(
-      widget.items,
-    ).where((item) => item.latitude != null && item.longitude != null).toList();
-  }
+  List<ItineraryItem> get _locatedItems => _projection.mappedItems;
 
   Set<Marker> get _markers {
     final items = _locatedItems;
@@ -45,7 +43,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
     return {
       for (var i = 0; i < items.length; i++)
         Marker(
-          markerId: MarkerId(items[i].id),
+          markerId: MarkerId(TripMapProjection.markerKey(items[i], i)),
           position: LatLng(items[i].latitude!, items[i].longitude!),
           infoWindow: InfoWindow(
             title: '${i + 1}. ${items[i].title}',
@@ -76,7 +74,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
     final routes = <String, RouteResult>{};
 
     await Future.wait(
-      _routePairs().map((pair) async {
+      _projection.routePairs.map((pair) async {
         final route = await RouteService.calculate(
           originLatitude: pair.origin.latitude!,
           originLongitude: pair.origin.longitude!,
@@ -96,32 +94,6 @@ class _TripMapScreenState extends State<TripMapScreen> {
         ..clear()
         ..addAll(routes);
     });
-  }
-
-  List<_MapRoutePair> _routePairs() {
-    final sortedItems = orderItineraryItems(widget.items);
-    final pairs = <_MapRoutePair>[];
-
-    for (var index = 0; index < sortedItems.length - 1; index++) {
-      final origin = sortedItems[index];
-      final destination = sortedItems[index + 1];
-      final sameDay =
-          origin.date.year == destination.date.year &&
-          origin.date.month == destination.date.month &&
-          origin.date.day == destination.date.day;
-
-      if (!sameDay ||
-          origin.latitude == null ||
-          origin.longitude == null ||
-          destination.latitude == null ||
-          destination.longitude == null) {
-        continue;
-      }
-
-      pairs.add(_MapRoutePair(origin: origin, destination: destination));
-    }
-
-    return pairs;
   }
 
   LatLng get _initialPosition {
@@ -279,13 +251,4 @@ class _TripMapScreenState extends State<TripMapScreen> {
       ),
     );
   }
-}
-
-class _MapRoutePair {
-  final ItineraryItem origin;
-  final ItineraryItem destination;
-
-  const _MapRoutePair({required this.origin, required this.destination});
-
-  String get key => '${origin.id}|${destination.id}';
 }

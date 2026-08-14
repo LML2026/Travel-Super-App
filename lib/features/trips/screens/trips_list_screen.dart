@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../core/storage/trip_storage_service.dart';
 import '../models/trip.dart';
 import 'create_trip_screen.dart';
@@ -40,11 +40,9 @@ class _TripsListScreenState extends State<TripsListScreen> {
   }
 
   Future<void> _createTrip() async {
-    final trip = await Navigator.of(context).push<Trip>(
-      MaterialPageRoute(
-        builder: (_) => const CreateTripScreen(),
-      ),
-    );
+    final trip = await Navigator.of(
+      context,
+    ).push<Trip>(MaterialPageRoute(builder: (_) => const CreateTripScreen()));
 
     if (trip != null) {
       setState(() {
@@ -63,9 +61,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trips'),
-      ),
+      appBar: AppBar(title: const Text('Trips')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createTrip,
         icon: const Icon(Icons.add),
@@ -145,10 +141,12 @@ class _TripsListScreenState extends State<TripsListScreen> {
                         setState(() {
                           _trips.removeAt(index);
                         });
+                        await _persistTrips();
                       } else if (result is Trip) {
                         setState(() {
                           _trips[index] = result;
                         });
+                        await _persistTrips();
                       }
                     },
                   ),
@@ -158,12 +156,3 @@ class _TripsListScreenState extends State<TripsListScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-
-

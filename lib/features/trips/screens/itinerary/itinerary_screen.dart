@@ -675,7 +675,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                             const Icon(Icons.payments_outlined, size: 18),
                             const SizedBox(width: 6),
                             Text(
-                              '${item.currency} ${item.estimatedCost!.toStringAsFixed(2)}',
+                              '${widget.trip.currency} '
+                              '${item.estimatedCost!.toStringAsFixed(2)}',
                             ),
                           ],
                         ),
