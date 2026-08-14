@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/itinerary_ordering.dart';
+import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../../core/storage/itinerary_storage_service.dart';
 import '../../models/itinerary/itinerary_item.dart';
@@ -21,6 +23,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   final List<ItineraryItem> _items = [];
   final ItineraryStorageService _storage = ItineraryStorageService();
   final Map<String, RouteResult> _routes = {};
+  final Set<DateTime> _optimizingDays = {};
 
   bool _isLoading = true;
   TravelMode _travelMode = TravelMode.walking;
@@ -50,15 +53,10 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   }
 
   void _sortItems() {
-    _items.sort((a, b) {
-      final dateCompare = a.date.compareTo(b.date);
-
-      if (dateCompare != 0) {
-        return dateCompare;
-      }
-
-      return (a.time ?? '').compareTo(b.time ?? '');
-    });
+    final ordered = orderItineraryItems(_items);
+    _items
+      ..clear()
+      ..addAll(ordered);
   }
 
   Future<void> _persistItems() async {
@@ -172,6 +170,121 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         ..clear()
         ..addAll(routes);
     });
+  }
+
+  Future<RouteResult?> _lookupOptimizationRoute(
+    ItineraryItem origin,
+    ItineraryItem destination,
+    TravelMode travelMode,
+  ) {
+    return RouteService.calculate(
+      originLatitude: origin.latitude!,
+      originLongitude: origin.longitude!,
+      destinationLatitude: destination.latitude!,
+      destinationLongitude: destination.longitude!,
+      travelMode: travelMode,
+    );
+  }
+
+  Future<void> _optimizeDay(DateTime date) async {
+    final day = itineraryDay(date);
+    if (_optimizingDays.contains(day)) return;
+
+    setState(() => _optimizingDays.add(day));
+
+    final result = await ItineraryOptimizer.optimizeDay(
+      items: List<ItineraryItem>.from(_items),
+      day: day,
+      travelMode: _travelMode,
+      routeLookup: _lookupOptimizationRoute,
+    );
+
+    if (!mounted) return;
+    setState(() => _optimizingDays.remove(day));
+
+    if (result == null) return;
+
+    final shouldApply = await _showOptimizationPreview(result);
+    if (shouldApply != true || !mounted) return;
+
+    final replacements = <String, ItineraryItem>{
+      for (var index = 0; index < result.suggestedDayItems.length; index++)
+        result.suggestedDayItems[index].id: result.suggestedDayItems[index]
+            .copyWith(orderIndex: index),
+    };
+
+    setState(() {
+      for (var index = 0; index < _items.length; index++) {
+        final replacement = replacements[_items[index].id];
+        if (replacement != null) _items[index] = replacement;
+      }
+      _sortItems();
+      _routes.clear();
+    });
+
+    await _persistItems();
+    await _loadRoutes();
+  }
+
+  Future<bool?> _showOptimizationPreview(ItineraryOptimizationResult result) {
+    final unmappedCount = result.suggestedDayItems
+        .where((item) => item.latitude == null || item.longitude == null)
+        .length;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Suggested order'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (
+                var index = 0;
+                index < result.suggestedDayItems.length;
+                index++
+              )
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    '${index + 1}. ${result.suggestedDayItems[index].title}',
+                  ),
+                ),
+              const SizedBox(height: 12),
+              if (result.hasReliableDurations) ...[
+                Text('Current travel: ${result.currentDurationMinutes} min'),
+                Text(
+                  'Suggested travel: ${result.suggestedDurationMinutes} min',
+                ),
+                Text('Potential saving: ${result.savingMinutes} min'),
+              ] else
+                const Text('Estimated route improvement available.'),
+              if (unmappedCount > 0) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '$unmappedCount unmapped '
+                  '${unmappedCount == 1 ? 'stop was' : 'stops were'} kept '
+                  'in the existing position and excluded from route estimates.',
+                ),
+              ],
+              const SizedBox(height: 12),
+              const Text('Activity times will remain unchanged.'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Apply suggested order'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<_ItineraryRoutePair> _routePairs() {
@@ -343,7 +456,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         const SizedBox(height: 28),
 
         for (final entry in grouped.entries) ...[
-          _buildDayHeader(context, entry.key),
+          _buildDayHeader(context, entry.key, entry.value),
           const SizedBox(height: 12),
 
           for (var i = 0; i < entry.value.length; i++)
@@ -423,24 +536,50 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     );
   }
 
-  Widget _buildDayHeader(BuildContext context, DateTime date) {
+  Widget _buildDayHeader(
+    BuildContext context,
+    DateTime date,
+    List<ItineraryItem> items,
+  ) {
+    final day = itineraryDay(date);
+    final mappedCount = items
+        .where((item) => item.latitude != null && item.longitude != null)
+        .length;
+    final isOptimizing = _optimizingDays.contains(day);
+
     return Row(
       children: [
         CircleAvatar(radius: 20, child: Text('${_dayNumber(date)}')),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Day ${_dayNumber(date)}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              _formatDate(date),
-              style: const TextStyle(color: Colors.black54),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Day ${_dayNumber(date)}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                _formatDate(date),
+                style: const TextStyle(color: Colors.black54),
+              ),
+            ],
+          ),
         ),
+        if (mappedCount >= 3)
+          TextButton.icon(
+            onPressed: isOptimizing ? null : () => _optimizeDay(day),
+            icon: isOptimizing
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.auto_awesome_outlined),
+            label: Text(isOptimizing ? 'Optimizing...' : 'Optimize day'),
+          ),
       ],
     );
   }

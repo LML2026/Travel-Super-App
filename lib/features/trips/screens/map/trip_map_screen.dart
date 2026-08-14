@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/itinerary_ordering.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../nearby/nearby_essentials_screen.dart';
 import '../../models/itinerary/itinerary_item.dart';
@@ -33,9 +34,9 @@ class _TripMapScreenState extends State<TripMapScreen> {
   }
 
   List<ItineraryItem> get _locatedItems {
-    return widget.items
-        .where((item) => item.latitude != null && item.longitude != null)
-        .toList();
+    return orderItineraryItems(
+      widget.items,
+    ).where((item) => item.latitude != null && item.longitude != null).toList();
   }
 
   Set<Marker> get _markers {
@@ -98,14 +99,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
   }
 
   List<_MapRoutePair> _routePairs() {
-    final sortedItems = List<ItineraryItem>.from(widget.items)
-      ..sort((first, second) {
-        final dateComparison = first.date.compareTo(second.date);
-
-        if (dateComparison != 0) return dateComparison;
-
-        return (first.time ?? '').compareTo(second.time ?? '');
-      });
+    final sortedItems = orderItineraryItems(widget.items);
     final pairs = <_MapRoutePair>[];
 
     for (var index = 0; index < sortedItems.length - 1; index++) {

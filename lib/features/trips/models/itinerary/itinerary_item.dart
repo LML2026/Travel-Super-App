@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 class ItineraryItem {
   final String id;
@@ -15,6 +15,7 @@ class ItineraryItem {
   final double? latitude;
   final double? longitude;
   final int? travelMinutesToNext;
+  final int? orderIndex;
 
   const ItineraryItem({
     required this.id,
@@ -31,6 +32,7 @@ class ItineraryItem {
     this.latitude,
     this.longitude,
     this.travelMinutesToNext,
+    this.orderIndex,
   });
 
   ItineraryItem copyWith({
@@ -46,6 +48,7 @@ class ItineraryItem {
     double? latitude,
     double? longitude,
     int? travelMinutesToNext,
+    int? orderIndex,
   }) {
     return ItineraryItem(
       id: id,
@@ -62,6 +65,7 @@ class ItineraryItem {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       travelMinutesToNext: travelMinutesToNext ?? this.travelMinutesToNext,
+      orderIndex: orderIndex ?? this.orderIndex,
     );
   }
 
@@ -81,6 +85,7 @@ class ItineraryItem {
       'latitude': latitude,
       'longitude': longitude,
       'travelMinutesToNext': travelMinutesToNext,
+      'orderIndex': orderIndex,
     };
   }
 
@@ -100,14 +105,12 @@ class ItineraryItem {
       latitude: (map['latitude'] as num?)?.toDouble(),
       longitude: (map['longitude'] as num?)?.toDouble(),
       travelMinutesToNext: (map['travelMinutesToNext'] as num?)?.toInt(),
+      orderIndex: (map['orderIndex'] as num?)?.toInt(),
     );
   }
 
   String toJson() => jsonEncode(toMap());
 
   factory ItineraryItem.fromJson(String source) =>
-      ItineraryItem.fromMap(
-        jsonDecode(source) as Map<String, dynamic>,
-      );
+      ItineraryItem.fromMap(jsonDecode(source) as Map<String, dynamic>);
 }
-
