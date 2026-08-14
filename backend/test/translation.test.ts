@@ -6,6 +6,14 @@ import { createApp } from "../src/app";
 import { TokenVerifier } from "../src/auth/auth_middleware";
 import { RateLimiter } from "../src/security/rate_limiter";
 import { TranslationProvider, TranslationProviderError } from "../src/translation/translation_provider";
+import {
+  GoogleTranslationProvider,
+  GoogleTranslateTextRequest,
+  GoogleTranslateTextResponse,
+  toGoogleLanguageCode,
+  fromGoogleLanguageCode,
+} from "../src/translation/google_translation_provider";
+import { createConfiguredTranslationProvider } from "../src/translation/translation_provider_factory";
 import { UnavailableTranslationProvider } from "../src/translation/unavailable_translation_provider";
 
 class FakeProvider implements TranslationProvider {
@@ -214,4 +222,119 @@ test("rate limiting is public and sanitized", async () => {
   assert.equal(response.status, 429);
   assert.equal(response.headers.get("retry-after"), "30");
   assert.deepEqual(await response.json(), { error: { code: "rateLimited" } });
+});
+
+test("Google provider maps zh_CN and omits source for auto-detect", async () => {
+  let captured: GoogleTranslateTextRequest | undefined;
+  const client = {
+    async translateText(request: GoogleTranslateTextRequest): Promise<[
+      GoogleTranslateTextResponse,
+      unknown,
+      unknown,
+    ]> {
+      captured = request;
+      return [
+        {
+          translations: [
+            { translatedText: "你好", detectedLanguageCode: "zh-CN" },
+          ],
+        },
+        undefined,
+        undefined,
+      ];
+    },
+  };
+  const provider = new GoogleTranslationProvider({
+    projectId: "test-project",
+    location: "global",
+    client,
+  });
+
+  const result = await provider.translate({
+    text: "Hello",
+    sourceLanguage: "auto",
+    targetLanguage: "zh_CN",
+  });
+
+  assert.equal(captured?.targetLanguageCode, "zh-CN");
+  assert.equal(captured?.sourceLanguageCode, undefined);
+  assert.equal(result.translatedText, "你好");
+  assert.equal(result.detectedSourceLanguage, "zh_CN");
+  assert.equal(toGoogleLanguageCode("zh_CN"), "zh-CN");
+  assert.equal(fromGoogleLanguageCode("zh-CN"), "zh_CN");
+});
+
+test("Google provider preserves Unicode and maps timeout/failure safely", async () => {
+  const unicodeClient = {
+    async translateText(_request: GoogleTranslateTextRequest): Promise<[
+      GoogleTranslateTextResponse,
+      unknown,
+      unknown,
+    ]> {
+      return [
+        { translations: [{ translatedText: "გამარჯობა مرحبا 日本語" }] },
+        undefined,
+        undefined,
+      ];
+    },
+  };
+  const unicodeProvider = new GoogleTranslationProvider({
+    projectId: "test-project",
+    client: unicodeClient,
+  });
+  const unicodeResult = await unicodeProvider.translate({
+    text: "Hello",
+    sourceLanguage: "en",
+    targetLanguage: "ka",
+  });
+  assert.equal(unicodeResult.translatedText, "გამარჯობა مرحبا 日本語");
+
+  for (const [errorCode, expected] of [
+    [4, "timeout"],
+    [7, "providerUnavailable"],
+    [13, "translationFailed"],
+  ] as const) {
+    const provider = new GoogleTranslationProvider({
+      projectId: "test-project",
+      client: {
+        async translateText(_request: GoogleTranslateTextRequest) {
+          throw Object.assign(new Error("private provider details"), {
+            code: errorCode,
+          });
+        },
+      },
+    });
+    await assert.rejects(
+      provider.translate({ text: "Hello", sourceLanguage: "en", targetLanguage: "it" }),
+      (error: unknown) => error instanceof TranslationProviderError && error.kind === expected,
+    );
+  }
+});
+
+test("Google provider is unavailable unless explicitly selected", async () => {
+  assert.equal(
+    createConfiguredTranslationProvider({}).constructor.name,
+    "UnavailableTranslationProvider",
+  );
+  assert.equal(
+    createConfiguredTranslationProvider({ TRANSLATION_PROVIDER: "other" }).constructor.name,
+    "UnavailableTranslationProvider",
+  );
+  assert.equal(
+    createConfiguredTranslationProvider({ TRANSLATION_PROVIDER: "google" }).constructor.name,
+    "UnavailableTranslationProvider",
+  );
+  assert.equal(
+    createConfiguredTranslationProvider(
+      { TRANSLATION_PROVIDER: "google", GOOGLE_CLOUD_PROJECT: "test" },
+      {
+        client: {
+          async translateText(_request: GoogleTranslateTextRequest) {
+            return [{ translations: [] }, undefined, undefined];
+          },
+        },
+      },
+    ).constructor.name,
+    "GoogleTranslationProvider",
+  );
 });

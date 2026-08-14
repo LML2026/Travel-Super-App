@@ -14,7 +14,13 @@ export interface TranslationProvider {
 }
 
 export class TranslationProviderError extends Error {
-  constructor(readonly kind: "providerUnavailable" | "timeout" | "translationFailed") {
+  constructor(
+    readonly kind:
+      | "providerUnavailable"
+      | "timeout"
+      | "unsupportedLanguage"
+      | "translationFailed",
+  ) {
     super(kind);
   }
 }

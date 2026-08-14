@@ -45,10 +45,10 @@ class _FakeAuthService implements AuthService {
 }
 
 TranslationRequest _request() => const TranslationRequest(
-      sourceText: 'Where is the station?',
-      sourceLanguageCode: 'auto',
-      targetLanguageCode: 'it',
-    );
+  sourceText: 'Where is the station?',
+  sourceLanguageCode: 'auto',
+  targetLanguageCode: 'it',
+);
 
 BackendTranslationService _service({
   required _FakeAuthService auth,
@@ -56,24 +56,37 @@ BackendTranslationService _service({
   String baseUrl = 'https://backend.example.test/',
   Duration timeout = const Duration(seconds: 15),
 }) => BackendTranslationService(
-      authService: auth,
-      client: client,
-      baseUrl: baseUrl,
-      requestTimeout: timeout,
-    );
+  authService: auth,
+  client: client,
+  baseUrl: baseUrl,
+  requestTimeout: timeout,
+);
 
 void main() {
-  test('missing backend URL stays unavailable without requesting a token', () async {
-    final auth = _FakeAuthService('token');
-    final service = _service(auth: auth, client: MockClient((_) async => throw StateError('called')), baseUrl: '');
+  test(
+    'missing backend URL stays unavailable without requesting a token',
+    () async {
+      final auth = _FakeAuthService('token');
+      final service = _service(
+        auth: auth,
+        client: MockClient((_) async => throw StateError('called')),
+        baseUrl: '',
+      );
 
-    await expectLater(
-      service.translate(_request()),
-      throwsA(isA<TranslationApiException>().having((error) => error.code, 'code', 'providerUnavailable')),
-    );
-    expect(auth.tokenCalls, 0);
-    service.close();
-  });
+      await expectLater(
+        service.translate(_request()),
+        throwsA(
+          isA<TranslationApiException>().having(
+            (error) => error.code,
+            'code',
+            'providerUnavailable',
+          ),
+        ),
+      );
+      expect(auth.tokenCalls, 0);
+      service.close();
+    },
+  );
 
   test('missing token is unauthorized without an HTTP request', () async {
     final auth = _FakeAuthService(null);
@@ -88,7 +101,13 @@ void main() {
 
     await expectLater(
       service.translate(_request()),
-      throwsA(isA<TranslationApiException>().having((error) => error.code, 'code', 'unauthorized')),
+      throwsA(
+        isA<TranslationApiException>().having(
+          (error) => error.code,
+          'code',
+          'unauthorized',
+        ),
+      ),
     );
     expect(requests, 0);
     service.close();
@@ -120,12 +139,20 @@ void main() {
   test('malformed success response is translationFailed', () async {
     final service = _service(
       auth: _FakeAuthService('token'),
-      client: MockClient((_) async => http.Response('{"unexpected":true}', 200)),
+      client: MockClient(
+        (_) async => http.Response('{"unexpected":true}', 200),
+      ),
     );
 
     await expectLater(
       service.translate(_request()),
-      throwsA(isA<TranslationApiException>().having((error) => error.code, 'code', 'translationFailed')),
+      throwsA(
+        isA<TranslationApiException>().having(
+          (error) => error.code,
+          'code',
+          'translationFailed',
+        ),
+      ),
     );
     service.close();
   });
@@ -143,15 +170,23 @@ void main() {
     ]) {
       final service = _service(
         auth: _FakeAuthService('token'),
-        client: MockClient((_) async => http.Response(
-              '{"error":{"code":"$code","message":"private text"}}',
-              code == 'unauthorized' ? 401 : 400,
-            )),
+        client: MockClient(
+          (_) async => http.Response(
+            '{"error":{"code":"$code","message":"private text"}}',
+            code == 'unauthorized' ? 401 : 400,
+          ),
+        ),
       );
 
       await expectLater(
         service.translate(_request()),
-        throwsA(isA<TranslationApiException>().having((error) => error.code, 'code', code)),
+        throwsA(
+          isA<TranslationApiException>().having(
+            (error) => error.code,
+            'code',
+            code,
+          ),
+        ),
       );
       service.close();
     }
@@ -169,7 +204,13 @@ void main() {
 
     await expectLater(
       service.translate(_request()),
-      throwsA(isA<TranslationApiException>().having((error) => error.code, 'code', 'timeout')),
+      throwsA(
+        isA<TranslationApiException>().having(
+          (error) => error.code,
+          'code',
+          'timeout',
+        ),
+      ),
     );
     service.close();
   });

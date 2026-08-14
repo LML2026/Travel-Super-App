@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/auth/auth_service_scope.dart';
 import '../../../core/localization/app_locale.dart';
+import '../../../core/translation/backend_translation_service.dart';
+import '../../../core/translation/translation_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../translator/screens/travel_translator_screen.dart';
 import '../../trips/screens/trips_list_screen.dart';
@@ -186,9 +188,17 @@ class HomeScreen extends StatelessWidget {
                     title: l10n.translator,
                     subtitle: l10n.speakAnywhere,
                     onTap: () {
+                      final authService = AuthServiceScope.of(context);
+                      final service =
+                          BackendTranslationService.configuredBaseUrl
+                              .trim()
+                              .isEmpty
+                          ? const UnavailableTranslationService()
+                          : BackendTranslationService(authService: authService);
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const TravelTranslatorScreen(),
+                          builder: (_) =>
+                              TravelTranslatorScreen(service: service),
                         ),
                       );
                     },

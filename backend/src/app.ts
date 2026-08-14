@@ -34,6 +34,11 @@ const safeErrorHandler: ErrorRequestHandler = (error, _request, response, _next)
     return;
   }
 
+  if (error instanceof Error && error.name === "TranslationProviderError") {
+    response.status(503).json(publicErrorResponse("translationFailed"));
+    return;
+  }
+
   if (isBodyParseOrSizeError(error)) {
     const code = error.type === "entity.too.large" ? "requestTooLarge" : "invalidRequest";
     response.status(error.type === "entity.too.large" ? 413 : 400).json(publicErrorResponse(code));

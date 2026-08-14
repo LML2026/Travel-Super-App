@@ -22,8 +22,8 @@ class BackendTranslationService implements TranslationService {
     http.Client? client,
     String? baseUrl,
     this.requestTimeout = const Duration(seconds: 15),
-  })  : _client = client ?? http.Client(),
-        _baseUri = _parseBaseUri(baseUrl ?? configuredBaseUrl);
+  }) : _client = client ?? http.Client(),
+       _baseUri = _parseBaseUri(baseUrl ?? configuredBaseUrl);
 
   bool get isConfigured => _baseUri != null;
 
@@ -96,7 +96,9 @@ class BackendTranslationService implements TranslationService {
     if (trimmed.isEmpty) return null;
 
     final uri = Uri.tryParse(trimmed.endsWith('/') ? trimmed : '$trimmed/');
-    if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http') || uri.host.isEmpty) {
+    if (uri == null ||
+        (uri.scheme != 'https' && uri.scheme != 'http') ||
+        uri.host.isEmpty) {
       return null;
     }
     return uri;

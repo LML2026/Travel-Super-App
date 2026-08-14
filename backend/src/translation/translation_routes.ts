@@ -50,7 +50,11 @@ function translate(dependencies: TranslationRouteDependencies): RequestHandler {
       });
     } catch (error) {
       if (error instanceof TranslationProviderError) {
-        const status = error.kind === "timeout" ? 504 : 503;
+        const status = error.kind === "timeout"
+          ? 504
+          : error.kind === "unsupportedLanguage"
+              ? 400
+              : 503;
         next(new PublicApiError(error.kind, status));
         return;
       }
