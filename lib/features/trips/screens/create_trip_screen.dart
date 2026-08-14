@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/trip.dart';
 
 class CreateTripScreen extends StatefulWidget {
@@ -89,10 +90,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Trip'),
-      ),
+      appBar: AppBar(title: Text(l10n.createTrip)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -157,7 +158,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _budgetController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Budget',
                       prefixIcon: Icon(Icons.payments_outlined),
@@ -203,9 +206,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
             FilledButton.icon(
               onPressed: _saveTrip,
               icon: const Icon(Icons.check),
-              label: const Padding(
+              label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 14),
-                child: Text('Create Trip'),
+                child: Text(l10n.createTrip),
               ),
             ),
           ],
@@ -214,7 +217,3 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     );
   }
 }
-
-
-
-

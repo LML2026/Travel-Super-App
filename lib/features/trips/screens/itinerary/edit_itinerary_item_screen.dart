@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 import '../../../../core/services/place_search_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class EditItineraryItemScreen extends StatefulWidget {
   final Trip trip;
@@ -127,8 +128,10 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Itinerary Item')),
+      appBar: AppBar(title: Text(l10n.editItineraryItem)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -186,7 +189,7 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
                 }
               },
               icon: const Icon(Icons.search),
-              label: const Text('Search location'),
+              label: Text(l10n.searchLocation),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -249,9 +252,9 @@ class _EditItineraryItemScreenState extends State<EditItineraryItemScreen> {
             FilledButton.icon(
               onPressed: _save,
               icon: const Icon(Icons.save_outlined),
-              label: const Padding(
+              label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 14),
-                child: Text('Save Changes'),
+                child: Text(l10n.save),
               ),
             ),
           ],

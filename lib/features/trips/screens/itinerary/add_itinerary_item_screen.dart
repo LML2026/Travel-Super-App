@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 import '../../../../core/services/place_search_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AddItineraryItemScreen extends StatefulWidget {
   final Trip trip;
@@ -99,8 +100,10 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Itinerary Item')),
+      appBar: AppBar(title: Text(l10n.addItineraryItem)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -158,7 +161,7 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
                 }
               },
               icon: const Icon(Icons.search),
-              label: const Text('Search location'),
+              label: Text(l10n.searchLocation),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -221,9 +224,9 @@ class _AddItineraryItemScreenState extends State<AddItineraryItemScreen> {
             FilledButton.icon(
               onPressed: _save,
               icon: const Icon(Icons.add),
-              label: const Padding(
+              label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 14),
-                child: Text('Add to Itinerary'),
+                child: Text('${l10n.add} ${l10n.itinerary}'),
               ),
             ),
           ],

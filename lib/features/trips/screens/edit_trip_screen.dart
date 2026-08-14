@@ -1,13 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/trip.dart';
 
 class EditTripScreen extends StatefulWidget {
   final Trip trip;
 
-  const EditTripScreen({
-    super.key,
-    required this.trip,
-  });
+  const EditTripScreen({super.key, required this.trip});
 
   @override
   State<EditTripScreen> createState() => _EditTripScreenState();
@@ -27,9 +25,15 @@ class _EditTripScreenState extends State<EditTripScreen> {
   @override
   void initState() {
     super.initState();
-    _destinationController = TextEditingController(text: widget.trip.destination);
-    _travellersController = TextEditingController(text: widget.trip.travellers.toString());
-    _budgetController = TextEditingController(text: widget.trip.budget.toStringAsFixed(2));
+    _destinationController = TextEditingController(
+      text: widget.trip.destination,
+    );
+    _travellersController = TextEditingController(
+      text: widget.trip.travellers.toString(),
+    );
+    _budgetController = TextEditingController(
+      text: widget.trip.budget.toStringAsFixed(2),
+    );
     _notesController = TextEditingController(text: widget.trip.notes);
     _departureDate = widget.trip.departureDate;
     _returnDate = widget.trip.returnDate;
@@ -100,8 +104,10 @@ class _EditTripScreenState extends State<EditTripScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Trip')),
+      appBar: AppBar(title: Text(l10n.editTrip)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -140,7 +146,9 @@ class _EditTripScreenState extends State<EditTripScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _budgetController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Budget',
                 border: OutlineInputBorder(),
@@ -174,9 +182,9 @@ class _EditTripScreenState extends State<EditTripScreen> {
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _save,
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 14),
-                child: Text('Save Changes'),
+                child: Text(l10n.save),
               ),
             ),
           ],

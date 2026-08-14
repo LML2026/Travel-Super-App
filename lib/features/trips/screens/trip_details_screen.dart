@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../core/services/trip_overview_service.dart';
 import '../../../core/storage/itinerary_storage_service.dart';
 import '../../nearby/nearby_essentials_screen.dart';
@@ -78,21 +79,22 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   }
 
   Future<void> _deleteTrip() async {
+    final l10n = AppLocalizations.of(context);
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete trip?'),
+        title: Text(l10n.deleteTripQuestion),
         content: Text(
           'Are you sure you want to delete the trip to ${_trip.destination}?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -105,6 +107,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final summary = TripOverviewService.build(
       trip: _trip,
       items: _items,
@@ -116,15 +119,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trip Overview'),
+        title: Text(l10n.tripOverview),
         actions: [
           IconButton(
-            tooltip: 'Edit trip',
+            tooltip: l10n.editTrip,
             icon: const Icon(Icons.edit_outlined),
             onPressed: _editTrip,
           ),
           IconButton(
-            tooltip: 'Delete trip',
+            tooltip: l10n.deleteTrip,
             icon: const Icon(Icons.delete_outline),
             onPressed: _deleteTrip,
           ),
@@ -177,7 +180,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     if (_trip.notes.trim().isNotEmpty) ...[
                       const SizedBox(height: 24),
                       _SectionCard(
-                        title: 'Notes',
+                        title: l10n.notes,
                         child: Text(_trip.notes.trim()),
                       ),
                     ],

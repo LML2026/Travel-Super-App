@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/services/nearby_search_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class NearbyEssentialsScreen extends StatefulWidget {
   final double latitude;
@@ -281,8 +282,10 @@ class _NearbyEssentialsScreenState extends State<NearbyEssentialsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Nearby Essentials')),
+      appBar: AppBar(title: Text(l10n.nearbyEssentials)),
       body: Column(
         children: [
           Padding(

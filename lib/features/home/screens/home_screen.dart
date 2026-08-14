@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../../../core/localization/app_locale.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../trips/screens/trips_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -6,19 +8,90 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'ITAREVO',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
+          PopupMenuButton<Locale>(
+            tooltip: l10n.language,
+            icon: const Icon(Icons.language),
+            onSelected: (locale) {
+              AppLocaleScope.of(context).select(locale);
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: const Locale('en'),
+                child: Text(l10n.english),
+              ),
+              PopupMenuItem(
+                value: const Locale('it'),
+                child: Text(l10n.italian),
+              ),
+              PopupMenuItem(
+                value: const Locale('es'),
+                child: Text(l10n.spanish),
+              ),
+              PopupMenuItem(
+                value: const Locale('fr'),
+                child: Text(l10n.french),
+              ),
+              PopupMenuItem(
+                value: const Locale('de'),
+                child: Text(l10n.german),
+              ),
+              PopupMenuItem(
+                value: const Locale('ru'),
+                child: Text(l10n.russian),
+              ),
+              PopupMenuItem(
+                value: Locale('zh', 'CN'),
+                child: Text(l10n.chineseSimplified),
+              ),
+              PopupMenuItem(
+                value: const Locale('ja'),
+                child: Text(l10n.japanese),
+              ),
+              PopupMenuItem(
+                value: const Locale('ko'),
+                child: Text(l10n.korean),
+              ),
+              PopupMenuItem(value: Locale('pt'), child: Text(l10n.portuguese)),
+              PopupMenuItem(
+                value: const Locale('ar'),
+                child: Text(l10n.arabic),
+              ),
+              PopupMenuItem(
+                value: const Locale('tr'),
+                child: Text(l10n.turkish),
+              ),
+              PopupMenuItem(
+                value: const Locale('pl'),
+                child: Text(l10n.polish),
+              ),
+              PopupMenuItem(value: Locale('nl'), child: Text(l10n.dutch)),
+              PopupMenuItem(value: const Locale('hi'), child: Text(l10n.hindi)),
+              PopupMenuItem(
+                value: const Locale('ka'),
+                child: Text(l10n.georgian),
+              ),
+              PopupMenuItem(
+                value: const Locale('fa'),
+                child: Text(l10n.persian),
+              ),
+              PopupMenuItem(
+                value: const Locale('hy'),
+                child: Text(l10n.armenian),
+              ),
+              PopupMenuItem(
+                value: const Locale('uk'),
+                child: Text(l10n.ukrainian),
+              ),
+            ],
           ),
           const SizedBox(width: 8),
         ],
@@ -29,16 +102,13 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Travel smarter.',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+              Text(
+                l10n.travelSmarter,
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Plan, book and manage your entire journey in one place.',
+              Text(
+                l10n.homeDescription,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
@@ -53,11 +123,11 @@ class HomeScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Where are you going next?',
+                      l10n.whereNext,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -66,22 +136,16 @@ class HomeScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Start a new trip and let ITAREVO organise the details.',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 15,
-                      ),
+                      l10n.startNewTrip,
+                      style: TextStyle(color: Colors.white70, fontSize: 15),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
-              const Text(
-                'Explore',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+              Text(
+                l10n.explore,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               GridView.count(
@@ -94,8 +158,8 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _FeatureTile(
                     icon: Icons.map_outlined,
-                    title: 'Trips',
-                    subtitle: 'Plan your journey',
+                    title: l10n.trips,
+                    subtitle: l10n.planYourJourney,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -106,28 +170,28 @@ class HomeScreen extends StatelessWidget {
                   ),
                   _FeatureTile(
                     icon: Icons.flight_outlined,
-                    title: 'Flights',
-                    subtitle: 'Search and manage',
+                    title: l10n.flights,
+                    subtitle: l10n.searchAndManage,
                   ),
                   _FeatureTile(
                     icon: Icons.hotel_outlined,
-                    title: 'Hotels',
-                    subtitle: 'Find your stay',
+                    title: l10n.hotels,
+                    subtitle: l10n.findYourStay,
                   ),
                   _FeatureTile(
                     icon: Icons.translate,
-                    title: 'Translator',
-                    subtitle: 'Speak anywhere',
+                    title: l10n.translator,
+                    subtitle: l10n.speakAnywhere,
                   ),
                   _FeatureTile(
                     icon: Icons.account_balance_wallet_outlined,
-                    title: 'Wallet',
-                    subtitle: 'Money and payments',
+                    title: l10n.wallet,
+                    subtitle: l10n.moneyAndPayments,
                   ),
                   _FeatureTile(
                     icon: Icons.auto_awesome_outlined,
-                    title: 'AI Assistant',
-                    subtitle: 'Your travel copilot',
+                    title: l10n.aiAssistant,
+                    subtitle: l10n.yourTravelCopilot,
                   ),
                 ],
               ),
@@ -180,10 +244,7 @@ class _FeatureTile extends StatelessWidget {
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 13,
-                ),
+                style: const TextStyle(color: Colors.black54, fontSize: 13),
               ),
             ],
           ),
@@ -192,4 +253,3 @@ class _FeatureTile extends StatelessWidget {
     );
   }
 }
-

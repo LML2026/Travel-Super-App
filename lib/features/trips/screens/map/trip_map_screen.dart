@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/services/route_service.dart';
 import '../../../../core/services/trip_map_projection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../nearby/nearby_essentials_screen.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -175,21 +176,22 @@ class _TripMapScreenState extends State<TripMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final locatedItems = _locatedItems;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.trip.destination} Map'),
+        title: Text('${widget.trip.destination} ${l10n.map}'),
         actions: [
           if (locatedItems.isNotEmpty)
             IconButton(
-              tooltip: 'Nearby Essentials',
+              tooltip: l10n.nearbyEssentials,
               icon: const Icon(Icons.near_me_outlined),
               onPressed: _openNearby,
             ),
           if (locatedItems.isNotEmpty)
             IconButton(
-              tooltip: 'Show all stops',
+              tooltip: l10n.showAllStops,
               icon: const Icon(Icons.center_focus_strong),
               onPressed: _fitAllMarkers,
             ),

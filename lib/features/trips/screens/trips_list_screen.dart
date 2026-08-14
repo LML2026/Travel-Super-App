@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/storage/trip_storage_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/trip.dart';
 import 'create_trip_screen.dart';
 import 'trip_details_screen.dart';
@@ -60,12 +61,14 @@ class _TripsListScreenState extends State<TripsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Trips')),
+      appBar: AppBar(title: Text(l10n.trips)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createTrip,
         icon: const Icon(Icons.add),
-        label: const Text('New Trip'),
+        label: Text(l10n.newTrip),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -78,23 +81,20 @@ class _TripsListScreenState extends State<TripsListScreen> {
                   children: [
                     const Icon(Icons.luggage_outlined, size: 72),
                     const SizedBox(height: 20),
-                    const Text(
-                      'No trips yet',
+                    Text(
+                      l10n.noTripsYet,
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Create your first trip and ITAREVO will keep everything organised.',
-                      textAlign: TextAlign.center,
-                    ),
+                    Text(l10n.createFirstTrip, textAlign: TextAlign.center),
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       onPressed: _createTrip,
                       icon: const Icon(Icons.add),
-                      label: const Text('Create Trip'),
+                      label: Text(l10n.createTrip),
                     ),
                   ],
                 ),

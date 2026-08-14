@@ -4,6 +4,7 @@ import '../../../../core/itinerary_ordering.dart';
 import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../../core/storage/itinerary_storage_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
 import 'add_itinerary_item_screen.dart';
@@ -106,6 +107,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   }
 
   Future<void> _deleteItem(ItineraryItem item) async {
+    final l10n = AppLocalizations.of(context);
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -114,11 +116,11 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -384,12 +386,14 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.trip.destination} Itinerary'),
+        title: Text('${widget.trip.destination} ${l10n.itinerary}'),
         actions: [
           IconButton(
-            tooltip: 'Trip Map',
+            tooltip: l10n.map,
             icon: const Icon(Icons.map_outlined),
             onPressed: () {
               Navigator.of(context).push(
@@ -408,7 +412,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addItem,
         icon: const Icon(Icons.add),
-        label: const Text('Add Item'),
+        label: Text('${l10n.add} Item'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -590,6 +594,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     required RouteResult? routeToNext,
     required bool isLast,
   }) {
+    final l10n = AppLocalizations.of(context);
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -640,7 +646,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
                           ),
                           if (item.isBooked) const Chip(label: Text('Booked')),
                           IconButton(
-                            tooltip: 'Delete item',
+                            tooltip: l10n.delete,
                             onPressed: () => _deleteItem(item),
                             icon: const Icon(Icons.delete_outline),
                           ),
