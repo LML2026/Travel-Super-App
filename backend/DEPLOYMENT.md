@@ -5,7 +5,7 @@ This service is prepared for a later Cloud Run deployment. Deployment and Google
 ## Runtime
 
 - Node.js 22 slim runtime image
-- Compiled entry point: `dist/src/server.js`
+- Compiled entry point: `dist/server.js`
 - Start command: `npm start`
 - Port: Cloud Run supplies `PORT`; local fallback is `8080`
 - Runtime user: non-root `node`
