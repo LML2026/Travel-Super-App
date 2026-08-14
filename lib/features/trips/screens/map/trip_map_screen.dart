@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/services/route_service.dart';
 import '../../../nearby/nearby_essentials_screen.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -8,8 +9,14 @@ import '../../models/trip.dart';
 class TripMapScreen extends StatefulWidget {
   final Trip trip;
   final List<ItineraryItem> items;
+  final TravelMode travelMode;
 
-  const TripMapScreen({super.key, required this.trip, required this.items});
+  const TripMapScreen({
+    super.key,
+    required this.trip,
+    required this.items,
+    this.travelMode = TravelMode.walking,
+  });
 
   @override
   State<TripMapScreen> createState() => _TripMapScreenState();
@@ -17,6 +24,13 @@ class TripMapScreen extends StatefulWidget {
 
 class _TripMapScreenState extends State<TripMapScreen> {
   GoogleMapController? _mapController;
+  final Map<String, RouteResult> _routes = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRoutes();
+  }
 
   List<ItineraryItem> get _locatedItems {
     return widget.items
@@ -40,6 +54,80 @@ class _TripMapScreenState extends State<TripMapScreen> {
           ),
         ),
     };
+  }
+
+  Set<Polyline> get _polylines {
+    return {
+      for (final entry in _routes.entries)
+        if (entry.value.points.length >= 2)
+          Polyline(
+            polylineId: PolylineId(entry.key),
+            points: entry.value.points
+                .map((point) => LatLng(point.latitude, point.longitude))
+                .toList(growable: false),
+            color: Theme.of(context).colorScheme.primary,
+            width: 5,
+          ),
+    };
+  }
+
+  Future<void> _loadRoutes() async {
+    final routes = <String, RouteResult>{};
+
+    await Future.wait(
+      _routePairs().map((pair) async {
+        final route = await RouteService.calculate(
+          originLatitude: pair.origin.latitude!,
+          originLongitude: pair.origin.longitude!,
+          destinationLatitude: pair.destination.latitude!,
+          destinationLongitude: pair.destination.longitude!,
+          travelMode: widget.travelMode,
+        );
+
+        if (route != null) routes[pair.key] = route;
+      }),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _routes
+        ..clear()
+        ..addAll(routes);
+    });
+  }
+
+  List<_MapRoutePair> _routePairs() {
+    final sortedItems = List<ItineraryItem>.from(widget.items)
+      ..sort((first, second) {
+        final dateComparison = first.date.compareTo(second.date);
+
+        if (dateComparison != 0) return dateComparison;
+
+        return (first.time ?? '').compareTo(second.time ?? '');
+      });
+    final pairs = <_MapRoutePair>[];
+
+    for (var index = 0; index < sortedItems.length - 1; index++) {
+      final origin = sortedItems[index];
+      final destination = sortedItems[index + 1];
+      final sameDay =
+          origin.date.year == destination.date.year &&
+          origin.date.month == destination.date.month &&
+          origin.date.day == destination.date.day;
+
+      if (!sameDay ||
+          origin.latitude == null ||
+          origin.longitude == null ||
+          destination.latitude == null ||
+          destination.longitude == null) {
+        continue;
+      }
+
+      pairs.add(_MapRoutePair(origin: origin, destination: destination));
+    }
+
+    return pairs;
   }
 
   LatLng get _initialPosition {
@@ -149,6 +237,7 @@ class _TripMapScreenState extends State<TripMapScreen> {
               zoom: locatedItems.isEmpty ? 4 : 13,
             ),
             markers: _markers,
+            polylines: _polylines,
             mapType: MapType.normal,
             compassEnabled: true,
             zoomControlsEnabled: true,
@@ -196,4 +285,13 @@ class _TripMapScreenState extends State<TripMapScreen> {
       ),
     );
   }
+}
+
+class _MapRoutePair {
+  final ItineraryItem origin;
+  final ItineraryItem destination;
+
+  const _MapRoutePair({required this.origin, required this.destination});
+
+  String get key => '${origin.id}|${destination.id}';
 }

@@ -213,6 +213,59 @@
     }
   };
 </script>
+<script>
+  window.itarevoCalculateRoute = async function(
+      originLat, originLng, destinationLat, destinationLng, travelMode) {
+    console.debug('ITAREVO route request started');
+
+    try {
+      const { Route } = await google.maps.importLibrary('routes');
+      const response = await Route.computeRoutes({
+        origin: {
+          lat: Number(originLat),
+          lng: Number(originLng)
+        },
+        destination: {
+          lat: Number(destinationLat),
+          lng: Number(destinationLng)
+        },
+        travelMode: travelMode,
+        polylineQuality: 'OVERVIEW',
+        fields: ['durationMillis', 'distanceMeters', 'path']
+      });
+      const route = response.routes?.[0];
+
+      if (!route || route.durationMillis == null ||
+          route.distanceMeters == null) {
+        console.debug('ITAREVO route result null');
+        return '';
+      }
+
+      const routePoints = route.path || [];
+      console.debug('ITAREVO route request completed');
+
+      return JSON.stringify({
+        durationMinutes: Math.max(
+          1,
+          Math.round(route.durationMillis / 60000)
+        ),
+        distanceMetres: Math.round(route.distanceMeters),
+        points: routePoints.map((point) => ({
+          latitude: typeof point.lat === 'function'
+              ? point.lat()
+              : point.lat,
+          longitude: typeof point.lng === 'function'
+              ? point.lng()
+              : point.lng
+        }))
+      });
+    } catch (error) {
+      const diagnostic = error?.code || error?.name || 'unknown';
+      console.warn('ITAREVO route request failed:', diagnostic);
+      return '';
+    }
+  };
+</script>
 </body>
 </html>
 
