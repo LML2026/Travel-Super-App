@@ -99,5 +99,7 @@
   "phraseTrain": "Où est la gare ?",
   "phraseTaxi": "Pouvez-vous appeler un taxi ?",
   "phraseReservation": "J'ai une réservation.",
-  "phraseDontUnderstand": "Je ne comprends pas."
+  "phraseDontUnderstand": "Je ne comprends pas.",
+  "authWelcome": "Connectez-vous pour continuer votre voyage.", "email": "E-mail", "password": "Mot de passe", "signIn": "Se connecter", "createAccount": "Créer un compte", "alreadyHaveAccount": "Vous avez déjà un compte ? Connectez-vous", "needAnAccount": "Besoin d'un compte ? Créez-en un", "signOut": "Se déconnecter", "account": "Compte", "authPasswordRequirements": "Le mot de passe doit contenir au moins 6 caractères.", "authInvalidEmail": "Saisissez une adresse e-mail valide.", "authInvalidCredentials": "E-mail ou mot de passe incorrect.", "authEmailAlreadyInUse": "Cet e-mail est déjà utilisé.", "authWeakPassword": "Choisissez un mot de passe plus sûr.", "authNetworkUnavailable": "Réseau indisponible. Réessayez.", "authTooManyRequests": "Trop de tentatives. Réessayez plus tard.", "authUnavailable": "L'authentification est indisponible.", "authSignOutFailed": "Déconnexion impossible. Réessayez.", "authSignUpFailed": "Impossible de créer le compte.", "authFailed": "Échec de l'authentification. Réessayez."
+  ,"showPassword": "Afficher le mot de passe", "hidePassword": "Masquer le mot de passe"
 }

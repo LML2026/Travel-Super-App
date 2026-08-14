@@ -314,4 +314,72 @@ class AppLocalizationsKa extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'ვერ ვიგებ.';
+
+  @override
+  String get authWelcome => 'შედით სისტემაში მოგზაურობის გასაგრძელებლად.';
+
+  @override
+  String get email => 'ელფოსტა';
+
+  @override
+  String get password => 'პაროლი';
+
+  @override
+  String get signIn => 'შესვლა';
+
+  @override
+  String get createAccount => 'ანგარიშის შექმნა';
+
+  @override
+  String get alreadyHaveAccount => 'უკვე გაქვთ ანგარიში? შედით';
+
+  @override
+  String get needAnAccount => 'გჭირდებათ ანგარიში? შექმენით';
+
+  @override
+  String get signOut => 'გასვლა';
+
+  @override
+  String get account => 'ანგარიში';
+
+  @override
+  String get authPasswordRequirements =>
+      'პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.';
+
+  @override
+  String get authInvalidEmail => 'შეიყვანეთ მოქმედი ელფოსტა.';
+
+  @override
+  String get authInvalidCredentials => 'ელფოსტა ან პაროლი არასწორია.';
+
+  @override
+  String get authEmailAlreadyInUse => 'ეს ელფოსტა უკვე გამოყენებულია.';
+
+  @override
+  String get authWeakPassword => 'აირჩიეთ უფრო ძლიერი პაროლი.';
+
+  @override
+  String get authNetworkUnavailable => 'ქსელი მიუწვდომელია. სცადეთ ხელახლა.';
+
+  @override
+  String get authTooManyRequests =>
+      'ძალიან ბევრი მცდელობაა. სცადეთ მოგვიანებით.';
+
+  @override
+  String get authUnavailable => 'ავთენტიფიკაცია მიუწვდომელია.';
+
+  @override
+  String get authSignOutFailed => 'გასვლა ვერ მოხერხდა.';
+
+  @override
+  String get authSignUpFailed => 'ანგარიშის შექმნა ვერ მოხერხდა.';
+
+  @override
+  String get authFailed => 'ავთენტიფიკაცია ვერ მოხერხდა.';
+
+  @override
+  String get showPassword => 'პაროლის ჩვენება';
+
+  @override
+  String get hidePassword => 'პაროლის დამალვა';
 }

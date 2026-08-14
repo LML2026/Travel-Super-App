@@ -316,4 +316,71 @@ class AppLocalizationsHy extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Ես չեմ հասկանում։';
+
+  @override
+  String get authWelcome => 'Մուտք գործեք՝ ուղևորությունը շարունակելու համար։';
+
+  @override
+  String get email => 'Էլ․ փոստ';
+
+  @override
+  String get password => 'Գաղտնաբառ';
+
+  @override
+  String get signIn => 'Մուտք գործել';
+
+  @override
+  String get createAccount => 'Ստեղծել հաշիվ';
+
+  @override
+  String get alreadyHaveAccount => 'Արդեն ունե՞ք հաշիվ։ Մուտք գործեք';
+
+  @override
+  String get needAnAccount => 'Հաշիվ է պե՞տք։ Ստեղծեք';
+
+  @override
+  String get signOut => 'Ելք';
+
+  @override
+  String get account => 'Հաշիվ';
+
+  @override
+  String get authPasswordRequirements =>
+      'Գաղտնաբառը պետք է ունենա առնվազն 6 նիշ։';
+
+  @override
+  String get authInvalidEmail => 'Մուտքագրեք վավեր էլ․ փոստ։';
+
+  @override
+  String get authInvalidCredentials => 'Էլ․ փոստը կամ գաղտնաբառը սխալ է։';
+
+  @override
+  String get authEmailAlreadyInUse => 'Այս էլ․ փոստն արդեն օգտագործվում է։';
+
+  @override
+  String get authWeakPassword => 'Ընտրեք ավելի ուժեղ գաղտնաբառ։';
+
+  @override
+  String get authNetworkUnavailable => 'Ցանցն անհասանելի է։ Փորձեք կրկին։';
+
+  @override
+  String get authTooManyRequests => 'Չափից շատ փորձեր։ Փորձեք ավելի ուշ։';
+
+  @override
+  String get authUnavailable => 'Նույնականացումը հասանելի չէ։';
+
+  @override
+  String get authSignOutFailed => 'Չհաջողվեց դուրս գալ։';
+
+  @override
+  String get authSignUpFailed => 'Չհաջողվեց ստեղծել հաշիվը։';
+
+  @override
+  String get authFailed => 'Նույնականացումը ձախողվեց։';
+
+  @override
+  String get showPassword => 'Ցուցադրել գաղտնաբառը';
+
+  @override
+  String get hidePassword => 'Թաքցնել գաղտնաբառը';
 }

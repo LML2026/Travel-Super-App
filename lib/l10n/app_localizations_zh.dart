@@ -309,6 +309,72 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => '我不明白。';
+
+  @override
+  String get authWelcome => '登录以继续您的旅程。';
+
+  @override
+  String get email => '电子邮箱';
+
+  @override
+  String get password => '密码';
+
+  @override
+  String get signIn => '登录';
+
+  @override
+  String get createAccount => '创建账户';
+
+  @override
+  String get alreadyHaveAccount => '已有账户？登录';
+
+  @override
+  String get needAnAccount => '需要账户？创建账户';
+
+  @override
+  String get signOut => '退出登录';
+
+  @override
+  String get account => '账户';
+
+  @override
+  String get authPasswordRequirements => '密码至少需要 6 个字符。';
+
+  @override
+  String get authInvalidEmail => '请输入有效的电子邮箱地址。';
+
+  @override
+  String get authInvalidCredentials => '电子邮箱或密码不正确。';
+
+  @override
+  String get authEmailAlreadyInUse => '该电子邮箱已被使用。';
+
+  @override
+  String get authWeakPassword => '请选择更强的密码。';
+
+  @override
+  String get authNetworkUnavailable => '网络不可用，请重试。';
+
+  @override
+  String get authTooManyRequests => '尝试次数过多，请稍后重试。';
+
+  @override
+  String get authUnavailable => '身份验证暂不可用。';
+
+  @override
+  String get authSignOutFailed => '无法退出登录，请重试。';
+
+  @override
+  String get authSignUpFailed => '无法创建账户。';
+
+  @override
+  String get authFailed => '身份验证失败，请重试。';
+
+  @override
+  String get showPassword => '显示密码';
+
+  @override
+  String get hidePassword => '隐藏密码';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -616,4 +682,70 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get phraseDontUnderstand => '我不明白。';
+
+  @override
+  String get authWelcome => '登录以继续您的旅程。';
+
+  @override
+  String get email => '电子邮箱';
+
+  @override
+  String get password => '密码';
+
+  @override
+  String get signIn => '登录';
+
+  @override
+  String get createAccount => '创建账户';
+
+  @override
+  String get alreadyHaveAccount => '已有账户？登录';
+
+  @override
+  String get needAnAccount => '需要账户？创建账户';
+
+  @override
+  String get signOut => '退出登录';
+
+  @override
+  String get account => '账户';
+
+  @override
+  String get authPasswordRequirements => '密码至少需要 6 个字符。';
+
+  @override
+  String get authInvalidEmail => '请输入有效的电子邮箱地址。';
+
+  @override
+  String get authInvalidCredentials => '电子邮箱或密码不正确。';
+
+  @override
+  String get authEmailAlreadyInUse => '该电子邮箱已被使用。';
+
+  @override
+  String get authWeakPassword => '请选择更强的密码。';
+
+  @override
+  String get authNetworkUnavailable => '网络不可用，请重试。';
+
+  @override
+  String get authTooManyRequests => '尝试次数过多，请稍后重试。';
+
+  @override
+  String get authUnavailable => '身份验证暂不可用。';
+
+  @override
+  String get authSignOutFailed => '无法退出登录，请重试。';
+
+  @override
+  String get authSignUpFailed => '无法创建账户。';
+
+  @override
+  String get authFailed => '身份验证失败，请重试。';
+
+  @override
+  String get showPassword => '显示密码';
+
+  @override
+  String get hidePassword => '隐藏密码';
 }

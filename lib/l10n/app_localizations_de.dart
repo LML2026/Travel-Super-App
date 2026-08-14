@@ -316,4 +316,75 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Ich verstehe nicht.';
+
+  @override
+  String get authWelcome => 'Melde dich an, um deine Reise fortzusetzen.';
+
+  @override
+  String get email => 'E-Mail';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get signIn => 'Anmelden';
+
+  @override
+  String get createAccount => 'Konto erstellen';
+
+  @override
+  String get alreadyHaveAccount => 'Schon ein Konto? Anmelden';
+
+  @override
+  String get needAnAccount => 'Noch kein Konto? Erstelle eines';
+
+  @override
+  String get signOut => 'Abmelden';
+
+  @override
+  String get account => 'Konto';
+
+  @override
+  String get authPasswordRequirements =>
+      'Das Passwort muss mindestens 6 Zeichen enthalten.';
+
+  @override
+  String get authInvalidEmail => 'Gib eine gültige E-Mail-Adresse ein.';
+
+  @override
+  String get authInvalidCredentials => 'E-Mail oder Passwort ist falsch.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Diese E-Mail wird bereits verwendet.';
+
+  @override
+  String get authWeakPassword => 'Wähle ein stärkeres Passwort.';
+
+  @override
+  String get authNetworkUnavailable =>
+      'Netzwerk nicht verfügbar. Versuche es erneut.';
+
+  @override
+  String get authTooManyRequests =>
+      'Zu viele Versuche. Versuche es später erneut.';
+
+  @override
+  String get authUnavailable =>
+      'Authentifizierung ist derzeit nicht verfügbar.';
+
+  @override
+  String get authSignOutFailed => 'Abmelden nicht möglich. Versuche es erneut.';
+
+  @override
+  String get authSignUpFailed => 'Konto konnte nicht erstellt werden.';
+
+  @override
+  String get authFailed =>
+      'Authentifizierung fehlgeschlagen. Versuche es erneut.';
+
+  @override
+  String get showPassword => 'Passwort anzeigen';
+
+  @override
+  String get hidePassword => 'Passwort ausblenden';
 }

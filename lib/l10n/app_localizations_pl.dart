@@ -314,4 +314,71 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Nie rozumiem.';
+
+  @override
+  String get authWelcome => 'Zaloguj się, aby kontynuować podróż.';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get password => 'Hasło';
+
+  @override
+  String get signIn => 'Zaloguj się';
+
+  @override
+  String get createAccount => 'Utwórz konto';
+
+  @override
+  String get alreadyHaveAccount => 'Masz już konto? Zaloguj się';
+
+  @override
+  String get needAnAccount => 'Potrzebujesz konta? Utwórz je';
+
+  @override
+  String get signOut => 'Wyloguj się';
+
+  @override
+  String get account => 'Konto';
+
+  @override
+  String get authPasswordRequirements =>
+      'Hasło musi mieć co najmniej 6 znaków.';
+
+  @override
+  String get authInvalidEmail => 'Wpisz prawidłowy adres e-mail.';
+
+  @override
+  String get authInvalidCredentials => 'E-mail lub hasło są nieprawidłowe.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Ten e-mail jest już używany.';
+
+  @override
+  String get authWeakPassword => 'Wybierz silniejsze hasło.';
+
+  @override
+  String get authNetworkUnavailable => 'Sieć niedostępna. Spróbuj ponownie.';
+
+  @override
+  String get authTooManyRequests => 'Zbyt wiele prób. Spróbuj później.';
+
+  @override
+  String get authUnavailable => 'Uwierzytelnianie jest niedostępne.';
+
+  @override
+  String get authSignOutFailed => 'Nie udało się wylogować.';
+
+  @override
+  String get authSignUpFailed => 'Nie udało się utworzyć konta.';
+
+  @override
+  String get authFailed => 'Uwierzytelnianie nie powiodło się.';
+
+  @override
+  String get showPassword => 'Pokaż hasło';
+
+  @override
+  String get hidePassword => 'Ukryj hasło';
 }

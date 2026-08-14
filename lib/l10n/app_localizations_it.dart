@@ -314,4 +314,71 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Non capisco.';
+
+  @override
+  String get authWelcome => 'Accedi per continuare il tuo viaggio.';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get signIn => 'Accedi';
+
+  @override
+  String get createAccount => 'Crea account';
+
+  @override
+  String get alreadyHaveAccount => 'Hai già un account? Accedi';
+
+  @override
+  String get needAnAccount => 'Ti serve un account? Creane uno';
+
+  @override
+  String get signOut => 'Esci';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get authPasswordRequirements =>
+      'La password deve contenere almeno 6 caratteri.';
+
+  @override
+  String get authInvalidEmail => 'Inserisci un indirizzo email valido.';
+
+  @override
+  String get authInvalidCredentials => 'Email o password non corretta.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Questa email è già in uso.';
+
+  @override
+  String get authWeakPassword => 'Scegli una password più sicura.';
+
+  @override
+  String get authNetworkUnavailable => 'Rete non disponibile. Riprova.';
+
+  @override
+  String get authTooManyRequests => 'Troppi tentativi. Riprova più tardi.';
+
+  @override
+  String get authUnavailable => 'Autenticazione non disponibile.';
+
+  @override
+  String get authSignOutFailed => 'Impossibile uscire. Riprova.';
+
+  @override
+  String get authSignUpFailed => 'Impossibile creare l\'account.';
+
+  @override
+  String get authFailed => 'Autenticazione non riuscita. Riprova.';
+
+  @override
+  String get showPassword => 'Mostra password';
+
+  @override
+  String get hidePassword => 'Nascondi password';
 }

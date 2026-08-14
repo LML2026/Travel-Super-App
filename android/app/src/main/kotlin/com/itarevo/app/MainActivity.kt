@@ -1,4 +1,4 @@
-package com.example.itarevo
+package com.itarevo.app
 
 import io.flutter.embedding.android.FlutterActivity
 

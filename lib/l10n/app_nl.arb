@@ -99,5 +99,6 @@
   "phraseTrain": "Waar is het treinstation?",
   "phraseTaxi": "Kun je een taxi bellen?",
   "phraseReservation": "Ik heb een reservering.",
-  "phraseDontUnderstand": "Ik begrijp het niet."
+  "phraseDontUnderstand": "Ik begrijp het niet.", "authWelcome": "Log in om je reis voort te zetten.", "email": "E-mail", "password": "Wachtwoord", "signIn": "Inloggen", "createAccount": "Account maken", "alreadyHaveAccount": "Heb je al een account? Log in", "needAnAccount": "Een account nodig? Maak er een", "signOut": "Uitloggen", "account": "Account", "authPasswordRequirements": "Het wachtwoord moet minstens 6 tekens bevatten.", "authInvalidEmail": "Voer een geldig e-mailadres in.", "authInvalidCredentials": "E-mail of wachtwoord is onjuist.", "authEmailAlreadyInUse": "Dit e-mailadres is al in gebruik.", "authWeakPassword": "Kies een sterker wachtwoord.", "authNetworkUnavailable": "Netwerk niet beschikbaar. Probeer het opnieuw.", "authTooManyRequests": "Te veel pogingen. Probeer het later opnieuw.", "authUnavailable": "Authenticatie is niet beschikbaar.", "authSignOutFailed": "Uitloggen is mislukt.", "authSignUpFailed": "Account maken is mislukt.", "authFailed": "Authenticatie mislukt."
+  ,"showPassword": "Wachtwoord tonen", "hidePassword": "Wachtwoord verbergen"
 }

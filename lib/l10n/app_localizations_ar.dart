@@ -311,4 +311,72 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'لا أفهم.';
+
+  @override
+  String get authWelcome => 'سجّل الدخول لمتابعة رحلتك.';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get signIn => 'تسجيل الدخول';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get alreadyHaveAccount => 'لديك حساب؟ سجّل الدخول';
+
+  @override
+  String get needAnAccount => 'تحتاج إلى حساب؟ أنشئ حساباً';
+
+  @override
+  String get signOut => 'تسجيل الخروج';
+
+  @override
+  String get account => 'الحساب';
+
+  @override
+  String get authPasswordRequirements =>
+      'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.';
+
+  @override
+  String get authInvalidEmail => 'أدخل عنوان بريد إلكتروني صالحاً.';
+
+  @override
+  String get authInvalidCredentials =>
+      'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+
+  @override
+  String get authEmailAlreadyInUse => 'هذا البريد الإلكتروني مستخدم بالفعل.';
+
+  @override
+  String get authWeakPassword => 'اختر كلمة مرور أقوى.';
+
+  @override
+  String get authNetworkUnavailable => 'الشبكة غير متاحة. حاول مرة أخرى.';
+
+  @override
+  String get authTooManyRequests => 'محاولات كثيرة جداً. حاول لاحقاً.';
+
+  @override
+  String get authUnavailable => 'المصادقة غير متاحة حالياً.';
+
+  @override
+  String get authSignOutFailed => 'تعذّر تسجيل الخروج.';
+
+  @override
+  String get authSignUpFailed => 'تعذّر إنشاء الحساب.';
+
+  @override
+  String get authFailed => 'فشلت المصادقة. حاول مرة أخرى.';
+
+  @override
+  String get showPassword => 'إظهار كلمة المرور';
+
+  @override
+  String get hidePassword => 'إخفاء كلمة المرور';
 }

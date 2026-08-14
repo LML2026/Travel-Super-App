@@ -99,5 +99,6 @@
   "phraseTrain": "火车站在哪里？",
   "phraseTaxi": "可以帮我叫出租车吗？",
   "phraseReservation": "我有预订。",
-  "phraseDontUnderstand": "我不明白。"
+  "phraseDontUnderstand": "我不明白。", "authWelcome": "登录以继续您的旅程。", "email": "电子邮箱", "password": "密码", "signIn": "登录", "createAccount": "创建账户", "alreadyHaveAccount": "已有账户？登录", "needAnAccount": "需要账户？创建账户", "signOut": "退出登录", "account": "账户", "authPasswordRequirements": "密码至少需要 6 个字符。", "authInvalidEmail": "请输入有效的电子邮箱地址。", "authInvalidCredentials": "电子邮箱或密码不正确。", "authEmailAlreadyInUse": "该电子邮箱已被使用。", "authWeakPassword": "请选择更强的密码。", "authNetworkUnavailable": "网络不可用，请重试。", "authTooManyRequests": "尝试次数过多，请稍后重试。", "authUnavailable": "身份验证暂不可用。", "authSignOutFailed": "无法退出登录，请重试。", "authSignUpFailed": "无法创建账户。", "authFailed": "身份验证失败，请重试。"
+  ,"showPassword": "显示密码", "hidePassword": "隐藏密码"
 }

@@ -99,5 +99,6 @@
   "phraseTrain": "ایستگاه قطار کجاست؟",
   "phraseTaxi": "می‌توانید تاکسی خبر کنید؟",
   "phraseReservation": "رزرو دارم.",
-  "phraseDontUnderstand": "متوجه نمی‌شوم."
+  "phraseDontUnderstand": "متوجه نمی‌شوم.", "authWelcome": "برای ادامه سفر خود وارد شوید.", "email": "ایمیل", "password": "رمز عبور", "signIn": "ورود", "createAccount": "ایجاد حساب", "alreadyHaveAccount": "حساب دارید؟ وارد شوید", "needAnAccount": "حساب ندارید؟ ایجاد کنید", "signOut": "خروج", "account": "حساب", "authPasswordRequirements": "رمز عبور باید حداقل ۶ نویسه داشته باشد.", "authInvalidEmail": "یک ایمیل معتبر وارد کنید.", "authInvalidCredentials": "ایمیل یا رمز عبور نادرست است.", "authEmailAlreadyInUse": "این ایمیل قبلاً استفاده شده است.", "authWeakPassword": "رمز عبور قوی‌تری انتخاب کنید.", "authNetworkUnavailable": "شبکه در دسترس نیست. دوباره تلاش کنید.", "authTooManyRequests": "تلاش‌های زیادی انجام شده است. بعداً دوباره تلاش کنید.", "authUnavailable": "احراز هویت در دسترس نیست.", "authSignOutFailed": "خروج انجام نشد.", "authSignUpFailed": "ایجاد حساب انجام نشد.", "authFailed": "احراز هویت ناموفق بود."
+  ,"showPassword": "نمایش رمز عبور", "hidePassword": "پنهان کردن رمز عبور"
 }

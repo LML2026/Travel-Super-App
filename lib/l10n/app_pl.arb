@@ -99,5 +99,6 @@
   "phraseTrain": "Gdzie jest dworzec?",
   "phraseTaxi": "Czy możesz wezwać taksówkę?",
   "phraseReservation": "Mam rezerwację.",
-  "phraseDontUnderstand": "Nie rozumiem."
+  "phraseDontUnderstand": "Nie rozumiem.", "authWelcome": "Zaloguj się, aby kontynuować podróż.", "email": "E-mail", "password": "Hasło", "signIn": "Zaloguj się", "createAccount": "Utwórz konto", "alreadyHaveAccount": "Masz już konto? Zaloguj się", "needAnAccount": "Potrzebujesz konta? Utwórz je", "signOut": "Wyloguj się", "account": "Konto", "authPasswordRequirements": "Hasło musi mieć co najmniej 6 znaków.", "authInvalidEmail": "Wpisz prawidłowy adres e-mail.", "authInvalidCredentials": "E-mail lub hasło są nieprawidłowe.", "authEmailAlreadyInUse": "Ten e-mail jest już używany.", "authWeakPassword": "Wybierz silniejsze hasło.", "authNetworkUnavailable": "Sieć niedostępna. Spróbuj ponownie.", "authTooManyRequests": "Zbyt wiele prób. Spróbuj później.", "authUnavailable": "Uwierzytelnianie jest niedostępne.", "authSignOutFailed": "Nie udało się wylogować.", "authSignUpFailed": "Nie udało się utworzyć konta.", "authFailed": "Uwierzytelnianie nie powiodło się."
+  ,"showPassword": "Pokaż hasło", "hidePassword": "Ukryj hasło"
 }

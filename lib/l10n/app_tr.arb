@@ -99,5 +99,6 @@
   "phraseTrain": "Tren istasyonu nerede?",
   "phraseTaxi": "Taksi çağırabilir misiniz?",
   "phraseReservation": "Rezervasyonum var.",
-  "phraseDontUnderstand": "Anlamıyorum."
+  "phraseDontUnderstand": "Anlamıyorum.", "authWelcome": "Yolculuğunuza devam etmek için giriş yapın.", "email": "E-posta", "password": "Şifre", "signIn": "Giriş yap", "createAccount": "Hesap oluştur", "alreadyHaveAccount": "Zaten hesabınız var mı? Giriş yapın", "needAnAccount": "Hesabınız yok mu? Oluşturun", "signOut": "Çıkış yap", "account": "Hesap", "authPasswordRequirements": "Şifre en az 6 karakter olmalıdır.", "authInvalidEmail": "Geçerli bir e-posta girin.", "authInvalidCredentials": "E-posta veya şifre hatalı.", "authEmailAlreadyInUse": "Bu e-posta zaten kullanılıyor.", "authWeakPassword": "Daha güçlü bir şifre seçin.", "authNetworkUnavailable": "Ağ kullanılamıyor. Tekrar deneyin.", "authTooManyRequests": "Çok fazla deneme yapıldı. Daha sonra tekrar deneyin.", "authUnavailable": "Kimlik doğrulama kullanılamıyor.", "authSignOutFailed": "Çıkış yapılamadı.", "authSignUpFailed": "Hesap oluşturulamadı.", "authFailed": "Kimlik doğrulama başarısız."
+  ,"showPassword": "Şifreyi göster", "hidePassword": "Şifreyi gizle"
 }

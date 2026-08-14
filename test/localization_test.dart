@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:itarevo/core/auth/auth_service.dart';
+import 'package:itarevo/core/auth/auth_state.dart';
+import 'package:itarevo/core/auth/auth_user.dart';
 import 'package:itarevo/core/localization/app_locale.dart';
 import 'package:itarevo/core/localization/locale_preferences.dart';
 import 'package:itarevo/features/trips/models/trip.dart';
@@ -229,7 +232,12 @@ void main() {
   ) async {
     final controller = AppLocaleController();
 
-    await tester.pumpWidget(ItarevoApp(controller: controller));
+    await tester.pumpWidget(
+      ItarevoApp(
+        controller: controller,
+        authService: const _SignedInAuthService(),
+      ),
+    );
 
     for (final locale in const [
       Locale('en'),
@@ -257,4 +265,37 @@ void main() {
 
     expect(find.text('Viaggi'), findsWidgets);
   });
+}
+
+class _SignedInAuthService implements AuthService {
+  const _SignedInAuthService();
+
+  @override
+  AuthUser? get currentUser =>
+      const AuthUser(uid: 'local-test-user', email: 'test@example.com');
+
+  @override
+  Stream<AuthState> get authStateChanges => Stream.value(
+    const AuthState.signedIn(
+      AuthUser(uid: 'local-test-user', email: 'test@example.com'),
+    ),
+  );
+
+  @override
+  Future<AuthUser> signInWithEmailPassword({
+    required String email,
+    required String password,
+  }) async => currentUser!;
+
+  @override
+  Future<AuthUser> createAccount({
+    required String email,
+    required String password,
+  }) async => currentUser!;
+
+  @override
+  Future<void> signOut() async {}
+
+  @override
+  Future<String?> getIdToken() async => null;
 }

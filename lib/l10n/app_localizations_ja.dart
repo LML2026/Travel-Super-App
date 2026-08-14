@@ -309,4 +309,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => '分かりません。';
+
+  @override
+  String get authWelcome => 'ログインして旅を続けましょう。';
+
+  @override
+  String get email => 'メールアドレス';
+
+  @override
+  String get password => 'パスワード';
+
+  @override
+  String get signIn => 'ログイン';
+
+  @override
+  String get createAccount => 'アカウントを作成';
+
+  @override
+  String get alreadyHaveAccount => 'アカウントをお持ちですか？ログイン';
+
+  @override
+  String get needAnAccount => 'アカウントが必要ですか？作成';
+
+  @override
+  String get signOut => 'ログアウト';
+
+  @override
+  String get account => 'アカウント';
+
+  @override
+  String get authPasswordRequirements => 'パスワードは6文字以上必要です。';
+
+  @override
+  String get authInvalidEmail => '有効なメールアドレスを入力してください。';
+
+  @override
+  String get authInvalidCredentials => 'メールアドレスまたはパスワードが正しくありません。';
+
+  @override
+  String get authEmailAlreadyInUse => 'そのメールアドレスはすでに使用されています。';
+
+  @override
+  String get authWeakPassword => 'より強いパスワードを選択してください。';
+
+  @override
+  String get authNetworkUnavailable => 'ネットワークを利用できません。再試行してください。';
+
+  @override
+  String get authTooManyRequests => '試行回数が多すぎます。後でもう一度お試しください。';
+
+  @override
+  String get authUnavailable => '認証を利用できません。';
+
+  @override
+  String get authSignOutFailed => 'ログアウトできませんでした。';
+
+  @override
+  String get authSignUpFailed => 'アカウントを作成できませんでした。';
+
+  @override
+  String get authFailed => '認証に失敗しました。';
+
+  @override
+  String get showPassword => 'パスワードを表示';
+
+  @override
+  String get hidePassword => 'パスワードを隠す';
 }

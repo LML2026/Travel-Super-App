@@ -99,5 +99,6 @@
   "phraseTrain": "Де залізничний вокзал?",
   "phraseTaxi": "Можете викликати таксі?",
   "phraseReservation": "У мене є бронювання.",
-  "phraseDontUnderstand": "Я не розумію."
+  "phraseDontUnderstand": "Я не розумію.", "authWelcome": "Увійдіть, щоб продовжити подорож.", "email": "Електронна пошта", "password": "Пароль", "signIn": "Увійти", "createAccount": "Створити обліковий запис", "alreadyHaveAccount": "Вже маєте обліковий запис? Увійдіть", "needAnAccount": "Потрібен обліковий запис? Створіть", "signOut": "Вийти", "account": "Обліковий запис", "authPasswordRequirements": "Пароль має містити щонайменше 6 символів.", "authInvalidEmail": "Введіть дійсну електронну пошту.", "authInvalidCredentials": "Електронна пошта або пароль неправильні.", "authEmailAlreadyInUse": "Ця електронна пошта вже використовується.", "authWeakPassword": "Виберіть надійніший пароль.", "authNetworkUnavailable": "Мережа недоступна. Спробуйте ще раз.", "authTooManyRequests": "Забагато спроб. Спробуйте пізніше.", "authUnavailable": "Автентифікація недоступна.", "authSignOutFailed": "Не вдалося вийти.", "authSignUpFailed": "Не вдалося створити обліковий запис.", "authFailed": "Помилка автентифікації."
+  ,"showPassword": "Показати пароль", "hidePassword": "Приховати пароль"
 }

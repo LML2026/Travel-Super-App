@@ -99,5 +99,6 @@
   "phraseTrain": "სად არის მატარებლის სადგური?",
   "phraseTaxi": "შეგიძლიათ ტაქსი გამოიძახოთ?",
   "phraseReservation": "ჯავშანი მაქვს.",
-  "phraseDontUnderstand": "ვერ ვიგებ."
+  "phraseDontUnderstand": "ვერ ვიგებ.", "authWelcome": "შედით სისტემაში მოგზაურობის გასაგრძელებლად.", "email": "ელფოსტა", "password": "პაროლი", "signIn": "შესვლა", "createAccount": "ანგარიშის შექმნა", "alreadyHaveAccount": "უკვე გაქვთ ანგარიში? შედით", "needAnAccount": "გჭირდებათ ანგარიში? შექმენით", "signOut": "გასვლა", "account": "ანგარიში", "authPasswordRequirements": "პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.", "authInvalidEmail": "შეიყვანეთ მოქმედი ელფოსტა.", "authInvalidCredentials": "ელფოსტა ან პაროლი არასწორია.", "authEmailAlreadyInUse": "ეს ელფოსტა უკვე გამოყენებულია.", "authWeakPassword": "აირჩიეთ უფრო ძლიერი პაროლი.", "authNetworkUnavailable": "ქსელი მიუწვდომელია. სცადეთ ხელახლა.", "authTooManyRequests": "ძალიან ბევრი მცდელობაა. სცადეთ მოგვიანებით.", "authUnavailable": "ავთენტიფიკაცია მიუწვდომელია.", "authSignOutFailed": "გასვლა ვერ მოხერხდა.", "authSignUpFailed": "ანგარიშის შექმნა ვერ მოხერხდა.", "authFailed": "ავთენტიფიკაცია ვერ მოხერხდა."
+  ,"showPassword": "პაროლის ჩვენება", "hidePassword": "პაროლის დამალვა"
 }

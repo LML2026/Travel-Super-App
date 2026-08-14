@@ -315,4 +315,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Je ne comprends pas.';
+
+  @override
+  String get authWelcome => 'Connectez-vous pour continuer votre voyage.';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get password => 'Mot de passe';
+
+  @override
+  String get signIn => 'Se connecter';
+
+  @override
+  String get createAccount => 'Créer un compte';
+
+  @override
+  String get alreadyHaveAccount => 'Vous avez déjà un compte ? Connectez-vous';
+
+  @override
+  String get needAnAccount => 'Besoin d\'un compte ? Créez-en un';
+
+  @override
+  String get signOut => 'Se déconnecter';
+
+  @override
+  String get account => 'Compte';
+
+  @override
+  String get authPasswordRequirements =>
+      'Le mot de passe doit contenir au moins 6 caractères.';
+
+  @override
+  String get authInvalidEmail => 'Saisissez une adresse e-mail valide.';
+
+  @override
+  String get authInvalidCredentials => 'E-mail ou mot de passe incorrect.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Cet e-mail est déjà utilisé.';
+
+  @override
+  String get authWeakPassword => 'Choisissez un mot de passe plus sûr.';
+
+  @override
+  String get authNetworkUnavailable => 'Réseau indisponible. Réessayez.';
+
+  @override
+  String get authTooManyRequests => 'Trop de tentatives. Réessayez plus tard.';
+
+  @override
+  String get authUnavailable => 'L\'authentification est indisponible.';
+
+  @override
+  String get authSignOutFailed => 'Déconnexion impossible. Réessayez.';
+
+  @override
+  String get authSignUpFailed => 'Impossible de créer le compte.';
+
+  @override
+  String get authFailed => 'Échec de l\'authentification. Réessayez.';
+
+  @override
+  String get showPassword => 'Afficher le mot de passe';
+
+  @override
+  String get hidePassword => 'Masquer le mot de passe';
 }

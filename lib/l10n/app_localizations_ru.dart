@@ -312,4 +312,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Я не понимаю.';
+
+  @override
+  String get authWelcome => 'Войдите, чтобы продолжить путешествие.';
+
+  @override
+  String get email => 'Электронная почта';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get signIn => 'Войти';
+
+  @override
+  String get createAccount => 'Создать аккаунт';
+
+  @override
+  String get alreadyHaveAccount => 'Уже есть аккаунт? Войти';
+
+  @override
+  String get needAnAccount => 'Нужен аккаунт? Создать';
+
+  @override
+  String get signOut => 'Выйти';
+
+  @override
+  String get account => 'Аккаунт';
+
+  @override
+  String get authPasswordRequirements =>
+      'Пароль должен содержать не менее 6 символов.';
+
+  @override
+  String get authInvalidEmail =>
+      'Введите действительный адрес электронной почты.';
+
+  @override
+  String get authInvalidCredentials => 'Неверная почта или пароль.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Эта почта уже используется.';
+
+  @override
+  String get authWeakPassword => 'Выберите более надежный пароль.';
+
+  @override
+  String get authNetworkUnavailable => 'Сеть недоступна. Попробуйте снова.';
+
+  @override
+  String get authTooManyRequests => 'Слишком много попыток. Попробуйте позже.';
+
+  @override
+  String get authUnavailable => 'Аутентификация сейчас недоступна.';
+
+  @override
+  String get authSignOutFailed => 'Не удалось выйти. Попробуйте снова.';
+
+  @override
+  String get authSignUpFailed => 'Не удалось создать аккаунт.';
+
+  @override
+  String get authFailed => 'Ошибка аутентификации. Попробуйте снова.';
+
+  @override
+  String get showPassword => 'Показать пароль';
+
+  @override
+  String get hidePassword => 'Скрыть пароль';
 }

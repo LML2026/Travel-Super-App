@@ -309,4 +309,70 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => '이해하지 못했어요.';
+
+  @override
+  String get authWelcome => '로그인하여 여행을 계속하세요.';
+
+  @override
+  String get email => '이메일';
+
+  @override
+  String get password => '비밀번호';
+
+  @override
+  String get signIn => '로그인';
+
+  @override
+  String get createAccount => '계정 만들기';
+
+  @override
+  String get alreadyHaveAccount => '계정이 있나요? 로그인';
+
+  @override
+  String get needAnAccount => '계정이 필요한가요? 만들기';
+
+  @override
+  String get signOut => '로그아웃';
+
+  @override
+  String get account => '계정';
+
+  @override
+  String get authPasswordRequirements => '비밀번호는 6자 이상이어야 합니다.';
+
+  @override
+  String get authInvalidEmail => '유효한 이메일을 입력하세요.';
+
+  @override
+  String get authInvalidCredentials => '이메일 또는 비밀번호가 올바르지 않습니다.';
+
+  @override
+  String get authEmailAlreadyInUse => '이미 사용 중인 이메일입니다.';
+
+  @override
+  String get authWeakPassword => '더 강한 비밀번호를 선택하세요.';
+
+  @override
+  String get authNetworkUnavailable => '네트워크를 사용할 수 없습니다.';
+
+  @override
+  String get authTooManyRequests => '시도가 너무 많습니다. 나중에 다시 시도하세요.';
+
+  @override
+  String get authUnavailable => '인증을 사용할 수 없습니다.';
+
+  @override
+  String get authSignOutFailed => '로그아웃하지 못했습니다.';
+
+  @override
+  String get authSignUpFailed => '계정을 만들지 못했습니다.';
+
+  @override
+  String get authFailed => '인증에 실패했습니다.';
+
+  @override
+  String get showPassword => '비밀번호 표시';
+
+  @override
+  String get hidePassword => '비밀번호 숨기기';
 }

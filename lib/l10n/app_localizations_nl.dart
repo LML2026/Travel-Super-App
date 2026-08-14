@@ -314,4 +314,73 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Ik begrijp het niet.';
+
+  @override
+  String get authWelcome => 'Log in om je reis voort te zetten.';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get password => 'Wachtwoord';
+
+  @override
+  String get signIn => 'Inloggen';
+
+  @override
+  String get createAccount => 'Account maken';
+
+  @override
+  String get alreadyHaveAccount => 'Heb je al een account? Log in';
+
+  @override
+  String get needAnAccount => 'Een account nodig? Maak er een';
+
+  @override
+  String get signOut => 'Uitloggen';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get authPasswordRequirements =>
+      'Het wachtwoord moet minstens 6 tekens bevatten.';
+
+  @override
+  String get authInvalidEmail => 'Voer een geldig e-mailadres in.';
+
+  @override
+  String get authInvalidCredentials => 'E-mail of wachtwoord is onjuist.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Dit e-mailadres is al in gebruik.';
+
+  @override
+  String get authWeakPassword => 'Kies een sterker wachtwoord.';
+
+  @override
+  String get authNetworkUnavailable =>
+      'Netwerk niet beschikbaar. Probeer het opnieuw.';
+
+  @override
+  String get authTooManyRequests =>
+      'Te veel pogingen. Probeer het later opnieuw.';
+
+  @override
+  String get authUnavailable => 'Authenticatie is niet beschikbaar.';
+
+  @override
+  String get authSignOutFailed => 'Uitloggen is mislukt.';
+
+  @override
+  String get authSignUpFailed => 'Account maken is mislukt.';
+
+  @override
+  String get authFailed => 'Authenticatie mislukt.';
+
+  @override
+  String get showPassword => 'Wachtwoord tonen';
+
+  @override
+  String get hidePassword => 'Wachtwoord verbergen';
 }

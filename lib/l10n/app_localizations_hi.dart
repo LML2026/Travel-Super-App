@@ -314,4 +314,73 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'मैं समझ नहीं पा रहा हूँ।';
+
+  @override
+  String get authWelcome => 'अपनी यात्रा जारी रखने के लिए साइन इन करें।';
+
+  @override
+  String get email => 'ईमेल';
+
+  @override
+  String get password => 'पासवर्ड';
+
+  @override
+  String get signIn => 'साइन इन करें';
+
+  @override
+  String get createAccount => 'खाता बनाएं';
+
+  @override
+  String get alreadyHaveAccount => 'पहले से खाता है? साइन इन करें';
+
+  @override
+  String get needAnAccount => 'खाता चाहिए? बनाएं';
+
+  @override
+  String get signOut => 'साइन आउट करें';
+
+  @override
+  String get account => 'खाता';
+
+  @override
+  String get authPasswordRequirements =>
+      'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।';
+
+  @override
+  String get authInvalidEmail => 'मान्य ईमेल पता दर्ज करें।';
+
+  @override
+  String get authInvalidCredentials => 'ईमेल या पासवर्ड गलत है।';
+
+  @override
+  String get authEmailAlreadyInUse => 'यह ईमेल पहले से उपयोग में है।';
+
+  @override
+  String get authWeakPassword => 'मज़बूत पासवर्ड चुनें।';
+
+  @override
+  String get authNetworkUnavailable =>
+      'नेटवर्क उपलब्ध नहीं है। फिर से प्रयास करें।';
+
+  @override
+  String get authTooManyRequests =>
+      'बहुत अधिक प्रयास। बाद में फिर प्रयास करें।';
+
+  @override
+  String get authUnavailable => 'प्रमाणीकरण उपलब्ध नहीं है।';
+
+  @override
+  String get authSignOutFailed => 'साइन आउट नहीं हो सका।';
+
+  @override
+  String get authSignUpFailed => 'खाता नहीं बनाया जा सका।';
+
+  @override
+  String get authFailed => 'प्रमाणीकरण विफल हुआ।';
+
+  @override
+  String get showPassword => 'पासवर्ड दिखाएं';
+
+  @override
+  String get hidePassword => 'पासवर्ड छिपाएं';
 }

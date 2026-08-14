@@ -99,5 +99,7 @@
   "phraseTrain": "Wo ist der Bahnhof?",
   "phraseTaxi": "Kannst du ein Taxi rufen?",
   "phraseReservation": "Ich habe eine Reservierung.",
-  "phraseDontUnderstand": "Ich verstehe nicht."
+  "phraseDontUnderstand": "Ich verstehe nicht.",
+  "authWelcome": "Melde dich an, um deine Reise fortzusetzen.", "email": "E-Mail", "password": "Passwort", "signIn": "Anmelden", "createAccount": "Konto erstellen", "alreadyHaveAccount": "Schon ein Konto? Anmelden", "needAnAccount": "Noch kein Konto? Erstelle eines", "signOut": "Abmelden", "account": "Konto", "authPasswordRequirements": "Das Passwort muss mindestens 6 Zeichen enthalten.", "authInvalidEmail": "Gib eine gültige E-Mail-Adresse ein.", "authInvalidCredentials": "E-Mail oder Passwort ist falsch.", "authEmailAlreadyInUse": "Diese E-Mail wird bereits verwendet.", "authWeakPassword": "Wähle ein stärkeres Passwort.", "authNetworkUnavailable": "Netzwerk nicht verfügbar. Versuche es erneut.", "authTooManyRequests": "Zu viele Versuche. Versuche es später erneut.", "authUnavailable": "Authentifizierung ist derzeit nicht verfügbar.", "authSignOutFailed": "Abmelden nicht möglich. Versuche es erneut.", "authSignUpFailed": "Konto konnte nicht erstellt werden.", "authFailed": "Authentifizierung fehlgeschlagen. Versuche es erneut."
+  ,"showPassword": "Passwort anzeigen", "hidePassword": "Passwort ausblenden"
 }

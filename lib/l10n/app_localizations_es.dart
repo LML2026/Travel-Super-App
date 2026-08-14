@@ -314,4 +314,72 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'No entiendo.';
+
+  @override
+  String get authWelcome => 'Inicia sesión para continuar tu viaje.';
+
+  @override
+  String get email => 'Correo electrónico';
+
+  @override
+  String get password => 'Contraseña';
+
+  @override
+  String get signIn => 'Iniciar sesión';
+
+  @override
+  String get createAccount => 'Crear cuenta';
+
+  @override
+  String get alreadyHaveAccount => '¿Ya tienes una cuenta? Inicia sesión';
+
+  @override
+  String get needAnAccount => '¿Necesitas una cuenta? Créala';
+
+  @override
+  String get signOut => 'Cerrar sesión';
+
+  @override
+  String get account => 'Cuenta';
+
+  @override
+  String get authPasswordRequirements =>
+      'La contraseña debe tener al menos 6 caracteres.';
+
+  @override
+  String get authInvalidEmail => 'Introduce un correo electrónico válido.';
+
+  @override
+  String get authInvalidCredentials =>
+      'El correo o la contraseña no son correctos.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Ese correo ya está en uso.';
+
+  @override
+  String get authWeakPassword => 'Elige una contraseña más segura.';
+
+  @override
+  String get authNetworkUnavailable => 'Red no disponible. Inténtalo de nuevo.';
+
+  @override
+  String get authTooManyRequests => 'Demasiados intentos. Inténtalo más tarde.';
+
+  @override
+  String get authUnavailable => 'La autenticación no está disponible.';
+
+  @override
+  String get authSignOutFailed => 'No se pudo cerrar la sesión.';
+
+  @override
+  String get authSignUpFailed => 'No se pudo crear la cuenta.';
+
+  @override
+  String get authFailed => 'La autenticación falló. Inténtalo de nuevo.';
+
+  @override
+  String get showPassword => 'Mostrar contraseña';
+
+  @override
+  String get hidePassword => 'Ocultar contraseña';
 }

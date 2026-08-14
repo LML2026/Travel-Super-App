@@ -313,4 +313,72 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'متوجه نمی‌شوم.';
+
+  @override
+  String get authWelcome => 'برای ادامه سفر خود وارد شوید.';
+
+  @override
+  String get email => 'ایمیل';
+
+  @override
+  String get password => 'رمز عبور';
+
+  @override
+  String get signIn => 'ورود';
+
+  @override
+  String get createAccount => 'ایجاد حساب';
+
+  @override
+  String get alreadyHaveAccount => 'حساب دارید؟ وارد شوید';
+
+  @override
+  String get needAnAccount => 'حساب ندارید؟ ایجاد کنید';
+
+  @override
+  String get signOut => 'خروج';
+
+  @override
+  String get account => 'حساب';
+
+  @override
+  String get authPasswordRequirements =>
+      'رمز عبور باید حداقل ۶ نویسه داشته باشد.';
+
+  @override
+  String get authInvalidEmail => 'یک ایمیل معتبر وارد کنید.';
+
+  @override
+  String get authInvalidCredentials => 'ایمیل یا رمز عبور نادرست است.';
+
+  @override
+  String get authEmailAlreadyInUse => 'این ایمیل قبلاً استفاده شده است.';
+
+  @override
+  String get authWeakPassword => 'رمز عبور قوی‌تری انتخاب کنید.';
+
+  @override
+  String get authNetworkUnavailable => 'شبکه در دسترس نیست. دوباره تلاش کنید.';
+
+  @override
+  String get authTooManyRequests =>
+      'تلاش‌های زیادی انجام شده است. بعداً دوباره تلاش کنید.';
+
+  @override
+  String get authUnavailable => 'احراز هویت در دسترس نیست.';
+
+  @override
+  String get authSignOutFailed => 'خروج انجام نشد.';
+
+  @override
+  String get authSignUpFailed => 'ایجاد حساب انجام نشد.';
+
+  @override
+  String get authFailed => 'احراز هویت ناموفق بود.';
+
+  @override
+  String get showPassword => 'نمایش رمز عبور';
+
+  @override
+  String get hidePassword => 'پنهان کردن رمز عبور';
 }

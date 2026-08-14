@@ -313,4 +313,71 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Anlamıyorum.';
+
+  @override
+  String get authWelcome => 'Yolculuğunuza devam etmek için giriş yapın.';
+
+  @override
+  String get email => 'E-posta';
+
+  @override
+  String get password => 'Şifre';
+
+  @override
+  String get signIn => 'Giriş yap';
+
+  @override
+  String get createAccount => 'Hesap oluştur';
+
+  @override
+  String get alreadyHaveAccount => 'Zaten hesabınız var mı? Giriş yapın';
+
+  @override
+  String get needAnAccount => 'Hesabınız yok mu? Oluşturun';
+
+  @override
+  String get signOut => 'Çıkış yap';
+
+  @override
+  String get account => 'Hesap';
+
+  @override
+  String get authPasswordRequirements => 'Şifre en az 6 karakter olmalıdır.';
+
+  @override
+  String get authInvalidEmail => 'Geçerli bir e-posta girin.';
+
+  @override
+  String get authInvalidCredentials => 'E-posta veya şifre hatalı.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Bu e-posta zaten kullanılıyor.';
+
+  @override
+  String get authWeakPassword => 'Daha güçlü bir şifre seçin.';
+
+  @override
+  String get authNetworkUnavailable => 'Ağ kullanılamıyor. Tekrar deneyin.';
+
+  @override
+  String get authTooManyRequests =>
+      'Çok fazla deneme yapıldı. Daha sonra tekrar deneyin.';
+
+  @override
+  String get authUnavailable => 'Kimlik doğrulama kullanılamıyor.';
+
+  @override
+  String get authSignOutFailed => 'Çıkış yapılamadı.';
+
+  @override
+  String get authSignUpFailed => 'Hesap oluşturulamadı.';
+
+  @override
+  String get authFailed => 'Kimlik doğrulama başarısız.';
+
+  @override
+  String get showPassword => 'Şifreyi göster';
+
+  @override
+  String get hidePassword => 'Şifreyi gizle';
 }

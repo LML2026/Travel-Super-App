@@ -99,5 +99,6 @@
   "phraseTrain": "ट्रेन स्टेशन कहाँ है?",
   "phraseTaxi": "क्या आप टैक्सी बुला सकते हैं?",
   "phraseReservation": "मेरी बुकिंग है।",
-  "phraseDontUnderstand": "मैं समझ नहीं पा रहा हूँ।"
+  "phraseDontUnderstand": "मैं समझ नहीं पा रहा हूँ।", "authWelcome": "अपनी यात्रा जारी रखने के लिए साइन इन करें।", "email": "ईमेल", "password": "पासवर्ड", "signIn": "साइन इन करें", "createAccount": "खाता बनाएं", "alreadyHaveAccount": "पहले से खाता है? साइन इन करें", "needAnAccount": "खाता चाहिए? बनाएं", "signOut": "साइन आउट करें", "account": "खाता", "authPasswordRequirements": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।", "authInvalidEmail": "मान्य ईमेल पता दर्ज करें।", "authInvalidCredentials": "ईमेल या पासवर्ड गलत है।", "authEmailAlreadyInUse": "यह ईमेल पहले से उपयोग में है।", "authWeakPassword": "मज़बूत पासवर्ड चुनें।", "authNetworkUnavailable": "नेटवर्क उपलब्ध नहीं है। फिर से प्रयास करें।", "authTooManyRequests": "बहुत अधिक प्रयास। बाद में फिर प्रयास करें।", "authUnavailable": "प्रमाणीकरण उपलब्ध नहीं है।", "authSignOutFailed": "साइन आउट नहीं हो सका।", "authSignUpFailed": "खाता नहीं बनाया जा सका।", "authFailed": "प्रमाणीकरण विफल हुआ।"
+  ,"showPassword": "पासवर्ड दिखाएं", "hidePassword": "पासवर्ड छिपाएं"
 }

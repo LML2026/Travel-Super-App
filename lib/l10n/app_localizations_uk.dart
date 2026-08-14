@@ -313,4 +313,73 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Я не розумію.';
+
+  @override
+  String get authWelcome => 'Увійдіть, щоб продовжити подорож.';
+
+  @override
+  String get email => 'Електронна пошта';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get signIn => 'Увійти';
+
+  @override
+  String get createAccount => 'Створити обліковий запис';
+
+  @override
+  String get alreadyHaveAccount => 'Вже маєте обліковий запис? Увійдіть';
+
+  @override
+  String get needAnAccount => 'Потрібен обліковий запис? Створіть';
+
+  @override
+  String get signOut => 'Вийти';
+
+  @override
+  String get account => 'Обліковий запис';
+
+  @override
+  String get authPasswordRequirements =>
+      'Пароль має містити щонайменше 6 символів.';
+
+  @override
+  String get authInvalidEmail => 'Введіть дійсну електронну пошту.';
+
+  @override
+  String get authInvalidCredentials =>
+      'Електронна пошта або пароль неправильні.';
+
+  @override
+  String get authEmailAlreadyInUse =>
+      'Ця електронна пошта вже використовується.';
+
+  @override
+  String get authWeakPassword => 'Виберіть надійніший пароль.';
+
+  @override
+  String get authNetworkUnavailable => 'Мережа недоступна. Спробуйте ще раз.';
+
+  @override
+  String get authTooManyRequests => 'Забагато спроб. Спробуйте пізніше.';
+
+  @override
+  String get authUnavailable => 'Автентифікація недоступна.';
+
+  @override
+  String get authSignOutFailed => 'Не вдалося вийти.';
+
+  @override
+  String get authSignUpFailed => 'Не вдалося створити обліковий запис.';
+
+  @override
+  String get authFailed => 'Помилка автентифікації.';
+
+  @override
+  String get showPassword => 'Показати пароль';
+
+  @override
+  String get hidePassword => 'Приховати пароль';
 }

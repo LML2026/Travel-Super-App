@@ -99,5 +99,26 @@
   "phraseTrain": "Where is the train station?",
   "phraseTaxi": "Can you call a taxi?",
   "phraseReservation": "I have a reservation.",
-  "phraseDontUnderstand": "I don't understand."
+  "phraseDontUnderstand": "I don't understand.",
+  "authWelcome": "Sign in to continue your journey.",
+  "email": "Email",
+  "password": "Password",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "alreadyHaveAccount": "Already have an account? Sign in",
+  "needAnAccount": "Need an account? Create one",
+  "signOut": "Sign out",
+  "account": "Account",
+  "authPasswordRequirements": "Password must be at least 6 characters.",
+  "authInvalidEmail": "Enter a valid email address.",
+  "authInvalidCredentials": "Email or password is incorrect.",
+  "authEmailAlreadyInUse": "That email is already in use.",
+  "authWeakPassword": "Choose a stronger password.",
+  "authNetworkUnavailable": "Network unavailable. Try again.",
+  "authTooManyRequests": "Too many attempts. Try again later.",
+  "authUnavailable": "Authentication is currently unavailable.",
+  "authSignOutFailed": "Could not sign out. Try again.",
+  "authSignUpFailed": "Could not create the account.",
+  "authFailed": "Authentication failed. Try again."
+  ,"showPassword": "Show password", "hidePassword": "Hide password"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/auth/auth_service_scope.dart';
 import '../../../core/localization/app_locale.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../translator/screens/travel_translator_screen.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
         ),
         actions: [
+          _AccountMenu(),
           PopupMenuButton<Locale>(
             tooltip: l10n.language,
             icon: const Icon(Icons.language),
@@ -207,6 +209,41 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AccountMenu extends StatelessWidget {
+  const _AccountMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final service = AuthServiceScope.of(context);
+    final email = service.currentUser?.email ?? l10n.account;
+
+    return PopupMenuButton<String>(
+      tooltip: l10n.account,
+      icon: const Icon(Icons.account_circle_outlined),
+      onSelected: (value) async {
+        if (value != 'signOut') return;
+        try {
+          await service.signOut();
+        } on Object {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.authSignOutFailed)));
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem<String>(
+          enabled: false,
+          value: 'email',
+          child: Text(email),
+        ),
+        PopupMenuItem<String>(value: 'signOut', child: Text(l10n.signOut)),
+      ],
     );
   }
 }

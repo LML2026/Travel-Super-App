@@ -99,5 +99,6 @@
   "phraseTrain": "Որտե՞ղ է երկաթուղային կայարանը։",
   "phraseTaxi": "Կարո՞ղ եք տաքսի կանչել։",
   "phraseReservation": "Ես ամրագրում ունեմ։",
-  "phraseDontUnderstand": "Ես չեմ հասկանում։"
+  "phraseDontUnderstand": "Ես չեմ հասկանում։", "authWelcome": "Մուտք գործեք՝ ուղևորությունը շարունակելու համար։", "email": "Էլ․ փոստ", "password": "Գաղտնաբառ", "signIn": "Մուտք գործել", "createAccount": "Ստեղծել հաշիվ", "alreadyHaveAccount": "Արդեն ունե՞ք հաշիվ։ Մուտք գործեք", "needAnAccount": "Հաշիվ է պե՞տք։ Ստեղծեք", "signOut": "Ելք", "account": "Հաշիվ", "authPasswordRequirements": "Գաղտնաբառը պետք է ունենա առնվազն 6 նիշ։", "authInvalidEmail": "Մուտքագրեք վավեր էլ․ փոստ։", "authInvalidCredentials": "Էլ․ փոստը կամ գաղտնաբառը սխալ է։", "authEmailAlreadyInUse": "Այս էլ․ փոստն արդեն օգտագործվում է։", "authWeakPassword": "Ընտրեք ավելի ուժեղ գաղտնաբառ։", "authNetworkUnavailable": "Ցանցն անհասանելի է։ Փորձեք կրկին։", "authTooManyRequests": "Չափից շատ փորձեր։ Փորձեք ավելի ուշ։", "authUnavailable": "Նույնականացումը հասանելի չէ։", "authSignOutFailed": "Չհաջողվեց դուրս գալ։", "authSignUpFailed": "Չհաջողվեց ստեղծել հաշիվը։", "authFailed": "Նույնականացումը ձախողվեց։"
+  ,"showPassword": "Ցուցադրել գաղտնաբառը", "hidePassword": "Թաքցնել գաղտնաբառը"
 }

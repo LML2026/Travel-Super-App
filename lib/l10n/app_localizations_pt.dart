@@ -314,4 +314,72 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get phraseDontUnderstand => 'Não entendo.';
+
+  @override
+  String get authWelcome => 'Inicie sessão para continuar a sua viagem.';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get password => 'Palavra-passe';
+
+  @override
+  String get signIn => 'Iniciar sessão';
+
+  @override
+  String get createAccount => 'Criar conta';
+
+  @override
+  String get alreadyHaveAccount => 'Já tem uma conta? Inicie sessão';
+
+  @override
+  String get needAnAccount => 'Precisa de uma conta? Crie uma';
+
+  @override
+  String get signOut => 'Terminar sessão';
+
+  @override
+  String get account => 'Conta';
+
+  @override
+  String get authPasswordRequirements =>
+      'A palavra-passe deve ter pelo menos 6 caracteres.';
+
+  @override
+  String get authInvalidEmail => 'Introduza um e-mail válido.';
+
+  @override
+  String get authInvalidCredentials =>
+      'O e-mail ou a palavra-passe estão incorretos.';
+
+  @override
+  String get authEmailAlreadyInUse => 'Esse e-mail já está a ser utilizado.';
+
+  @override
+  String get authWeakPassword => 'Escolha uma palavra-passe mais forte.';
+
+  @override
+  String get authNetworkUnavailable => 'Rede indisponível. Tente novamente.';
+
+  @override
+  String get authTooManyRequests => 'Demasiadas tentativas. Tente mais tarde.';
+
+  @override
+  String get authUnavailable => 'A autenticação não está disponível.';
+
+  @override
+  String get authSignOutFailed => 'Não foi possível terminar a sessão.';
+
+  @override
+  String get authSignUpFailed => 'Não foi possível criar a conta.';
+
+  @override
+  String get authFailed => 'Falha na autenticação.';
+
+  @override
+  String get showPassword => 'Mostrar palavra-passe';
+
+  @override
+  String get hidePassword => 'Ocultar palavra-passe';
 }
