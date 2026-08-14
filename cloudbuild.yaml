@@ -1,0 +1,22 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    dir: backend
+    args:
+      - build
+      - -t
+      - europe-west2-docker.pkg.dev/$PROJECT_ID/itarevo-backend/itarevo-translator:$SHORT_SHA
+      - -f
+      - Dockerfile
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    dir: backend
+    args:
+      - push
+      - europe-west2-docker.pkg.dev/$PROJECT_ID/itarevo-backend/itarevo-translator:$SHORT_SHA
+
+images:
+  - europe-west2-docker.pkg.dev/$PROJECT_ID/itarevo-backend/itarevo-translator:$SHORT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY
