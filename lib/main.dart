@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'core/maps_config.dart';
+import 'core/maps_loader.dart';
 import 'core/theme/app_theme.dart';
 import 'shells/app_shell.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadGoogleMaps(MapsConfig.apiKey);
   runApp(const ItarevoApp());
 }
 

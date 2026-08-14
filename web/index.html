@@ -31,7 +31,31 @@
 
   <title>itarevo</title>
   <link rel="manifest" href="manifest.json">
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzrWS8FbWVW8raVOLezNlgIb_Idge7b98&libraries=places"></script>
+<script>
+  window.itarevoLoadGoogleMaps = function(apiKey) {
+    if (window.google?.maps) return Promise.resolve(true);
+    if (!apiKey) return Promise.resolve(false);
+
+    if (!window.itarevoGoogleMapsPromise) {
+      window.itarevoGoogleMapsPromise = new Promise((resolve) => {
+        const script = document.createElement('script');
+        const source = new URL(
+          'https://maps.googleapis.com/maps/api/js'
+        );
+
+        source.searchParams.set('key', apiKey);
+        source.searchParams.set('libraries', 'places');
+        script.src = source.toString();
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+      });
+    }
+
+    return window.itarevoGoogleMapsPromise;
+  };
+</script>
 </head>
 <body>
   <!--
