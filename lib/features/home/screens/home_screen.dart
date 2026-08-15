@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../core/auth/auth_service_scope.dart';
 import '../../../core/localization/app_locale.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/translation/backend_translation_service.dart';
 import '../../../core/translation/translation_service.dart';
+import '../../../core/widgets/app_feature_tile.dart';
+import '../../../core/widgets/app_section_header.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../translator/screens/travel_translator_screen.dart';
 import '../../trips/screens/trips_list_screen.dart';
@@ -103,119 +107,167 @@ class HomeScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.travelSmarter,
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.homeDescription,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 28),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.whereNext,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      l10n.startNewTrip,
-                      style: TextStyle(color: Colors.white70, fontSize: 15),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
-              Text(
-                l10n.explore,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 1.25,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.xxl,
+          ),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1120),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _FeatureTile(
-                    icon: Icons.map_outlined,
-                    title: l10n.trips,
-                    subtitle: l10n.planYourJourney,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const TripsListScreen(),
+                  Text(
+                    l10n.travelSmarter,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    l10n.homeDescription,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(minHeight: 184),
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: AppRadii.largeBorder.borderRadius,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                l10n.whereNext,
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                l10n.startNewTrip,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Colors.white.withAlpha(220),
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: AppSpacing.lg),
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(24),
+                            borderRadius: AppRadii.largeBorder.borderRadius,
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(AppSpacing.lg),
+                            child: Icon(
+                              Icons.explore_outlined,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  AppSectionHeader(title: l10n.explore),
+                  const SizedBox(height: AppSpacing.md),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final columns = constraints.maxWidth >= 900
+                          ? 3
+                          : constraints.maxWidth >= 560
+                          ? 2
+                          : 1;
+                      final ratio = columns == 1 ? 2.35 : 1.25;
+
+                      return GridView.count(
+                        crossAxisCount: columns,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: AppSpacing.md,
+                        mainAxisSpacing: AppSpacing.md,
+                        childAspectRatio: ratio,
+                        children: [
+                          AppFeatureTile(
+                            icon: Icons.map_outlined,
+                            title: l10n.trips,
+                            subtitle: l10n.planYourJourney,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const TripsListScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          AppFeatureTile(
+                            icon: Icons.flight_outlined,
+                            title: l10n.flights,
+                            subtitle: l10n.searchAndManage,
+                            available: false,
+                          ),
+                          AppFeatureTile(
+                            icon: Icons.hotel_outlined,
+                            title: l10n.hotels,
+                            subtitle: l10n.findYourStay,
+                            available: false,
+                          ),
+                          AppFeatureTile(
+                            icon: Icons.translate,
+                            title: l10n.translator,
+                            subtitle: l10n.speakAnywhere,
+                            onTap: () {
+                              final authService = AuthServiceScope.of(context);
+                              final service =
+                                  BackendTranslationService.configuredBaseUrl
+                                      .trim()
+                                      .isEmpty
+                                  ? const UnavailableTranslationService()
+                                  : BackendTranslationService(
+                                      authService: authService,
+                                    );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      TravelTranslatorScreen(service: service),
+                                ),
+                              );
+                            },
+                          ),
+                          AppFeatureTile(
+                            icon: Icons.account_balance_wallet_outlined,
+                            title: l10n.wallet,
+                            subtitle: l10n.moneyAndPayments,
+                            available: false,
+                          ),
+                          AppFeatureTile(
+                            icon: Icons.auto_awesome_outlined,
+                            title: l10n.aiAssistant,
+                            subtitle: l10n.yourTravelCopilot,
+                            available: false,
+                          ),
+                        ],
                       );
                     },
-                  ),
-                  _FeatureTile(
-                    icon: Icons.flight_outlined,
-                    title: l10n.flights,
-                    subtitle: l10n.searchAndManage,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.hotel_outlined,
-                    title: l10n.hotels,
-                    subtitle: l10n.findYourStay,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.translate,
-                    title: l10n.translator,
-                    subtitle: l10n.speakAnywhere,
-                    onTap: () {
-                      final authService = AuthServiceScope.of(context);
-                      final service =
-                          BackendTranslationService.configuredBaseUrl
-                              .trim()
-                              .isEmpty
-                          ? const UnavailableTranslationService()
-                          : BackendTranslationService(authService: authService);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              TravelTranslatorScreen(service: service),
-                        ),
-                      );
-                    },
-                  ),
-                  _FeatureTile(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: l10n.wallet,
-                    subtitle: l10n.moneyAndPayments,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.auto_awesome_outlined,
-                    title: l10n.aiAssistant,
-                    subtitle: l10n.yourTravelCopilot,
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -254,57 +306,6 @@ class _AccountMenu extends StatelessWidget {
         ),
         PopupMenuItem<String>(value: 'signOut', child: Text(l10n.signOut)),
       ],
-    );
-  }
-}
-
-class _FeatureTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback? onTap;
-
-  const _FeatureTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 34,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.black54, fontSize: 13),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
