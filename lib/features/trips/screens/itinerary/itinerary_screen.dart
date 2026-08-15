@@ -7,6 +7,7 @@ import '../../../../core/journey_intelligence/companion_policy_context.dart';
 import '../../../../core/journey_intelligence/journey_analyzer.dart';
 import '../../../../core/journey_intelligence/journey_companion_presenter.dart';
 import '../../../../core/journey_intelligence/journey_context_builder.dart';
+import '../../../../core/journey_intelligence/journey_clock.dart';
 import '../../../../core/journey_intelligence/journey_insight.dart';
 import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
@@ -401,6 +402,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
       trip: widget.trip,
       items: _items,
       clock: DateTime.now(),
+      clockSource: JourneyClockSource.deviceLocal,
     );
     final insights = analyzers
         .expand((analyzer) => analyzer.analyze(context))

@@ -3,11 +3,13 @@ import 'dart:collection';
 import '../../features/trips/models/itinerary/itinerary_item.dart';
 import '../../features/trips/models/trip.dart';
 import '../services/trip_overview_service.dart';
+import 'journey_clock.dart';
 
 class JourneyContext {
   final Trip trip;
   final List<ItineraryItem> orderedItems;
   final DateTime clock;
+  final JourneyClockSource clockSource;
   final TripOverviewStatus tripStatus;
   final int? daysUntilStart;
   final int bookedCount;
@@ -22,6 +24,7 @@ class JourneyContext {
     required this.trip,
     required List<ItineraryItem> orderedItems,
     required this.clock,
+    required this.clockSource,
     required this.tripStatus,
     required this.daysUntilStart,
     required this.bookedCount,

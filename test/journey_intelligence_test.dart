@@ -8,6 +8,7 @@ import 'package:itarevo/core/journey_intelligence/analyzers/trip_status_analyzer
 import 'package:itarevo/core/journey_intelligence/journey_analyzer.dart';
 import 'package:itarevo/core/journey_intelligence/journey_context.dart';
 import 'package:itarevo/core/journey_intelligence/journey_context_builder.dart';
+import 'package:itarevo/core/journey_intelligence/journey_clock.dart';
 import 'package:itarevo/core/journey_intelligence/journey_insight.dart';
 import 'package:itarevo/features/trips/models/itinerary/itinerary_item.dart';
 import 'package:itarevo/features/trips/models/trip.dart';
@@ -80,6 +81,44 @@ void main() {
       final context = _context(items: [_item('malformed', time: '25:61')]);
 
       expect(context.nextScheduledItem, isNull);
+    });
+
+    test('requires trusted itinerary-local clock evidence for next item', () {
+      final trip = Trip(
+        id: 'trip',
+        destination: 'Rome',
+        departureDate: DateTime(2026, 9, 15),
+        returnDate: DateTime(2026, 9, 20),
+        travellers: 2,
+        notes: '',
+        budget: 100,
+        currency: 'EUR',
+      );
+      final item = _item('next', time: '14:00');
+
+      for (final source in [
+        JourneyClockSource.deviceLocal,
+        JourneyClockSource.unknown,
+      ]) {
+        expect(
+          JourneyContextBuilder.build(
+            trip: trip,
+            items: [item],
+            clock: clock,
+            clockSource: source,
+          ).nextScheduledItem,
+          isNull,
+        );
+      }
+      expect(
+        JourneyContextBuilder.build(
+          trip: trip,
+          items: [item],
+          clock: clock,
+          clockSource: JourneyClockSource.explicitTripLocal,
+        ).nextScheduledItem?.id,
+        'next',
+      );
     });
   });
 
@@ -389,6 +428,7 @@ JourneyContext _context({
     ),
     items: items ?? [_item('default', time: '14:00')],
     clock: clock ?? DateTime(2026, 9, 16, 12),
+    clockSource: JourneyClockSource.testInjected,
   );
 }
 

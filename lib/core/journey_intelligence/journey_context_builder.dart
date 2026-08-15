@@ -1,6 +1,7 @@
 import '../../features/trips/models/itinerary/itinerary_item.dart';
 import '../../features/trips/models/trip.dart';
 import '../services/trip_overview_service.dart';
+import 'journey_clock.dart';
 import 'journey_context.dart';
 
 class JourneyContextBuilder {
@@ -10,6 +11,7 @@ class JourneyContextBuilder {
     required Trip trip,
     required Iterable<ItineraryItem> items,
     required DateTime clock,
+    JourneyClockSource clockSource = JourneyClockSource.unknown,
   }) {
     final itemList = List<ItineraryItem>.of(items);
     final overview = TripOverviewService.build(
@@ -28,6 +30,7 @@ class JourneyContextBuilder {
       trip: trip,
       orderedItems: overview.orderedItems,
       clock: clock,
+      clockSource: clockSource,
       tripStatus: overview.status,
       daysUntilStart: overview.daysUntilStart,
       bookedCount: overview.bookedCount,
@@ -37,7 +40,13 @@ class JourneyContextBuilder {
       hasKnownEstimatedCost: overview.hasEstimatedCost,
       isEstimatedCostComplete:
           estimatedCostItemCount == overview.orderedItems.length,
-      nextScheduledItem: _scheduledItemAtOrAfter(overview.nextPlan, clock),
+      nextScheduledItem:
+          JourneyClock(
+            value: clock,
+            source: clockSource,
+          ).isTrustedForItineraryLocalComparison
+          ? _scheduledItemAtOrAfter(overview.nextPlan, clock)
+          : null,
     );
   }
 
