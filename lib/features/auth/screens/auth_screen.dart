@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/auth/auth_service.dart';
 import '../../../core/auth/auth_user.dart';
+import '../../../core/widgets/app_button.dart';
+import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/app_text_field.dart';
 import '../../../l10n/app_localizations.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -103,129 +106,118 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(28),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'ITAREVO',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 3,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.authWelcome,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 28),
-                        if (widget.unavailable) ...[
-                          Text(
-                            l10n.authUnavailable,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
+              child: AppCard(
+                padding: const EdgeInsets.all(32),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'ITAREVO',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 3,
                             ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.authWelcome,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 28),
+                      if (widget.unavailable) ...[
+                        Text(
+                          l10n.authUnavailable,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                           ),
-                          const SizedBox(height: 16),
-                        ],
-                        TextFormField(
-                          controller: _emailController,
-                          enabled: !widget.unavailable && !_isLoading,
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: InputDecoration(
-                            labelText: l10n.email,
-                            prefixIcon: const Icon(Icons.email_outlined),
-                          ),
-                          validator: (value) {
-                            if (value == null || !value.contains('@')) {
-                              return l10n.authInvalidEmail;
-                            }
-                            return null;
-                          },
                         ),
+                        const SizedBox(height: 16),
+                      ],
+                      AppTextField(
+                        controller: _emailController,
+                        enabled: !widget.unavailable && !_isLoading,
+                        label: l10n.email,
+                        keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.email],
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        validator: (value) {
+                          if (value == null || !value.contains('@')) {
+                            return l10n.authInvalidEmail;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      AppTextField(
+                        controller: _passwordController,
+                        enabled: !widget.unavailable && !_isLoading,
+                        label: l10n.password,
+                        obscureText: !_isPasswordVisible,
+                        autofillHints: const [AutofillHints.password],
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          tooltip: _isPasswordVisible
+                              ? l10n.hidePassword
+                              : l10n.showPassword,
+                          onPressed: widget.unavailable || _isLoading
+                              ? null
+                              : () => setState(
+                                  () =>
+                                      _isPasswordVisible = !_isPasswordVisible,
+                                ),
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.length < 6) {
+                            return l10n.authPasswordRequirements;
+                          }
+                          return null;
+                        },
+                      ),
+                      if (_errorCode != null) ...[
                         const SizedBox(height: 14),
-                        TextFormField(
-                          controller: _passwordController,
-                          enabled: !widget.unavailable && !_isLoading,
-                          obscureText: !_isPasswordVisible,
-                          autofillHints: const [AutofillHints.password],
-                          decoration: InputDecoration(
-                            labelText: l10n.password,
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              tooltip: _isPasswordVisible
-                                  ? l10n.hidePassword
-                                  : l10n.showPassword,
-                              onPressed: widget.unavailable || _isLoading
-                                  ? null
-                                  : () => setState(
-                                      () => _isPasswordVisible =
-                                          !_isPasswordVisible,
-                                    ),
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.length < 6) {
-                              return l10n.authPasswordRequirements;
-                            }
-                            return null;
-                          },
-                        ),
-                        if (_errorCode != null) ...[
-                          const SizedBox(height: 14),
-                          Text(
-                            _errorMessage(l10n),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 22),
-                        FilledButton(
-                          onPressed: widget.unavailable || _isLoading
-                              ? null
-                              : _submit,
-                          child: _isLoading
-                              ? const SizedBox.square(
-                                  dimension: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(title),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: widget.unavailable || _isLoading
-                              ? null
-                              : () => setState(() {
-                                  _isCreateAccount = !_isCreateAccount;
-                                  _errorCode = null;
-                                }),
-                          child: Text(
-                            _isCreateAccount
-                                ? l10n.alreadyHaveAccount
-                                : l10n.needAnAccount,
+                        Text(
+                          _errorMessage(l10n),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                           ),
                         ),
                       ],
-                    ),
+                      const SizedBox(height: 22),
+                      AppButton(
+                        label: title,
+                        onPressed: widget.unavailable || _isLoading
+                            ? null
+                            : _submit,
+                        isLoading: _isLoading,
+                        fullWidth: true,
+                      ),
+                      const SizedBox(height: 8),
+                      AppButton(
+                        variant: AppButtonVariant.tertiary,
+                        fullWidth: true,
+                        label: _isCreateAccount
+                            ? l10n.alreadyHaveAccount
+                            : l10n.needAnAccount,
+                        onPressed: widget.unavailable || _isLoading
+                            ? null
+                            : () => setState(() {
+                                _isCreateAccount = !_isCreateAccount;
+                                _errorCode = null;
+                              }),
+                      ),
+                    ],
                   ),
                 ),
               ),
