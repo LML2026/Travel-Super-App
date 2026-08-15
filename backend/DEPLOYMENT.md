@@ -28,6 +28,18 @@ ITAREVO_ALLOWED_ORIGINS=http://localhost:8080,https://your-approved-itarevo-web-
 
 Use a comma-separated allowlist. If it is absent, browser origins are rejected; native clients without an `Origin` header remain unaffected.
 
+## Flutter client connection
+
+The Flutter client receives the backend URL at build or run time; it is not hardcoded in Dart:
+
+```text
+ITAREVO_TRANSLATION_BACKEND_URL=https://itarevo-translator-106137562514.europe-west2.run.app
+```
+
+The authenticated flow is: signed-in Firebase user, `AuthService.getIdToken()`, `POST /translate` with a Bearer token, Cloud Run Firebase verification, and a sanitized translation response. The Flutter client contains no Google Translation credential.
+
+Controlled live translation was verified through the ITAREVO Flutter Web app using the local browser origin `http://localhost:8080`.
+
 ## Identity and credentials
 
 The Cloud Run service must use the dedicated `ITAREVO Translator Backend` service identity. Firebase Admin and Cloud Translation use Application Default Credentials from the runtime identity. Do not create, copy, or mount a service-account JSON key.
