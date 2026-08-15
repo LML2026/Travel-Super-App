@@ -375,4 +375,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hidePassword => '비밀번호 숨기기';
+
+  @override
+  String get needsAttention => '확인이 필요합니다';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count개 위치에 좌표가 필요합니다';
+  }
 }

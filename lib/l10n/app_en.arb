@@ -121,4 +121,6 @@
   "authSignUpFailed": "Could not create the account.",
   "authFailed": "Authentication failed. Try again."
   ,"showPassword": "Show password", "hidePassword": "Hide password"
+  ,"needsAttention": "Needs attention",
+  "locationsNeedCoordinates": "{count} location(s) need coordinates"
 }

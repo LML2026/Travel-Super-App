@@ -101,4 +101,6 @@
   "phraseReservation": "Tenho uma reserva.",
   "phraseDontUnderstand": "Não entendo.", "authWelcome": "Inicie sessão para continuar a sua viagem.", "email": "E-mail", "password": "Palavra-passe", "signIn": "Iniciar sessão", "createAccount": "Criar conta", "alreadyHaveAccount": "Já tem uma conta? Inicie sessão", "needAnAccount": "Precisa de uma conta? Crie uma", "signOut": "Terminar sessão", "account": "Conta", "authPasswordRequirements": "A palavra-passe deve ter pelo menos 6 caracteres.", "authInvalidEmail": "Introduza um e-mail válido.", "authInvalidCredentials": "O e-mail ou a palavra-passe estão incorretos.", "authEmailAlreadyInUse": "Esse e-mail já está a ser utilizado.", "authWeakPassword": "Escolha uma palavra-passe mais forte.", "authNetworkUnavailable": "Rede indisponível. Tente novamente.", "authTooManyRequests": "Demasiadas tentativas. Tente mais tarde.", "authUnavailable": "A autenticação não está disponível.", "authSignOutFailed": "Não foi possível terminar a sessão.", "authSignUpFailed": "Não foi possível criar a conta.", "authFailed": "Falha na autenticação."
   ,"showPassword": "Mostrar palavra-passe", "hidePassword": "Ocultar palavra-passe"
+  ,"needsAttention": "Requer atenção",
+  "locationsNeedCoordinates": "{count} local(is) precisa(m) de coordenadas"
 }

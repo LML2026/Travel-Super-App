@@ -382,4 +382,12 @@ class AppLocalizationsKa extends AppLocalizations {
 
   @override
   String get hidePassword => 'პაროლის დამალვა';
+
+  @override
+  String get needsAttention => 'საჭიროებს ყურადღებას';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count ადგილს კოორდინატები სჭირდება';
+  }
 }

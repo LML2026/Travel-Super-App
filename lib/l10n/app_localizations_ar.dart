@@ -379,4 +379,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hidePassword => 'إخفاء كلمة المرور';
+
+  @override
+  String get needsAttention => 'يحتاج إلى انتباه';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count موقع يحتاج إلى إحداثيات';
+  }
 }

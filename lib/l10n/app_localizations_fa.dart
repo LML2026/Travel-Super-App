@@ -381,4 +381,12 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get hidePassword => 'پنهان کردن رمز عبور';
+
+  @override
+  String get needsAttention => 'نیاز به توجه دارد';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count مکان به مختصات نیاز دارد';
+  }
 }

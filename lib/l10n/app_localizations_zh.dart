@@ -375,6 +375,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hidePassword => '隐藏密码';
+
+  @override
+  String get needsAttention => '需要注意';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count 个地点需要坐标';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -748,4 +756,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get hidePassword => '隐藏密码';
+
+  @override
+  String get needsAttention => '需要注意';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count 个地点需要坐标';
+  }
 }

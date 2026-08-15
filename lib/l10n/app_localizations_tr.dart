@@ -380,4 +380,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hidePassword => 'Şifreyi gizle';
+
+  @override
+  String get needsAttention => 'Dikkat gerektiriyor';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count konum için koordinat gerekli';
+  }
 }

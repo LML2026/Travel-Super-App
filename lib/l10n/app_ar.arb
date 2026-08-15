@@ -101,4 +101,6 @@
   "phraseReservation": "لدي حجز.",
   "phraseDontUnderstand": "لا أفهم.", "authWelcome": "سجّل الدخول لمتابعة رحلتك.", "email": "البريد الإلكتروني", "password": "كلمة المرور", "signIn": "تسجيل الدخول", "createAccount": "إنشاء حساب", "alreadyHaveAccount": "لديك حساب؟ سجّل الدخول", "needAnAccount": "تحتاج إلى حساب؟ أنشئ حساباً", "signOut": "تسجيل الخروج", "account": "الحساب", "authPasswordRequirements": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.", "authInvalidEmail": "أدخل عنوان بريد إلكتروني صالحاً.", "authInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.", "authEmailAlreadyInUse": "هذا البريد الإلكتروني مستخدم بالفعل.", "authWeakPassword": "اختر كلمة مرور أقوى.", "authNetworkUnavailable": "الشبكة غير متاحة. حاول مرة أخرى.", "authTooManyRequests": "محاولات كثيرة جداً. حاول لاحقاً.", "authUnavailable": "المصادقة غير متاحة حالياً.", "authSignOutFailed": "تعذّر تسجيل الخروج.", "authSignUpFailed": "تعذّر إنشاء الحساب.", "authFailed": "فشلت المصادقة. حاول مرة أخرى."
   ,"showPassword": "إظهار كلمة المرور", "hidePassword": "إخفاء كلمة المرور"
+  ,"needsAttention": "يحتاج إلى انتباه",
+  "locationsNeedCoordinates": "{count} موقع يحتاج إلى إحداثيات"
 }

@@ -383,4 +383,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get hidePassword => 'पासवर्ड छिपाएं';
+
+  @override
+  String get needsAttention => 'ध्यान आवश्यक';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count स्थानों को निर्देशांक चाहिए';
+  }
 }

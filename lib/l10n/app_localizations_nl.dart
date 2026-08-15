@@ -383,4 +383,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get hidePassword => 'Wachtwoord verbergen';
+
+  @override
+  String get needsAttention => 'Vereist aandacht';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count locatie(s) hebben coördinaten nodig';
+  }
 }

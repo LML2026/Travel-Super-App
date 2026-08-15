@@ -101,4 +101,6 @@
   "phraseReservation": "予約があります。",
   "phraseDontUnderstand": "分かりません。", "authWelcome": "ログインして旅を続けましょう。", "email": "メールアドレス", "password": "パスワード", "signIn": "ログイン", "createAccount": "アカウントを作成", "alreadyHaveAccount": "アカウントをお持ちですか？ログイン", "needAnAccount": "アカウントが必要ですか？作成", "signOut": "ログアウト", "account": "アカウント", "authPasswordRequirements": "パスワードは6文字以上必要です。", "authInvalidEmail": "有効なメールアドレスを入力してください。", "authInvalidCredentials": "メールアドレスまたはパスワードが正しくありません。", "authEmailAlreadyInUse": "そのメールアドレスはすでに使用されています。", "authWeakPassword": "より強いパスワードを選択してください。", "authNetworkUnavailable": "ネットワークを利用できません。再試行してください。", "authTooManyRequests": "試行回数が多すぎます。後でもう一度お試しください。", "authUnavailable": "認証を利用できません。", "authSignOutFailed": "ログアウトできませんでした。", "authSignUpFailed": "アカウントを作成できませんでした。", "authFailed": "認証に失敗しました。"
   ,"showPassword": "パスワードを表示", "hidePassword": "パスワードを隠す"
+  ,"needsAttention": "要確認",
+  "locationsNeedCoordinates": "{count} 件の場所に座標が必要です"
 }

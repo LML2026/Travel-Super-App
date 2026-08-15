@@ -375,4 +375,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get hidePassword => 'パスワードを隠す';
+
+  @override
+  String get needsAttention => '要確認';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count 件の場所に座標が必要です';
+  }
 }

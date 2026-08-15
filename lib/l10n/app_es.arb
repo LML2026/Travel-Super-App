@@ -102,4 +102,6 @@
   "phraseDontUnderstand": "No entiendo.",
   "authWelcome": "Inicia sesión para continuar tu viaje.", "email": "Correo electrónico", "password": "Contraseña", "signIn": "Iniciar sesión", "createAccount": "Crear cuenta", "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión", "needAnAccount": "¿Necesitas una cuenta? Créala", "signOut": "Cerrar sesión", "account": "Cuenta", "authPasswordRequirements": "La contraseña debe tener al menos 6 caracteres.", "authInvalidEmail": "Introduce un correo electrónico válido.", "authInvalidCredentials": "El correo o la contraseña no son correctos.", "authEmailAlreadyInUse": "Ese correo ya está en uso.", "authWeakPassword": "Elige una contraseña más segura.", "authNetworkUnavailable": "Red no disponible. Inténtalo de nuevo.", "authTooManyRequests": "Demasiados intentos. Inténtalo más tarde.", "authUnavailable": "La autenticación no está disponible.", "authSignOutFailed": "No se pudo cerrar la sesión.", "authSignUpFailed": "No se pudo crear la cuenta.", "authFailed": "La autenticación falló. Inténtalo de nuevo."
   ,"showPassword": "Mostrar contraseña", "hidePassword": "Ocultar contraseña"
+  ,"needsAttention": "Requiere atención",
+  "locationsNeedCoordinates": "{count} ubicación(es) necesita(n) coordenadas"
 }

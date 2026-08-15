@@ -102,4 +102,6 @@
   "phraseDontUnderstand": "Я не понимаю.",
   "authWelcome": "Войдите, чтобы продолжить путешествие.", "email": "Электронная почта", "password": "Пароль", "signIn": "Войти", "createAccount": "Создать аккаунт", "alreadyHaveAccount": "Уже есть аккаунт? Войти", "needAnAccount": "Нужен аккаунт? Создать", "signOut": "Выйти", "account": "Аккаунт", "authPasswordRequirements": "Пароль должен содержать не менее 6 символов.", "authInvalidEmail": "Введите действительный адрес электронной почты.", "authInvalidCredentials": "Неверная почта или пароль.", "authEmailAlreadyInUse": "Эта почта уже используется.", "authWeakPassword": "Выберите более надежный пароль.", "authNetworkUnavailable": "Сеть недоступна. Попробуйте снова.", "authTooManyRequests": "Слишком много попыток. Попробуйте позже.", "authUnavailable": "Аутентификация сейчас недоступна.", "authSignOutFailed": "Не удалось выйти. Попробуйте снова.", "authSignUpFailed": "Не удалось создать аккаунт.", "authFailed": "Ошибка аутентификации. Попробуйте снова."
   ,"showPassword": "Показать пароль", "hidePassword": "Скрыть пароль"
+  ,"needsAttention": "Требует внимания",
+  "locationsNeedCoordinates": "Для {count} мест нужны координаты"
 }

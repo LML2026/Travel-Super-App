@@ -4,7 +4,10 @@ import '../../../../core/itinerary_ordering.dart';
 import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../../core/storage/itinerary_storage_service.dart';
+import '../../../../core/widgets/app_attention_card.dart';
+import '../../../../core/widgets/app_itinerary_item.dart';
 import '../../../../core/widgets/app_journey_brief.dart';
+import '../../../../core/widgets/app_journey_connector.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -385,6 +388,22 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     return {for (final date in sortedDates) date: grouped[date]!};
   }
 
+  int get _unmappedItemCount => _items
+      .where((item) => item.latitude == null || item.longitude == null)
+      .length;
+
+  void _openMap() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TripMapScreen(
+          trip: widget.trip,
+          items: List<ItineraryItem>.from(_items),
+          travelMode: _travelMode,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -396,17 +415,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
           IconButton(
             tooltip: l10n.map,
             icon: const Icon(Icons.map_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => TripMapScreen(
-                    trip: widget.trip,
-                    items: List<ItineraryItem>.from(_items),
-                    travelMode: _travelMode,
-                  ),
-                ),
-              );
-            },
+            onPressed: _openMap,
           ),
         ],
       ),
@@ -451,37 +460,74 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
 
   Widget _buildTimeline(BuildContext context) {
     final grouped = _groupItemsByDate();
+    final l10n = AppLocalizations.of(context);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-      children: [
-        _buildSummaryCard(context),
-        const SizedBox(height: 12),
-        _buildJourneyBrief(context),
-        const SizedBox(height: 12),
-        _buildTravelModeSelector(),
-        const SizedBox(height: 28),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 760),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+          children: [
+            _buildSummaryCard(context),
+            const SizedBox(height: 12),
+            _buildJourneyBrief(context),
+            if (_unmappedItemCount > 0) ...[
+              const SizedBox(height: 12),
+              _buildAttentionSurface(context),
+            ],
+            const SizedBox(height: 12),
+            _buildTravelModeSelector(),
+            const SizedBox(height: 28),
 
-        for (final entry in grouped.entries) ...[
-          _buildDayHeader(context, entry.key, entry.value),
-          const SizedBox(height: 12),
+            for (final entry in grouped.entries) ...[
+              _buildDayHeader(context, entry.key, entry.value),
+              const SizedBox(height: 12),
 
-          for (var i = 0; i < entry.value.length; i++)
-            _buildTimelineItem(
-              context,
-              entry.value[i],
-              routeToNext: i < entry.value.length - 1
-                  ? _routes[_ItineraryRoutePair.keyFor(
-                      entry.value[i],
-                      entry.value[i + 1],
-                    )]
-                  : null,
-              isLast: i == entry.value.length - 1,
-            ),
+              for (var i = 0; i < entry.value.length; i++) ...[
+                AppItineraryItem(
+                  item: entry.value[i],
+                  categoryIcon: _categoryIcon(entry.value[i].category),
+                  bookedLabel: 'Booked',
+                  editLabel: l10n.edit,
+                  deleteLabel: l10n.delete,
+                  formatMinutes: (minutes) => '$minutes min',
+                  onOpen: () => _editItem(entry.value[i]),
+                  onEdit: () => _editItem(entry.value[i]),
+                  onDelete: () => _deleteItem(entry.value[i]),
+                ),
+                if (i < entry.value.length - 1)
+                  AppJourneyConnector(
+                    durationMinutes:
+                        _routes[_ItineraryRoutePair.keyFor(
+                              entry.value[i],
+                              entry.value[i + 1],
+                            )]
+                            ?.durationMinutes ??
+                        entry.value[i].travelMinutesToNext,
+                    distanceMetres:
+                        _routes[_ItineraryRoutePair.keyFor(
+                              entry.value[i],
+                              entry.value[i + 1],
+                            )]
+                            ?.distanceMetres,
+                    travelModeLabel:
+                        _routes[_ItineraryRoutePair.keyFor(
+                              entry.value[i],
+                              entry.value[i + 1],
+                            )] !=
+                            null
+                        ? _travelMode.label
+                        : null,
+                    formatMinutes: (minutes) => '$minutes min',
+                    formatDistance: _formatRouteDistance,
+                  ),
+              ],
 
-          const SizedBox(height: 24),
-        ],
-      ],
+              const SizedBox(height: 32),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -593,6 +639,17 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     );
   }
 
+  Widget _buildAttentionSurface(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return AppAttentionCard(
+      title: l10n.needsAttention,
+      detail: l10n.locationsNeedCoordinates(_unmappedItemCount),
+      actionLabel: l10n.map,
+      onAction: _openMap,
+    );
+  }
+
   Widget _buildDayHeader(
     BuildContext context,
     DateTime date,
@@ -638,145 +695,6 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
             label: Text(isOptimizing ? 'Optimizing...' : 'Optimize day'),
           ),
       ],
-    );
-  }
-
-  Widget _buildTimelineItem(
-    BuildContext context,
-    ItineraryItem item, {
-    required RouteResult? routeToNext,
-    required bool isLast,
-  }) {
-    final l10n = AppLocalizations.of(context);
-
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 58,
-            child: Column(
-              children: [
-                Text(
-                  item.time ?? '—',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: 2,
-                  height: isLast ? 20 : 120,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Card(
-              margin: const EdgeInsets.only(bottom: 14),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () => _editItem(item),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            child: Icon(_categoryIcon(item.category), size: 20),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item.title,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          if (item.isBooked) const Chip(label: Text('Booked')),
-                          IconButton(
-                            tooltip: l10n.delete,
-                            onPressed: () => _deleteItem(item),
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        item.category,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      if (item.location.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on_outlined, size: 18),
-                            const SizedBox(width: 6),
-                            Expanded(child: Text(item.location)),
-                          ],
-                        ),
-                      ],
-
-                      if (item.estimatedCost != null) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.payments_outlined, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${widget.trip.currency} '
-                              '${item.estimatedCost!.toStringAsFixed(2)}',
-                            ),
-                          ],
-                        ),
-                      ],
-
-                      if (item.notes.isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        Text(
-                          item.notes,
-                          style: const TextStyle(color: Colors.black54),
-                        ),
-                      ],
-
-                      if (routeToNext != null) ...[
-                        const Divider(height: 24),
-                        Row(
-                          children: [
-                            Icon(
-                              _travelMode == TravelMode.walking
-                                  ? Icons.directions_walk
-                                  : Icons.directions_car_outlined,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '${routeToNext.durationMinutes} min '
-                              '${_travelMode.label} · '
-                              '${_formatRouteDistance(routeToNext.distanceMetres)}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

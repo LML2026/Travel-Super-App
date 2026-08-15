@@ -383,4 +383,12 @@ class AppLocalizationsHy extends AppLocalizations {
 
   @override
   String get hidePassword => 'Թաքցնել գաղտնաբառը';
+
+  @override
+  String get needsAttention => 'Ուշադրության կարիք ունի';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count վայր(եր)ին կոորդինատներ են պետք';
+  }
 }

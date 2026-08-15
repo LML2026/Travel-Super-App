@@ -380,4 +380,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hidePassword => 'Скрыть пароль';
+
+  @override
+  String get needsAttention => 'Требует внимания';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return 'Для $count мест нужны координаты';
+  }
 }

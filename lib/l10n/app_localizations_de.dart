@@ -387,4 +387,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hidePassword => 'Passwort ausblenden';
+
+  @override
+  String get needsAttention => 'Benötigt Aufmerksamkeit';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return '$count Standort(e) benötigen Koordinaten';
+  }
 }

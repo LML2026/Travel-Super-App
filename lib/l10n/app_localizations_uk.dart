@@ -382,4 +382,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get hidePassword => 'Приховати пароль';
+
+  @override
+  String get needsAttention => 'Потребує уваги';
+
+  @override
+  String locationsNeedCoordinates(Object count) {
+    return 'Для $count місць потрібні координати';
+  }
 }

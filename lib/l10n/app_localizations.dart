@@ -864,6 +864,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide password'**
   String get hidePassword;
+
+  /// No description provided for @needsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get needsAttention;
+
+  /// No description provided for @locationsNeedCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} location(s) need coordinates'**
+  String locationsNeedCoordinates(Object count);
 }
 
 class _AppLocalizationsDelegate
