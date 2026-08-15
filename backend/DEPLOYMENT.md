@@ -63,6 +63,10 @@ npm start
 
 No translation provider is active unless `TRANSLATION_PROVIDER=google` and `GOOGLE_CLOUD_PROJECT` are explicitly configured.
 
+## Timezone Provider Policy
+
+`GOOGLE_TIMEZONE_API_KEY` is a server-only Cloud Run secret for the Google Maps Platform Time Zone API. It must never be passed to Flutter, logged, or committed. Google Time Zone API results are not persisted or cached by this service. Before any client UI displays Google-derived timezone content, review Google's current attribution and display requirements.
+
 ## Image boundary
 
 The final image contains production dependencies and compiled `src` output only. Tests, host `node_modules`, host `dist`, Git metadata, logs, environment files, and credential-file patterns are excluded by `.dockerignore` or the multi-stage build.

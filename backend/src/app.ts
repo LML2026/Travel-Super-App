@@ -5,10 +5,14 @@ import { PublicApiError, publicErrorResponse } from "./translation/translation_e
 import { TranslationProvider } from "./translation/translation_provider";
 import { createTranslationRouter } from "./translation/translation_routes";
 import { UnavailableTranslationProvider } from "./translation/unavailable_translation_provider";
+import { TimezoneProvider } from "./timezone/timezone_provider";
+import { createTimezoneRouter } from "./timezone/timezone_routes";
+import { UnavailableTimezoneProvider } from "./timezone/unavailable_timezone_provider";
 
 export interface AppDependencies {
   tokenVerifier: TokenVerifier;
   provider?: TranslationProvider;
+  timezoneProvider?: TimezoneProvider;
   rateLimiter?: RateLimiter;
   allowedOrigins?: string[];
 }
@@ -25,6 +29,12 @@ export function createApp(dependencies: AppDependencies) {
       tokenVerifier: dependencies.tokenVerifier,
       provider: dependencies.provider ?? new UnavailableTranslationProvider(),
       rateLimiter: dependencies.rateLimiter ?? new InMemoryRateLimiter(),
+    }),
+  );
+  app.use(
+    createTimezoneRouter({
+      tokenVerifier: dependencies.tokenVerifier,
+      provider: dependencies.timezoneProvider ?? new UnavailableTimezoneProvider(),
     }),
   );
   app.use(safeErrorHandler);
