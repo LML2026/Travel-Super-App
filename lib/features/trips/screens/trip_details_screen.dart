@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/app_metric_tile.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/services/trip_overview_service.dart';
 import '../../../core/storage/itinerary_storage_service.dart';
@@ -202,14 +207,11 @@ class _TripHero extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colorScheme.primary, colorScheme.tertiary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
+        color: colorScheme.primary,
+        borderRadius: AppRadii.largeBorder.borderRadius,
+        border: Border.all(color: colorScheme.primary.withAlpha(90)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,18 +237,21 @@ class _TripHero extends StatelessWidget {
             '${summary.trip.travellers == 1 ? 'traveller' : 'travellers'}',
             style: TextStyle(color: colorScheme.onPrimary.withAlpha(220)),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.md),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: colorScheme.onPrimary.withAlpha(28),
-              borderRadius: BorderRadius.circular(30),
+              color: AppColors.saffron.withAlpha(230),
+              borderRadius: AppRadii.smallBorder.borderRadius,
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
               child: Text(
                 _statusText(summary),
-                style: TextStyle(
-                  color: colorScheme.onPrimary,
+                style: const TextStyle(
+                  color: AppColors.ink,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -306,26 +311,7 @@ class _SummaryMetrics extends StatelessWidget {
             for (final value in values)
               SizedBox(
                 width: width,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          value.value,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(value.label),
-                      ],
-                    ),
-                  ),
-                ),
+                child: AppMetricTile(label: value.label, value: value.value),
               ),
           ],
         );
@@ -479,13 +465,13 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
+    return AppCard(
+      padding: EdgeInsets.zero,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(AppRadii.medium)),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -635,10 +621,10 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

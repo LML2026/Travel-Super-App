@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_trip_card.dart';
 import '../../../core/storage/trip_storage_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/trip.dart';
@@ -73,82 +76,63 @@ class _TripsListScreenState extends State<TripsListScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _trips.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.luggage_outlined, size: 72),
-                    const SizedBox(height: 20),
-                    Text(
-                      l10n.noTripsYet,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(l10n.createFirstTrip, textAlign: TextAlign.center),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: _createTrip,
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.createTrip),
-                    ),
-                  ],
-                ),
-              ),
+          ? AppEmptyState(
+              icon: Icons.luggage_outlined,
+              title: l10n.noTripsYet,
+              message: l10n.createFirstTrip,
+              actionLabel: l10n.createTrip,
+              onAction: _createTrip,
             )
-          : ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: _trips.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final trip = _trips[index];
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final contentWidth = constraints.maxWidth >= 900
+                    ? 760.0
+                    : constraints.maxWidth;
 
-                return Card(
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(18),
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.flight_takeoff),
-                    ),
-                    title: Text(
-                      trip.destination,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        '${_formatDate(trip.departureDate)} - ${_formatDate(trip.returnDate)}'
-                        '\n${trip.travellers} traveller(s) • ${trip.currency} ${trip.budget.toStringAsFixed(2)}',
-                      ),
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
-                      final result = await Navigator.of(context).push<Object?>(
-                        MaterialPageRoute(
-                          builder: (_) => TripDetailsScreen(trip: trip),
-                        ),
-                      );
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: contentWidth),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      itemCount: _trips.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: AppSpacing.md),
+                      itemBuilder: (context, index) {
+                        final trip = _trips[index];
 
-                      if (!mounted) return;
+                        return AppTripCard(
+                          destination: trip.destination,
+                          dates:
+                              '${_formatDate(trip.departureDate)} - ${_formatDate(trip.returnDate)}',
+                          details:
+                              '${trip.travellers} traveller(s) • ${trip.currency} ${trip.budget.toStringAsFixed(2)}',
+                          onTap: () async {
+                            final result = await Navigator.of(context)
+                                .push<Object?>(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        TripDetailsScreen(trip: trip),
+                                  ),
+                                );
 
-                      if (result == 'delete') {
-                        setState(() {
-                          _trips.removeAt(index);
-                        });
-                        await _persistTrips();
-                      } else if (result is Trip) {
-                        setState(() {
-                          _trips[index] = result;
-                        });
-                        await _persistTrips();
-                      }
-                    },
+                            if (!mounted) return;
+
+                            if (result == 'delete') {
+                              setState(() {
+                                _trips.removeAt(index);
+                              });
+                              await _persistTrips();
+                            } else if (result is Trip) {
+                              setState(() {
+                                _trips[index] = result;
+                              });
+                              await _persistTrips();
+                            }
+                          },
+                        );
+                      },
+                    ),
                   ),
                 );
               },
