@@ -4,7 +4,7 @@ enum JourneyInsightType { information, attention }
 
 enum JourneyInsightSeverity { low, normal }
 
-enum JourneyInsightConfidence { confirmed, high }
+enum JourneyInsightConfidence { confirmed, high, unknown }
 
 enum JourneyActionType {
   openTrip,
