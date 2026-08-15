@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/itinerary_ordering.dart';
+import '../../../../core/journey_intelligence/analyzers/missing_coordinate_analyzer.dart';
+import '../../../../core/journey_intelligence/companion_policy.dart';
+import '../../../../core/journey_intelligence/companion_policy_context.dart';
+import '../../../../core/journey_intelligence/journey_analyzer.dart';
+import '../../../../core/journey_intelligence/journey_companion_presenter.dart';
+import '../../../../core/journey_intelligence/journey_context_builder.dart';
+import '../../../../core/journey_intelligence/journey_insight.dart';
 import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../../core/storage/itinerary_storage_service.dart';
@@ -388,9 +395,26 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     return {for (final date in sortedDates) date: grouped[date]!};
   }
 
-  int get _unmappedItemCount => _items
-      .where((item) => item.latitude == null || item.longitude == null)
-      .length;
+  JourneyCompanionViewModel? get _companionViewModel {
+    const analyzers = <JourneyAnalyzer>[MissingCoordinateAnalyzer()];
+    final context = JourneyContextBuilder.build(
+      trip: widget.trip,
+      items: _items,
+      clock: DateTime.now(),
+    );
+    final insights = analyzers
+        .expand((analyzer) => analyzer.analyze(context))
+        .toList(growable: false);
+    final decision = CompanionPolicy.decide(
+      insights: insights,
+      context: CompanionPolicyContext(
+        clock: context.clock,
+        availableActions: const {JourneyActionType.openMap},
+      ),
+    );
+
+    return JourneyCompanionPresenter.present(decision);
+  }
 
   void _openMap() {
     Navigator.of(context).push(
@@ -461,6 +485,7 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
   Widget _buildTimeline(BuildContext context) {
     final grouped = _groupItemsByDate();
     final l10n = AppLocalizations.of(context);
+    final companion = _companionViewModel;
 
     return Center(
       child: ConstrainedBox(
@@ -471,9 +496,9 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
             _buildSummaryCard(context),
             const SizedBox(height: 12),
             _buildJourneyBrief(context),
-            if (_unmappedItemCount > 0) ...[
+            if (companion != null) ...[
               const SizedBox(height: 12),
-              _buildAttentionSurface(context),
+              _buildCompanionSurface(context, companion),
             ],
             const SizedBox(height: 12),
             _buildTravelModeSelector(),
@@ -639,12 +664,19 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
     );
   }
 
-  Widget _buildAttentionSurface(BuildContext context) {
+  Widget _buildCompanionSurface(
+    BuildContext context,
+    JourneyCompanionViewModel companion,
+  ) {
     final l10n = AppLocalizations.of(context);
 
     return AppAttentionCard(
       title: l10n.needsAttention,
-      detail: l10n.locationsNeedCoordinates(_unmappedItemCount),
+      detail: switch (companion.message) {
+        JourneyCompanionMessage.missingCoordinates =>
+          l10n.locationsNeedCoordinates(companion.arguments['count']! as int),
+        JourneyCompanionMessage.comingUp => '',
+      },
       actionLabel: l10n.map,
       onAction: _openMap,
     );
