@@ -4,6 +4,7 @@ import '../../../../core/itinerary_ordering.dart';
 import '../../../../core/services/itinerary_optimizer.dart';
 import '../../../../core/services/route_service.dart';
 import '../../../../core/storage/itinerary_storage_service.dart';
+import '../../../../core/widgets/app_journey_brief.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/itinerary/itinerary_item.dart';
 import '../../models/trip.dart';
@@ -456,6 +457,8 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
       children: [
         _buildSummaryCard(context),
         const SizedBox(height: 12),
+        _buildJourneyBrief(context),
+        const SizedBox(height: 12),
         _buildTravelModeSelector(),
         const SizedBox(height: 28),
 
@@ -537,6 +540,56 @@ class _ItineraryScreenState extends State<ItineraryScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildJourneyBrief(BuildContext context) {
+    final firstItem = _items.isEmpty ? null : _items.first;
+    final mappedCount = _items
+        .where((item) => item.latitude != null && item.longitude != null)
+        .length;
+    final bookedCount = _items.where((item) => item.isBooked).length;
+    final totalCost = _items.fold<double>(
+      0,
+      (total, item) => total + (item.estimatedCost ?? 0),
+    );
+
+    return AppJourneyBrief(
+      title: 'Journey brief',
+      lines: [
+        AppJourneyBriefLine(
+          icon: Icons.route_outlined,
+          label: 'Stops',
+          value: '${_items.length} planned',
+        ),
+        if (firstItem != null)
+          AppJourneyBriefLine(
+            icon: Icons.schedule_outlined,
+            label: 'First stop',
+            value: firstItem.time == null
+                ? firstItem.title
+                : '${firstItem.title} at ${firstItem.time}',
+          ),
+        if (mappedCount < _items.length)
+          AppJourneyBriefLine(
+            icon: Icons.location_off_outlined,
+            label: 'Map coverage',
+            value:
+                '${_items.length - mappedCount} location(s) need coordinates',
+          ),
+        if (bookedCount > 0)
+          AppJourneyBriefLine(
+            icon: Icons.bookmark_outline,
+            label: 'Booked',
+            value: '$bookedCount item(s)',
+          ),
+        if (totalCost > 0)
+          AppJourneyBriefLine(
+            icon: Icons.payments_outlined,
+            label: 'Estimated cost',
+            value: '${widget.trip.currency} ${totalCost.toStringAsFixed(2)}',
+          ),
+      ],
     );
   }
 
