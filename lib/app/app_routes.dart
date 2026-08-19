@@ -68,6 +68,7 @@ enum AppRoute {
   tripNotes,
   tripDocuments,
   tripActivities,
+  tripAiPlanner,
   profile,
   destination,
   bookingStatus,
@@ -148,6 +149,8 @@ extension AppRouteConfig on AppRoute {
         return '/trips/:id/documents';
       case AppRoute.tripActivities:
         return '/trips/:id/activities';
+      case AppRoute.tripAiPlanner:
+        return '/trips/:id/ai-planner';
       case AppRoute.profile:
         return '/profile';
       case AppRoute.destination:
@@ -171,19 +174,17 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
 
-  Future<T?> pushTransport<T>() =>
-      pushNamed<T>(AppRoute.transport.routeName);
+  Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
 
-    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+  Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
 
-    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+  Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
       pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
 
-    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+  Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
       pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
 
-    Future<T?> pushSavedRides<T>() =>
-      pushNamed<T>(AppRoute.savedRides.routeName);
+  Future<T?> pushSavedRides<T>() => pushNamed<T>(AppRoute.savedRides.routeName);
 
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 
@@ -284,6 +285,13 @@ extension AppNavigation on BuildContext {
   Future<T?> pushTripActivities<T>(String tripId) => pushNamed<T>(
         AppRoute.tripActivities.routeName,
         pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushTripAiPlanner<T>(String tripId, {Trip? initialTrip}) =>
+      pushNamed<T>(
+        AppRoute.tripAiPlanner.routeName,
+        pathParameters: {'id': tripId},
+        extra: initialTrip,
       );
 
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);

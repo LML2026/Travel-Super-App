@@ -81,10 +81,10 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     final rides = ridesAsync.valueOrNull ?? const <TaxiSavedRide>[];
     final savedFlights = savedFlightsAsync.valueOrNull ?? const <SavedFlight>[];
     final savedHotels = savedHotelsAsync.valueOrNull ?? const <SavedHotel>[];
-    final linkedFlight = _findLinkedFlight(savedFlights, _trip.selectedFlightId);
+    final linkedFlight =
+        _findLinkedFlight(savedFlights, _trip.selectedFlightId);
     final linkedHotel = _findLinkedHotel(savedHotels, _trip.selectedHotelId);
-    final hasDocuments =
-      documents.isNotEmpty;
+    final hasDocuments = documents.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -245,7 +245,10 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 onOpenDocuments: () => context.pushTripDocuments(_trip.id),
               ),
               const TranslatorCard(),
-              const AiAssistantCard(),
+              AiAssistantCard(
+                onOpenPlanner: () =>
+                    context.pushTripAiPlanner(_trip.id, initialTrip: _trip),
+              ),
             ],
           ),
         ),
@@ -316,7 +319,8 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 contentPadding: EdgeInsets.zero,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: const Text('Trip owner'),
-                subtitle: Text('${_trip.travellers} traveller${_trip.travellers == 1 ? '' : 's'} planned'),
+                subtitle: Text(
+                    '${_trip.travellers} traveller${_trip.travellers == 1 ? '' : 's'} planned'),
               ),
               const SizedBox(height: 8),
               FilledButton.icon(
@@ -713,7 +717,8 @@ class _OverviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spent = expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
+    final spent =
+        expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
     final remaining = trip.budget - spent;
 
     return DashboardSection(
@@ -730,7 +735,8 @@ class _OverviewSection extends StatelessWidget {
           _InfoRow(
             icon: Icons.groups_outlined,
             label: 'Travellers',
-            value: '${trip.travellers} traveller${trip.travellers == 1 ? '' : 's'}',
+            value:
+                '${trip.travellers} traveller${trip.travellers == 1 ? '' : 's'}',
           ),
           _InfoRow(
             icon: Icons.flight_takeoff,
@@ -955,7 +961,8 @@ class _ItinerarySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (items.isEmpty)
-            const Text('No itinerary items yet. Add activities, bookings, transport, flights or hotels to build the trip timeline.')
+            const Text(
+                'No itinerary items yet. Add activities, bookings, transport, flights or hotels to build the trip timeline.')
           else
             ...items.map((item) => _TimelineRow(item: item)),
           const SizedBox(height: 8),
@@ -1101,7 +1108,8 @@ class _BookingsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (bookings.isEmpty)
-                  const Text('Confirmed flight, hotel and transport bookings will appear here.')
+                  const Text(
+                      'Confirmed flight, hotel and transport bookings will appear here.')
                 else
                   ...bookings.take(4).map(
                         (booking) => ListTile(
@@ -1115,7 +1123,8 @@ class _BookingsSection extends StatelessWidget {
                       ),
                 TextButton(
                   onPressed: onOpenBookings,
-                  child: Text(bookings.isEmpty ? 'Open bookings' : 'View all bookings'),
+                  child: Text(
+                      bookings.isEmpty ? 'Open bookings' : 'View all bookings'),
                 ),
               ],
             ),
@@ -1138,7 +1147,8 @@ class _ExpensesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spent = expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
+    final spent =
+        expenses.fold<double>(0, (sum, expense) => sum + expense.amount);
     final remaining = trip.budget - spent;
     final grouped = <String, double>{};
     for (final expense in expenses) {
@@ -1157,18 +1167,22 @@ class _ExpensesSection extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Trip Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
+                Text(
+                    'Trip Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
                 Text('Spent: ${trip.currency} ${spent.toStringAsFixed(2)}'),
-                Text('Remaining: ${trip.currency} ${remaining.toStringAsFixed(2)}'),
+                Text(
+                    'Remaining: ${trip.currency} ${remaining.toStringAsFixed(2)}'),
                 const SizedBox(height: 8),
                 if (grouped.isEmpty)
-                  const Text('No expenses yet. Track flights, hotels, food, transport and activities here.')
+                  const Text(
+                      'No expenses yet. Track flights, hotels, food, transport and activities here.')
                 else
                   ...grouped.entries.map(
                     (entry) => _InfoRow(
                       icon: Icons.label_outline,
                       label: entry.key,
-                      value: '${trip.currency} ${entry.value.toStringAsFixed(2)}',
+                      value:
+                          '${trip.currency} ${entry.value.toStringAsFixed(2)}',
                     ),
                   ),
                 TextButton(
@@ -1203,19 +1217,22 @@ class _DocumentsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (documents.isEmpty)
-                  const Text('Add tickets, confirmations, passports, visa references and travel documents.')
+                  const Text(
+                      'Add tickets, confirmations, passports, visa references and travel documents.')
                 else
                   ...documents.take(4).map(
                         (document) => ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.description_outlined),
                           title: Text(document.title),
-                          subtitle: Text('${document.type} • ${document.reference}'),
+                          subtitle:
+                              Text('${document.type} • ${document.reference}'),
                         ),
                       ),
                 TextButton(
                   onPressed: onOpenDocuments,
-                  child: Text(documents.isEmpty ? 'Add document' : 'Manage documents'),
+                  child: Text(
+                      documents.isEmpty ? 'Add document' : 'Manage documents'),
                 ),
               ],
             ),
@@ -1247,12 +1264,14 @@ class _TravellersSection extends StatelessWidget {
               for (var index = 0; index < trip.travellers; index++)
                 Chip(
                   avatar: const Icon(Icons.person_outline, size: 18),
-                  label: Text(index == 0 ? 'Trip owner' : 'Traveller ${index + 1}'),
+                  label: Text(
+                      index == 0 ? 'Trip owner' : 'Traveller ${index + 1}'),
                 ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text('Collaborator invites are represented in the UI and ready to connect to a live sharing service.'),
+          const Text(
+              'Collaborator invites are represented in the UI and ready to connect to a live sharing service.'),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onInvite,
@@ -1299,7 +1318,8 @@ class _MapRouteSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Open the maps hub with this trip context and route-ready places.'),
+          const Text(
+              'Open the maps hub with this trip context and route-ready places.'),
           const SizedBox(height: 8),
           if (uniqueLocations.isEmpty)
             const Text('Add itinerary locations to build a route.')
@@ -1518,7 +1538,8 @@ String _countdownText(Trip trip) {
   return remaining == 0 ? 'Final day of trip' : '$remaining days remaining';
 }
 
-DateTime _startOfDay(DateTime date) => DateTime(date.year, date.month, date.day);
+DateTime _startOfDay(DateTime date) =>
+    DateTime(date.year, date.month, date.day);
 
 DateTime _endOfDay(DateTime date) =>
     DateTime(date.year, date.month, date.day, 23, 59, 59);
@@ -1559,7 +1580,9 @@ String _bookingTitle(Booking booking) {
           .join(' ')
           .ifEmpty('Flight booking');
     case BookingType.hotel:
-      return booking.metadata['hotelName']?.toString().ifEmpty('Hotel booking') ??
+      return booking.metadata['hotelName']
+              ?.toString()
+              .ifEmpty('Hotel booking') ??
           'Hotel booking';
     case BookingType.transport:
       return (booking.metadata['providerName'] ??
@@ -1572,7 +1595,8 @@ String _bookingTitle(Booking booking) {
 String _bookingSubtitle(Booking booking) {
   switch (booking.type) {
     case BookingType.flight:
-      final departure = booking.metadata['departure']?.toString() ?? 'Departure';
+      final departure =
+          booking.metadata['departure']?.toString() ?? 'Departure';
       final arrival = booking.metadata['arrival']?.toString() ?? 'Arrival';
       return '$departure -> $arrival';
     case BookingType.hotel:

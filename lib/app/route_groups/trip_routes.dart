@@ -11,6 +11,7 @@ import '../../features/trips/presentation/screens/trip_documents_page.dart';
 import '../../features/trips/presentation/screens/trip_dashboard_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
 import '../../features/trips/presentation/screens/trip_notes_page.dart';
+import '../../features/ai_planner/presentation/screens/ai_trip_planner_page.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
 
@@ -99,12 +100,30 @@ List<RouteBase> buildTripRoutes() {
         final tripId = state.pathParameters['id'];
         if (tripId == null || tripId.isEmpty) {
           return const RouteErrorPage(
-            message:
-                'Trip activities route requires a trip id path parameter.',
+            message: 'Trip activities route requires a trip id path parameter.',
           );
         }
 
         return TripActivitiesPage(tripId: tripId);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.tripAiPlanner.routeName,
+      path: AppRoute.tripAiPlanner.path,
+      builder: (context, state) {
+        final tripId = state.pathParameters['id'];
+        if (tripId == null || tripId.isEmpty) {
+          return const RouteErrorPage(
+            message: 'Trip AI planner route requires a trip id path parameter.',
+          );
+        }
+
+        final extra = state.extra;
+        if (extra is domain.Trip) {
+          return AiTripPlannerPage(trip: extra);
+        }
+
+        return _TripAiPlannerResolverPage(tripId: tripId);
       },
     ),
   ];
@@ -179,6 +198,43 @@ class _TripEditResolverPage extends ConsumerWidget {
         }
 
         return EditTripPage(trip: trip);
+      },
+    );
+  }
+}
+
+class _TripAiPlannerResolverPage extends ConsumerWidget {
+  const _TripAiPlannerResolverPage({required this.tripId});
+
+  final String tripId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tripAsync = ref.watch(selectedTripProvider(tripId));
+
+    return tripAsync.when(
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: const Text('AI Travel Planner')),
+        body: Center(
+          child: Text('Failed to load trip: $error'),
+        ),
+      ),
+      data: (trip) {
+        if (trip == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('AI Travel Planner')),
+            body: const Center(
+              child: Text('Trip not found.'),
+            ),
+          );
+        }
+
+        return AiTripPlannerPage(trip: trip);
       },
     );
   }
