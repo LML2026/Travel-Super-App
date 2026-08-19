@@ -21,7 +21,8 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('ITAREVO')),
       body: summaryAsync.when(
-        loading: () => const LoadingIndicator(message: 'Preparing your dashboard...'),
+        loading: () =>
+            const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(
           title: 'Dashboard unavailable',
           message: error.toString(),
@@ -49,19 +50,58 @@ class HomePage extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               if (summary.hasUpcomingTrip)
-                _UpcomingTripCard(summary: summary, onOpenTrip: () {
-                  context.pushTripDetails(summary.upcomingTrip!);
-                })
+                _UpcomingTripCard(
+                    summary: summary,
+                    onOpenTrip: () {
+                      context.pushTripDetails(summary.upcomingTrip!);
+                    })
               else
                 const AppEmptyState(
                   icon: Icons.luggage_outlined,
                   title: 'No upcoming trip',
-                  message: 'Save a trip to see flights, hotels, weather, and budget here.',
+                  message:
+                      'Save a trip to see flights, hotels, weather, and budget here.',
                 ),
               const SizedBox(height: AppSpacing.lg),
               _WalletSnapshotCard(walletAsync: walletAsync),
               const SizedBox(height: AppSpacing.lg),
-              Text('Book Transport', style: Theme.of(context).textTheme.titleMedium),
+              AppCard(
+                onTap: () => context.pushTravelDiscovery(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.travel_explore_outlined),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Travel Discovery',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Search flights, hotels, rides, activities and restaurants, then add them to a trip.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text('Quick Booking',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),
               Wrap(
                 spacing: AppSpacing.sm,
@@ -169,7 +209,9 @@ class _UpcomingTripCard extends StatelessWidget {
         children: [
           Text('Upcoming Trip', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
-          Text(trip.destination, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Text(trip.destination,
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
           Text(dateLine),
           const SizedBox(height: AppSpacing.md),
@@ -185,8 +227,18 @@ class _UpcomingTripCard extends StatelessWidget {
 
   static String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }

@@ -6,6 +6,7 @@ import '../../core/presentation/pages/booking_status_page.dart';
 import '../../core/presentation/pages/confirmed_booking_details_page.dart';
 import '../../features/ai/screens/ai_assistant_page.dart';
 import '../../features/destinations/destination_detail_page.dart';
+import '../../features/discovery/presentation/screens/travel_discovery_page.dart';
 import '../../features/maps/models/places_prefill.dart';
 import '../../features/maps/presentation/screens/maps_hub_page.dart';
 import '../../features/nearby/models/nearby_service_type.dart';
@@ -41,6 +42,11 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.wallet.routeName,
       path: AppRoute.wallet.path,
       builder: (context, state) => const WalletPage(),
+    ),
+    GoRoute(
+      name: AppRoute.travelDiscovery.routeName,
+      path: AppRoute.travelDiscovery.path,
+      builder: (context, state) => const TravelDiscoveryPage(),
     ),
     GoRoute(
       name: AppRoute.transport.routeName,
@@ -112,11 +118,13 @@ List<RouteBase> buildCoreRoutes() {
         final extra = state.extra;
         if (extra != null && extra is! NearbyServiceType) {
           return const RouteErrorPage(
-            message: 'Nearby Essentials expects an optional NearbyServiceType payload.',
+            message:
+                'Nearby Essentials expects an optional NearbyServiceType payload.',
           );
         }
 
-        return NearbyEssentialsPage(initialService: extra as NearbyServiceType?);
+        return NearbyEssentialsPage(
+            initialService: extra as NearbyServiceType?);
       },
     ),
     GoRoute(
@@ -162,7 +170,8 @@ List<RouteBase> buildCoreRoutes() {
       builder: (context, state) {
         final id = state.pathParameters['id'];
         if (id == null) {
-          return const RouteErrorPage(message: 'Trip ID is required for bookings.');
+          return const RouteErrorPage(
+              message: 'Trip ID is required for bookings.');
         }
         return TripBookingsPage(tripId: id);
       },
@@ -174,7 +183,8 @@ List<RouteBase> buildCoreRoutes() {
         final extra = state.extra;
         if (extra is! Booking) {
           return const RouteErrorPage(
-            message: 'Confirmed booking details route requires a Booking extra payload.',
+            message:
+                'Confirmed booking details route requires a Booking extra payload.',
           );
         }
         return ConfirmedBookingDetailsPage(booking: extra);
