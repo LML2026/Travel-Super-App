@@ -103,6 +103,41 @@ class HomePage extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                onTap: () => context.pushSavedItems(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.bookmark_border),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Saved Items',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Flights, hotels, rides, restaurants and places you want to remember.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
               Text('Quick Booking',
                   style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),

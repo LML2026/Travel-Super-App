@@ -9,6 +9,8 @@ import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../expenses/presentation/screens/add_expense_page.dart';
 import '../../../maps/models/places_prefill.dart';
 import '../../../translator/domain/translation_models.dart';
+import '../../../trip_readiness/domain/entities/trip_readiness_item.dart';
+import '../../../trip_readiness/presentation/providers/trip_readiness_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/domain/entities/trip_activity.dart';
 import '../../../trips/domain/entities/trip_document.dart';
@@ -92,6 +94,7 @@ class _LiveTripContent extends ConsumerWidget {
     final bookingsAsync = ref.watch(tripBookingsProvider(trip.id));
     final documentsAsync = ref.watch(tripDocumentsProvider(trip.id));
     final expensesAsync = ref.watch(tripExpensesProvider(trip.id));
+    final readinessSummary = ref.watch(tripReadinessSummaryProvider(trip.id));
 
     final activities = activitiesAsync.valueOrNull ?? const <TripActivity>[];
     final bookings = bookingsAsync.valueOrNull ?? const <Booking>[];
@@ -126,6 +129,7 @@ class _LiveTripContent extends ConsumerWidget {
               ref.invalidate(tripBookingsProvider(trip.id));
               ref.invalidate(tripDocumentsProvider(trip.id));
               ref.invalidate(tripExpensesProvider(trip.id));
+              ref.invalidate(tripReadinessSummaryProvider(trip.id));
             },
             child: ListView(
               padding: const EdgeInsets.all(16),
@@ -217,7 +221,11 @@ class _LiveTripContent extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _ReadinessCard(reminders: liveTrip.reminders),
+                _ReadinessCard(
+                  summary: readinessSummary,
+                  fallbackReminders: liveTrip.reminders,
+                  onOpenReadiness: () => context.pushTripReadiness(trip),
+                ),
                 const SizedBox(height: 12),
                 _EssentialsCard(
                   trip: trip,
@@ -804,9 +812,15 @@ class _AiCompanionCard extends StatelessWidget {
 }
 
 class _ReadinessCard extends StatelessWidget {
-  const _ReadinessCard({required this.reminders});
+  const _ReadinessCard({
+    required this.summary,
+    required this.fallbackReminders,
+    required this.onOpenReadiness,
+  });
 
-  final List<String> reminders;
+  final TripReadinessSummary summary;
+  final List<String> fallbackReminders;
+  final VoidCallback onOpenReadiness;
 
   @override
   Widget build(BuildContext context) {
@@ -823,18 +837,134 @@ class _ReadinessCard extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 8),
-            for (final reminder in reminders)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                leading: const Icon(Icons.task_alt_outlined),
-                title: Text(reminder),
-              ),
+            _PersistentReadinessSummary(
+              summary: summary,
+              fallbackReminders: fallbackReminders,
+              onOpenReadiness: onOpenReadiness,
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+class _PersistentReadinessSummary extends StatelessWidget {
+  const _PersistentReadinessSummary({
+    required this.summary,
+    required this.fallbackReminders,
+    required this.onOpenReadiness,
+  });
+
+  final TripReadinessSummary summary;
+  final List<String> fallbackReminders;
+  final VoidCallback onOpenReadiness;
+
+  @override
+  Widget build(BuildContext context) {
+    final overdueCount =
+        summary.overdueItems.length + summary.overdueReminders.length;
+    final dueTodayCount =
+        summary.dueTodayItems.length + summary.dueTodayReminders.length;
+
+    if (summary.totalCount == 0 && summary.reminders.isEmpty) {
+      return _DerivedReminderList(
+        reminders: fallbackReminders,
+        onOpenReadiness: onOpenReadiness,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: LinearProgressIndicator(value: summary.progress)),
+            const SizedBox(width: 12),
+            Text('${(summary.progress * 100).round()}%'),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            Chip(label: Text('${summary.remainingCount} pending')),
+            Chip(label: Text('${summary.completedCount} complete')),
+            if (overdueCount > 0)
+              Chip(
+                label: Text('$overdueCount overdue'),
+                avatar: Icon(
+                  Icons.warning_amber_outlined,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            if (dueTodayCount > 0)
+              Chip(label: Text('$dueTodayCount due today')),
+          ],
+        ),
+        if (summary.nextTask != null) ...[
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.task_alt_outlined),
+            title: Text(summary.nextTask!.title),
+            subtitle: Text(_readinessSubtitle(summary.nextTask!)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: onOpenReadiness,
+          ),
+        ],
+        const SizedBox(height: 8),
+        FilledButton.icon(
+          onPressed: onOpenReadiness,
+          icon: const Icon(Icons.checklist_outlined),
+          label: const Text('Manage readiness'),
+        ),
+      ],
+    );
+  }
+}
+
+class _DerivedReminderList extends StatelessWidget {
+  const _DerivedReminderList({
+    required this.reminders,
+    required this.onOpenReadiness,
+  });
+
+  final List<String> reminders;
+  final VoidCallback onOpenReadiness;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (reminders.isEmpty)
+          const Text('No readiness reminders for the next few hours.')
+        else
+          for (final reminder in reminders)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              leading: const Icon(Icons.task_alt_outlined),
+              title: Text(reminder),
+            ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: onOpenReadiness,
+          icon: const Icon(Icons.add_task_outlined),
+          label: const Text('Create checklist'),
+        ),
+      ],
+    );
+  }
+}
+
+String _readinessSubtitle(TripReadinessItem item) {
+  final due = item.dueAt;
+  final dueText =
+      due == null ? 'No due date' : DateFormat('EEE d MMM').format(due);
+  return '${item.category.name} · $dueText';
 }
 
 class _EssentialsCard extends StatelessWidget {

@@ -41,6 +41,7 @@ bool _isProtectedPath(String path) {
       path.startsWith('/wallet') ||
       path.startsWith('/transport') ||
       path.startsWith('/translator') ||
+      path.startsWith('/saved') ||
       path.startsWith('/documents') ||
       path.startsWith('/trips');
 }

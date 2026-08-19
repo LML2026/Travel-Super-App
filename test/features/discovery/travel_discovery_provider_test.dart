@@ -6,6 +6,8 @@ import 'package:travel_super_app/features/authentication/presentation/providers/
 import 'package:travel_super_app/features/discovery/data/travel_discovery_service.dart';
 import 'package:travel_super_app/features/discovery/domain/travel_discovery_models.dart';
 import 'package:travel_super_app/features/discovery/presentation/providers/travel_discovery_provider.dart';
+import 'package:travel_super_app/features/saved_items/data/saved_items_repository.dart';
+import 'package:travel_super_app/features/saved_items/presentation/providers/saved_items_provider.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip_activity.dart';
 import 'package:travel_super_app/features/trips/domain/repositories/trip_activity_repository.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_activity_provider.dart';
@@ -19,16 +21,20 @@ void main() {
           travelDiscoveryServiceProvider.overrideWithValue(
             const DemoTravelDiscoveryService(),
           ),
+          savedItemsRepositoryProvider.overrideWithValue(
+            MemorySavedItemsRepository(),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
+      await container.read(travelDiscoveryControllerProvider.future);
       final controller =
           container.read(travelDiscoveryControllerProvider.notifier);
 
       controller.selectTrip('trip-1');
       await controller.search(_query());
-      controller.toggleSave('demo-transport-private');
+      await controller.toggleSave('demo-transport-private');
       controller.toggleCompare('demo-flight-direct');
 
       final state =
@@ -57,10 +63,14 @@ void main() {
           travelDiscoveryBookingSaverProvider.overrideWithValue(
             (booking) async => savedBookings.add(booking),
           ),
+          savedItemsRepositoryProvider.overrideWithValue(
+            MemorySavedItemsRepository(),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
+      await container.read(travelDiscoveryControllerProvider.future);
       final controller =
           container.read(travelDiscoveryControllerProvider.notifier);
       controller.selectTrip('trip-1');
@@ -83,10 +93,14 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           tripActivityRepositoryProvider.overrideWithValue(repository),
+          savedItemsRepositoryProvider.overrideWithValue(
+            MemorySavedItemsRepository(),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
+      await container.read(travelDiscoveryControllerProvider.future);
       final controller =
           container.read(travelDiscoveryControllerProvider.notifier);
       controller.selectTrip('trip-1');

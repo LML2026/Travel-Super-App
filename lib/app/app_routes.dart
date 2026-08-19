@@ -44,6 +44,7 @@ enum AppRoute {
   wallet,
   liveTrip,
   travelDiscovery,
+  savedItems,
   transport,
   taxi,
   taxiResults,
@@ -73,6 +74,7 @@ enum AppRoute {
   tripActivities,
   tripAiPlanner,
   tripLive,
+  tripReadiness,
   translator,
   profile,
   destination,
@@ -104,6 +106,8 @@ extension AppRouteConfig on AppRoute {
         return '/live-trip';
       case AppRoute.travelDiscovery:
         return '/discover';
+      case AppRoute.savedItems:
+        return '/saved';
       case AppRoute.transport:
         return '/transport';
       case AppRoute.taxi:
@@ -162,6 +166,8 @@ extension AppRouteConfig on AppRoute {
         return '/trips/:id/ai-planner';
       case AppRoute.tripLive:
         return '/trips/:id/live';
+      case AppRoute.tripReadiness:
+        return '/trips/:id/readiness';
       case AppRoute.translator:
         return '/translator';
       case AppRoute.profile:
@@ -192,6 +198,8 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushTravelDiscovery<T>() =>
       pushNamed<T>(AppRoute.travelDiscovery.routeName);
+
+  Future<T?> pushSavedItems<T>() => pushNamed<T>(AppRoute.savedItems.routeName);
 
   Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
 
@@ -315,6 +323,12 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushTripLive<T>(Trip trip) => pushNamed<T>(
         AppRoute.tripLive.routeName,
+        pathParameters: {'id': trip.id},
+        extra: trip,
+      );
+
+  Future<T?> pushTripReadiness<T>(Trip trip) => pushNamed<T>(
+        AppRoute.tripReadiness.routeName,
         pathParameters: {'id': trip.id},
         extra: trip,
       );

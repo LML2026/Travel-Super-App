@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/models/booking.dart';
 import '../../../../core/repositories/booking_repository.dart';
 import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../saved_items/presentation/providers/saved_items_provider.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../data/travel_discovery_service.dart';
 import '../../domain/travel_discovery_models.dart';
@@ -26,8 +27,11 @@ final travelDiscoveryControllerProvider =
 
 class TravelDiscoveryController extends AsyncNotifier<TravelDiscoveryState> {
   @override
-  FutureOr<TravelDiscoveryState> build() {
-    return const TravelDiscoveryState();
+  Future<TravelDiscoveryState> build() async {
+    final savedItems = await ref.watch(savedItemsControllerProvider.future);
+    return TravelDiscoveryState(
+      savedIds: savedItems.map((item) => item.id).toSet(),
+    );
   }
 
   Future<void> search(TravelDiscoveryQuery query) async {
@@ -46,10 +50,27 @@ class TravelDiscoveryController extends AsyncNotifier<TravelDiscoveryState> {
     state = AsyncData(current.copyWith(selectedTripId: tripId));
   }
 
-  void toggleSave(String resultId) {
+  Future<void> toggleSave(String resultId) async {
     final current = state.valueOrNull ?? const TravelDiscoveryState();
+    TravelDiscoveryResult? result;
+    for (final item in current.results) {
+      if (item.id == resultId) {
+        result = item;
+        break;
+      }
+    }
     final saved = {...current.savedIds};
-    saved.contains(resultId) ? saved.remove(resultId) : saved.add(resultId);
+    if (saved.contains(resultId)) {
+      saved.remove(resultId);
+      await ref.read(savedItemsControllerProvider.notifier).remove(resultId);
+    } else {
+      if (result != null) {
+        await ref
+            .read(savedItemsControllerProvider.notifier)
+            .saveDiscoveryResult(result);
+      }
+      saved.add(resultId);
+    }
     state = AsyncData(current.copyWith(savedIds: saved));
   }
 

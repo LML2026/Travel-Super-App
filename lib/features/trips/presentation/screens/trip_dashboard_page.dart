@@ -17,6 +17,8 @@ import '../../../maps/models/places_prefill.dart';
 import '../../../taxi/domain/entities/taxi_saved_ride.dart';
 import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../../translator/domain/translation_models.dart';
+import '../../../trip_readiness/domain/entities/trip_readiness_item.dart';
+import '../../../trip_readiness/presentation/providers/trip_readiness_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/entities/trip_activity.dart';
 import '../../domain/entities/trip_collaborator.dart';
@@ -76,6 +78,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     final ridesAsync = ref.watch(taxiSavedRidesForTripProvider(_trip.id));
     final savedFlightsAsync = ref.watch(savedFlightsProvider);
     final savedHotelsAsync = ref.watch(savedHotelsProvider);
+    final readinessSummary = ref.watch(tripReadinessSummaryProvider(_trip.id));
 
     final activities = activitiesAsync.valueOrNull ?? const <TripActivity>[];
     final bookings = bookingsAsync.valueOrNull ?? const <Booking>[];
@@ -164,8 +167,14 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                   ),
                 ),
               ),
+              _ReadinessSummarySection(
+                summary: readinessSummary,
+                onOpenReadiness: () => context.pushTripReadiness(_trip),
+              ),
               _QuickActions(
                 onOpenLiveTrip: () => context.pushTripLive(_trip),
+                onOpenReadiness: () => context.pushTripReadiness(_trip),
+                onOpenSavedItems: () => context.pushSavedItems(),
                 onAddActivity: () => context.pushTripActivities(_trip.id),
                 onOpenBookings: () => context.pushTripBookings(_trip.id),
                 onOpenExpenses: () => Navigator.push(
@@ -705,9 +714,70 @@ class _TripHero extends StatelessWidget {
   }
 }
 
+class _ReadinessSummarySection extends StatelessWidget {
+  const _ReadinessSummarySection({
+    required this.summary,
+    required this.onOpenReadiness,
+  });
+
+  final TripReadinessSummary summary;
+  final VoidCallback onOpenReadiness;
+
+  @override
+  Widget build(BuildContext context) {
+    return DashboardSection(
+      icon: Icons.fact_check_outlined,
+      title: 'Trip Readiness',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: LinearProgressIndicator(value: summary.progress),
+              ),
+              const SizedBox(width: 12),
+              Text('${(summary.progress * 100).round()}%'),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '${summary.completedCount} complete · ${summary.remainingCount} remaining',
+          ),
+          if (summary.overdueItems.isNotEmpty ||
+              summary.overdueReminders.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                '${summary.overdueItems.length + summary.overdueReminders.length} overdue',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          if (summary.nextTask != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text('Next: ${summary.nextTask!.title}'),
+            ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: onOpenReadiness,
+            icon: const Icon(Icons.checklist_outlined),
+            label: const Text('Open readiness'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _QuickActions extends StatelessWidget {
   const _QuickActions({
     required this.onOpenLiveTrip,
+    required this.onOpenReadiness,
+    required this.onOpenSavedItems,
     required this.onAddActivity,
     required this.onOpenBookings,
     required this.onOpenExpenses,
@@ -717,6 +787,8 @@ class _QuickActions extends StatelessWidget {
   });
 
   final VoidCallback onOpenLiveTrip;
+  final VoidCallback onOpenReadiness;
+  final VoidCallback onOpenSavedItems;
   final VoidCallback onAddActivity;
   final VoidCallback onOpenBookings;
   final VoidCallback onOpenExpenses;
@@ -737,6 +809,16 @@ class _QuickActions extends StatelessWidget {
             icon: Icons.explore_outlined,
             label: 'Live Trip',
             onPressed: onOpenLiveTrip,
+          ),
+          _ActionButton(
+            icon: Icons.fact_check_outlined,
+            label: 'Readiness',
+            onPressed: onOpenReadiness,
+          ),
+          _ActionButton(
+            icon: Icons.bookmark_border,
+            label: 'Saved',
+            onPressed: onOpenSavedItems,
           ),
           _ActionButton(
             icon: Icons.add_location_alt_outlined,
