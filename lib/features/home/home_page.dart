@@ -54,6 +54,9 @@ class HomePage extends ConsumerWidget {
                     summary: summary,
                     onOpenTrip: () {
                       context.pushTripDetails(summary.upcomingTrip!);
+                    },
+                    onOpenLiveTrip: () {
+                      context.pushLiveTrip(trip: summary.upcomingTrip!);
                     })
               else
                 const AppEmptyState(
@@ -192,10 +195,12 @@ class _UpcomingTripCard extends StatelessWidget {
   const _UpcomingTripCard({
     required this.summary,
     required this.onOpenTrip,
+    required this.onOpenLiveTrip,
   });
 
   final DashboardSummary summary;
   final VoidCallback onOpenTrip;
+  final VoidCallback onOpenLiveTrip;
 
   @override
   Widget build(BuildContext context) {
@@ -215,10 +220,21 @@ class _UpcomingTripCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(dateLine),
           const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
-            onPressed: onOpenTrip,
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('Open Trip'),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              FilledButton.icon(
+                onPressed: onOpenLiveTrip,
+                icon: const Icon(Icons.explore_outlined),
+                label: const Text('Live Trip'),
+              ),
+              OutlinedButton.icon(
+                onPressed: onOpenTrip,
+                icon: const Icon(Icons.dashboard_outlined),
+                label: const Text('Dashboard'),
+              ),
+            ],
           ),
         ],
       ),

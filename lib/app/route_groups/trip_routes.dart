@@ -12,6 +12,7 @@ import '../../features/trips/presentation/screens/trip_dashboard_page.dart';
 import '../../features/trips/presentation/screens/trip_list_page.dart';
 import '../../features/trips/presentation/screens/trip_notes_page.dart';
 import '../../features/ai_planner/presentation/screens/ai_trip_planner_page.dart';
+import '../../features/live_trip/presentation/screens/live_trip_page.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
 
@@ -126,6 +127,25 @@ List<RouteBase> buildTripRoutes() {
         return _TripAiPlannerResolverPage(tripId: tripId);
       },
     ),
+    GoRoute(
+      name: AppRoute.tripLive.routeName,
+      path: AppRoute.tripLive.path,
+      builder: (context, state) {
+        final tripId = state.pathParameters['id'];
+        if (tripId == null || tripId.isEmpty) {
+          return const RouteErrorPage(
+            message: 'Live trip route requires a trip id path parameter.',
+          );
+        }
+
+        final extra = state.extra;
+        if (extra is domain.Trip) {
+          return LiveTripPage(trip: extra);
+        }
+
+        return _LiveTripResolverPage(tripId: tripId);
+      },
+    ),
   ];
 }
 
@@ -235,6 +255,43 @@ class _TripAiPlannerResolverPage extends ConsumerWidget {
         }
 
         return AiTripPlannerPage(trip: trip);
+      },
+    );
+  }
+}
+
+class _LiveTripResolverPage extends ConsumerWidget {
+  const _LiveTripResolverPage({required this.tripId});
+
+  final String tripId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tripAsync = ref.watch(selectedTripProvider(tripId));
+
+    return tripAsync.when(
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: const Text('Live Trip')),
+        body: Center(
+          child: Text('Failed to load live trip: $error'),
+        ),
+      ),
+      data: (trip) {
+        if (trip == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Live Trip')),
+            body: const Center(
+              child: Text('Trip not found.'),
+            ),
+          );
+        }
+
+        return LiveTripPage(trip: trip);
       },
     );
   }

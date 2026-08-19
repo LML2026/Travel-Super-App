@@ -93,6 +93,11 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
         title: const Text('Trip Dashboard'),
         actions: [
           IconButton(
+            tooltip: 'Live Trip',
+            icon: const Icon(Icons.explore_outlined),
+            onPressed: () => context.pushTripLive(_trip),
+          ),
+          IconButton(
             tooltip: 'Edit Trip',
             icon: const Icon(Icons.edit),
             onPressed: () {
@@ -159,6 +164,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 ),
               ),
               _QuickActions(
+                onOpenLiveTrip: () => context.pushTripLive(_trip),
                 onAddActivity: () => context.pushTripActivities(_trip.id),
                 onOpenBookings: () => context.pushTripBookings(_trip.id),
                 onOpenExpenses: () => Navigator.push(
@@ -693,6 +699,7 @@ class _TripHero extends StatelessWidget {
 
 class _QuickActions extends StatelessWidget {
   const _QuickActions({
+    required this.onOpenLiveTrip,
     required this.onAddActivity,
     required this.onOpenBookings,
     required this.onOpenExpenses,
@@ -701,6 +708,7 @@ class _QuickActions extends StatelessWidget {
     required this.onInvite,
   });
 
+  final VoidCallback onOpenLiveTrip;
   final VoidCallback onAddActivity;
   final VoidCallback onOpenBookings;
   final VoidCallback onOpenExpenses;
@@ -717,6 +725,11 @@ class _QuickActions extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
+          _ActionButton(
+            icon: Icons.explore_outlined,
+            label: 'Live Trip',
+            onPressed: onOpenLiveTrip,
+          ),
           _ActionButton(
             icon: Icons.add_location_alt_outlined,
             label: 'Add plan',

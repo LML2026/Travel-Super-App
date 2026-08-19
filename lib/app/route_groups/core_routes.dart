@@ -7,6 +7,7 @@ import '../../core/presentation/pages/confirmed_booking_details_page.dart';
 import '../../features/ai/screens/ai_assistant_page.dart';
 import '../../features/destinations/destination_detail_page.dart';
 import '../../features/discovery/presentation/screens/travel_discovery_page.dart';
+import '../../features/live_trip/presentation/screens/live_trip_page.dart';
 import '../../features/maps/models/places_prefill.dart';
 import '../../features/maps/presentation/screens/maps_hub_page.dart';
 import '../../features/nearby/models/nearby_service_type.dart';
@@ -20,6 +21,7 @@ import '../../features/taxi/presentation/screens/saved_rides_page.dart';
 import '../../features/taxi/presentation/screens/taxi_booking_details_page.dart';
 import '../../features/taxi/presentation/screens/taxi_results_page.dart';
 import '../../features/taxi/presentation/screens/taxi_search_page.dart';
+import '../../features/trips/domain/entities/trip.dart' as domain;
 import '../../features/trips/presentation/screens/trip_bookings_page.dart';
 import '../../features/wallet/presentation/screens/wallet_page.dart';
 import '../../features/weather/pages/weather_page.dart';
@@ -42,6 +44,19 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.wallet.routeName,
       path: AppRoute.wallet.path,
       builder: (context, state) => const WalletPage(),
+    ),
+    GoRoute(
+      name: AppRoute.liveTrip.routeName,
+      path: AppRoute.liveTrip.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra != null && extra is! domain.Trip) {
+          return const RouteErrorPage(
+            message: 'Live Trip received an invalid trip payload.',
+          );
+        }
+        return LiveTripPage(trip: extra as domain.Trip?);
+      },
     ),
     GoRoute(
       name: AppRoute.travelDiscovery.routeName,
