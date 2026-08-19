@@ -1,13 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/providers.dart';
+import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../../discovery/domain/travel_discovery_models.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../data/saved_items_repository.dart';
 import '../../domain/saved_item.dart';
 
 final savedItemsRepositoryProvider = Provider<SavedItemsRepository>((ref) {
-  return LocalSavedItemsRepository(ref.watch(storageServiceProvider));
+  final cache = LocalSavedItemsRepository(ref.watch(storageServiceProvider));
+  final user = ref.watch(immediateCurrentUserProvider);
+  if (user == null) {
+    return cache;
+  }
+  return CloudBackedSavedItemsRepository(
+    cloud: FirestoreSavedItemsRepository(userId: user.uid),
+    cache: cache,
+  );
 });
 
 final savedItemsControllerProvider =

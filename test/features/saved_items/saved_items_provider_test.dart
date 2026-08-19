@@ -10,6 +10,34 @@ import 'package:travel_super_app/features/trips/presentation/providers/trip_acti
 
 void main() {
   group('Saved items', () {
+    test('cloud-backed repository loads cloud items and refreshes cache',
+        () async {
+      final cloud = MemorySavedItemsRepository([_savedRestaurant()]);
+      final cache = MemorySavedItemsRepository();
+      final repository = CloudBackedSavedItemsRepository(
+        cloud: cloud,
+        cache: cache,
+      );
+
+      final loaded = await repository.load();
+
+      expect(loaded.single.title, 'Canal-side dinner');
+      expect((await cache.load()).single.title, 'Canal-side dinner');
+    });
+
+    test('cloud-backed repository falls back to cache when cloud load fails',
+        () async {
+      final cache = MemorySavedItemsRepository([_savedRestaurant()]);
+      final repository = CloudBackedSavedItemsRepository(
+        cloud: _FailingSavedItemsRepository(),
+        cache: cache,
+      );
+
+      final loaded = await repository.load();
+
+      expect(loaded.single.id, 'saved-restaurant');
+    });
+
     test('persists discovery saves and removals', () async {
       final repository = MemorySavedItemsRepository();
       final container = ProviderContainer(
@@ -52,19 +80,7 @@ void main() {
 
       await container.read(savedItemsControllerProvider.future);
       await container.read(savedItemsControllerProvider.notifier).addToTrip(
-            item: SavedItem(
-              id: 'saved-restaurant',
-              category: SavedItemCategory.restaurant,
-              title: 'Canal-side dinner',
-              subtitle: 'French bistro',
-              location: 'Paris',
-              provider: 'ITAREVO Demo Restaurants',
-              savedAt: DateTime(2026, 8, 19),
-              price: 54,
-              currency: 'GBP',
-              scheduledAt: DateTime(2026, 9, 2, 19),
-              notes: 'Quiet table.',
-            ),
+            item: _savedRestaurant(),
             tripId: 'trip-1',
           );
 
@@ -77,6 +93,22 @@ void main() {
       expect(activity.cost, 54);
     });
   });
+}
+
+SavedItem _savedRestaurant() {
+  return SavedItem(
+    id: 'saved-restaurant',
+    category: SavedItemCategory.restaurant,
+    title: 'Canal-side dinner',
+    subtitle: 'French bistro',
+    location: 'Paris',
+    provider: 'ITAREVO Demo Restaurants',
+    savedAt: DateTime(2026, 8, 19),
+    price: 54,
+    currency: 'GBP',
+    scheduledAt: DateTime(2026, 9, 2, 19),
+    notes: 'Quiet table.',
+  );
 }
 
 TravelDiscoveryResult _restaurantResult() {
@@ -117,5 +149,17 @@ class _MemoryTripActivityRepository implements TripActivityRepository {
   @override
   Stream<List<TripActivity>> watchActivities(String tripId) {
     return Stream.value(addedActivities);
+  }
+}
+
+class _FailingSavedItemsRepository implements SavedItemsRepository {
+  @override
+  Future<List<SavedItem>> load() async {
+    throw StateError('cloud unavailable');
+  }
+
+  @override
+  Future<void> save(List<SavedItem> items) async {
+    throw StateError('cloud unavailable');
   }
 }

@@ -83,7 +83,7 @@ void main() {
         now: DateTime(2026, 9, 1, 12),
       );
 
-      expect(state.nextEvent?.title, 'Hotel check-in window');
+      expect(state.nextEvent?.title, 'Check in: Hotel');
       expect(state.nextEvent?.type, LiveTripEventType.hotel);
     });
 

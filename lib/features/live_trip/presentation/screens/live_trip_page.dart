@@ -14,6 +14,7 @@ import '../../../trip_readiness/presentation/providers/trip_readiness_provider.d
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/domain/entities/trip_activity.dart';
 import '../../../trips/domain/entities/trip_document.dart';
+import '../../../trips/domain/services/trip_event_composer.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../../trips/presentation/providers/trip_bookings_provider.dart';
 import '../../../trips/presentation/providers/trip_document_provider.dart';
@@ -100,6 +101,13 @@ class _LiveTripContent extends ConsumerWidget {
     final bookings = bookingsAsync.valueOrNull ?? const <Booking>[];
     final documents = documentsAsync.valueOrNull ?? const <TripDocument>[];
     final expenses = expensesAsync.valueOrNull ?? const <Expense>[];
+    final tripEvents = const TripEventComposer().compose(
+      trip: trip,
+      bookings: bookings,
+      activities: activities,
+      reminders: readinessSummary.reminders,
+      includeReadiness: true,
+    );
     final liveTrip = const LiveTripComposer().compose(
       trip: trip,
       now: DateTime.now(),
@@ -107,6 +115,7 @@ class _LiveTripContent extends ConsumerWidget {
       bookings: bookings,
       documents: documents,
       expenses: expenses,
+      tripEvents: tripEvents,
     );
 
     return Scaffold(

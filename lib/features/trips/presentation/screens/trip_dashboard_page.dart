@@ -23,6 +23,7 @@ import '../../domain/entities/trip.dart';
 import '../../domain/entities/trip_activity.dart';
 import '../../domain/entities/trip_collaborator.dart';
 import '../../domain/entities/trip_document.dart';
+import '../../domain/services/trip_event_composer.dart';
 import '../providers/trip_activity_provider.dart';
 import '../providers/trip_bookings_provider.dart';
 import '../providers/trip_collaboration_provider.dart';
@@ -91,6 +92,16 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
         _findLinkedFlight(savedFlights, _trip.selectedFlightId);
     final linkedHotel = _findLinkedHotel(savedHotels, _trip.selectedHotelId);
     final hasDocuments = documents.isNotEmpty;
+    final tripEvents = const TripEventComposer().compose(
+      trip: _trip,
+      bookings: bookings,
+      activities: activities,
+      rides: rides,
+      reminders: readinessSummary.reminders,
+      linkedFlight: linkedFlight,
+      linkedHotel: linkedHotel,
+      includeReadiness: true,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -142,6 +153,22 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 destination: _trip.destination,
                 onTap: () => context.pushWeather(),
               ),
+              if (_hasCloudError([
+                activitiesAsync,
+                bookingsAsync,
+                documentsAsync,
+                expensesAsync,
+                ridesAsync,
+              ]))
+                _CloudDataErrorBanner(
+                  onRetry: () {
+                    ref.invalidate(tripActivitiesProvider(_trip.id));
+                    ref.invalidate(tripBookingsProvider(_trip.id));
+                    ref.invalidate(tripDocumentsProvider(_trip.id));
+                    ref.invalidate(tripExpensesProvider(_trip.id));
+                    ref.invalidate(taxiSavedRidesForTripProvider(_trip.id));
+                  },
+                ),
               _TravelPlanSection(
                 linkedFlight: linkedFlight,
                 linkedHotel: linkedHotel,
@@ -202,11 +229,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
               ),
               _ItinerarySection(
                 trip: _trip,
-                linkedFlight: linkedFlight,
-                linkedHotel: linkedHotel,
-                rides: rides,
-                activities: activities,
-                bookings: bookings,
+                events: tripEvents,
                 onAddActivity: () => context.pushTripActivities(_trip.id),
                 onOpenTransport: () => context.pushTransport(),
                 onOpenBooking: (booking) =>
@@ -773,6 +796,43 @@ class _ReadinessSummarySection extends StatelessWidget {
   }
 }
 
+class _CloudDataErrorBanner extends StatelessWidget {
+  const _CloudDataErrorBanner({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Icon(
+              Icons.cloud_off_outlined,
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Some trip data could not sync. Existing local/demo sections are unchanged.',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: onRetry,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _QuickActions extends StatelessWidget {
   const _QuickActions({
     required this.onOpenLiveTrip,
@@ -1086,22 +1146,14 @@ class _TravelPlanSection extends StatelessWidget {
 class _ItinerarySection extends StatelessWidget {
   const _ItinerarySection({
     required this.trip,
-    required this.linkedFlight,
-    required this.linkedHotel,
-    required this.rides,
-    required this.activities,
-    required this.bookings,
+    required this.events,
     required this.onAddActivity,
     required this.onOpenTransport,
     required this.onOpenBooking,
   });
 
   final Trip trip;
-  final SavedFlight? linkedFlight;
-  final SavedHotel? linkedHotel;
-  final List<TaxiSavedRide> rides;
-  final List<TripActivity> activities;
-  final List<Booking> bookings;
+  final List<TripEvent> events;
   final VoidCallback onAddActivity;
   final VoidCallback onOpenTransport;
   final ValueChanged<Booking> onOpenBooking;
@@ -1143,100 +1195,37 @@ class _ItinerarySection extends StatelessWidget {
   }
 
   List<_TimelineItem> _timelineItems() {
-    final items = <_TimelineItem>[];
-    final flightDeparture = _parseDate(linkedFlight?.departureAt);
-    final flightArrival = _parseDate(linkedFlight?.arrivalAt);
-
-    if (linkedFlight != null) {
-      items.add(
-        _TimelineItem(
-          date: flightDeparture ?? trip.startDate,
-          icon: Icons.flight_takeoff,
-          title: '${linkedFlight!.airline} ${linkedFlight!.flightNumber}',
-          subtitle: '${linkedFlight!.origin} -> ${linkedFlight!.destination}',
-          location: linkedFlight!.origin,
-          status: 'Linked flight',
-        ),
-      );
-      if (flightArrival != null) {
-        items.add(
-          _TimelineItem(
-            date: flightArrival,
-            icon: Icons.flight_land,
-            title: 'Arrive ${linkedFlight!.destination}',
-            subtitle: linkedFlight!.duration,
-            location: linkedFlight!.destination,
-            status: linkedFlight!.cabinClass,
+    return events
+        .map(
+          (event) => _TimelineItem(
+            date: event.startTime,
+            icon: _eventIcon(event.type),
+            title: _timelineTitle(event),
+            subtitle: _timelineSubtitle(event),
+            location: event.location ?? trip.destination,
+            status: event.status ?? 'Planned',
+            onTap: event.booking == null
+                ? null
+                : () => onOpenBooking(event.booking!),
           ),
-        );
-      }
-    }
+        )
+        .toList(growable: false);
+  }
 
-    if (linkedHotel != null) {
-      items.add(
-        _TimelineItem(
-          date: trip.startDate,
-          icon: Icons.hotel_outlined,
-          title: 'Check in: ${linkedHotel!.name}',
-          subtitle: _hotelAddress(linkedHotel!),
-          location: linkedHotel!.city,
-          status: '${linkedHotel!.nights} nights',
-        ),
-      );
-      items.add(
-        _TimelineItem(
-          date: trip.endDate,
-          icon: Icons.logout_outlined,
-          title: 'Check out: ${linkedHotel!.name}',
-          subtitle: _hotelAddress(linkedHotel!),
-          location: linkedHotel!.city,
-          status: 'Stay complete',
-        ),
-      );
+  String _timelineTitle(TripEvent event) {
+    final activity = event.activity;
+    if (activity != null && activity.scheduledAt == null) {
+      return 'Activity plan';
     }
+    return event.title;
+  }
 
-    for (final ride in rides) {
-      items.add(
-        _TimelineItem(
-          date: ride.scheduledAt ?? ride.createdAt ?? trip.startDate,
-          icon: Icons.local_taxi_outlined,
-          title: '${ride.provider} ride',
-          subtitle: '${ride.pickupAddress} -> ${ride.destinationAddress}',
-          location: ride.pickupAddress,
-          status: ride.status,
-        ),
-      );
+  String _timelineSubtitle(TripEvent event) {
+    final activity = event.activity;
+    if (activity != null && activity.scheduledAt == null) {
+      return activity.notes ?? 'Open activities to edit details';
     }
-
-    for (final booking in bookings) {
-      items.add(
-        _TimelineItem(
-          date: booking.createdAt,
-          icon: _bookingIcon(booking.type),
-          title: _bookingTitle(booking),
-          subtitle: _bookingSubtitle(booking),
-          location: _bookingLocation(booking),
-          status: booking.status.name,
-          onTap: () => onOpenBooking(booking),
-        ),
-      );
-    }
-
-    for (final activity in activities) {
-      items.add(
-        _TimelineItem(
-          date: activity.scheduledAt ?? activity.createdAt ?? trip.startDate,
-          icon: Icons.explore_outlined,
-          title: 'Activity plan',
-          subtitle: activity.notes ?? 'Open activities to edit details',
-          location: activity.location ?? trip.destination,
-          status: activity.status ?? 'Planned',
-        ),
-      );
-    }
-
-    items.sort((a, b) => a.date.compareTo(b.date));
-    return items;
+    return event.subtitle ?? event.provider ?? event.source;
   }
 }
 
@@ -1893,11 +1882,8 @@ DateTime _startOfDay(DateTime date) =>
 DateTime _endOfDay(DateTime date) =>
     DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-DateTime? _parseDate(String? value) {
-  if (value == null || value.isEmpty) {
-    return null;
-  }
-  return DateTime.tryParse(value);
+bool _hasCloudError(List<AsyncValue<dynamic>> values) {
+  return values.any((value) => value.hasError);
 }
 
 String _formatTime(String value) {
@@ -1916,6 +1902,25 @@ IconData _bookingIcon(BookingType type) {
       return Icons.hotel_outlined;
     case BookingType.transport:
       return Icons.local_taxi_outlined;
+  }
+}
+
+IconData _eventIcon(TripEventType type) {
+  switch (type) {
+    case TripEventType.flight:
+      return Icons.flight_takeoff;
+    case TripEventType.hotel:
+      return Icons.hotel_outlined;
+    case TripEventType.transport:
+      return Icons.local_taxi_outlined;
+    case TripEventType.restaurant:
+      return Icons.restaurant_outlined;
+    case TripEventType.activity:
+      return Icons.explore_outlined;
+    case TripEventType.readiness:
+      return Icons.fact_check_outlined;
+    case TripEventType.itinerary:
+      return Icons.event_note_outlined;
   }
 }
 
@@ -1958,17 +1963,6 @@ String _bookingSubtitle(Booking booking) {
       final destination =
           booking.metadata['destination']?.toString() ?? 'Destination';
       return '$pickup -> $destination';
-  }
-}
-
-String _bookingLocation(Booking booking) {
-  switch (booking.type) {
-    case BookingType.flight:
-      return booking.metadata['departure']?.toString() ?? 'Airport';
-    case BookingType.hotel:
-      return booking.metadata['city']?.toString() ?? 'Hotel';
-    case BookingType.transport:
-      return booking.metadata['pickup']?.toString() ?? 'Pickup';
   }
 }
 

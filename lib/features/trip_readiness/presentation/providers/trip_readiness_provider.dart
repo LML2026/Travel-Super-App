@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../../trips/domain/entities/trip.dart';
+import '../../../trips/presentation/providers/trip_data_scope_provider.dart';
 import '../../../trips/presentation/providers/trip_bookings_provider.dart';
 import '../../../trips/presentation/providers/trip_document_provider.dart';
 import '../../data/repositories/firestore_trip_readiness_repository.dart';
@@ -33,13 +34,40 @@ final tripReadinessRepositoryProvider =
 });
 
 final tripReadinessItemsProvider =
-    StreamProvider.family<List<TripReadinessItem>, String>((ref, tripId) {
-  return ref.watch(tripReadinessRepositoryProvider).watchItems(tripId);
+    StreamProvider.family<List<TripReadinessItem>, String>(
+        (ref, tripId) async* {
+  final user = ref.watch(immediateCurrentUserProvider);
+  if (user == null) {
+    yield* ref.watch(tripReadinessRepositoryProvider).watchItems(tripId);
+    return;
+  }
+  final scope = await ref.watch(tripDataScopeProvider(tripId).future);
+  if (scope == null) {
+    yield const <TripReadinessItem>[];
+    return;
+  }
+  yield* ref
+      .read(tripReadinessRepositoryFactoryProvider)
+      .call(scope.ownerUserId)
+      .watchItems(tripId);
 });
 
 final tripRemindersProvider =
-    StreamProvider.family<List<TripReminder>, String>((ref, tripId) {
-  return ref.watch(tripReadinessRepositoryProvider).watchReminders(tripId);
+    StreamProvider.family<List<TripReminder>, String>((ref, tripId) async* {
+  final user = ref.watch(immediateCurrentUserProvider);
+  if (user == null) {
+    yield* ref.watch(tripReadinessRepositoryProvider).watchReminders(tripId);
+    return;
+  }
+  final scope = await ref.watch(tripDataScopeProvider(tripId).future);
+  if (scope == null) {
+    yield const <TripReminder>[];
+    return;
+  }
+  yield* ref
+      .read(tripReadinessRepositoryFactoryProvider)
+      .call(scope.ownerUserId)
+      .watchReminders(tripId);
 });
 
 final tripReadinessSummaryProvider =

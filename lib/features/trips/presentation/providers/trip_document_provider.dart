@@ -9,6 +9,7 @@ import '../../data/services/trip_document_file_service.dart';
 import '../../domain/entities/trip_document.dart';
 import '../../domain/entities/trip_document_upload.dart';
 import '../../domain/repositories/trip_document_repository.dart';
+import 'trip_data_scope_provider.dart';
 
 typedef TripDocumentRepositoryFactory = TripDocumentRepository Function(
   String userId,
@@ -29,8 +30,21 @@ final tripDocumentRepositoryProvider = Provider<TripDocumentRepository>((ref) {
 });
 
 final tripDocumentsProvider =
-    StreamProvider.family<List<TripDocument>, String>((ref, tripId) {
-  return ref.watch(tripDocumentRepositoryProvider).watchDocuments(tripId);
+    StreamProvider.family<List<TripDocument>, String>((ref, tripId) async* {
+  final user = ref.watch(immediateCurrentUserProvider);
+  if (user == null) {
+    yield* ref.watch(tripDocumentRepositoryProvider).watchDocuments(tripId);
+    return;
+  }
+  final scope = await ref.watch(tripDataScopeProvider(tripId).future);
+  if (scope == null) {
+    yield const <TripDocument>[];
+    return;
+  }
+  yield* ref
+      .read(tripDocumentRepositoryFactoryProvider)
+      .call(scope.ownerUserId)
+      .watchDocuments(tripId);
 });
 
 final tripDocumentFileServiceProvider =
