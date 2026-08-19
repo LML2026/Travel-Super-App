@@ -30,6 +30,13 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
     } else if (createdAtRaw is DateTime) {
       createdAt = createdAtRaw;
     }
+    final uploadedAtRaw = data['uploadedAt'];
+    DateTime? uploadedAt;
+    if (uploadedAtRaw is Timestamp) {
+      uploadedAt = uploadedAtRaw.toDate();
+    } else if (uploadedAtRaw is DateTime) {
+      uploadedAt = uploadedAtRaw;
+    }
 
     return TripDocument(
       id: data['id'] as String,
@@ -38,6 +45,14 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
       type: data['type'] as String? ?? 'General',
       reference: data['reference'] as String? ?? '',
       notes: data['notes'] as String?,
+      fileName: data['fileName'] as String?,
+      contentType: data['contentType'] as String?,
+      sizeBytes: data['sizeBytes'] as int?,
+      downloadUrl: data['downloadUrl'] as String?,
+      storagePath: data['storagePath'] as String?,
+      inlineBase64: data['inlineBase64'] as String?,
+      uploadedBy: data['uploadedBy'] as String?,
+      uploadedAt: uploadedAt,
       createdAt: createdAt,
     );
   }
@@ -50,6 +65,16 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
       'type': document.type,
       'reference': document.reference,
       'notes': document.notes,
+      'fileName': document.fileName,
+      'contentType': document.contentType,
+      'sizeBytes': document.sizeBytes,
+      'downloadUrl': document.downloadUrl,
+      'storagePath': document.storagePath,
+      'inlineBase64': document.inlineBase64,
+      'uploadedBy': document.uploadedBy,
+      'uploadedAt': document.uploadedAt == null
+          ? null
+          : Timestamp.fromDate(document.uploadedAt!),
       'createdAt': document.createdAt == null
           ? FieldValue.serverTimestamp()
           : Timestamp.fromDate(document.createdAt!),
@@ -84,6 +109,7 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
   Future<void> deleteDocument({
     required String tripId,
     required String documentId,
+    TripDocument? document,
   }) async {
     await _collection(tripId).doc(documentId).delete();
   }

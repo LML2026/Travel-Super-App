@@ -18,9 +18,11 @@ import '../../../taxi/domain/entities/taxi_saved_ride.dart';
 import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/entities/trip_activity.dart';
+import '../../domain/entities/trip_collaborator.dart';
 import '../../domain/entities/trip_document.dart';
 import '../providers/trip_activity_provider.dart';
 import '../providers/trip_bookings_provider.dart';
+import '../providers/trip_collaboration_provider.dart';
 import '../providers/trip_document_provider.dart';
 import '../providers/trip_provider.dart';
 import '../widgets/activities_card.dart';
@@ -297,42 +299,93 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
   Future<void> _showCollaboratorSheet() async {
     await showModalBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Trip collaborators',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Invite links and shared editing are ready for a collaboration service. This V1 keeps the owner workspace visible without sending live invites.',
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(child: Icon(Icons.person)),
-                title: const Text('Trip owner'),
-                subtitle: Text(
-                    '${_trip.travellers} traveller${_trip.travellers == 1 ? '' : 's'} planned'),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: () => Navigator.pop(sheetContext),
-                icon: const Icon(Icons.check),
-                label: const Text('Done'),
-              ),
-            ],
-          ),
+      isScrollControlled: true,
+      builder: (sheetContext) => _CollaboratorSheet(
+        tripId: _trip.id,
+        travellers: _trip.travellers,
+        onInvite: (context, email, userId, role) => _inviteCollaborator(
+          context,
+          email: email,
+          userId: userId,
+          role: role,
+        ),
+        onUpdateRole: (context, collaboratorId, role) =>
+            _updateCollaboratorRole(
+          context,
+          collaboratorId: collaboratorId,
+          role: role,
+        ),
+        onRemove: (context, collaboratorId) => _removeCollaborator(
+          context,
+          collaboratorId: collaboratorId,
         ),
       ),
     );
+  }
+
+  Future<void> _inviteCollaborator(
+    BuildContext context, {
+    required String email,
+    required String userId,
+    required TripCollaboratorRole role,
+  }) async {
+    try {
+      await ref.read(tripCollaborationActionsProvider).inviteCollaborator(
+            tripId: _trip.id,
+            email: email,
+            role: role,
+            userId: userId,
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Collaborator invited.')),
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
+  Future<void> _updateCollaboratorRole(
+    BuildContext context, {
+    required String collaboratorId,
+    required TripCollaboratorRole role,
+  }) async {
+    try {
+      await ref.read(tripCollaborationActionsProvider).updateRole(
+            tripId: _trip.id,
+            collaboratorId: collaboratorId,
+            role: role,
+          );
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeCollaborator(
+    BuildContext context, {
+    required String collaboratorId,
+  }) async {
+    try {
+      await ref.read(tripCollaborationActionsProvider).removeCollaborator(
+            tripId: _trip.id,
+            collaboratorId: collaboratorId,
+          );
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
   }
 
   Future<void> _reloadTrip() async {
@@ -1240,6 +1293,199 @@ class _DocumentsSection extends StatelessWidget {
   }
 }
 
+class _CollaboratorSheet extends ConsumerStatefulWidget {
+  const _CollaboratorSheet({
+    required this.tripId,
+    required this.travellers,
+    required this.onInvite,
+    required this.onUpdateRole,
+    required this.onRemove,
+  });
+
+  final String tripId;
+  final int travellers;
+  final Future<void> Function(
+    BuildContext context,
+    String email,
+    String userId,
+    TripCollaboratorRole role,
+  ) onInvite;
+  final Future<void> Function(
+    BuildContext context,
+    String collaboratorId,
+    TripCollaboratorRole role,
+  ) onUpdateRole;
+  final Future<void> Function(BuildContext context, String collaboratorId)
+      onRemove;
+
+  @override
+  ConsumerState<_CollaboratorSheet> createState() => _CollaboratorSheetState();
+}
+
+class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
+  final _emailController = TextEditingController();
+  final _userIdController = TextEditingController();
+  TripCollaboratorRole _role = TripCollaboratorRole.editor;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _userIdController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final collaboratorsAsync =
+        ref.watch(tripCollaboratorsProvider(widget.tripId));
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Trip collaborators',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Invite editors or viewers. Shared trip changes use the same user/trip-scoped Firestore collections.',
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: const Text('Trip owner'),
+                subtitle: Text(
+                  '${widget.travellers} traveller${widget.travellers == 1 ? '' : 's'} planned',
+                ),
+                trailing: const Chip(label: Text('owner')),
+              ),
+              collaboratorsAsync.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (error, _) =>
+                    Text('Could not load collaborators: $error'),
+                data: (collaborators) {
+                  if (collaborators.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text('No collaborators invited yet.'),
+                    );
+                  }
+                  return Column(
+                    children: [
+                      for (final collaborator in collaborators)
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.group_outlined),
+                          ),
+                          title: Text(collaborator.email),
+                          subtitle: Text(collaborator.status.name),
+                          trailing: PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'remove') {
+                                await widget.onRemove(context, collaborator.id);
+                                return;
+                              }
+                              await widget.onUpdateRole(
+                                context,
+                                collaborator.id,
+                                TripCollaboratorRole.values.firstWhere(
+                                  (role) => role.name == value,
+                                ),
+                              );
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: 'editor',
+                                child: Text('Make editor'),
+                              ),
+                              PopupMenuItem(
+                                value: 'viewer',
+                                child: Text('Make viewer'),
+                              ),
+                              PopupMenuItem(
+                                value: 'remove',
+                                child: Text('Remove'),
+                              ),
+                            ],
+                            child: Chip(label: Text(collaborator.role.name)),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const Divider(height: 24),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Collaborator email',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _userIdController,
+                decoration: const InputDecoration(
+                  labelText: 'Collaborator user ID (optional)',
+                  hintText: 'Used to mirror shared trip access',
+                ),
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<TripCollaboratorRole>(
+                segments: const [
+                  ButtonSegment(
+                    value: TripCollaboratorRole.editor,
+                    icon: Icon(Icons.edit_outlined),
+                    label: Text('Editor'),
+                  ),
+                  ButtonSegment(
+                    value: TripCollaboratorRole.viewer,
+                    icon: Icon(Icons.visibility_outlined),
+                    label: Text('Viewer'),
+                  ),
+                ],
+                selected: {_role},
+                onSelectionChanged: (selection) {
+                  setState(() => _role = selection.single);
+                },
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () async {
+                  await widget.onInvite(
+                    context,
+                    _emailController.text,
+                    _userIdController.text,
+                    _role,
+                  );
+                  _emailController.clear();
+                  _userIdController.clear();
+                },
+                icon: const Icon(Icons.person_add_alt),
+                label: const Text('Invite collaborator'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _TravellersSection extends StatelessWidget {
   const _TravellersSection({
     required this.trip,
@@ -1271,7 +1517,7 @@ class _TravellersSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-              'Collaborator invites are represented in the UI and ready to connect to a live sharing service.'),
+              'Invite editors or viewers and keep shared trip planning data synced through the trip workspace.'),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onInvite,

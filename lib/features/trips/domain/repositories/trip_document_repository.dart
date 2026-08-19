@@ -10,5 +10,6 @@ abstract interface class TripDocumentRepository {
   Future<void> deleteDocument({
     required String tripId,
     required String documentId,
+    TripDocument? document,
   });
 }
