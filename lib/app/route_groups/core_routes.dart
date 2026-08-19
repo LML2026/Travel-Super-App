@@ -21,6 +21,8 @@ import '../../features/taxi/presentation/screens/saved_rides_page.dart';
 import '../../features/taxi/presentation/screens/taxi_booking_details_page.dart';
 import '../../features/taxi/presentation/screens/taxi_results_page.dart';
 import '../../features/taxi/presentation/screens/taxi_search_page.dart';
+import '../../features/translator/domain/translation_models.dart';
+import '../../features/translator/presentation/screens/translator_page.dart';
 import '../../features/trips/domain/entities/trip.dart' as domain;
 import '../../features/trips/presentation/screens/trip_bookings_page.dart';
 import '../../features/wallet/presentation/screens/wallet_page.dart';
@@ -146,6 +148,19 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.aiAssistant.routeName,
       path: AppRoute.aiAssistant.path,
       builder: (context, state) => const AiAssistantPage(),
+    ),
+    GoRoute(
+      name: AppRoute.translator.routeName,
+      path: AppRoute.translator.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra != null && extra is! TranslatorContext) {
+          return const RouteErrorPage(
+            message: 'Translator received an invalid context payload.',
+          );
+        }
+        return TranslatorPage(context: extra as TranslatorContext?);
+      },
     ),
     GoRoute(
       name: AppRoute.profile.routeName,

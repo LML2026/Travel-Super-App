@@ -11,6 +11,7 @@ import '../features/flights/models/flight.dart';
 import '../features/flights/models/saved_flight.dart';
 import '../features/hotels/models/hotel.dart';
 import '../features/hotels/models/saved_hotel.dart';
+import '../features/translator/domain/translation_models.dart';
 import '../features/trips/domain/entities/trip.dart';
 
 class TripCreateRouteArgs {
@@ -72,6 +73,7 @@ enum AppRoute {
   tripActivities,
   tripAiPlanner,
   tripLive,
+  translator,
   profile,
   destination,
   bookingStatus,
@@ -160,6 +162,8 @@ extension AppRouteConfig on AppRoute {
         return '/trips/:id/ai-planner';
       case AppRoute.tripLive:
         return '/trips/:id/live';
+      case AppRoute.translator:
+        return '/translator';
       case AppRoute.profile:
         return '/profile';
       case AppRoute.destination:
@@ -314,6 +318,9 @@ extension AppNavigation on BuildContext {
         pathParameters: {'id': trip.id},
         extra: trip,
       );
+
+  Future<T?> pushTranslator<T>({TranslatorContext? context}) =>
+      pushNamed<T>(AppRoute.translator.routeName, extra: context);
 
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);
 

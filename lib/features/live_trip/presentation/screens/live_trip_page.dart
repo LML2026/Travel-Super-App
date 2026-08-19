@@ -8,6 +8,7 @@ import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../expenses/presentation/screens/add_expense_page.dart';
 import '../../../maps/models/places_prefill.dart';
+import '../../../translator/domain/translation_models.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/domain/entities/trip_activity.dart';
 import '../../../trips/domain/entities/trip_document.dart';
@@ -137,7 +138,8 @@ class _LiveTripContent extends ConsumerWidget {
                   onViewBooking: (booking) =>
                       context.pushConfirmedBookingDetails(booking),
                   onOpenDocuments: () => context.pushTripDocuments(trip.id),
-                  onTranslate: () => _showTranslatorSheet(context),
+                  onTranslate: () =>
+                      _openTranslator(context, liveTrip.nextEvent),
                   onAskAi: () => context.pushTripAiPlanner(
                     trip.id,
                     initialTrip: trip,
@@ -168,7 +170,8 @@ class _LiveTripContent extends ConsumerWidget {
                     }
                   },
                   onDocuments: () => context.pushTripDocuments(trip.id),
-                  onTranslate: () => _showTranslatorSheet(context),
+                  onTranslate: () =>
+                      _openTranslator(context, liveTrip.nextEvent),
                   onAskAi: () => context.pushTripAiPlanner(
                     trip.id,
                     initialTrip: trip,
@@ -225,7 +228,8 @@ class _LiveTripContent extends ConsumerWidget {
                       title: '${trip.destination} essentials',
                     ),
                   ),
-                  onTranslate: () => _showTranslatorSheet(context),
+                  onTranslate: () =>
+                      _openTranslator(context, liveTrip.nextEvent),
                 ),
               ],
             ),
@@ -261,32 +265,28 @@ class _LiveTripContent extends ConsumerWidget {
     );
   }
 
-  void _showTranslatorSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Translator',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text('Destination context: ${trip.destination}'),
-            const SizedBox(height: 8),
-            const Text(
-              'Voice and text translation are available through the existing translator module when connected.',
-            ),
-          ],
-        ),
+  void _openTranslator(BuildContext context, LiveTripEvent? event) {
+    context.pushTranslator(
+      context: TranslatorContext(
+        destination: trip.destination,
+        contextLabel: event == null ? 'Live Trip' : event.title,
+        initialText: _translatorPromptFor(event),
       ),
     );
+  }
+
+  String? _translatorPromptFor(LiveTripEvent? event) {
+    if (event == null) {
+      return null;
+    }
+    return switch (event.type) {
+      LiveTripEventType.hotel => 'I have a reservation.',
+      LiveTripEventType.restaurant => 'A table for two, please.',
+      LiveTripEventType.transport => 'Please take me to this address.',
+      LiveTripEventType.flight => 'Where is the check-in desk?',
+      LiveTripEventType.activity => 'Can you show me on the map?',
+      LiveTripEventType.itinerary => null,
+    };
   }
 }
 

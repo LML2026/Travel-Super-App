@@ -16,6 +16,7 @@ import '../../../hotels/providers/hotel_provider.dart';
 import '../../../maps/models/places_prefill.dart';
 import '../../../taxi/domain/entities/taxi_saved_ride.dart';
 import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
+import '../../../translator/domain/translation_models.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/entities/trip_activity.dart';
 import '../../domain/entities/trip_collaborator.dart';
@@ -252,7 +253,14 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 hasDocuments: hasDocuments,
                 onOpenDocuments: () => context.pushTripDocuments(_trip.id),
               ),
-              const TranslatorCard(),
+              TranslatorCard(
+                onOpenTranslator: () => context.pushTranslator(
+                  context: TranslatorContext(
+                    destination: _trip.destination,
+                    contextLabel: _trip.title,
+                  ),
+                ),
+              ),
               AiAssistantCard(
                 onOpenPlanner: () =>
                     context.pushTripAiPlanner(_trip.id, initialTrip: _trip),
