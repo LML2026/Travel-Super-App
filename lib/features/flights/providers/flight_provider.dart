@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/result.dart';
+import '../../../core/models/booking.dart';
+import '../../../core/repositories/booking_repository.dart';
 import '../models/flight.dart';
 import '../models/flight_search_request.dart';
 import '../models/recent_search.dart';
@@ -110,4 +113,30 @@ final isFlightSavedProvider = FutureProvider.family<bool, String>((ref, flightId
 final getSavedFlightIdProvider = FutureProvider.family<String?, String>((ref, flightId) async {
   return ref.read(flightFirestoreServiceProvider).getSavedFlightId(flightId);
 });
+
+// ── Flight Booking provider ────────────────────────────────────────────────
+class FlightBookingNotifier extends AutoDisposeAsyncNotifier<Booking?> {
+  @override
+  FutureOr<Booking?> build() => null;
+
+  Future<void> book(String tripId, String userId, Flight flight) async {
+    state = const AsyncLoading();
+    final repository = ref.read(flightRepositoryProvider);
+    final result = await repository.bookFlight(tripId, userId, flight);
+
+    state = switch (result) {
+      Success(:final data) => AsyncData(data),
+      Failure(:final message) => AsyncError(message, StackTrace.current),
+    };
+
+    if (result is Success<Booking>) {
+      await ref.read(bookingRepositoryProvider).saveBooking(result.data);
+    }
+  }
+}
+
+final flightBookingProvider =
+    AsyncNotifierProvider.autoDispose<FlightBookingNotifier, Booking?>(
+  FlightBookingNotifier.new,
+);
 

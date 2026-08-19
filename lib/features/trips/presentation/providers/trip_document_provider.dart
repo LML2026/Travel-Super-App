@@ -58,6 +58,10 @@ class TripDocumentActions {
     await _repository.addDocument(document);
   }
 
+  Future<void> updateDocument(TripDocument document) {
+    return _repository.updateDocument(document);
+  }
+
   Future<void> deleteDocument({
     required String tripId,
     required String documentId,
@@ -71,6 +75,11 @@ class _UnauthenticatedTripDocumentRepository implements TripDocumentRepository {
 
   @override
   Future<void> addDocument(TripDocument document) async {
+    throw StateError('Authentication required to manage trip documents.');
+  }
+
+  @override
+  Future<void> updateDocument(TripDocument document) async {
     throw StateError('Authentication required to manage trip documents.');
   }
 

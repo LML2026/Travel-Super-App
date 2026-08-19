@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../../core/models/booking.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/providers/taxi_provider.dart';
@@ -163,29 +165,30 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {
-              final provider = _resolveProvider(providers, args.option.providerName);
-              if (provider == null) {
+              final user = ref.read(immediateCurrentUserProvider);
+              if (user == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Provider is not available.')),
+                  const SnackBar(content: Text('Please log in to book.')),
                 );
                 return;
               }
 
-              try {
-                await provider.openBooking(args.request);
-                if (context.mounted) {
-                  ref.read(selectedTaxiProviderNameProvider.notifier).state = provider.name;
-                }
-              } catch (error) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Could not open provider: $error')),
+              final trips = await ref.read(tripsProvider.future);
+              final tripId = trips.isNotEmpty ? trips.first.id : 'mock-trip-id';
+
+              ref.read(transportBookingProvider.notifier).book(
+                    tripId: tripId,
+                    userId: user.uid,
+                    request: args.request,
+                    option: args.option,
                   );
-                }
+
+              if (context.mounted) {
+                context.pushBookingStatus(BookingType.transport);
               }
             },
             icon: const Icon(Icons.open_in_new),
-            label: const Text('Open provider booking'),
+            label: const Text('Book Transport'),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(

@@ -44,6 +44,9 @@ class TripActivityActions {
     String? location,
     String? notes,
     DateTime? scheduledAt,
+    double? cost,
+    String? currency,
+    String? status,
   }) async {
     final activity = TripActivity(
       id: const Uuid().v4(),
@@ -52,10 +55,17 @@ class TripActivityActions {
       location: location,
       notes: notes,
       scheduledAt: scheduledAt,
+      cost: cost,
+      currency: currency,
+      status: status,
       createdAt: DateTime.now(),
     );
 
     await _repository.addActivity(activity);
+  }
+
+  Future<void> updateActivity(TripActivity activity) {
+    return _repository.updateActivity(activity);
   }
 
   Future<void> deleteActivity({
@@ -71,6 +81,11 @@ class _UnauthenticatedTripActivityRepository implements TripActivityRepository {
 
   @override
   Future<void> addActivity(TripActivity activity) async {
+    throw StateError('Authentication required to manage trip activities.');
+  }
+
+  @override
+  Future<void> updateActivity(TripActivity activity) async {
     throw StateError('Authentication required to manage trip activities.');
   }
 

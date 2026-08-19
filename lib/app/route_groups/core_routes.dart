@@ -1,6 +1,9 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/models/destination.dart';
+import '../../core/models/booking.dart';
+import '../../core/presentation/pages/booking_status_page.dart';
+import '../../core/presentation/pages/confirmed_booking_details_page.dart';
 import '../../features/ai/screens/ai_assistant_page.dart';
 import '../../features/destinations/destination_detail_page.dart';
 import '../../features/maps/models/places_prefill.dart';
@@ -16,6 +19,7 @@ import '../../features/taxi/presentation/screens/saved_rides_page.dart';
 import '../../features/taxi/presentation/screens/taxi_booking_details_page.dart';
 import '../../features/taxi/presentation/screens/taxi_results_page.dart';
 import '../../features/taxi/presentation/screens/taxi_search_page.dart';
+import '../../features/trips/presentation/screens/trip_bookings_page.dart';
 import '../../features/wallet/presentation/screens/wallet_page.dart';
 import '../../features/weather/pages/weather_page.dart';
 import '../app_routes.dart';
@@ -136,6 +140,44 @@ List<RouteBase> buildCoreRoutes() {
           );
         }
         return DestinationDetailPage(destination: extra);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.bookingStatus.routeName,
+      path: AppRoute.bookingStatus.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra is! BookingType) {
+          return const RouteErrorPage(
+            message:
+                'Booking status route requires a BookingType extra payload.',
+          );
+        }
+        return BookingStatusPage(type: extra);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.tripBookings.routeName,
+      path: AppRoute.tripBookings.path,
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        if (id == null) {
+          return const RouteErrorPage(message: 'Trip ID is required for bookings.');
+        }
+        return TripBookingsPage(tripId: id);
+      },
+    ),
+    GoRoute(
+      name: AppRoute.confirmedBookingDetails.routeName,
+      path: AppRoute.confirmedBookingDetails.path,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra is! Booking) {
+          return const RouteErrorPage(
+            message: 'Confirmed booking details route requires a Booking extra payload.',
+          );
+        }
+        return ConfirmedBookingDetailsPage(booking: extra);
       },
     ),
   ];

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app_routes.dart';
+import '../../authentication/presentation/providers/auth_providers.dart';
+import '../../../core/models/booking.dart';
+import '../../trips/presentation/providers/trip_provider.dart';
 import '../models/flight.dart';
 import '../models/saved_flight.dart';
 import '../providers/flight_provider.dart';
@@ -321,12 +325,31 @@ class FlightDetailsPage extends ConsumerWidget {
                       // Book button
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Booking ${flight.flightNumber} - Coming soon!'),
-                              ),
-                            );
+                          onPressed: () async {
+                            final user = ref.read(immediateCurrentUserProvider);
+                            if (user == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please log in to book.'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final trips = await ref.read(tripsProvider.future);
+                            final tripId = trips.isNotEmpty
+                                ? trips.first.id
+                                : 'mock-trip-id';
+
+                            ref.read(flightBookingProvider.notifier).book(
+                                  tripId,
+                                  user.uid,
+                                  flight,
+                                );
+
+                            if (context.mounted) {
+                              context.pushBookingStatus(BookingType.flight);
+                            }
                           },
                           icon: const Icon(Icons.flight_takeoff),
                           label: const Text('Book Flight'),

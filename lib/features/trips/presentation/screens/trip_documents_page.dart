@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/entities/trip_document.dart';
 import '../providers/trip_document_provider.dart';
 
 class TripDocumentsPage extends ConsumerWidget {
@@ -11,17 +12,24 @@ class TripDocumentsPage extends ConsumerWidget {
 
   final String tripId;
 
-  Future<void> _showAddDocumentDialog(BuildContext context, WidgetRef ref) async {
-    final titleController = TextEditingController();
-    final typeController = TextEditingController(text: 'General');
-    final referenceController = TextEditingController();
-    final notesController = TextEditingController();
+  Future<void> _showDocumentDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    TripDocument? document,
+  }) async {
+    final titleController = TextEditingController(text: document?.title);
+    final typeController =
+        TextEditingController(text: document?.type ?? 'Confirmation');
+    final referenceController =
+        TextEditingController(text: document?.reference);
+    final notesController = TextEditingController(text: document?.notes);
+    final isEditing = document != null;
 
     final added = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Add Document'),
+          title: Text(isEditing ? 'Edit Document' : 'Add Document'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -33,7 +41,10 @@ class TripDocumentsPage extends ConsumerWidget {
                 const SizedBox(height: 8),
                 TextField(
                   controller: typeController,
-                  decoration: const InputDecoration(labelText: 'Type'),
+                  decoration: const InputDecoration(
+                    labelText: 'Type',
+                    hintText: 'Ticket, confirmation, passport, visa',
+                  ),
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -71,21 +82,31 @@ class TripDocumentsPage extends ConsumerWidget {
                   return;
                 }
 
-                await ref.read(tripDocumentActionsProvider).addDocument(
-                      tripId: tripId,
-                      title: title,
-                      type: type,
-                      reference: reference,
-                      notes: notesController.text.trim().isEmpty
-                          ? null
-                          : notesController.text.trim(),
-                    );
+                final notes = notesController.text.trim();
+                if (isEditing) {
+                  await ref.read(tripDocumentActionsProvider).updateDocument(
+                        document.copyWith(
+                          title: title,
+                          type: type,
+                          reference: reference,
+                          notes: notes.isEmpty ? null : notes,
+                        ),
+                      );
+                } else {
+                  await ref.read(tripDocumentActionsProvider).addDocument(
+                        tripId: tripId,
+                        title: title,
+                        type: type,
+                        reference: reference,
+                        notes: notes.isEmpty ? null : notes,
+                      );
+                }
 
                 if (context.mounted) {
                   Navigator.of(dialogContext).pop(true);
                 }
               },
-              child: const Text('Add'),
+              child: Text(isEditing ? 'Save' : 'Add'),
             ),
           ],
         );
@@ -99,7 +120,9 @@ class TripDocumentsPage extends ConsumerWidget {
 
     if (added == true && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trip document added.')),
+        SnackBar(
+          content: Text(isEditing ? 'Trip document updated.' : 'Trip document added.'),
+        ),
       );
     }
   }
@@ -111,7 +134,7 @@ class TripDocumentsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Trip Documents')),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddDocumentDialog(context, ref),
+        onPressed: () => _showDocumentDialog(context, ref),
         icon: const Icon(Icons.add),
         label: const Text('Add'),
       ),
@@ -135,16 +158,39 @@ class TripDocumentsPage extends ConsumerWidget {
                 child: ListTile(
                   leading: const Icon(Icons.description_outlined),
                   title: Text(document.title),
-                  subtitle: Text('${document.type} | ${document.reference}'),
-                  trailing: IconButton(
-                    tooltip: 'Delete',
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () async {
+                  subtitle: Text(
+                    [
+                      document.type,
+                      document.reference,
+                      if (document.notes?.trim().isNotEmpty == true)
+                        document.notes!.trim(),
+                    ].join(' | '),
+                  ),
+                  onTap: () => _showDocumentDialog(
+                    context,
+                    ref,
+                    document: document,
+                  ),
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == 'edit') {
+                        await _showDocumentDialog(
+                          context,
+                          ref,
+                          document: document,
+                        );
+                        return;
+                      }
+
                       await ref.read(tripDocumentActionsProvider).deleteDocument(
                             tripId: tripId,
                             documentId: document.id,
                           );
                     },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'edit', child: Text('Edit')),
+                      PopupMenuItem(value: 'delete', child: Text('Remove')),
+                    ],
                   ),
                 ),
               );

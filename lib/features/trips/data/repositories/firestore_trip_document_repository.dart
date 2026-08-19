@@ -74,6 +74,13 @@ class FirestoreTripDocumentRepository implements TripDocumentRepository {
   }
 
   @override
+  Future<void> updateDocument(TripDocument document) async {
+    await _collection(document.tripId)
+        .doc(document.id)
+        .set(_toMap(document), SetOptions(merge: true));
+  }
+
+  @override
   Future<void> deleteDocument({
     required String tripId,
     required String documentId,

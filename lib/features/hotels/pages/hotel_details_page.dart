@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app_routes.dart';
+import '../../authentication/presentation/providers/auth_providers.dart';
+import '../../../core/models/booking.dart';
+import '../../trips/presentation/providers/trip_provider.dart';
 import '../../weather/providers/weather_provider.dart';
 import '../models/hotel.dart';
 import '../models/saved_hotel.dart';
@@ -247,12 +251,31 @@ class HotelDetailsPage extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Booking flow for ${hotel.name} will be enabled in the next sprint.'),
-                        ),
-                      );
+                    onPressed: () async {
+                      final user = ref.read(immediateCurrentUserProvider);
+                      if (user == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please log in to book.'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      final trips = await ref.read(tripsProvider.future);
+                      final tripId = trips.isNotEmpty
+                          ? trips.first.id
+                          : 'mock-trip-id';
+
+                      ref.read(hotelBookingProvider.notifier).book(
+                            tripId,
+                            user.uid,
+                            hotel,
+                          );
+
+                      if (context.mounted) {
+                        context.pushBookingStatus(BookingType.hotel);
+                      }
                     },
                     icon: const Icon(Icons.calendar_month_outlined),
                     label: const Text('Book Now'),

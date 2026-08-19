@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/destination.dart';
+import '../core/models/booking.dart';
 import '../features/maps/models/places_prefill.dart';
 import '../features/nearby/models/nearby_service_type.dart';
 import '../features/taxi/domain/entities/taxi_ride_option.dart';
@@ -69,6 +70,9 @@ enum AppRoute {
   tripActivities,
   profile,
   destination,
+  bookingStatus,
+  tripBookings,
+  confirmedBookingDetails,
 }
 
 extension AppRouteConfig on AppRoute {
@@ -148,6 +152,12 @@ extension AppRouteConfig on AppRoute {
         return '/profile';
       case AppRoute.destination:
         return '/destination';
+      case AppRoute.bookingStatus:
+        return '/booking-status';
+      case AppRoute.tripBookings:
+        return '/trips/:id/bookings';
+      case AppRoute.confirmedBookingDetails:
+        return '/trips/:id/bookings/details';
     }
   }
 }
@@ -280,4 +290,18 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushDestination<T>(Destination destination) =>
       pushNamed<T>(AppRoute.destination.routeName, extra: destination);
+
+  Future<T?> pushBookingStatus<T>(BookingType type) =>
+      pushNamed<T>(AppRoute.bookingStatus.routeName, extra: type);
+
+  Future<T?> pushTripBookings<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripBookings.routeName,
+        pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushConfirmedBookingDetails<T>(Booking booking) => pushNamed<T>(
+        AppRoute.confirmedBookingDetails.routeName,
+        pathParameters: {'id': booking.tripId},
+        extra: booking,
+      );
 }

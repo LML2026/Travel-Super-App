@@ -1,5 +1,6 @@
 import '../../../core/utils/app_logger.dart';
 import '../../../core/utils/result.dart';
+import '../../../core/models/booking.dart';
 import '../models/flight.dart';
 import '../models/flight_search_request.dart';
 import '../services/flight_service.dart';
@@ -26,6 +27,41 @@ class FlightRepository {
       return Success(flights);
     } catch (e, st) {
       appLogger.e('FlightRepository: search failed', error: e, stackTrace: st);
+      return Failure(e.toString(), error: e);
+    }
+  }
+
+  Future<Result<Booking>> bookFlight(
+    String tripId,
+    String userId,
+    Flight flight,
+  ) async {
+    try {
+      appLogger.i(
+        'FlightRepository: booking flight ${flight.id} for trip $tripId',
+      );
+      // Mocked booking process
+      await Future.delayed(const Duration(seconds: 2));
+
+      final booking = Booking.flight(
+        id: 'FL-${DateTime.now().millisecondsSinceEpoch}',
+        tripId: tripId,
+        userId: userId,
+        amount: flight.amount,
+        currency: flight.currency,
+        metadata: {
+          'flightId': flight.id,
+          'airline': flight.airline,
+          'flightNumber': flight.flightNumber,
+          'departure': flight.departureAt,
+          'arrival': flight.arrivalAt,
+        },
+      );
+
+      appLogger.i('FlightRepository: flight booked successfully');
+      return Success(booking.copyWith(status: BookingStatus.confirmed));
+    } catch (e, st) {
+      appLogger.e('FlightRepository: booking failed', error: e, stackTrace: st);
       return Failure(e.toString(), error: e);
     }
   }

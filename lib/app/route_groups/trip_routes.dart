@@ -117,29 +117,21 @@ class _TripDashboardResolverPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repository = ref.watch(tripRepositoryProvider);
+    final tripAsync = ref.watch(selectedTripProvider(tripId));
 
-    return FutureBuilder<domain.Trip?>(
-      future: repository.get(tripId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: Center(
-              child: Text('Failed to load trip: ${snapshot.error}'),
-            ),
-          );
-        }
-
-        final trip = snapshot.data;
+    return tripAsync.when(
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: const Text('Trip Dashboard')),
+        body: Center(
+          child: Text('Failed to load trip: $error'),
+        ),
+      ),
+      data: (trip) {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
@@ -162,29 +154,21 @@ class _TripEditResolverPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repository = ref.watch(tripRepositoryProvider);
+    final tripAsync = ref.watch(selectedTripProvider(tripId));
 
-    return FutureBuilder<domain.Trip?>(
-      future: repository.get(tripId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Edit Trip')),
-            body: Center(
-              child: Text('Failed to load trip: ${snapshot.error}'),
-            ),
-          );
-        }
-
-        final trip = snapshot.data;
+    return tripAsync.when(
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: const Text('Edit Trip')),
+        body: Center(
+          child: Text('Failed to load trip: $error'),
+        ),
+      ),
+      data: (trip) {
         if (trip == null) {
           return Scaffold(
             appBar: AppBar(title: const Text('Edit Trip')),

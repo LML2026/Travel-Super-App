@@ -46,6 +46,9 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
       location: data['location'] as String?,
       notes: data['notes'] as String?,
       scheduledAt: scheduledAt,
+      cost: (data['cost'] as num?)?.toDouble(),
+      currency: data['currency'] as String?,
+      status: data['status'] as String?,
       createdAt: createdAt,
     );
   }
@@ -60,6 +63,9 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
       'scheduledAt': activity.scheduledAt == null
           ? null
           : Timestamp.fromDate(activity.scheduledAt!),
+      'cost': activity.cost,
+      'currency': activity.currency,
+      'status': activity.status,
       'createdAt': activity.createdAt == null
           ? FieldValue.serverTimestamp()
           : Timestamp.fromDate(activity.createdAt!),
@@ -78,6 +84,13 @@ class FirestoreTripActivityRepository implements TripActivityRepository {
 
   @override
   Future<void> addActivity(TripActivity activity) async {
+    await _collection(activity.tripId)
+        .doc(activity.id)
+        .set(_toMap(activity), SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> updateActivity(TripActivity activity) async {
     await _collection(activity.tripId)
         .doc(activity.id)
         .set(_toMap(activity), SetOptions(merge: true));

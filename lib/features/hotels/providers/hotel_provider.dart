@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/models/booking.dart';
+import '../../../core/repositories/booking_repository.dart';
 import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
 import '../models/recent_hotel_search.dart';
@@ -117,3 +120,29 @@ final isHotelSavedProvider = FutureProvider.family<bool, String>((ref, hotelId) 
 final getSavedHotelIdProvider = FutureProvider.family<String?, String>((ref, hotelId) async {
   return ref.read(hotelFirestoreServiceProvider).getSavedHotelId(hotelId);
 });
+
+// ── Hotel Booking provider ─────────────────────────────────────────────────
+class HotelBookingNotifier extends AutoDisposeAsyncNotifier<Booking?> {
+  @override
+  FutureOr<Booking?> build() => null;
+
+  Future<void> book(String tripId, String userId, Hotel hotel) async {
+    state = const AsyncLoading();
+    final repository = ref.read(hotelRepositoryProvider);
+    final result = await repository.bookHotel(tripId, userId, hotel);
+
+    state = switch (result) {
+      Success(:final data) => AsyncData(data),
+      Failure(:final message) => AsyncError(message, StackTrace.current),
+    };
+
+    if (result is Success<Booking>) {
+      await ref.read(bookingRepositoryProvider).saveBooking(result.data);
+    }
+  }
+}
+
+final hotelBookingProvider =
+    AsyncNotifierProvider.autoDispose<HotelBookingNotifier, Booking?>(
+  HotelBookingNotifier.new,
+);
