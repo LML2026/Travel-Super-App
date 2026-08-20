@@ -3,6 +3,7 @@ import '../../../core/utils/result.dart';
 import '../../../core/models/booking.dart';
 import '../models/flight.dart';
 import '../models/flight_search_request.dart';
+import '../services/duffel_flight_service.dart';
 import '../services/flight_service.dart';
 
 /// Repository layer — the UI and providers talk only to this class.
@@ -12,9 +13,11 @@ class FlightRepository {
 
   FlightRepository({FlightService? api}) : _api = api ?? FlightService();
 
-  Future<Result<List<Flight>>> searchFlights(FlightSearchRequest request) async {
+  Future<Result<List<Flight>>> searchFlights(
+      FlightSearchRequest request) async {
     try {
-      appLogger.i('FlightRepository: searching ${request.from} → ${request.to}');
+      appLogger
+          .i('FlightRepository: searching ${request.from} → ${request.to}');
       final flights = await _api.searchFlights(
         from: request.from,
         to: request.to,
@@ -27,8 +30,16 @@ class FlightRepository {
       return Success(flights);
     } catch (e, st) {
       appLogger.e('FlightRepository: search failed', error: e, stackTrace: st);
-      return Failure(e.toString(), error: e);
+      return Failure(_friendlySearchMessage(e), error: e);
     }
+  }
+
+  String _friendlySearchMessage(Object error) {
+    if (error is DuffelApiException &&
+        (error.statusCode == 401 || error.statusCode == 403)) {
+      return 'Flight search is temporarily unavailable. Please try again later.';
+    }
+    return 'We could not search flights right now. Please try again.';
   }
 
   Future<Result<Booking>> bookFlight(
@@ -66,4 +77,3 @@ class FlightRepository {
     }
   }
 }
-

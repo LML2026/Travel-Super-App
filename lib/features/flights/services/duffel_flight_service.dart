@@ -100,8 +100,21 @@ class DuffelFlightService {
 
   String? _readToken() {
     try {
-      final token = _tokenReader()?.trim();
-      return token == null || token.isEmpty ? null : token;
+      final configured = _tokenReader()?.trim();
+      if (configured == null || configured.isEmpty) {
+        return null;
+      }
+
+      var token = configured.replaceFirst('\uFEFF', '');
+      if (token.startsWith('Bearer ')) {
+        token = token.substring('Bearer '.length).trim();
+      }
+      if (token.length >= 2 &&
+          ((token.startsWith('"') && token.endsWith('"')) ||
+              (token.startsWith("'") && token.endsWith("'")))) {
+        token = token.substring(1, token.length - 1).trim();
+      }
+      return token.isEmpty ? null : token;
     } catch (_) {
       return null;
     }

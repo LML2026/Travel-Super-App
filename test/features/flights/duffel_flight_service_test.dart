@@ -83,7 +83,8 @@ void main() {
   });
 
   test('does not call Duffel when the local token is unavailable', () async {
-    final client = _FakeDuffelClient(const <String, dynamic>{}, statusCode: 200);
+    final client =
+        _FakeDuffelClient(const <String, dynamic>{}, statusCode: 200);
     final service = DuffelFlightService(
       client: client,
       tokenReader: () => null,
@@ -98,5 +99,28 @@ void main() {
       ),
       throwsA(isA<DuffelNotConfiguredException>()),
     );
+  });
+
+  test('normalizes a locally configured Bearer token before sending it',
+      () async {
+    final client = _FakeDuffelClient(<String, dynamic>{
+      'data': <String, dynamic>{
+        'live_mode': false,
+        'offers': <Map<String, dynamic>>[],
+      },
+    }, statusCode: 200);
+
+    await DuffelFlightService(
+      client: client,
+      tokenReader: () => '  Bearer fixture-value  ',
+    ).searchFlights(
+      from: 'EDI',
+      to: 'LHR',
+      departureDate: '2026-10-01',
+      passengers: 3,
+      cabinClass: 'business',
+    );
+
+    expect(client.request.headers['Authorization'], 'Bearer fixture-value');
   });
 }
