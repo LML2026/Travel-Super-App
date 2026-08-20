@@ -7,6 +7,7 @@ import '../widgets/expense_list_item.dart';
 import '../../../trips/presentation/providers/trip_dashboard_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import 'add_expense_page.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class TripExpensesPage extends ConsumerStatefulWidget {
   const TripExpensesPage({
@@ -82,7 +83,10 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
     if (mutationState.hasError && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save expense: ${mutationState.error}'),
+          content: Text(UserFacingError.message(
+            mutationState.error!,
+            fallback: 'We could not save this expense.',
+          )),
         ),
       );
     }
@@ -115,7 +119,10 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
             child: expensesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, _) => Center(
-                child: Text('Unable to load expenses: $error'),
+                child: Text(UserFacingError.message(
+                  error,
+                  fallback: 'Expenses are unavailable right now.',
+                )),
               ),
               data: (expenses) {
                 if (expenses.isEmpty) {

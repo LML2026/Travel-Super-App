@@ -250,7 +250,10 @@ class TripDetailsPage extends ConsumerWidget {
                 title: 'Transport Timeline',
                 child: ridesAsync.when(
                   loading: () => const Text('Loading transport rides...'),
-                  error: (error, _) => Text('Could not load rides: $error'),
+                  error: (error, _) => Text(UserFacingError.message(
+                    error,
+                    fallback: 'Transport rides are unavailable right now.',
+                  )),
                   data: (rides) {
                     if (rides.isEmpty) {
                       return const Text('No saved transport rides yet.');

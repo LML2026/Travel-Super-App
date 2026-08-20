@@ -394,7 +394,10 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                   const SizedBox(height: 12),
                   rateAsync.when(
                     loading: () => const LinearProgressIndicator(),
-                    error: (error, _) => Text('Rate unavailable: $error'),
+                    error: (error, _) => Text(UserFacingError.message(
+                      error,
+                      fallback: 'Exchange rate unavailable right now.',
+                    )),
                     data: (rate) {
                       final converted = amount * rate;
                       return Text(

@@ -4,6 +4,7 @@ import '../providers/trip_activity_provider.dart';
 import 'dashboard_section.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class ActivitiesCard extends ConsumerWidget {
   const ActivitiesCard({
@@ -24,7 +25,10 @@ class ActivitiesCard extends ConsumerWidget {
       title: 'Activities',
       child: activitiesAsync.when(
         loading: () => const Text('Loading activities...'),
-        error: (error, _) => Text('Could not load activities: $error'),
+        error: (error, _) => Text(UserFacingError.message(
+          error,
+          fallback: 'Activities are unavailable right now.',
+        )),
         data: (activities) {
           if (activities.isEmpty) {
             return Column(

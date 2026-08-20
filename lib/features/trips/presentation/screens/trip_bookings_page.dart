@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../providers/trip_bookings_provider.dart';
 
 class TripBookingsPage extends ConsumerWidget {
@@ -53,7 +54,12 @@ class TripBookingsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => Center(
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'Bookings are unavailable right now.',
+          )),
+        ),
       ),
     );
   }

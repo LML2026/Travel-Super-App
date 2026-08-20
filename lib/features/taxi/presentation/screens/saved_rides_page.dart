@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/user_facing_error.dart';
+
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../providers/taxi_hub_provider.dart';
@@ -106,7 +108,10 @@ class SavedRidesPage extends ConsumerWidget {
                   error: (error, _) => Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Text('Could not load saved rides: $error'),
+                      child: Text(UserFacingError.message(
+                        error,
+                        fallback: 'Saved rides are unavailable right now.',
+                      )),
                     ),
                   ),
                 ),
@@ -118,7 +123,10 @@ class SavedRidesPage extends ConsumerWidget {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text('Could not load trips: $error'),
+            child: Text(UserFacingError.message(
+              error,
+              fallback: 'Trips are unavailable right now.',
+            )),
           ),
         ),
       ),

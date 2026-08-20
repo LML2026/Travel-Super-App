@@ -282,7 +282,10 @@ class _GoogleMapCard extends StatelessWidget {
             ),
             error: (error, _) => Padding(
               padding: const EdgeInsets.all(16),
-              child: Text('Live map location unavailable: $error'),
+              child: Text(UserFacingError.message(
+                error,
+                fallback: 'Live location is unavailable right now.',
+              )),
             ),
             data: (location) => SizedBox(
               height: 220,
@@ -660,7 +663,10 @@ class _LiveLocationCard extends StatelessWidget {
             const SizedBox(height: 10),
             currentLocationAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (error, _) => Text('Location unavailable: $error'),
+              error: (error, _) => Text(UserFacingError.message(
+                error,
+                fallback: 'Location is unavailable right now.',
+              )),
               data: (location) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -782,7 +788,10 @@ class _PlacesResultsSection extends StatelessWidget {
             }
 
             if (snapshot.hasError) {
-              return Text('Could not load places: ${snapshot.error}');
+              return Text(UserFacingError.message(
+                snapshot.error!,
+                fallback: 'Places are unavailable right now.',
+              ));
             }
 
             final places = snapshot.data ?? const <PlaceResult>[];

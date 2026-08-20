@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
 import '../../../hotels/models/saved_hotel.dart';
@@ -68,7 +69,10 @@ class _SavedItemsPageState extends ConsumerState<SavedItemsPage> {
           const SizedBox(height: 12),
           savedItemsAsync.when(
             loading: () => const LinearProgressIndicator(),
-            error: (error, _) => Text('Could not load saved items: $error'),
+            error: (error, _) => Text(UserFacingError.message(
+              error,
+              fallback: 'Saved items are unavailable right now.',
+            )),
             data: (items) {
               final filtered = _category == null
                   ? items

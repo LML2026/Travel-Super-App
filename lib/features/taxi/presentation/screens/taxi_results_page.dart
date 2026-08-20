@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/taxi_ride_request.dart';
 import '../providers/taxi_hub_provider.dart';
 
@@ -88,7 +89,10 @@ class TaxiResultsPage extends ConsumerWidget {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text('Failed to load ride options: $error'),
+            child: Text(UserFacingError.message(
+              error,
+              fallback: 'Ride options are unavailable right now.',
+            )),
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),

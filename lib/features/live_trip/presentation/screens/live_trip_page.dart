@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../../../core/models/booking.dart';
 import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
@@ -52,7 +53,12 @@ class LiveTripPage extends ConsumerWidget {
       ),
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Live Trip')),
-        body: Center(child: Text('Could not load trips: $error')),
+        body: Center(
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load your trips.',
+          )),
+        ),
       ),
       data: (trips) {
         final activeTrip = _activeTrip(trips, DateTime.now());
@@ -250,7 +256,11 @@ class _LiveTripContent extends ConsumerWidget {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: Text('Could not open document: $error')),
+                          content: Text(UserFacingError.message(
+                            error,
+                            fallback: 'We could not open this document.',
+                          )),
+                        ),
                       );
                     }
                   },

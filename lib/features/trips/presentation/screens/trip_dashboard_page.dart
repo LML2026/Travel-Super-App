@@ -1482,8 +1482,10 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
               ),
               collaboratorsAsync.when(
                 loading: () => const LinearProgressIndicator(),
-                error: (error, _) =>
-                    Text('Could not load collaborators: $error'),
+                error: (error, _) => Text(UserFacingError.message(
+                  error,
+                  fallback: 'Collaborators are unavailable right now.',
+                )),
                 data: (collaborators) {
                   if (collaborators.isEmpty) {
                     return const Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'create_trip_page.dart';
@@ -34,7 +35,10 @@ class TripListPage extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
         error: (error, stack) => Center(
-          child: Text(error.toString()),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load your trips. Please try again.',
+          )),
         ),
         data: (trips) {
           if (trips.isEmpty) {

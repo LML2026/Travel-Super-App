@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/user_facing_error.dart';
+
 import '../../data/translation_service.dart';
 import '../../domain/translation_models.dart';
 import '../providers/translator_provider.dart';
@@ -82,7 +84,10 @@ class _TranslatorPageState extends ConsumerState<TranslatorPage> {
           error: (error, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Text('Translator unavailable: $error'),
+              child: Text(UserFacingError.message(
+                error,
+                fallback: 'Translation is unavailable right now.',
+              )),
             ),
           ),
           data: (state) => _TranslatorBody(

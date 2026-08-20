@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/user_facing_error.dart';
+
 import '../../domain/entities/trip_activity.dart';
 import '../providers/trip_activity_provider.dart';
 
@@ -213,7 +215,12 @@ class TripActivitiesPage extends ConsumerWidget {
       ),
       body: activitiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Could not load activities: $error')),
+        error: (error, _) => Center(
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'Activities are unavailable right now.',
+          )),
+        ),
         data: (activities) {
           if (activities.isEmpty) {
             return const Center(

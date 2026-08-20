@@ -325,8 +325,12 @@ class TripDocumentsPage extends ConsumerWidget {
           Expanded(
             child: documentsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) =>
-                  Center(child: Text('Could not load documents: $error')),
+                  error: (error, _) => Center(
+                    child: Text(UserFacingError.message(
+                      error,
+                      fallback: 'Documents are unavailable right now.',
+                    )),
+                  ),
               data: (documents) {
                 if (documents.isEmpty) {
                   return const Center(

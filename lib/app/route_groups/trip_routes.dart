@@ -188,7 +188,10 @@ class _TripDashboardResolverPage extends ConsumerWidget {
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Trip Dashboard')),
         body: Center(
-          child: Text('Failed to load trip: $error'),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load this trip.',
+          )),
         ),
       ),
       data: (trip) {
@@ -225,7 +228,10 @@ class _TripEditResolverPage extends ConsumerWidget {
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Edit Trip')),
         body: Center(
-          child: Text('Failed to load trip: $error'),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load this trip.',
+          )),
         ),
       ),
       data: (trip) {
@@ -262,7 +268,10 @@ class _TripAiPlannerResolverPage extends ConsumerWidget {
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('AI Travel Planner')),
         body: Center(
-          child: Text('Failed to load trip: $error'),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load this trip.',
+          )),
         ),
       ),
       data: (trip) {
@@ -339,7 +348,10 @@ class _TripReadinessResolverPage extends ConsumerWidget {
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Trip Readiness')),
         body: Center(
-          child: Text('Failed to load trip readiness: $error'),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load trip readiness.',
+          )),
         ),
       ),
       data: (trip) {
