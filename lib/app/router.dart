@@ -43,8 +43,19 @@ bool _isProtectedPath(String path) {
       path.startsWith('/translator') ||
       path.startsWith('/saved') ||
       path.startsWith('/documents') ||
-      path.startsWith('/trips');
+      path.startsWith('/trips') ||
+      path.startsWith('/bookings') ||
+      path.startsWith('/profile') ||
+      path.startsWith('/live-trip') ||
+      path.startsWith('/flights/recent') ||
+      path.startsWith('/flights/saved') ||
+      path.startsWith('/hotels/recent') ||
+      path.startsWith('/hotels/saved');
 }
+
+/// Returns whether a route contains user-owned or authenticated-only data.
+/// Public discovery and search routes intentionally remain accessible.
+bool isProtectedPath(String path) => _isProtectedPath(path);
 
 GoRouter createAppRouter(Ref ref) {
   final authRefresh = _AuthRefreshListenable(

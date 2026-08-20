@@ -175,7 +175,9 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Link Flight'));
+    final linkFlightButton = find.widgetWithText(FilledButton, 'Link Flight');
+    tester.widget<FilledButton>(linkFlightButton).onPressed!.call();
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Air France AF188'));

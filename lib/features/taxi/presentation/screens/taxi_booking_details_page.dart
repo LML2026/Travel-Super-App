@@ -7,7 +7,6 @@ import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../../../core/models/booking.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
-import '../../domain/providers/taxi_provider.dart';
 import '../providers/taxi_hub_provider.dart';
 
 class TaxiBookingDetailsPage extends ConsumerWidget {
@@ -17,15 +16,6 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   });
 
   final TaxiBookingRouteArgs args;
-
-  TaxiProvider? _resolveProvider(List<TaxiProvider> providers, String name) {
-    for (final provider in providers) {
-      if (provider.name == name) {
-        return provider;
-      }
-    }
-    return null;
-  }
 
   Future<String?> _selectTripId(
     BuildContext context,
@@ -101,7 +91,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   Future<void> _openRouteOnMap(BuildContext context) async {
     final query =
         '${args.request.pickupAddress} to ${args.request.destinationAddress}';
-    final uri = Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
+    final uri =
+        Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
 
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
         context.mounted) {
@@ -113,11 +104,6 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final providers = <TaxiProvider>[
-      ref.watch(taxiPrimaryProvider),
-      ...ref.watch(taxiProvidersProvider),
-    ];
-
     return Scaffold(
       appBar: AppBar(title: const Text('Booking details')),
       body: ListView(

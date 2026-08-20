@@ -494,7 +494,7 @@ class _TripSelectorCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: selectedTripId,
+              initialValue: selectedTripId,
               decoration: const InputDecoration(
                 labelText: 'Selected trip',
                 border: OutlineInputBorder(),
