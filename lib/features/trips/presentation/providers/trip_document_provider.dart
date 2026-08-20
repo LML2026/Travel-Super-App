@@ -11,6 +11,7 @@ import '../../domain/entities/trip_document.dart';
 import '../../domain/entities/trip_document_upload.dart';
 import '../../domain/repositories/trip_document_repository.dart';
 import 'trip_data_scope_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 typedef TripDocumentRepositoryFactory = TripDocumentRepository Function(
   String userId,
@@ -233,7 +234,10 @@ class TripDocumentMutationController
     } catch (error) {
       state = AsyncData(
         TripDocumentMutationState(
-          errorMessage: error.toString(),
+          errorMessage: UserFacingError.message(
+            error,
+            fallback: 'We could not read that file.',
+          ),
         ),
       );
       rethrow;
@@ -249,7 +253,12 @@ class TripDocumentMutationController
       );
     } catch (error) {
       state = AsyncData(
-        TripDocumentMutationState(errorMessage: error.toString()),
+        TripDocumentMutationState(
+          errorMessage: UserFacingError.message(
+            error,
+            fallback: 'We could not open this document.',
+          ),
+        ),
       );
       rethrow;
     }

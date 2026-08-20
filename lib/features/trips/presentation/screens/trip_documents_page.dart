@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/trip_document.dart';
 import '../../domain/entities/trip_document_upload.dart';
 import '../providers/trip_document_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class TripDocumentsPage extends ConsumerWidget {
   const TripDocumentsPage({
@@ -100,7 +101,10 @@ class TripDocumentsPage extends ConsumerWidget {
                               });
                             } catch (error) {
                               setDialogState(() {
-                                uploadError = error.toString();
+                                uploadError = UserFacingError.message(
+                                  error,
+                                  fallback: 'We could not read that file.',
+                                );
                                 upload = null;
                               });
                             }
@@ -271,7 +275,12 @@ class TripDocumentsPage extends ConsumerWidget {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(
+            content: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not update this document.',
+            )),
+          ),
         );
       }
     }

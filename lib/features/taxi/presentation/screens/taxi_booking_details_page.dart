@@ -8,6 +8,7 @@ import '../../../../core/models/booking.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../providers/taxi_hub_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class TaxiBookingDetailsPage extends ConsumerWidget {
   const TaxiBookingDetailsPage({
@@ -210,7 +211,12 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               } catch (error) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Could not save ride: $error')),
+                    SnackBar(
+                      content: Text(UserFacingError.message(
+                        error,
+                        fallback: 'We could not save this ride to your trip.',
+                      )),
+                    ),
                   );
                 }
               }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -390,7 +391,12 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(
+            content: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not invite this collaborator.',
+            )),
+          ),
         );
       }
     }
@@ -410,7 +416,12 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(
+            content: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not update this collaborator.',
+            )),
+          ),
         );
       }
     }
@@ -428,7 +439,12 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(
+            content: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not remove this collaborator.',
+            )),
+          ),
         );
       }
     }

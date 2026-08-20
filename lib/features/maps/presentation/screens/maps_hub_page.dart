@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
 import '../../../../core/providers/travel_provider_contracts.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../../providers/provider_gateway.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
@@ -71,7 +72,10 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(error.toString()),
+            child: Text(UserFacingError.message(
+              error,
+              fallback: 'Maps are unavailable right now. Check your connection and try again.',
+            )),
           ),
         ),
         data: (trips) {

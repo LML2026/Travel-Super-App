@@ -5,6 +5,7 @@ import '../../models/booking.dart';
 import '../../../features/flights/providers/flight_provider.dart';
 import '../../../features/hotels/providers/hotel_provider.dart';
 import '../../../features/taxi/presentation/providers/taxi_hub_provider.dart';
+import '../../utils/user_facing_error.dart';
 
 class BookingStatusPage extends ConsumerWidget {
   final BookingType type;
@@ -32,7 +33,12 @@ class BookingStatusPage extends ConsumerWidget {
             return _SuccessView(booking: booking);
           },
           loading: () => const _LoadingView(),
-          error: (error, stack) => _ErrorView(error: error.toString()),
+          error: (error, stack) => _ErrorView(
+            error: UserFacingError.message(
+              error,
+              fallback: 'We could not save this booking plan. Please try again.',
+            ),
+          ),
         ),
       ),
     );
@@ -86,12 +92,12 @@ class _SuccessView extends StatelessWidget {
           const Icon(Icons.check_circle_outline, color: Colors.green, size: 80),
           const SizedBox(height: 24),
           const Text(
-            'Booking Confirmed!',
+            'Booking Plan Saved',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Text(
-            'Your ${booking.type.name} booking has been successfully confirmed.',
+            'Your ${booking.type.name} details were saved to your trip. No payment or provider order was created.',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16),
           ),

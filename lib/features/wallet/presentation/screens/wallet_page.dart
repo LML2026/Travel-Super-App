@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/wallet_transaction.dart';
 import '../providers/wallet_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class WalletPage extends ConsumerStatefulWidget {
   const WalletPage({super.key});
@@ -45,7 +46,10 @@ class _WalletPageState extends ConsumerState<WalletPage> {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(error.toString()),
+            child: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not load your wallet.',
+            )),
           ),
         ),
         data: (wallet) {
@@ -92,7 +96,10 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 const SizedBox(height: 8),
                 transactionsAsync.when(
                   loading: () => const LinearProgressIndicator(),
-                  error: (error, _) => Text(error.toString()),
+                  error: (error, _) => Text(UserFacingError.message(
+                    error,
+                    fallback: 'Spending analytics are unavailable right now.',
+                  )),
                   data: (transactions) => _SpendingAnalytics(
                     transactions: transactions,
                   ),
@@ -105,7 +112,10 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 const SizedBox(height: 8),
                 transactionsAsync.when(
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, _) => Text(error.toString()),
+                  error: (error, _) => Text(UserFacingError.message(
+                    error,
+                    fallback: 'Transactions are unavailable right now.',
+                  )),
                   data: (transactions) => _TransactionList(
                     transactions: transactions,
                   ),

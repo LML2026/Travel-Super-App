@@ -5,6 +5,7 @@ import '../../app/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/widgets.dart';
+import '../../core/utils/user_facing_error.dart';
 import '../wallet/domain/entities/wallet.dart';
 import '../wallet/presentation/providers/wallet_provider.dart';
 import 'models/dashboard_summary.dart';
@@ -25,7 +26,10 @@ class HomePage extends ConsumerWidget {
             const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(
           title: 'Dashboard unavailable',
-          message: error.toString(),
+          message: UserFacingError.message(
+            error,
+            fallback: 'We could not load your travel summary.',
+          ),
           onRetry: () => ref.invalidate(dashboardSummaryProvider),
         ),
         data: (summary) => SingleChildScrollView(

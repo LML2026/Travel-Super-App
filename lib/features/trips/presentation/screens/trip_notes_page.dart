@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class TripNotesPage extends ConsumerStatefulWidget {
   const TripNotesPage({
@@ -77,7 +78,12 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save notes: $error')),
+        SnackBar(
+          content: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not save your trip notes.',
+          )),
+        ),
       );
     } finally {
       if (mounted) {

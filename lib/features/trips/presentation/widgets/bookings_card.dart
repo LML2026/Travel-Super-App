@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
 import '../providers/trip_bookings_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class BookingsCard extends ConsumerWidget {
   final String tripId;
@@ -43,7 +44,7 @@ class BookingsCard extends ConsumerWidget {
                 data: (bookings) {
                   if (bookings.isEmpty) {
                     return const Text(
-                      'No confirmed bookings yet. Start by searching for flights or hotels.',
+                      'No saved booking plans yet. Search for flights or hotels to add one.',
                       style: TextStyle(color: Colors.grey),
                     );
                   }
@@ -72,7 +73,10 @@ class BookingsCard extends ConsumerWidget {
                 },
                 loading: () => const Center(child: LinearProgressIndicator()),
                 error: (error, _) => Text(
-                  'Error loading bookings: $error',
+                  UserFacingError.message(
+                    error,
+                    fallback: 'Bookings are unavailable right now.',
+                  ),
                   style: const TextStyle(color: Colors.red),
                 ),
               ),

@@ -116,8 +116,13 @@ void main() {
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
-      // Verify snackbar shows booking message with flight number
-      expect(find.text('Booking BA123 - Coming soon!'), findsOneWidget);
+      // Verify the non-transactional save-plan message with flight number.
+      expect(
+        find.text(
+          'BA123 is ready to save to a trip. Live ticket purchase is not available yet.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('FlightCard displays multiple stops correctly',

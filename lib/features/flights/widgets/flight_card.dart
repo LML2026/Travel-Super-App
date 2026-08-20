@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../app/app_routes.dart';
 import '../models/flight.dart';
 import '../../../core/utils/flight_formatter.dart';
+import '../../../core/utils/user_facing_error.dart';
 
 class FlightCard extends ConsumerStatefulWidget {
   final Flight flight;
@@ -40,7 +41,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
       case FlightDataSource.duffelTest:
         return 'Duffel TEST data';
       case FlightDataSource.backend:
-        return 'Fallback provider data';
+        return 'Backend fallback data';
       case FlightDataSource.demo:
         return 'Demo flight data';
     }
@@ -100,7 +101,10 @@ class _FlightCardState extends ConsumerState<FlightCard> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not save flight: $error'),
+          content: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not save this flight. Please try again.',
+          )),
         ),
       );
     }
@@ -361,7 +365,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                'Booking ${widget.flight.flightNumber} - Coming soon!'),
+                                '${widget.flight.flightNumber} is ready to save to a trip. Live ticket purchase is not available yet.'),
                           ),
                         );
                       },

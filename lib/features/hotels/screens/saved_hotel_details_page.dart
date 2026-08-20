@@ -114,14 +114,10 @@ class SavedHotelDetailsPage extends ConsumerWidget {
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                  child: PrimaryButton(
-                    text: 'Book Now',
-                    icon: Icons.calendar_month,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Booking ${hotel.name} - Coming soon!')),
-                      );
-                    },
+                  child: FilledButton.icon(
+                    onPressed: null,
+                    icon: const Icon(Icons.info_outline),
+                    label: const Text('Live Booking Unavailable'),
                   ),
                 ),
               ],

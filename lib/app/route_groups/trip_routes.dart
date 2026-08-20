@@ -13,6 +13,7 @@ import '../../features/trips/presentation/screens/trip_list_page.dart';
 import '../../features/trips/presentation/screens/trip_notes_page.dart';
 import '../../features/ai_planner/presentation/screens/ai_trip_planner_page.dart';
 import '../../features/live_trip/presentation/screens/live_trip_page.dart';
+import '../../core/utils/user_facing_error.dart';
 import '../../features/trip_readiness/presentation/screens/trip_readiness_page.dart';
 import '../app_routes.dart';
 import '../route_error_page.dart';
@@ -298,7 +299,10 @@ class _LiveTripResolverPage extends ConsumerWidget {
       error: (error, _) => Scaffold(
         appBar: AppBar(title: const Text('Live Trip')),
         body: Center(
-          child: Text('Failed to load live trip: $error'),
+          child: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not load this live trip.',
+          )),
         ),
       ),
       data: (trip) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/models/booking.dart';
@@ -182,7 +183,12 @@ class AiTripPlannerPage extends ConsumerWidget {
               return _GeneratedPlanView(trip: trip, plan: plan);
             },
             loading: () => const _PlannerLoadingState(),
-            error: (error, _) => _PlannerErrorState(message: error.toString()),
+            error: (error, _) => _PlannerErrorState(
+              message: UserFacingError.message(
+                error,
+                fallback: 'The planner could not generate a plan. Try again.',
+              ),
+            ),
           ),
         ],
       ),
@@ -636,7 +642,7 @@ class _PlanHistoryCard extends StatelessWidget {
                       .format(plan.updatedAt ?? plan.generatedAt),
                 ),
                 subtitle: Text(
-                  '${plan.currency} ${plan.totalEstimatedCost.toStringAsFixed(0)} estimated - ${plan.source}',
+                  '${plan.currency} ${plan.totalEstimatedCost.toStringAsFixed(0)} estimated · ${_planSourceLabel(plan.source)}',
                 ),
                 trailing: activePlanId == plan.id
                     ? const Chip(label: Text('Current'))
@@ -650,6 +656,14 @@ class _PlanHistoryCard extends StatelessWidget {
       ),
     );
   }
+}
+
+String _planSourceLabel(String source) {
+  final normalized = source.toLowerCase();
+  if (normalized.contains('live') || normalized.contains('backend')) {
+    return source;
+  }
+  return 'Local demo plan';
 }
 
 class _ContextChip extends StatelessWidget {

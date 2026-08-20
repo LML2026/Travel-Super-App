@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/travel_discovery_models.dart';
 import '../providers/travel_discovery_provider.dart';
 
@@ -133,7 +134,12 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
           const SizedBox(height: 12),
           discoveryState.when(
             loading: () => const _LoadingResults(),
-            error: (error, _) => _ErrorResults(message: error.toString()),
+            error: (error, _) => _ErrorResults(
+              message: UserFacingError.message(
+                error,
+                fallback: 'Discovery is unavailable right now. Try again shortly.',
+              ),
+            ),
             data: (state) {
               final results = _categoryFilter == null
                   ? state.results
@@ -199,7 +205,12 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
+        SnackBar(
+          content: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not add this to your trip.',
+          )),
+        ),
       );
     }
   }

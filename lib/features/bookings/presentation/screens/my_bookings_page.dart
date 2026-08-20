@@ -25,7 +25,7 @@ class MyBookingsPage extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
-                  'Your confirmed flights, stays and transport bookings will appear here.',
+                  'Your saved flight, stay and transport plans will appear here.',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -81,7 +81,7 @@ class _BookingTile extends StatelessWidget {
         subtitle: Text(
             '${item.trip.destination} • ${_subtitleFor(booking)}\n${_sourceFor(booking)}'),
         isThreeLine: true,
-        trailing: Chip(label: Text(booking.status.name)),
+        trailing: Chip(label: Text(_statusLabel(booking))),
         onTap: () => context.pushConfirmedBookingDetails(booking),
       ),
     );
@@ -123,6 +123,14 @@ class _BookingTile extends StatelessWidget {
 
   String _sourceFor(Booking booking) =>
       'Source: ${(booking.metadata['source'] ?? booking.metadata['provider'] ?? booking.metadata['providerName'] ?? 'ITAREVO booking').toString()}';
+
+  String _statusLabel(Booking booking) {
+    final source = _sourceFor(booking).toLowerCase();
+    if (source.contains('demo') || source.contains('test')) {
+      return 'Saved plan';
+    }
+    return booking.status.name;
+  }
 
   IconData _iconFor(BookingType type) => switch (type) {
         BookingType.flight => Icons.flight_takeoff,
