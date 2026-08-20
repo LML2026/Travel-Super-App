@@ -23,7 +23,7 @@ class HotelRepository {
         stackTrace: st,
       );
       return Failure(
-        e.toString(),
+        'We could not search hotels right now. Please try again.',
         error: e,
       );
     }
@@ -35,7 +35,8 @@ class HotelRepository {
     Hotel hotel,
   ) async {
     try {
-      appLogger.i('HotelRepository: booking hotel ${hotel.id} for trip $tripId');
+      appLogger
+          .i('HotelRepository: booking hotel ${hotel.id} for trip $tripId');
       // Mocked booking process
       await Future.delayed(const Duration(seconds: 2));
 
