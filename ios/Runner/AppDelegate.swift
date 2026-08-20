@@ -1,10 +1,13 @@
 import Flutter
 import Foundation
 import GoogleMaps
+import AVFoundation
 import UIKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  private let speechSynthesizer = AVSpeechSynthesizer()
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -22,6 +25,44 @@ import UIKit
     )
     channel.setMethodCallHandler { [weak self] call, result in
       self?.handleGoogleMapsCall(call, result: result)
+    }
+
+    let speechChannel = FlutterMethodChannel(
+      name: "itarevo.speech",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    speechChannel.setMethodCallHandler { [weak self] call, result in
+      self?.handleSpeechCall(call, result: result)
+    }
+  }
+
+  private func handleSpeechCall(
+    _ call: FlutterMethodCall,
+    result: @escaping FlutterResult
+  ) {
+    switch call.method {
+    case "speak":
+      guard let arguments = call.arguments as? [String: Any],
+            let text = arguments["text"] as? String,
+            let localeId = arguments["localeId"] as? String,
+            !text.isEmpty else {
+        result(FlutterError(code: "invalid_speech", message: "Speech text is required.", details: nil))
+        return
+      }
+      speechSynthesizer.stopSpeaking(at: .immediate)
+      let utterance = AVSpeechUtterance(string: text)
+      utterance.voice = AVSpeechSynthesisVoice(language: localeId)
+      guard utterance.voice != nil else {
+        result(FlutterError(code: "unsupported_voice", message: "The requested voice is unavailable.", details: nil))
+        return
+      }
+      speechSynthesizer.speak(utterance)
+      result(true)
+    case "stop":
+      speechSynthesizer.stopSpeaking(at: .immediate)
+      result(true)
+    default:
+      result(FlutterMethodNotImplemented)
     }
   }
 

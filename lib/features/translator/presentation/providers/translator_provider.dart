@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../app/providers.dart';
 import '../../data/translation_history_repository.dart';
+import '../../data/speech_service.dart';
 import '../../data/translation_service.dart';
 import '../../domain/translation_models.dart';
 
@@ -15,6 +16,14 @@ final translationServiceProvider = Provider<TranslationService>((ref) {
 final translationHistoryRepositoryProvider =
     Provider<TranslationHistoryRepository>((ref) {
   return LocalTranslationHistoryRepository(ref.watch(storageServiceProvider));
+});
+
+final speechInputServiceProvider = Provider<SpeechInputService>((ref) {
+  return NativeSpeechInputService();
+});
+
+final speechOutputServiceProvider = Provider<SpeechOutputService>((ref) {
+  return NativeSpeechOutputService();
 });
 
 final translatorControllerProvider =
@@ -34,6 +43,10 @@ class TranslatorState {
     this.conversation = const [],
     this.context,
     this.errorMessage,
+    this.speechAvailable = false,
+    this.isListening = false,
+    this.isSpeaking = false,
+    this.speechError,
   });
 
   final String sourceLanguageCode;
@@ -46,6 +59,10 @@ class TranslatorState {
   final List<ConversationTurn> conversation;
   final TranslatorContext? context;
   final String? errorMessage;
+  final bool speechAvailable;
+  final bool isListening;
+  final bool isSpeaking;
+  final String? speechError;
 
   List<SavedTranslation> get favourites =>
       history.where((item) => item.isFavourite).toList(growable: false);
@@ -61,8 +78,13 @@ class TranslatorState {
     List<ConversationTurn>? conversation,
     TranslatorContext? context,
     String? errorMessage,
+    bool? speechAvailable,
+    bool? isListening,
+    bool? isSpeaking,
+    String? speechError,
     bool clearResponse = false,
     bool clearError = false,
+    bool clearSpeechError = false,
   }) {
     return TranslatorState(
       sourceLanguageCode: sourceLanguageCode ?? this.sourceLanguageCode,
@@ -76,6 +98,10 @@ class TranslatorState {
       conversation: conversation ?? this.conversation,
       context: context ?? this.context,
       errorMessage: clearError ? null : errorMessage,
+      speechAvailable: speechAvailable ?? this.speechAvailable,
+      isListening: isListening ?? this.isListening,
+      isSpeaking: isSpeaking ?? this.isSpeaking,
+      speechError: clearSpeechError ? null : speechError ?? this.speechError,
     );
   }
 }
@@ -103,6 +129,140 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
       ),
     );
   }
+
+  Future<bool> initializeSpeech() async {
+    final current = state.valueOrNull ?? const TranslatorState();
+    try {
+      final available = await ref.read(speechInputServiceProvider).initialize();
+      state = AsyncData(
+        current.copyWith(
+          speechAvailable: available,
+          speechError:
+              available ? null : 'Speech input is unavailable on this device.',
+          clearSpeechError: available,
+        ),
+      );
+      return available;
+    } catch (_) {
+      state = AsyncData(
+        current.copyWith(
+          speechAvailable: false,
+          speechError: 'Speech input is unavailable on this device.',
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<void> startListening({
+    String? languageCode,
+    bool conversation = false,
+    bool travellerSpeaking = true,
+  }) async {
+    final current = state.valueOrNull ?? const TranslatorState();
+    final available = current.speechAvailable || await initializeSpeech();
+    if (!available) return;
+    final selectedLanguage = languageCode ??
+        (conversation
+            ? (travellerSpeaking
+                ? current.travellerLanguageCode
+                : current.localLanguageCode)
+            : current.sourceLanguageCode);
+    state =
+        AsyncData(current.copyWith(isListening: true, clearSpeechError: true));
+    try {
+      await ref.read(speechInputServiceProvider).listen(
+            localeId: speechLocaleFor(selectedLanguage),
+            onResult: (text, isFinal) {
+              if (conversation) {
+                if (isFinal && text.trim().isNotEmpty) {
+                  unawaited(_finishConversationSpeech(
+                    text: text,
+                    travellerSpeaking: travellerSpeaking,
+                  ));
+                }
+              } else {
+                setInputText(text);
+                if (isFinal && text.trim().isNotEmpty) {
+                  unawaited(_finishSourceSpeech(text));
+                }
+              }
+            },
+          );
+    } catch (_) {
+      final latest = state.valueOrNull ?? current;
+      state = AsyncData(latest.copyWith(
+        isListening: false,
+        speechError:
+            'Could not start speech input. You can still type your translation.',
+      ));
+    }
+  }
+
+  Future<void> stopListening() async {
+    try {
+      await ref.read(speechInputServiceProvider).stop();
+    } catch (_) {
+      // Native recognition may have already ended.
+    }
+    final current = state.valueOrNull ?? const TranslatorState();
+    state = AsyncData(current.copyWith(isListening: false));
+  }
+
+  Future<void> _finishSourceSpeech(String text) async {
+    await translate(text);
+    final current = state.valueOrNull ?? const TranslatorState();
+    state = AsyncData(current.copyWith(isListening: false));
+  }
+
+  Future<void> _finishConversationSpeech({
+    required String text,
+    required bool travellerSpeaking,
+  }) async {
+    await addConversationTurn(
+      text: text,
+      travellerSpeaking: travellerSpeaking,
+    );
+    final current = state.valueOrNull ?? const TranslatorState();
+    state = AsyncData(current.copyWith(isListening: false));
+  }
+
+  Future<void> speakTranslation({String? text, String? languageCode}) async {
+    final current = state.valueOrNull ?? const TranslatorState();
+    final spokenText = (text ?? current.lastResponse?.translatedText)?.trim();
+    if (spokenText == null || spokenText.isEmpty) return;
+    state =
+        AsyncData(current.copyWith(isSpeaking: true, clearSpeechError: true));
+    try {
+      await ref.read(speechOutputServiceProvider).speak(
+            text: spokenText,
+            localeId: speechLocaleFor(
+              languageCode ??
+                  current.lastResponse?.targetLanguageCode ??
+                  current.targetLanguageCode,
+            ),
+          );
+    } catch (_) {
+      state = AsyncData((state.valueOrNull ?? current).copyWith(
+        speechError: 'This device does not support that spoken language.',
+      ));
+    } finally {
+      state =
+          AsyncData((state.valueOrNull ?? current).copyWith(isSpeaking: false));
+    }
+  }
+
+  Future<void> stopSpeaking() async {
+    try {
+      await ref.read(speechOutputServiceProvider).stop();
+    } catch (_) {
+      // Stop is best effort across native voice engines.
+    }
+    final current = state.valueOrNull ?? const TranslatorState();
+    state = AsyncData(current.copyWith(isSpeaking: false));
+  }
+
+  Future<void> replayTranslation() => speakTranslation();
 
   void setInputText(String value) {
     final current = state.valueOrNull ?? const TranslatorState();
@@ -204,7 +364,8 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
       );
       return response;
     } catch (error) {
-      state = AsyncData(current.copyWith(errorMessage: error.toString()));
+      state = AsyncData(
+          current.copyWith(errorMessage: _friendlyTranslationError(error)));
       return null;
     }
   }
@@ -266,7 +427,8 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
         ),
       );
     } catch (error) {
-      state = AsyncData(current.copyWith(errorMessage: error.toString()));
+      state = AsyncData(
+          current.copyWith(errorMessage: _friendlyTranslationError(error)));
     }
   }
 
@@ -360,5 +522,12 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
       }
     }
     return null;
+  }
+
+  String _friendlyTranslationError(Object error) {
+    if (error is ArgumentError) {
+      return error.message?.toString() ?? 'Enter text to translate.';
+    }
+    return 'Translation is temporarily unavailable. You can try again or continue with text mode.';
   }
 }

@@ -165,18 +165,44 @@ class _TranslateTab extends ConsumerWidget {
           onSwap: ref.read(translatorControllerProvider.notifier).swapLanguages,
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: controller,
-          minLines: 4,
-          maxLines: 7,
-          textInputAction: TextInputAction.newline,
-          decoration: const InputDecoration(
-            labelText: 'Text to translate',
-            hintText: 'Type a phrase for a hotel desk, restaurant or taxi...',
-            border: OutlineInputBorder(),
-          ),
-          onChanged:
-              ref.read(translatorControllerProvider.notifier).setInputText,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                minLines: 4,
+                maxLines: 7,
+                textInputAction: TextInputAction.newline,
+                decoration: const InputDecoration(
+                  labelText: 'Text to translate',
+                  hintText:
+                      'Type a phrase for a hotel desk, restaurant or taxi...',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: ref
+                    .read(translatorControllerProvider.notifier)
+                    .setInputText,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton.filled(
+              tooltip:
+                  state.isListening ? 'Stop listening' : 'Speak source text',
+              onPressed: busy
+                  ? null
+                  : () {
+                      final notifier =
+                          ref.read(translatorControllerProvider.notifier);
+                      if (state.isListening) {
+                        notifier.stopListening();
+                      } else {
+                        notifier.startListening();
+                      }
+                    },
+              icon: Icon(state.isListening ? Icons.stop : Icons.mic),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -242,7 +268,19 @@ class _TranslateTab extends ConsumerWidget {
           _ErrorPanel(message: state.errorMessage!),
         ],
         const SizedBox(height: 16),
-        _TranslationResultCard(response: response),
+        if (state.speechError != null) ...[
+          const SizedBox(height: 8),
+          _ErrorPanel(message: state.speechError!),
+        ],
+        _TranslationResultCard(
+          response: response,
+          isSpeaking: state.isSpeaking,
+          onPlay: () => ref
+              .read(translatorControllerProvider.notifier)
+              .speakTranslation(),
+          onStop: () =>
+              ref.read(translatorControllerProvider.notifier).stopSpeaking(),
+        ),
       ],
     );
   }
@@ -281,6 +319,13 @@ class _ConversationTab extends ConsumerWidget {
             );
             travellerController.clear();
           },
+          onListen: () => state.isListening
+              ? notifier.stopListening()
+              : notifier.startListening(
+                  conversation: true,
+                  travellerSpeaking: true,
+                ),
+          isListening: state.isListening,
         ),
         const SizedBox(height: 12),
         _ConversationInput(
@@ -295,6 +340,13 @@ class _ConversationTab extends ConsumerWidget {
             );
             localController.clear();
           },
+          onListen: () => state.isListening
+              ? notifier.stopListening()
+              : notifier.startListening(
+                  conversation: true,
+                  travellerSpeaking: false,
+                ),
+          isListening: state.isListening,
         ),
         const SizedBox(height: 16),
         if (state.conversation.isEmpty)
@@ -528,9 +580,17 @@ class _LanguageDropdown extends StatelessWidget {
 }
 
 class _TranslationResultCard extends StatelessWidget {
-  const _TranslationResultCard({required this.response});
+  const _TranslationResultCard({
+    required this.response,
+    required this.isSpeaking,
+    required this.onPlay,
+    required this.onStop,
+  });
 
   final TranslationResponse? response;
+  final bool isSpeaking;
+  final VoidCallback onPlay;
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -562,6 +622,11 @@ class _TranslationResultCard extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     label: Text('Demo'),
                   ),
+                FilledButton.icon(
+                  onPressed: isSpeaking ? onStop : onPlay,
+                  icon: Icon(isSpeaking ? Icons.stop : Icons.volume_up),
+                  label: Text(isSpeaking ? 'Stop' : 'Play / replay'),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -606,8 +671,8 @@ class _ConversationLanguageCard extends ConsumerWidget {
               onSwap: notifier.swapConversationLanguages,
             ),
             const SizedBox(height: 8),
-            const Text(
-                'Voice input/output can be added behind this interface later.'),
+            if (state.speechError != null)
+              _ErrorPanel(message: state.speechError!),
           ],
         ),
       ),
@@ -622,6 +687,8 @@ class _ConversationInput extends StatelessWidget {
     required this.controller,
     required this.busy,
     required this.onSend,
+    required this.onListen,
+    required this.isListening,
   });
 
   final String title;
@@ -629,6 +696,8 @@ class _ConversationInput extends StatelessWidget {
   final TextEditingController controller;
   final bool busy;
   final VoidCallback onSend;
+  final VoidCallback onListen;
+  final bool isListening;
 
   @override
   Widget build(BuildContext context) {
@@ -655,10 +724,20 @@ class _ConversationInput extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            FilledButton.icon(
-              onPressed: busy ? null : onSend,
-              icon: const Icon(Icons.send),
-              label: const Text('Translate Card'),
+            Row(
+              children: [
+                FilledButton.icon(
+                  onPressed: busy ? null : onSend,
+                  icon: const Icon(Icons.send),
+                  label: const Text('Translate Card'),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  tooltip: isListening ? 'Stop listening' : 'Speak message',
+                  onPressed: busy ? null : onListen,
+                  icon: Icon(isListening ? Icons.stop : Icons.mic),
+                ),
+              ],
             ),
           ],
         ),
@@ -667,13 +746,13 @@ class _ConversationInput extends StatelessWidget {
   }
 }
 
-class _ConversationTurnCard extends StatelessWidget {
+class _ConversationTurnCard extends ConsumerWidget {
   const _ConversationTurnCard({required this.turn});
 
   final ConversationTurn turn;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -692,6 +771,19 @@ class _ConversationTurnCard extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton.filledTonal(
+                tooltip: 'Play translation',
+                onPressed: () => ref
+                    .read(translatorControllerProvider.notifier)
+                    .speakTranslation(
+                      text: turn.translatedText,
+                      languageCode: turn.targetLanguageCode,
+                    ),
+                icon: const Icon(Icons.volume_up),
+              ),
             ),
           ],
         ),

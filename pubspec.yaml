@@ -30,6 +30,7 @@ dependencies:
   path_provider: ^2.1.0
   uuid: ^4.5.1
   url_launcher: ^6.3.1
+  speech_to_text: ^7.3.0
   geolocator: ^13.0.0
   google_maps_flutter: ^2.18.0
   google_maps_flutter_ios_sdk10: ^2.18.5
