@@ -1,3 +1,5 @@
+enum FlightDataSource { demo, backend, duffelTest }
+
 class Flight {
   final String id;
   final String airline;
@@ -11,6 +13,8 @@ class Flight {
   final int stops;
   final double amount;
   final String currency;
+  final String cabinClass;
+  final FlightDataSource dataSource;
 
   const Flight({
     required this.id,
@@ -25,9 +29,14 @@ class Flight {
     required this.stops,
     required this.amount,
     required this.currency,
+    this.cabinClass = '',
+    this.dataSource = FlightDataSource.demo,
   });
 
-  factory Flight.fromJson(Map<String, dynamic> json) {
+  factory Flight.fromJson(
+    Map<String, dynamic> json, {
+    FlightDataSource dataSource = FlightDataSource.backend,
+  }) {
     return Flight(
       id: json['id']?.toString() ?? '',
       airline: json['airline']?.toString() ?? 'Unknown airline',
@@ -41,6 +50,8 @@ class Flight {
       stops: (json['stops'] as num?)?.toInt() ?? 0,
       amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0,
       currency: json['currency']?.toString() ?? 'GBP',
+      cabinClass: json['cabinClass']?.toString() ?? '',
+      dataSource: dataSource,
     );
   }
 }

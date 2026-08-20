@@ -19,7 +19,13 @@ Future<void> bootstrap() async {
   loggerService.info('Bootstrapping Travel Super App');
 
   try {
-    await dotenv.load();
+    await dotenv.load(isOptional: true);
+    final baseEnvironment = Map<String, String>.from(dotenv.env);
+    await dotenv.load(
+      fileName: '.env.local',
+      mergeWith: baseEnvironment,
+      isOptional: true,
+    );
   } catch (error, stackTrace) {
     // Local/demo providers do not require environment configuration.
     loggerService.warning('Optional environment configuration unavailable.');
