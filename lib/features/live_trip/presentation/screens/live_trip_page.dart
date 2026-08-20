@@ -8,6 +8,14 @@ import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../expenses/presentation/screens/add_expense_page.dart';
 import '../../../maps/models/places_prefill.dart';
+import '../../../nearby/models/nearby_service_type.dart';
+import '../../../flights/models/saved_flight.dart';
+import '../../../flights/providers/flight_provider.dart';
+import '../../../hotels/models/saved_hotel.dart';
+import '../../../hotels/providers/hotel_provider.dart';
+import '../../../taxi/presentation/providers/taxi_hub_provider.dart';
+import '../../../weather/models/weather_data.dart';
+import '../../../weather/providers/weather_provider.dart';
 import '../../../translator/domain/translation_models.dart';
 import '../../../trip_readiness/domain/entities/trip_readiness_item.dart';
 import '../../../trip_readiness/presentation/providers/trip_readiness_provider.dart';
@@ -96,16 +104,32 @@ class _LiveTripContent extends ConsumerWidget {
     final documentsAsync = ref.watch(tripDocumentsProvider(trip.id));
     final expensesAsync = ref.watch(tripExpensesProvider(trip.id));
     final readinessSummary = ref.watch(tripReadinessSummaryProvider(trip.id));
+    final ridesAsync = ref.watch(taxiSavedRidesForTripProvider(trip.id));
+    final savedFlightsAsync = ref.watch(savedFlightsProvider);
+    final savedHotelsAsync = ref.watch(savedHotelsProvider);
+    final weatherAsync = ref.watch(weatherProvider(trip.destination));
 
     final activities = activitiesAsync.valueOrNull ?? const <TripActivity>[];
     final bookings = bookingsAsync.valueOrNull ?? const <Booking>[];
     final documents = documentsAsync.valueOrNull ?? const <TripDocument>[];
     final expenses = expensesAsync.valueOrNull ?? const <Expense>[];
+    final rides = ridesAsync.valueOrNull ?? const [];
+    final linkedFlight = _linkedFlight(
+      savedFlightsAsync.valueOrNull ?? const <SavedFlight>[],
+      trip.selectedFlightId,
+    );
+    final linkedHotel = _linkedHotel(
+      savedHotelsAsync.valueOrNull ?? const <SavedHotel>[],
+      trip.selectedHotelId,
+    );
     final tripEvents = const TripEventComposer().compose(
       trip: trip,
       bookings: bookings,
       activities: activities,
+      rides: rides,
       reminders: readinessSummary.reminders,
+      linkedFlight: linkedFlight,
+      linkedHotel: linkedHotel,
       includeReadiness: true,
     );
     final liveTrip = const LiveTripComposer().compose(
@@ -139,6 +163,10 @@ class _LiveTripContent extends ConsumerWidget {
               ref.invalidate(tripDocumentsProvider(trip.id));
               ref.invalidate(tripExpensesProvider(trip.id));
               ref.invalidate(tripReadinessSummaryProvider(trip.id));
+              ref.invalidate(taxiSavedRidesForTripProvider(trip.id));
+              ref.invalidate(savedFlightsProvider);
+              ref.invalidate(savedHotelsProvider);
+              ref.invalidate(weatherProvider(trip.destination));
             },
             child: ListView(
               padding: const EdgeInsets.all(16),
@@ -158,6 +186,9 @@ class _LiveTripContent extends ConsumerWidget {
                     initialTrip: trip,
                   ),
                   onAddExpense: () => _openAddExpense(context),
+                  onNearby: () => context.pushNearbyEssentials(
+                    initialService: _nearbyServiceFor(liveTrip.nextEvent),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _TodayTimelineCard(
@@ -191,12 +222,26 @@ class _LiveTripContent extends ConsumerWidget {
                   ),
                   onAddExpense: () => _openAddExpense(context),
                   onBooking: () => context.pushTripBookings(trip.id),
+                  onNearby: () => context.pushNearbyEssentials(
+                    initialService: _nearbyServiceFor(liveTrip.nextEvent),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 WeatherCard(
                   destination: trip.destination,
                   onTap: () => context.pushWeather(),
                 ),
+                if (weatherAsync.valueOrNull != null)
+                  _WeatherSuggestionCard(
+                    weather: weatherAsync.valueOrNull!,
+                    onRainyPlan: () => context.pushTripAiPlanner(
+                      trip.id,
+                      initialTrip: trip,
+                    ),
+                    onNearby: () => context.pushNearbyEssentials(
+                      initialService: NearbyServiceType.museum,
+                    ),
+                  ),
                 const SizedBox(height: 12),
                 _DocumentCard(
                   documents: liveTrip.relevantDocuments,
@@ -247,6 +292,9 @@ class _LiveTripContent extends ConsumerWidget {
                   ),
                   onTranslate: () =>
                       _openTranslator(context, liveTrip.nextEvent),
+                  onNearby: () => context.pushNearbyEssentials(
+                    initialService: _nearbyServiceFor(liveTrip.nextEvent),
+                  ),
                 ),
               ],
             ),
@@ -305,6 +353,38 @@ class _LiveTripContent extends ConsumerWidget {
       LiveTripEventType.itinerary => null,
     };
   }
+
+  NearbyServiceType _nearbyServiceFor(LiveTripEvent? event) {
+    switch (event?.type) {
+      case LiveTripEventType.restaurant:
+        return NearbyServiceType.restaurant;
+      case LiveTripEventType.hotel:
+        return NearbyServiceType.cafe;
+      case LiveTripEventType.flight:
+      case LiveTripEventType.transport:
+        return NearbyServiceType.transit;
+      case LiveTripEventType.activity:
+      case LiveTripEventType.itinerary:
+      case null:
+        return NearbyServiceType.attraction;
+    }
+  }
+}
+
+SavedFlight? _linkedFlight(List<SavedFlight> flights, String? id) {
+  if (id == null || id.isEmpty) return null;
+  for (final flight in flights) {
+    if (flight.flightId == id) return flight;
+  }
+  return null;
+}
+
+SavedHotel? _linkedHotel(List<SavedHotel> hotels, String? id) {
+  if (id == null || id.isEmpty) return null;
+  for (final hotel in hotels) {
+    if (hotel.hotelId == id) return hotel;
+  }
+  return null;
 }
 
 class _LiveTripHero extends StatelessWidget {
@@ -383,6 +463,7 @@ class _NextEventCard extends StatelessWidget {
     required this.onTranslate,
     required this.onAskAi,
     required this.onAddExpense,
+    required this.onNearby,
   });
 
   final LiveTripState state;
@@ -392,6 +473,7 @@ class _NextEventCard extends StatelessWidget {
   final VoidCallback onTranslate;
   final VoidCallback onAskAi;
   final VoidCallback onAddExpense;
+  final VoidCallback onNearby;
 
   @override
   Widget build(BuildContext context) {
@@ -498,6 +580,11 @@ class _NextEventCard extends StatelessWidget {
                   icon: const Icon(Icons.add_card_outlined),
                   label: const Text('Expense'),
                 ),
+                OutlinedButton.icon(
+                  onPressed: onNearby,
+                  icon: const Icon(Icons.place_outlined),
+                  label: const Text('Nearby'),
+                ),
               ],
             ),
             if (state.upcomingEvents.length > 1) ...[
@@ -575,6 +662,7 @@ class _ActionGrid extends StatelessWidget {
     required this.onAskAi,
     required this.onAddExpense,
     required this.onBooking,
+    required this.onNearby,
   });
 
   final LiveTripEvent? nextEvent;
@@ -584,6 +672,7 @@ class _ActionGrid extends StatelessWidget {
   final VoidCallback onAskAi;
   final VoidCallback onAddExpense;
   final VoidCallback onBooking;
+  final VoidCallback onNearby;
 
   @override
   Widget build(BuildContext context) {
@@ -633,6 +722,11 @@ class _ActionGrid extends StatelessWidget {
                   icon: Icons.confirmation_num_outlined,
                   label: 'Bookings',
                   onTap: onBooking,
+                ),
+                _ActionButton(
+                  icon: Icons.place_outlined,
+                  label: 'Nearby',
+                  onTap: onNearby,
                 ),
               ],
             ),
@@ -820,6 +914,60 @@ class _AiCompanionCard extends StatelessWidget {
   }
 }
 
+class _WeatherSuggestionCard extends StatelessWidget {
+  const _WeatherSuggestionCard({
+    required this.weather,
+    required this.onRainyPlan,
+    required this.onNearby,
+  });
+
+  final WeatherData weather;
+  final VoidCallback onRainyPlan;
+  final VoidCallback onNearby;
+
+  bool get _isWet => '${weather.condition} ${weather.description}'
+      .toLowerCase()
+      .contains(RegExp(r'rain|storm|snow'));
+
+  @override
+  Widget build(BuildContext context) {
+    final wet = _isWet;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Weather-aware plan',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 6),
+            Text(wet
+                ? 'Rain or snow is expected. Consider a museum or ask AI for an indoor plan.'
+                : 'Conditions look suitable for exploring nearby. Find something useful around your next stop.'),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              children: [
+                if (wet)
+                  ActionChip(
+                    avatar: const Icon(Icons.auto_awesome),
+                    label: const Text('Rainy-day plan'),
+                    onPressed: onRainyPlan,
+                  ),
+                ActionChip(
+                  avatar: const Icon(Icons.place_outlined),
+                  label: const Text('Find nearby'),
+                  onPressed: onNearby,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ReadinessCard extends StatelessWidget {
   const _ReadinessCard({
     required this.summary,
@@ -875,6 +1023,16 @@ class _PersistentReadinessSummary extends StatelessWidget {
         summary.overdueItems.length + summary.overdueReminders.length;
     final dueTodayCount =
         summary.dueTodayItems.length + summary.dueTodayReminders.length;
+    final upcomingCount = summary.items
+            .where((item) =>
+                !item.isCompleted &&
+                item.dueAt != null &&
+                item.dueAt!.isAfter(summary.now))
+            .length +
+        summary.reminders
+            .where((reminder) =>
+                !reminder.isCompleted && reminder.dueAt.isAfter(summary.now))
+            .length;
 
     if (summary.totalCount == 0 && summary.reminders.isEmpty) {
       return _DerivedReminderList(
@@ -910,6 +1068,7 @@ class _PersistentReadinessSummary extends StatelessWidget {
               ),
             if (dueTodayCount > 0)
               Chip(label: Text('$dueTodayCount due today')),
+            if (upcomingCount > 0) Chip(label: Text('$upcomingCount upcoming')),
           ],
         ),
         if (summary.nextTask != null) ...[
@@ -981,11 +1140,13 @@ class _EssentialsCard extends StatelessWidget {
     required this.trip,
     required this.onMaps,
     required this.onTranslate,
+    required this.onNearby,
   });
 
   final Trip trip;
   final VoidCallback onMaps;
   final VoidCallback onTranslate;
+  final VoidCallback onNearby;
 
   @override
   Widget build(BuildContext context) {
@@ -1028,6 +1189,11 @@ class _EssentialsCard extends StatelessWidget {
                   icon: Icons.translate_outlined,
                   label: 'Translator',
                   onTap: onTranslate,
+                ),
+                _ActionButton(
+                  icon: Icons.place_outlined,
+                  label: 'Nearby',
+                  onTap: onNearby,
                 ),
               ],
             ),
