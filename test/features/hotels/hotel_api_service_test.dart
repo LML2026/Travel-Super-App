@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:travel_super_app/features/hotels/models/hotel.dart';
 import 'package:travel_super_app/features/hotels/models/hotel_search_request.dart';
-import 'package:travel_super_app/features/hotels/services/amadeus_hotel_service.dart';
 import 'package:travel_super_app/features/hotels/services/hotel_api_service.dart';
 
 HotelSearchRequest _request() => HotelSearchRequest(
@@ -16,7 +15,6 @@ HotelSearchRequest _request() => HotelSearchRequest(
 void main() {
   test('maps successful backend results with backend source', () async {
     final service = HotelApiService(
-      amadeusService: AmadeusHotelService(credentialReader: (_) => null),
       backendSearch: (_) async => [
         Hotel.fromJson(<String, dynamic>{
           'id': 'backend-1',
@@ -41,7 +39,6 @@ void main() {
   test('returns stable realistic demo results when providers are unavailable',
       () async {
     final service = HotelApiService(
-      amadeusService: AmadeusHotelService(credentialReader: (_) => null),
       backendSearch: (_) async => throw const HotelSearchException(),
     );
 

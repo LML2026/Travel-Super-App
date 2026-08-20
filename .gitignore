@@ -73,4 +73,14 @@ _uploaded_extract/
 
 # Local Android signing material
 android/key.properties
+
+# Local exports, generated dependencies, and task artifacts
+/auth_*.json
+/users*.json
+/.artifacts/
+/backend/node_modules/
+
+# Obsolete provider experiment retained locally but excluded from release trees
+/lib/features/hotels/services/amadeus_hotel_service.dart
+/test/features/hotels/amadeus_hotel_service_test.dart
 keystore/*.jks

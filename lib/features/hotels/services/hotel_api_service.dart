@@ -4,32 +4,19 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../models/hotel.dart';
 import '../models/hotel_search_request.dart';
-import 'amadeus_hotel_service.dart';
 
 class HotelApiService {
   HotelApiService({
     ApiClient? apiClient,
-    AmadeusHotelService? amadeusService,
     Future<List<Hotel>> Function(HotelSearchRequest request)? backendSearch,
   })  : _apiClient = apiClient ?? ApiClient(),
-        _amadeusService = amadeusService ?? AmadeusHotelService(),
         _backendSearch = backendSearch;
 
   final ApiClient _apiClient;
-  final AmadeusHotelService _amadeusService;
   final Future<List<Hotel>> Function(HotelSearchRequest request)?
       _backendSearch;
 
   Future<List<Hotel>> searchHotels(HotelSearchRequest request) async {
-    if (_amadeusService.isConfigured) {
-      try {
-        final hotels = await _amadeusService.searchHotels(request);
-        if (hotels.isNotEmpty) return hotels;
-      } catch (_) {
-        // Continue to the existing backend and deterministic demo fallback.
-      }
-    }
-
     try {
       final hotels =
           await (_backendSearch?.call(request) ?? _searchBackend(request));
