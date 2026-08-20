@@ -1,12 +1,101 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    function signedIn() {
+      return request.auth != null;
     }
 
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    function isOwner(ownerId) {
+      return signedIn() && request.auth.uid == ownerId;
+    }
+
+    function sharedTrip(ownerId, tripId) {
+      return signedIn()
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)).data.ownerUserId == ownerId;
+    }
+
+    function sharedStatus(ownerId, tripId) {
+      return sharedTrip(ownerId, tripId)
+          && (get(/databases/$(database)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)).data.status == 'invited'
+              || get(/databases/$(database)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)).data.status == 'active');
+    }
+
+    function canReadTrip(ownerId, tripId) {
+      return isOwner(ownerId) || sharedStatus(ownerId, tripId);
+    }
+
+    function canEditTrip(ownerId, tripId) {
+      return isOwner(ownerId)
+          || (sharedStatus(ownerId, tripId)
+              && get(/databases/$(database)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)).data.role == 'editor');
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /sharedTrips/{tripId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+            || (signedIn()
+                && request.resource.data.ownerUserId == request.auth.uid);
+        allow delete: if isOwner(userId)
+            || (signedIn() && resource.data.ownerUserId == request.auth.uid);
+      }
+
+      match /trips/{tripId} {
+        allow read: if canReadTrip(userId, tripId);
+        allow create: if isOwner(userId);
+        allow update: if canEditTrip(userId, tripId);
+        allow delete: if isOwner(userId);
+
+        match /activities/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /bookings/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /documents/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /expenses/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /readinessItems/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /reminders/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /transport/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /aiPlannerPlans/{itemId} {
+          allow read: if canReadTrip(userId, tripId);
+          allow create, update, delete: if canEditTrip(userId, tripId);
+        }
+        match /collaborators/{collaboratorId} {
+          allow read: if canReadTrip(userId, tripId)
+              || (signedIn() && resource.data.userId == request.auth.uid);
+          allow create, update: if isOwner(userId);
+          allow delete: if isOwner(userId)
+              || (signedIn() && resource.data.userId == request.auth.uid);
+        }
+      }
+
+      match /wallets/{walletId}/transactions/{transactionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /{collectionId}/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
     }
   }
 }

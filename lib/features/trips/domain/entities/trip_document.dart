@@ -34,7 +34,9 @@ class TripDocument {
   final DateTime? createdAt;
 
   bool get hasUploadedFile =>
-      (inlineBase64?.isNotEmpty == true) || (downloadUrl?.isNotEmpty == true);
+      (inlineBase64?.isNotEmpty == true) ||
+      (downloadUrl?.isNotEmpty == true) ||
+      (storagePath?.isNotEmpty == true);
 
   TripDocument copyWith({
     String? id,

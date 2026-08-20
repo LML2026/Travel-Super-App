@@ -44,13 +44,36 @@ final tripActivitiesProvider =
 });
 
 final tripActivityActionsProvider = Provider<TripActivityActions>((ref) {
-  return TripActivityActions(ref.watch(tripActivityRepositoryProvider));
+  return TripActivityActions(
+    ref.watch(tripActivityRepositoryProvider),
+    repositoryFactory: ref.read(tripActivityRepositoryFactoryProvider),
+    scopeResolver: (tripId) => ref.read(tripDataScopeProvider(tripId).future),
+  );
 });
 
 class TripActivityActions {
-  TripActivityActions(this._repository);
+  TripActivityActions(
+    this._repository, {
+    TripActivityRepositoryFactory? repositoryFactory,
+    Future<TripDataScope?> Function(String tripId)? scopeResolver,
+  })  : _repositoryFactory = repositoryFactory,
+        _scopeResolver = scopeResolver;
 
   final TripActivityRepository _repository;
+  final TripActivityRepositoryFactory? _repositoryFactory;
+  final Future<TripDataScope?> Function(String tripId)? _scopeResolver;
+
+  Future<TripActivityRepository> _repositoryFor(String tripId) async {
+    try {
+      final scope = await _scopeResolver?.call(tripId);
+      if (scope != null && _repositoryFactory != null) {
+        return _repositoryFactory.call(scope.ownerUserId);
+      }
+    } catch (_) {
+      // Keep injected/local repositories usable without Firebase initialization.
+    }
+    return _repository;
+  }
 
   Future<void> addActivity({
     required String tripId,
@@ -62,7 +85,8 @@ class TripActivityActions {
     String? currency,
     String? status,
   }) async {
-    final existing = await _repository.watchActivities(tripId).first;
+    final repository = await _repositoryFor(tripId);
+    final existing = await repository.watchActivities(tripId).first;
     TripActivity? duplicate;
     for (final activity in existing) {
       if (_normal(activity.title) == _normal(title) &&
@@ -74,7 +98,7 @@ class TripActivityActions {
     }
 
     if (duplicate != null) {
-      await _repository.updateActivity(
+      await repository.updateActivity(
         duplicate.copyWith(
           notes: notes ?? duplicate.notes,
           cost: cost ?? duplicate.cost,
@@ -98,18 +122,20 @@ class TripActivityActions {
       createdAt: DateTime.now(),
     );
 
-    await _repository.addActivity(activity);
+    await repository.addActivity(activity);
   }
 
-  Future<void> updateActivity(TripActivity activity) {
-    return _repository.updateActivity(activity);
+  Future<void> updateActivity(TripActivity activity) async {
+    final repository = await _repositoryFor(activity.tripId);
+    return repository.updateActivity(activity);
   }
 
   Future<void> deleteActivity({
     required String tripId,
     required String activityId,
-  }) {
-    return _repository.deleteActivity(tripId: tripId, activityId: activityId);
+  }) async {
+    final repository = await _repositoryFor(tripId);
+    return repository.deleteActivity(tripId: tripId, activityId: activityId);
   }
 }
 

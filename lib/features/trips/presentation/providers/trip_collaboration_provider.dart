@@ -5,6 +5,7 @@ import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../data/repositories/firestore_trip_collaboration_repository.dart';
 import '../../domain/entities/trip_collaborator.dart';
 import '../../domain/repositories/trip_collaboration_repository.dart';
+import 'trip_data_scope_provider.dart';
 
 typedef TripCollaborationRepositoryFactory = TripCollaborationRepository
     Function(
@@ -27,9 +28,15 @@ final tripCollaborationRepositoryProvider =
 });
 
 final tripCollaboratorsProvider =
-    StreamProvider.family<List<TripCollaborator>, String>((ref, tripId) {
-  return ref
-      .watch(tripCollaborationRepositoryProvider)
+    StreamProvider.family<List<TripCollaborator>, String>((ref, tripId) async* {
+  final scope = await ref.watch(tripDataScopeProvider(tripId).future);
+  if (scope == null) {
+    yield const <TripCollaborator>[];
+    return;
+  }
+  yield* ref
+      .read(tripCollaborationRepositoryFactoryProvider)
+      .call(scope.ownerUserId)
       .watchCollaborators(tripId);
 });
 

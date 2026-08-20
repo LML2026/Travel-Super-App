@@ -70,10 +70,25 @@ class FirestoreTripCollaborationRepository
     required String collaboratorId,
     required TripCollaboratorRole role,
   }) async {
-    await _collection(tripId).doc(collaboratorId).set({
-      'role': role.name,
-      'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    final collaboratorRef = _collection(tripId).doc(collaboratorId);
+    final snapshot = await collaboratorRef.get();
+    final collaboratorUserId = snapshot.data()?['userId'] as String?;
+    final batch = _firestore.batch();
+    batch.set(
+        collaboratorRef,
+        {
+          'role': role.name,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true));
+    if (collaboratorUserId != null && collaboratorUserId.isNotEmpty) {
+      batch.set(
+        _sharedRef(collaboratorUserId, tripId),
+        {'role': role.name, 'updatedAt': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+    }
+    await batch.commit();
   }
 
   @override
@@ -81,7 +96,25 @@ class FirestoreTripCollaborationRepository
     required String tripId,
     required String collaboratorId,
   }) async {
-    await _collection(tripId).doc(collaboratorId).delete();
+    final collaboratorRef = _collection(tripId).doc(collaboratorId);
+    final snapshot = await collaboratorRef.get();
+    final collaboratorUserId = snapshot.data()?['userId'] as String?;
+    final batch = _firestore.batch()..delete(collaboratorRef);
+    if (collaboratorUserId != null && collaboratorUserId.isNotEmpty) {
+      batch.delete(_sharedRef(collaboratorUserId, tripId));
+    }
+    await batch.commit();
+  }
+
+  DocumentReference<Map<String, dynamic>> _sharedRef(
+    String collaboratorUserId,
+    String tripId,
+  ) {
+    return _firestore
+        .collection('users')
+        .doc(collaboratorUserId)
+        .collection('sharedTrips')
+        .doc(tripId);
   }
 
   TripCollaborator _fromMap(Map<String, dynamic> data) {

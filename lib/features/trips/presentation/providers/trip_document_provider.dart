@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../data/repositories/firestore_trip_document_repository.dart';
 import '../../data/services/trip_document_file_service.dart';
+import '../../data/services/trip_document_storage_service.dart';
 import '../../domain/entities/trip_document.dart';
 import '../../domain/entities/trip_document_upload.dart';
 import '../../domain/repositories/trip_document_repository.dart';
@@ -52,11 +53,19 @@ final tripDocumentFileServiceProvider =
   return const TripDocumentFileService();
 });
 
+final tripDocumentStorageServiceProvider =
+    Provider<TripDocumentStorageService>((ref) {
+  return FirebaseTripDocumentStorageService();
+});
+
 final tripDocumentActionsProvider = Provider<TripDocumentActions>((ref) {
   return TripDocumentActions(
     ref.watch(tripDocumentRepositoryProvider),
     ref.watch(tripDocumentFileServiceProvider),
     ref.watch(immediateCurrentUserProvider)?.uid,
+    storageService: ref.watch(tripDocumentStorageServiceProvider),
+    repositoryFactory: ref.read(tripDocumentRepositoryFactoryProvider),
+    scopeResolver: (tripId) => ref.read(tripDataScopeProvider(tripId).future),
   );
 });
 
@@ -64,12 +73,28 @@ class TripDocumentActions {
   TripDocumentActions(
     this._repository,
     this._fileService,
-    this._currentUserId,
-  );
+    this._currentUserId, {
+    TripDocumentRepositoryFactory? repositoryFactory,
+    Future<TripDataScope?> Function(String tripId)? scopeResolver,
+    TripDocumentStorageService? storageService,
+  })  : _repositoryFactory = repositoryFactory,
+        _scopeResolver = scopeResolver,
+        _storageService = storageService;
 
   final TripDocumentRepository _repository;
   final TripDocumentFileService _fileService;
   final String? _currentUserId;
+  final TripDocumentRepositoryFactory? _repositoryFactory;
+  final Future<TripDataScope?> Function(String tripId)? _scopeResolver;
+  final TripDocumentStorageService? _storageService;
+
+  Future<TripDocumentRepository> _repositoryFor(String tripId) async {
+    final scope = await _scopeResolver?.call(tripId);
+    if (scope != null && _repositoryFactory != null) {
+      return _repositoryFactory.call(scope.ownerUserId);
+    }
+    return _repository;
+  }
 
   Future<void> addDocument({
     required String tripId,
@@ -79,8 +104,20 @@ class TripDocumentActions {
     String? notes,
     TripDocumentUpload? upload,
   }) async {
+    final repository = await _repositoryFor(tripId);
+    final documentId = const Uuid().v4();
+    final scope = await _scopeResolver?.call(tripId);
+    String? storagePath;
+    if (upload != null && _storageService != null && scope != null) {
+      storagePath = await _storageService.upload(
+        ownerUserId: scope.ownerUserId,
+        tripId: tripId,
+        documentId: documentId,
+        upload: upload,
+      );
+    }
     final document = TripDocument(
-      id: const Uuid().v4(),
+      id: documentId,
       tripId: tripId,
       title: title,
       type: type,
@@ -89,17 +126,27 @@ class TripDocumentActions {
       fileName: upload?.fileName,
       contentType: upload?.contentType,
       sizeBytes: upload?.sizeBytes,
-      inlineBase64: upload == null ? null : _fileService.encodeInline(upload),
+      storagePath: storagePath,
+      inlineBase64: storagePath == null && upload != null
+          ? _fileService.encodeInline(upload)
+          : null,
       uploadedBy: upload == null ? null : _currentUserId,
       uploadedAt: upload == null ? null : DateTime.now(),
       createdAt: DateTime.now(),
     );
 
-    await _repository.addDocument(document);
+    try {
+      await repository.addDocument(document);
+    } catch (_) {
+      if (storagePath != null && _storageService != null) {
+        await _storageService.delete(storagePath);
+      }
+      rethrow;
+    }
   }
 
-  Future<void> updateDocument(TripDocument document) {
-    return _repository.updateDocument(document);
+  Future<void> updateDocument(TripDocument document) async {
+    return (await _repositoryFor(document.tripId)).updateDocument(document);
   }
 
   Future<void> deleteDocument({
@@ -107,7 +154,25 @@ class TripDocumentActions {
     required String documentId,
     TripDocument? document,
   }) {
-    return _repository.deleteDocument(
+    return _deleteDocument(
+      repository: _repositoryFor(tripId),
+      tripId: tripId,
+      documentId: documentId,
+      document: document,
+    );
+  }
+
+  Future<void> _deleteDocument({
+    required Future<TripDocumentRepository> repository,
+    required String tripId,
+    required String documentId,
+    TripDocument? document,
+  }) async {
+    final storagePath = document?.storagePath;
+    if (storagePath != null && _storageService != null) {
+      await _storageService.delete(storagePath);
+    }
+    await (await repository).deleteDocument(
       tripId: tripId,
       documentId: documentId,
       document: document,
@@ -119,6 +184,12 @@ class TripDocumentActions {
   }
 
   Future<void> openDocument(TripDocument document) {
+    if (document.storagePath != null && _storageService != null) {
+      return _storageService.open(
+        storagePath: document.storagePath!,
+        fileName: document.fileName ?? document.id,
+      );
+    }
     return _fileService.openDocument(document);
   }
 }

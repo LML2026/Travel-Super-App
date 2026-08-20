@@ -85,6 +85,8 @@ final tripReadinessActionsProvider = Provider<TripReadinessActions>((ref) {
   return TripReadinessActions(
     ref.watch(tripReadinessRepositoryProvider),
     ref.watch(tripReminderNotificationServiceProvider),
+    repositoryFactory: ref.read(tripReadinessRepositoryFactoryProvider),
+    scopeResolver: (tripId) => ref.read(tripDataScopeProvider(tripId).future),
   );
 });
 
@@ -94,17 +96,37 @@ final tripReminderNotificationServiceProvider =
 });
 
 class TripReadinessActions {
-  TripReadinessActions(this._repository, this._notificationService);
+  TripReadinessActions(
+    this._repository,
+    this._notificationService, {
+    TripReadinessRepositoryFactory? repositoryFactory,
+    Future<TripDataScope?> Function(String tripId)? scopeResolver,
+  })  : _repositoryFactory = repositoryFactory,
+        _scopeResolver = scopeResolver;
 
   final TripReadinessRepository _repository;
   final TripReminderNotificationService _notificationService;
+  final TripReadinessRepositoryFactory? _repositoryFactory;
+  final Future<TripDataScope?> Function(String tripId)? _scopeResolver;
 
-  Future<void> saveItem(TripReadinessItem item) {
-    return _repository.saveItem(item);
+  Future<TripReadinessRepository> _repositoryFor(String tripId) async {
+    try {
+      final scope = await _scopeResolver?.call(tripId);
+      if (scope != null && _repositoryFactory != null) {
+        return _repositoryFactory.call(scope.ownerUserId);
+      }
+    } catch (_) {
+      // Keep injected/local repositories usable without Firebase initialization.
+    }
+    return _repository;
   }
 
-  Future<void> toggleItem(TripReadinessItem item) {
-    return _repository.saveItem(
+  Future<void> saveItem(TripReadinessItem item) async {
+    return (await _repositoryFor(item.tripId)).saveItem(item);
+  }
+
+  Future<void> toggleItem(TripReadinessItem item) async {
+    return (await _repositoryFor(item.tripId)).saveItem(
       item.copyWith(
         isCompleted: !item.isCompleted,
         updatedAt: DateTime.now(),
@@ -119,32 +141,33 @@ class TripReadinessActions {
     DateTime? dueAt,
     String? notes,
   }) {
-    return _repository.saveItem(
-      TripReadinessItem(
-        id: const Uuid().v4(),
-        tripId: tripId,
-        title: title,
-        category: category,
-        dueAt: dueAt,
-        notes: notes,
-        source: 'custom',
-        createdAt: DateTime.now(),
-      ),
-    );
+    return _repositoryFor(tripId).then((repository) => repository.saveItem(
+          TripReadinessItem(
+            id: const Uuid().v4(),
+            tripId: tripId,
+            title: title,
+            category: category,
+            dueAt: dueAt,
+            notes: notes,
+            source: 'custom',
+            createdAt: DateTime.now(),
+          ),
+        ));
   }
 
-  Future<void> deleteItem(TripReadinessItem item) {
-    return _repository.deleteItem(tripId: item.tripId, itemId: item.id);
+  Future<void> deleteItem(TripReadinessItem item) async {
+    return (await _repositoryFor(item.tripId))
+        .deleteItem(tripId: item.tripId, itemId: item.id);
   }
 
   Future<void> saveReminder(TripReminder reminder) async {
-    await _repository.saveReminder(reminder);
+    await (await _repositoryFor(reminder.tripId)).saveReminder(reminder);
     await _notificationService.schedule(reminder);
   }
 
   Future<void> toggleReminder(TripReminder reminder) async {
     final updated = reminder.copyWith(isCompleted: !reminder.isCompleted);
-    await _repository.saveReminder(updated);
+    await (await _repositoryFor(reminder.tripId)).saveReminder(updated);
     if (updated.isCompleted) {
       await _notificationService.cancel(updated.id);
     } else {
@@ -175,7 +198,7 @@ class TripReadinessActions {
   }
 
   Future<void> deleteReminder(TripReminder reminder) async {
-    await _repository.deleteReminder(
+    await (await _repositoryFor(reminder.tripId)).deleteReminder(
       tripId: reminder.tripId,
       reminderId: reminder.id,
     );

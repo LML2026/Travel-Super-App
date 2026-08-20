@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/services/storage_service.dart';
+import '../../../trips/data/services/trip_document_storage_service.dart';
 
 abstract interface class AccountDeletionService {
   Future<void> deleteAccount({String? password});
@@ -27,13 +28,17 @@ class FirebaseAccountDeletionService implements AccountDeletionService {
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
     StorageService? storage,
+    TripDocumentStorageService? documentStorage,
   })  : _auth = auth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? StorageService();
+        _storage = storage ?? StorageService(),
+        _documentStorage =
+            documentStorage ?? FirebaseTripDocumentStorageService();
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final StorageService _storage;
+  final TripDocumentStorageService _documentStorage;
 
   static const _tripSubcollections = <String>[
     'activities',
@@ -122,8 +127,30 @@ class FirebaseAccountDeletionService implements AccountDeletionService {
   Future<void> _deleteUserData(String uid) async {
     final userRef = _firestore.collection('users').doc(uid);
 
+    final memberships = await _firestore
+        .collectionGroup('collaborators')
+        .where('userId', isEqualTo: uid)
+        .get();
+    for (final membership in memberships.docs) {
+      final references = <DocumentReference<Map<String, dynamic>>>[
+        membership.reference,
+      ];
+      final tripId = membership.data()['tripId'] as String?;
+      if (tripId != null && tripId.isNotEmpty) {
+        references.add(userRef.collection('sharedTrips').doc(tripId));
+      }
+      await _deleteReferences(references);
+    }
+
     final trips = await userRef.collection('trips').get();
     for (final trip in trips.docs) {
+      final documents = await trip.reference.collection('documents').get();
+      for (final document in documents.docs) {
+        final storagePath = document.data()['storagePath'] as String?;
+        if (storagePath != null && storagePath.isNotEmpty) {
+          await _documentStorage.delete(storagePath);
+        }
+      }
       for (final subcollection in _tripSubcollections) {
         await _deleteQuery(trip.reference.collection(subcollection));
       }
