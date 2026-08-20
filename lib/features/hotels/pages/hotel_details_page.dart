@@ -4,6 +4,8 @@ import '../../../app/app_routes.dart';
 import '../../authentication/presentation/providers/auth_providers.dart';
 import '../../../core/models/booking.dart';
 import '../../trips/presentation/providers/trip_provider.dart';
+import '../../trips/presentation/providers/trip_booking_link_provider.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../../weather/providers/weather_provider.dart';
 import '../models/hotel.dart';
 import '../models/saved_hotel.dart';
@@ -17,6 +19,44 @@ class HotelDetailsPage extends ConsumerWidget {
   });
 
   final Hotel hotel;
+
+  Future<void> _addToTrip(BuildContext context, WidgetRef ref) async {
+    final trips = await ref.read(tripsProvider.future);
+    if (trips.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Create a trip before linking a hotel.')),
+        );
+      }
+      return;
+    }
+    final trip = await showModalBottomSheet<Trip>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: trips
+              .map((trip) => ListTile(
+                    title: Text(trip.title),
+                    subtitle: Text(trip.destination),
+                    onTap: () => Navigator.pop(sheetContext, trip),
+                  ))
+              .toList(growable: false),
+        ),
+      ),
+    );
+    if (trip == null) return;
+    await ref.read(tripBookingLinkActionsProvider).linkHotel(
+          trip: trip,
+          hotel: hotel,
+        );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hotel added to ${trip.title}.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,7 +101,8 @@ class HotelDetailsPage extends ConsumerWidget {
                   _IconLine(
                     icon: Icons.bed_outlined,
                     label: 'Stay',
-                    value: '${hotel.beds} bed${hotel.beds > 1 ? 's' : ''}, ${hotel.nights} night${hotel.nights > 1 ? 's' : ''}',
+                    value:
+                        '${hotel.beds} bed${hotel.beds > 1 ? 's' : ''}, ${hotel.nights} night${hotel.nights > 1 ? 's' : ''}',
                   ),
                   _IconLine(
                     icon: Icons.payments_outlined,
@@ -123,26 +164,36 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Nearby Attractions, Restaurants & Transport',
               child: nearbyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) => const Text('Nearby places are unavailable right now.'),
+                error: (_, __) =>
+                    const Text('Nearby places are unavailable right now.'),
                 data: (nearby) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _NearbyList(
                       title: 'Attractions',
                       icon: Icons.place_outlined,
-                      entries: nearby.attractions.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
+                      entries: nearby.attractions
+                          .map((p) =>
+                              '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)')
+                          .toList(),
                     ),
                     const SizedBox(height: 8),
                     _NearbyList(
                       title: 'Restaurants',
                       icon: Icons.restaurant_outlined,
-                      entries: nearby.restaurants.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
+                      entries: nearby.restaurants
+                          .map((p) =>
+                              '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)')
+                          .toList(),
                     ),
                     const SizedBox(height: 8),
                     _NearbyList(
                       title: 'Transport',
                       icon: Icons.directions_transit_outlined,
-                      entries: nearby.transport.map((p) => '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)').toList(),
+                      entries: nearby.transport
+                          .map((p) =>
+                              '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)')
+                          .toList(),
                     ),
                   ],
                 ),
@@ -153,7 +204,8 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Live Weather',
               child: weatherAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) => const Text('Weather is currently unavailable.'),
+                error: (_, __) =>
+                    const Text('Weather is currently unavailable.'),
                 data: (weather) => Row(
                   children: [
                     Text(weather.emoji, style: const TextStyle(fontSize: 30)),
@@ -172,7 +224,8 @@ class HotelDetailsPage extends ConsumerWidget {
               title: 'Currency Conversion',
               child: currencyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
-                error: (_, __) => const Text('Currency conversion unavailable.'),
+                error: (_, __) =>
+                    const Text('Currency conversion unavailable.'),
                 data: (rate) => Text(
                   '1 ${rate.base} = ${rate.rate.toStringAsFixed(2)} ${rate.target}\n'
                   'Estimated nightly price: ${(hotel.pricePerNight * rate.rate).toStringAsFixed(0)} ${rate.target}',
@@ -208,9 +261,11 @@ class HotelDetailsPage extends ConsumerWidget {
                     data: (isSaved) => OutlinedButton.icon(
                       onPressed: () async {
                         if (isSaved) {
-                          final saveId = await ref.read(getSavedHotelIdProvider(hotel.id).future);
+                          final saveId = await ref
+                              .read(getSavedHotelIdProvider(hotel.id).future);
                           if (saveId != null) {
-                            await ref.read(removeSavedHotelProvider(saveId).future);
+                            await ref
+                                .read(removeSavedHotelProvider(saveId).future);
                           }
                           return;
                         }
@@ -250,6 +305,14 @@ class HotelDetailsPage extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _addToTrip(context, ref),
+                    icon: const Icon(Icons.add_location_alt_outlined),
+                    label: const Text('Add to trip'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
                   child: FilledButton.icon(
                     onPressed: () async {
                       final user = ref.read(immediateCurrentUserProvider);
@@ -263,9 +326,8 @@ class HotelDetailsPage extends ConsumerWidget {
                       }
 
                       final trips = await ref.read(tripsProvider.future);
-                      final tripId = trips.isNotEmpty
-                          ? trips.first.id
-                          : 'mock-trip-id';
+                      final tripId =
+                          trips.isNotEmpty ? trips.first.id : 'mock-trip-id';
 
                       ref.read(hotelBookingProvider.notifier).book(
                             tripId,
@@ -429,7 +491,8 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _IconLine extends StatelessWidget {
-  const _IconLine({required this.icon, required this.label, required this.value});
+  const _IconLine(
+      {required this.icon, required this.label, required this.value});
 
   final IconData icon;
   final String label;

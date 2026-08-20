@@ -15,6 +15,7 @@ import '../../features/nearby/presentation/nearby_essentials_page.dart';
 import '../../features/navigation/main_navigation_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/saved_items/presentation/screens/saved_items_page.dart';
+import '../../features/bookings/presentation/screens/my_bookings_page.dart';
 import '../../features/splash/splash_page.dart';
 import '../../features/transport/presentation/screens/transport_hub_page.dart';
 import '../../features/taxi/domain/entities/taxi_ride_request.dart';
@@ -70,6 +71,11 @@ List<RouteBase> buildCoreRoutes() {
       name: AppRoute.savedItems.routeName,
       path: AppRoute.savedItems.path,
       builder: (context, state) => const SavedItemsPage(),
+    ),
+    GoRoute(
+      name: AppRoute.myBookings.routeName,
+      path: AppRoute.myBookings.path,
+      builder: (context, state) => const MyBookingsPage(),
     ),
     GoRoute(
       name: AppRoute.transport.routeName,

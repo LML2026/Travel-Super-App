@@ -45,6 +45,7 @@ enum AppRoute {
   liveTrip,
   travelDiscovery,
   savedItems,
+  myBookings,
   transport,
   taxi,
   taxiResults,
@@ -108,6 +109,8 @@ extension AppRouteConfig on AppRoute {
         return '/discover';
       case AppRoute.savedItems:
         return '/saved';
+      case AppRoute.myBookings:
+        return '/bookings';
       case AppRoute.transport:
         return '/transport';
       case AppRoute.taxi:
@@ -200,6 +203,8 @@ extension AppNavigation on BuildContext {
       pushNamed<T>(AppRoute.travelDiscovery.routeName);
 
   Future<T?> pushSavedItems<T>() => pushNamed<T>(AppRoute.savedItems.routeName);
+
+  Future<T?> pushMyBookings<T>() => pushNamed<T>(AppRoute.myBookings.routeName);
 
   Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
 

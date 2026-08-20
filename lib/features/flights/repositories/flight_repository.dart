@@ -62,10 +62,16 @@ class FlightRepository {
         currency: flight.currency,
         metadata: {
           'flightId': flight.id,
+          'origin': flight.origin,
+          'destination': flight.destination,
           'airline': flight.airline,
           'flightNumber': flight.flightNumber,
           'departure': flight.departureAt,
           'arrival': flight.arrivalAt,
+          'duration': flight.duration,
+          'stops': flight.stops,
+          'cabinClass': flight.cabinClass,
+          'source': flight.dataSource.name,
         },
       );
 

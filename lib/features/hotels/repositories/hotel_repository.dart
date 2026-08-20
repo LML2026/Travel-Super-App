@@ -49,7 +49,15 @@ class HotelRepository {
         metadata: {
           'hotelId': hotel.id,
           'name': hotel.name,
+          'hotelName': hotel.name,
+          'city': hotel.city,
+          'country': hotel.country,
           'address': hotel.address,
+          'checkIn': null,
+          'nights': hotel.nights,
+          'roomType': hotel.roomType,
+          'pricePerNight': hotel.pricePerNight,
+          'source': hotel.dataSource.name,
         },
       );
 

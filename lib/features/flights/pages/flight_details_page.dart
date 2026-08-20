@@ -4,6 +4,8 @@ import '../../../app/app_routes.dart';
 import '../../authentication/presentation/providers/auth_providers.dart';
 import '../../../core/models/booking.dart';
 import '../../trips/presentation/providers/trip_provider.dart';
+import '../../trips/presentation/providers/trip_booking_link_provider.dart';
+import '../../trips/domain/entities/trip.dart';
 import '../models/flight.dart';
 import '../models/saved_flight.dart';
 import '../providers/flight_provider.dart';
@@ -29,9 +31,47 @@ class FlightDetailsPage extends ConsumerWidget {
   }
 
   String _getStopsText() {
-    return flight.stops == 0 
-        ? '🟢 Direct Flight' 
+    return flight.stops == 0
+        ? '🟢 Direct Flight'
         : '🟠 ${flight.stops} Stop${flight.stops > 1 ? 's' : ''}';
+  }
+
+  Future<void> _addToTrip(BuildContext context, WidgetRef ref) async {
+    final trips = await ref.read(tripsProvider.future);
+    if (trips.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Create a trip before linking a flight.')),
+        );
+      }
+      return;
+    }
+    final trip = await showModalBottomSheet<Trip>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: trips
+              .map((trip) => ListTile(
+                    title: Text(trip.title),
+                    subtitle: Text(trip.destination),
+                    onTap: () => Navigator.pop(sheetContext, trip),
+                  ))
+              .toList(growable: false),
+        ),
+      ),
+    );
+    if (trip == null) return;
+    await ref.read(tripBookingLinkActionsProvider).linkFlight(
+          trip: trip,
+          flight: flight,
+        );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Flight added to ${trip.title}.')),
+      );
+    }
   }
 
   @override
@@ -62,7 +102,7 @@ class FlightDetailsPage extends ConsumerWidget {
                           flight.airlineLogo,
                           width: 60,
                           height: 60,
-                          errorBuilder: (_, __, ___) => 
+                          errorBuilder: (_, __, ___) =>
                               const Icon(Icons.flight, size: 60),
                         )
                       else
@@ -92,10 +132,11 @@ class FlightDetailsPage extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Price
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2),
                       borderRadius: BorderRadius.circular(8),
@@ -231,11 +272,13 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'From',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
                                   ),
                                 ],
                               ),
-                              const Icon(Icons.arrow_forward, size: 32, color: Color(0xFF1976D2)),
+                              const Icon(Icons.arrow_forward,
+                                  size: 32, color: Color(0xFF1976D2)),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
@@ -249,7 +292,8 @@ class FlightDetailsPage extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   const Text(
                                     'To',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -271,9 +315,13 @@ class FlightDetailsPage extends ConsumerWidget {
                           data: (isSaved) => OutlinedButton.icon(
                             onPressed: () {
                               if (isSaved) {
-                                ref.read(getSavedFlightIdProvider(flight.id).future).then((saveId) {
+                                ref
+                                    .read(getSavedFlightIdProvider(flight.id)
+                                        .future)
+                                    .then((saveId) {
                                   if (saveId != null) {
-                                    ref.read(removeSavedFlightProvider(saveId).future);
+                                    ref.read(removeSavedFlightProvider(saveId)
+                                        .future);
                                   }
                                 });
                               } else {
@@ -294,7 +342,8 @@ class FlightDetailsPage extends ConsumerWidget {
                                   cabinClass: 'economy',
                                   savedAt: DateTime.now(),
                                 );
-                                ref.read(saveFlightProvider(savedFlight).future);
+                                ref.read(
+                                    saveFlightProvider(savedFlight).future);
                               }
                             },
                             icon: Icon(
@@ -319,9 +368,19 @@ class FlightDetailsPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(width: 12),
-                      
+
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _addToTrip(context, ref),
+                          icon: const Icon(Icons.add_location_alt_outlined),
+                          label: const Text('Add to trip'),
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
                       // Book button
                       Expanded(
                         child: ElevatedButton.icon(

@@ -69,6 +69,29 @@ class HomePage extends ConsumerWidget {
               _WalletSnapshotCard(walletAsync: walletAsync),
               const SizedBox(height: AppSpacing.lg),
               AppCard(
+                onTap: () => context.pushMyBookings(),
+                child: Row(
+                  children: [
+                    const Icon(Icons.confirmation_number_outlined, size: 40),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('My Bookings',
+                              style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 4),
+                          const Text(
+                              'Flights, stays and transport across your trips.'),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
                 onTap: () => context.pushTravelDiscovery(),
                 child: Row(
                   children: [
