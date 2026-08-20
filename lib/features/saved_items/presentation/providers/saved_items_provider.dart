@@ -6,6 +6,7 @@ import '../../../discovery/domain/travel_discovery_models.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../data/saved_items_repository.dart';
 import '../../domain/saved_item.dart';
+import '../../../nearby/models/nearby_service_result.dart';
 
 final savedItemsRepositoryProvider = Provider<SavedItemsRepository>((ref) {
   final cache = LocalSavedItemsRepository(ref.watch(storageServiceProvider));
@@ -48,6 +49,30 @@ class SavedItemsController extends AsyncNotifier<List<SavedItem>> {
         ...Map<String, dynamic>.from(result.metadata),
         'duration': result.duration,
         'endTime': result.endTime.toIso8601String(),
+      },
+    );
+    await _replace(item, current);
+  }
+
+  Future<void> saveNearbyPlace(NearbyServiceResult place) async {
+    final current = state.valueOrNull ?? await future;
+    final item = SavedItem(
+      id: place.id,
+      category: SavedItemCategory.place,
+      title: place.name,
+      subtitle: place.categoryLabel,
+      location: place.address,
+      provider: place.source == NearbyDataSource.google
+          ? 'Google Places'
+          : 'ITAREVO Demo Places',
+      savedAt: DateTime.now(),
+      notes: place.metadata['description'] as String?,
+      metadata: <String, dynamic>{
+        'latitude': place.latitude,
+        'longitude': place.longitude,
+        'rating': place.rating,
+        'isOpenNow': place.isOpenNow,
+        'source': place.source.name,
       },
     );
     await _replace(item, current);

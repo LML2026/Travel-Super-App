@@ -149,6 +149,8 @@ class GoogleMapsProviderGateway implements ProviderGateway {
 
   PlaceCategory _categoryFor(Iterable<String> types) {
     for (final type in types) {
+      if (type.contains('atm')) return PlaceCategory.atm;
+      if (type.contains('toilet')) return PlaceCategory.toilet;
       if (type.contains('restaurant')) return PlaceCategory.restaurant;
       if (type.contains('cafe')) return PlaceCategory.cafe;
       if (type.contains('museum')) return PlaceCategory.museum;
@@ -156,6 +158,7 @@ class GoogleMapsProviderGateway implements ProviderGateway {
       if (type.contains('pharmacy')) return PlaceCategory.pharmacy;
       if (type.contains('hospital')) return PlaceCategory.hospital;
       if (type.contains('shopping')) return PlaceCategory.shopping;
+      if (type.contains('supermarket')) return PlaceCategory.supermarket;
       if (type.contains('transit')) return PlaceCategory.transportStation;
     }
     return PlaceCategory.attraction;

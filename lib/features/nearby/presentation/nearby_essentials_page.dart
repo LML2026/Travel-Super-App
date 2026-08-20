@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/primary_button.dart';
-import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/travel_card.dart';
+import '../../maps/models/places_prefill.dart';
+import '../../providers/provider_gateway.dart';
+import '../../saved_items/presentation/providers/saved_items_provider.dart';
+import '../../trips/domain/entities/trip.dart';
+import '../../trips/presentation/providers/trip_activity_provider.dart';
+import '../../trips/presentation/providers/trip_provider.dart';
 import '../models/nearby_service_filter.dart';
 import '../models/nearby_service_metadata.dart';
+import '../models/nearby_service_result.dart';
 import '../models/nearby_service_type.dart';
-import '../services/nearby_service_engine.dart';
-import 'widgets/nearby_state_views.dart';
+import '../services/nearby_places_service.dart';
 
-class NearbyEssentialsPage extends StatefulWidget {
+class NearbyEssentialsPage extends ConsumerStatefulWidget {
   const NearbyEssentialsPage({
     this.initialService,
     super.key,
@@ -21,39 +25,68 @@ class NearbyEssentialsPage extends StatefulWidget {
   final NearbyServiceType? initialService;
 
   @override
-  State<NearbyEssentialsPage> createState() => _NearbyEssentialsPageState();
+  ConsumerState<NearbyEssentialsPage> createState() =>
+      _NearbyEssentialsPageState();
 }
 
-class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
-  static const NearbyServiceEngine _serviceEngine = NearbyServiceEngine();
+class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
+  final _locationController = TextEditingController();
   NearbyServiceType _selectedService = nearbyEssentialsMvpServices.first;
-  NearbyServiceFilter _previewFilter = const NearbyServiceFilter(
-    openNow: true,
-    maxDistanceMeters: 500,
-  );
+  NearbyServiceFilter _filter = const NearbyServiceFilter();
+  Future<List<NearbyServiceResult>>? _resultsFuture;
+  String? _selectedTripId;
+  String _submittedLocation = '';
 
   @override
   void initState() {
     super.initState();
-    _selectedService = widget.initialService ?? nearbyEssentialsMvpServices.first;
+    _selectedService =
+        widget.initialService ?? nearbyEssentialsMvpServices.first;
   }
 
-  void _openMapsHandoff() {
-    context.pushMaps(
-      prefill: _serviceEngine.buildPlacesPrefill(
+  @override
+  void dispose() {
+    _locationController.dispose();
+    super.dispose();
+  }
+
+  void _search() {
+    final location = _locationController.text.trim();
+    if (location.isEmpty) {
+      setState(() => _resultsFuture = null);
+      return;
+    }
+    setState(() {
+      _submittedLocation = location;
+      _resultsFuture = GoogleNearbyPlacesService(
+        gateway: ref.read(providerGatewayProvider),
+      ).search(NearbyPlacesQuery(
+        location: location,
         serviceType: _selectedService,
-        filter: _previewFilter,
-      ),
-    );
+      ));
+    });
+  }
+
+  void _selectService(NearbyServiceType service) {
+    setState(() {
+      _selectedService = service;
+      _resultsFuture = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedMetadata = _selectedService.metadata;
-
+    final trips = ref.watch(tripsProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nearby Essentials'),
+        actions: [
+          IconButton(
+            tooltip: 'Open saved places',
+            icon: const Icon(Icons.bookmarks_outlined),
+            onPressed: () => context.pushSavedItems(),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -62,198 +95,376 @@ class _NearbyEssentialsPageState extends State<NearbyEssentialsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.place_outlined,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Practical stops for the moment you need them',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            'Nearby Essentials will bring toilets, ATMs, pharmacies, hospitals, food, and cafes into one travel-first utility hub.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                PrimaryButton(
-                  text: 'Open in maps',
-                  icon: Icons.explore_outlined,
-                  onPressed: _openMapsHandoff,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          const SectionHeader(
-            title: 'Core services',
-            subtitle: 'The first Nearby Essentials services planned for the MVP utility layer.',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: nearbyEssentialsMvpServices.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.md,
-              crossAxisSpacing: AppSpacing.md,
-              childAspectRatio: 1.45,
-            ),
-            itemBuilder: (context, index) {
-              final serviceType = nearbyEssentialsMvpServices[index];
-              final metadata = serviceType.metadata;
-              final isSelected = serviceType == _selectedService;
-
-              return TravelCard(
-                onTap: () {
-                  setState(() {
-                    _selectedService = serviceType;
-                  });
-                },
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          metadata.icon,
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
-                        ),
-                        const Spacer(),
-                        if (isSelected)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: AppSpacing.xs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Text(
-                              'Selected',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      metadata.label,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      metadata.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          SectionHeader(
-            title: '${selectedMetadata.label} filters',
-            subtitle: 'Reusable filter metadata is ready before live provider wiring.',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TravelCard(
-            child: Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: selectedMetadata.previewFilters
-                  .map(
-                    (filterLabel) => Chip(label: Text(filterLabel)),
-                  )
-                  .toList(growable: false),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TravelCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Maps handoff preview',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                Text('Explore around your trip',
+                    style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  _serviceEngine.buildQueryPreview(
-                    _selectedService,
-                    _previewFilter,
+                const Text(
+                    'Live Google Places results with a clear demo fallback when live search is unavailable.'),
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: _locationController,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => _search(),
+                  decoration: InputDecoration(
+                    labelText: 'Destination or map location',
+                    hintText: 'e.g. Lisbon city centre',
+                    prefixIcon: const Icon(Icons.location_on_outlined),
+                    suffixIcon: IconButton(
+                      tooltip: 'Search nearby',
+                      onPressed: _search,
+                      icon: const Icon(Icons.search),
+                    ),
                   ),
-                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                trips.when(
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const Text(
+                      'Trip context unavailable. Enter a location to search.'),
+                  data: (items) => _TripContextPicker(
+                    trips: items,
+                    selectedTripId: _selectedTripId,
+                    onChanged: (trip) {
+                      setState(() {
+                        _selectedTripId = trip.id;
+                        if (_locationController.text.trim().isEmpty) {
+                          _locationController.text = trip.destination;
+                        }
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          SectionHeader(
-            title: '${selectedMetadata.label} results foundation',
-            subtitle: 'This placeholder becomes the shared results area in the next commit.',
+          Text('What are you looking for?',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: nearbyEssentialsMvpServices.map((service) {
+              return ChoiceChip(
+                selected: service == _selectedService,
+                label: Text(service.metadata.label),
+                avatar: Icon(service.metadata.icon, size: 18),
+                onSelected: (_) => _selectService(service),
+              );
+            }).toList(growable: false),
           ),
           const SizedBox(height: AppSpacing.md),
-          NearbyPlaceholderState(
-            title: 'Select ${selectedMetadata.label.toLowerCase()} near me',
-            message:
-                'The hub, service metadata, and filters are in place. Live results, maps handoff, and location-aware search are intentionally deferred to the next nearby commit.',
+          Wrap(
+            spacing: AppSpacing.sm,
+            children: [
+              FilterChip(
+                label: const Text('Open now'),
+                selected: _filter.openNow,
+                onSelected: (value) =>
+                    setState(() => _filter = _filter.copyWith(openNow: value)),
+              ),
+              FilterChip(
+                label: const Text('Top rated'),
+                selected: _filter.minRating != null,
+                onSelected: (value) => setState(() =>
+                    _filter = _filter.copyWith(minRating: value ? 4 : null)),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          const SectionHeader(
-            title: 'State foundations',
-            subtitle: 'Loading, empty, and error states are ready for engine wiring.',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const NearbyLoadingState(
-            message: 'Preparing nearby essentials around your current stop...',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const NearbyEmptyState(
-            title: 'No nearby results yet',
-            message: 'This shared empty state will be used when a service search returns no nearby essentials.',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          NearbyErrorState(
-            title: 'Nearby Essentials unavailable',
-            message: 'This shared error state is ready for provider, permission, or location failures.',
-            onRetry: _openMapsHandoff,
-          ),
+          if (_resultsFuture == null)
+            _NearbyEmpty(
+              service: _selectedService,
+              onSearch: _search,
+            )
+          else
+            _Results(
+              future: _resultsFuture!,
+              location: _submittedLocation,
+              selectedTripId: _selectedTripId,
+              onSave: (place) => _save(place),
+              onDetails: (place) => _showDetails(place),
+              onAddToTrip: (place) => _addToTrip(place),
+            ),
         ],
       ),
     );
   }
+
+  Future<void> _save(NearbyServiceResult place) async {
+    await ref
+        .read(savedItemsControllerProvider.notifier)
+        .saveNearbyPlace(place);
+    if (mounted) _message('${place.name} saved');
+  }
+
+  Future<void> _addToTrip(NearbyServiceResult place) async {
+    final tripId = _selectedTripId;
+    if (tripId == null || tripId.isEmpty) {
+      _message('Select a trip before adding this place.');
+      return;
+    }
+    await ref.read(tripActivityActionsProvider).addActivity(
+          tripId: tripId,
+          title: place.name,
+          location: place.address,
+          notes: '${place.categoryLabel}. Source: ${_sourceLabel(place)}.',
+          scheduledAt: null,
+          status: 'Place planned',
+        );
+    if (mounted) _message('${place.name} added to your trip');
+  }
+
+  void _showDetails(NearbyServiceResult place) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        child: Wrap(
+          runSpacing: 10,
+          children: [
+            Row(children: [
+              Expanded(
+                  child: Text(place.name,
+                      style: Theme.of(context).textTheme.titleLarge)),
+              IconButton(
+                  onPressed: () => Navigator.pop(sheetContext),
+                  icon: const Icon(Icons.close)),
+            ]),
+            Text(place.address),
+            Text('${place.categoryLabel} • ${_sourceLabel(place)}'),
+            if (place.rating != null)
+              Text('Rating ${place.rating!.toStringAsFixed(1)} / 5'),
+            if (place.isOpenNow != null)
+              Text(place.isOpenNow! ? 'Open now' : 'Closed now'),
+            if (place.metadata['description'] is String)
+              Text(place.metadata['description']! as String),
+            Row(children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.map_outlined),
+                  label: const Text('Map & route'),
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    context.pushMaps(
+                        prefill: PlacesPrefill(
+                      query: place.name,
+                      locationHint: place.address,
+                      title: place.name,
+                    ));
+                  },
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.add_location_alt_outlined),
+                  label: const Text('Add to trip'),
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    _addToTrip(place);
+                  },
+                ),
+              ),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _sourceLabel(NearbyServiceResult place) =>
+      place.source == NearbyDataSource.google
+          ? 'Live Google Places'
+          : 'Demo place data';
+
+  void _message(String text) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+}
+
+class _TripContextPicker extends StatelessWidget {
+  const _TripContextPicker(
+      {required this.trips,
+      required this.selectedTripId,
+      required this.onChanged});
+  final List<Trip> trips;
+  final String? selectedTripId;
+  final ValueChanged<Trip> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (trips.isEmpty)
+      return const Text('No trips yet. Search any destination above.');
+    final current =
+        trips.where((trip) => trip.id == selectedTripId).firstOrNull ??
+            trips.first;
+    return DropdownButtonFormField<String>(
+      initialValue: current.id,
+      decoration: const InputDecoration(labelText: 'Trip context'),
+      items: trips
+          .map((trip) => DropdownMenuItem(
+              value: trip.id,
+              child: Text('${trip.destination} • ${trip.title}')))
+          .toList(growable: false),
+      onChanged: (id) {
+        final match = trips.where((trip) => trip.id == id).firstOrNull;
+        if (match != null) onChanged(match);
+      },
+    );
+  }
+}
+
+class _NearbyEmpty extends StatelessWidget {
+  const _NearbyEmpty({required this.service, required this.onSearch});
+  final NearbyServiceType service;
+  final VoidCallback onSearch;
+
+  @override
+  Widget build(BuildContext context) => TravelCard(
+        child: Column(children: [
+          Icon(service.metadata.icon, size: 42),
+          const SizedBox(height: 10),
+          Text('Search for ${service.metadata.label.toLowerCase()} nearby',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text(service.metadata.description, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+              onPressed: onSearch,
+              icon: const Icon(Icons.search),
+              label: const Text('Search destination')),
+        ]),
+      );
+}
+
+class _Results extends ConsumerWidget {
+  const _Results(
+      {required this.future,
+      required this.location,
+      required this.selectedTripId,
+      required this.onSave,
+      required this.onDetails,
+      required this.onAddToTrip});
+  final Future<List<NearbyServiceResult>> future;
+  final String location;
+  final String? selectedTripId;
+  final ValueChanged<NearbyServiceResult> onSave;
+  final ValueChanged<NearbyServiceResult> onDetails;
+  final ValueChanged<NearbyServiceResult> onAddToTrip;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      FutureBuilder<List<NearbyServiceResult>>(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator()));
+          }
+          if (snapshot.hasError) return const _NearbyError();
+          final places = snapshot.data ?? const <NearbyServiceResult>[];
+          if (places.isEmpty)
+            return const _NearbyError(
+                message: 'No places found. Try a wider destination search.');
+          final saved =
+              ref.watch(savedItemsControllerProvider).valueOrNull ?? const [];
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Places near $location',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                ...places.map((place) {
+                  final isSaved = saved.any((item) => item.id == place.id);
+                  return _PlaceCard(
+                      place: place,
+                      isSaved: isSaved,
+                      canAdd: selectedTripId != null,
+                      onSave: onSave,
+                      onDetails: onDetails,
+                      onAddToTrip: onAddToTrip);
+                }),
+              ]);
+        },
+      );
+}
+
+class _PlaceCard extends StatelessWidget {
+  const _PlaceCard(
+      {required this.place,
+      required this.isSaved,
+      required this.canAdd,
+      required this.onSave,
+      required this.onDetails,
+      required this.onAddToTrip});
+  final NearbyServiceResult place;
+  final bool isSaved;
+  final bool canAdd;
+  final ValueChanged<NearbyServiceResult> onSave;
+  final ValueChanged<NearbyServiceResult> onDetails;
+  final ValueChanged<NearbyServiceResult> onAddToTrip;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(
+                  child: Text(place.name,
+                      style: Theme.of(context).textTheme.titleMedium)),
+              if (place.rating != null)
+                Chip(
+                    avatar: const Icon(Icons.star, size: 15),
+                    label: Text(place.rating!.toStringAsFixed(1))),
+            ]),
+            Text(place.address, maxLines: 2, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 6),
+            Wrap(spacing: 8, children: [
+              Text(
+                  place.source == NearbyDataSource.google
+                      ? 'Live Google Places'
+                      : 'Demo fallback',
+                  style: Theme.of(context).textTheme.labelSmall),
+              if (place.isOpenNow != null)
+                Text(place.isOpenNow! ? 'Open now' : 'Closed',
+                    style: Theme.of(context).textTheme.labelSmall),
+            ]),
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, runSpacing: 6, children: [
+              TextButton.icon(
+                  onPressed: () => onDetails(place),
+                  icon: const Icon(Icons.info_outline),
+                  label: const Text('Details')),
+              TextButton.icon(
+                  onPressed: () => onSave(place),
+                  icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
+                  label: Text(isSaved ? 'Saved' : 'Save')),
+              if (canAdd)
+                TextButton.icon(
+                    onPressed: () => onAddToTrip(place),
+                    icon: const Icon(Icons.add_location_alt_outlined),
+                    label: const Text('Add to trip')),
+            ]),
+          ]),
+        ),
+      );
+}
+
+class _NearbyError extends StatelessWidget {
+  const _NearbyError(
+      {this.message =
+          'Live search is unavailable right now. Try again or review the demo fallback.'});
+  final String message;
+  @override
+  Widget build(BuildContext context) => TravelCard(
+          child: Column(children: [
+        const Icon(Icons.place_outlined, size: 40),
+        const SizedBox(height: 8),
+        Text(message, textAlign: TextAlign.center)
+      ]));
 }
