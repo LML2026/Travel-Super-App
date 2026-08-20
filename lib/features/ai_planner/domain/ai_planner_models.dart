@@ -2,6 +2,7 @@ import '../../../core/models/booking.dart';
 import '../../expenses/domain/entities/expense.dart';
 import '../../trips/domain/entities/trip.dart';
 import '../../trips/domain/entities/trip_activity.dart';
+import '../../ai/domain/ai_travel_context.dart';
 
 enum AiPlannerPace {
   relaxed,
@@ -86,6 +87,7 @@ class AiPlannerContext {
     required this.expenses,
     required this.preferences,
     this.prompt,
+    this.travelContext,
   });
 
   final Trip trip;
@@ -94,6 +96,7 @@ class AiPlannerContext {
   final List<Expense> expenses;
   final AiPlannerPreferences preferences;
   final String? prompt;
+  final AiTravelContext? travelContext;
 }
 
 class AiPlannerSuggestion {

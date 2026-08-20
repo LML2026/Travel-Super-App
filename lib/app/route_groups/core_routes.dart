@@ -159,7 +159,18 @@ List<RouteBase> buildCoreRoutes() {
     GoRoute(
       name: AppRoute.aiAssistant.routeName,
       path: AppRoute.aiAssistant.path,
-      builder: (context, state) => const AiAssistantPage(),
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra is AiAssistantRouteArgs) {
+          return AiAssistantPage(
+            trip: extra.trip,
+            initialPrompt: extra.initialPrompt,
+          );
+        }
+        return AiAssistantPage(
+          trip: extra is domain.Trip ? extra : null,
+        );
+      },
     ),
     GoRoute(
       name: AppRoute.translator.routeName,

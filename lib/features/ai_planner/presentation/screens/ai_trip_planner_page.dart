@@ -9,6 +9,10 @@ import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/domain/entities/trip_activity.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../../trips/presentation/providers/trip_bookings_provider.dart';
+import '../../../weather/providers/weather_provider.dart';
+import '../../../saved_items/presentation/providers/saved_items_provider.dart';
+import '../../../trip_readiness/presentation/providers/trip_readiness_provider.dart';
+import '../../../ai/domain/ai_travel_context.dart';
 import '../../domain/ai_planner_models.dart';
 import '../providers/ai_planner_provider.dart';
 
@@ -25,6 +29,10 @@ class AiTripPlannerPage extends ConsumerWidget {
         const <Booking>[];
     final expenses = ref.watch(tripExpensesProvider(trip.id)).valueOrNull ??
         const <Expense>[];
+    final weather = ref.watch(weatherProvider(trip.destination)).valueOrNull;
+    final savedItems =
+        ref.watch(savedItemsControllerProvider).valueOrNull ?? const [];
+    final readiness = ref.watch(tripReadinessSummaryProvider(trip.id));
     final preferences = ref.watch(aiPlannerPreferencesProvider(trip.id));
     final planState = ref.watch(aiPlannerControllerProvider(trip.id));
     final historyState = ref.watch(aiPlannerHistoryProvider(trip.id));
@@ -38,6 +46,27 @@ class AiTripPlannerPage extends ConsumerWidget {
       bookings: bookings,
       expenses: expenses,
       preferences: preferences,
+      travelContext: AiTravelContext.fromTripData(
+        trip: trip,
+        activities: activities,
+        bookings: bookings,
+        expenses: expenses,
+        eventSummaries: [
+          ...bookings
+              .map((booking) => '${booking.type.name} ${booking.status.name}'),
+          ...activities.where((activity) => activity.scheduledAt != null).map(
+              (activity) => '${activity.title} at ${activity.scheduledAt}'),
+        ],
+        savedPlaces: savedItems
+            .where((item) => item.isTripActivity)
+            .map((item) => item.title)
+            .toList(growable: false),
+        weatherSummary: weather == null
+            ? null
+            : '${weather.description}, ${weather.tempC.toStringAsFixed(0)}°C',
+        readinessSummary:
+            '${readiness.completedCount}/${readiness.totalCount} tasks complete',
+      ),
     );
     final contextChanged = activePlan != null &&
         AiPlannerContextFingerprint.hasChanged(activePlan, currentContext);
@@ -63,6 +92,7 @@ class AiTripPlannerPage extends ConsumerWidget {
               bookings: bookings,
               expenses: expenses,
               preferences: preferences,
+              travelContext: currentContext.travelContext,
               prompt: 'Replan with latest trip context',
             ),
             icon: const Icon(Icons.autorenew),
@@ -97,6 +127,7 @@ class AiTripPlannerPage extends ConsumerWidget {
               expenses: expenses,
               preferences: _preferencesForPrompt(preferences, prompt),
               prompt: prompt,
+              travelContext: currentContext.travelContext,
             ),
           ),
           const SizedBox(height: 12),
@@ -109,6 +140,7 @@ class AiTripPlannerPage extends ConsumerWidget {
                 expenses: expenses,
                 preferences: preferences,
                 prompt: 'Update plan after trip context changed',
+                travelContext: currentContext.travelContext,
               ),
             ),
             const SizedBox(height: 12),
@@ -120,6 +152,7 @@ class AiTripPlannerPage extends ConsumerWidget {
               bookings: bookings,
               expenses: expenses,
               preferences: preferences,
+              travelContext: currentContext.travelContext,
             ),
             icon: const Icon(Icons.auto_awesome),
             label: const Text('Generate Plan'),
@@ -162,6 +195,7 @@ class AiTripPlannerPage extends ConsumerWidget {
     required List<Booking> bookings,
     required List<Expense> expenses,
     required AiPlannerPreferences preferences,
+    AiTravelContext? travelContext,
     String? prompt,
   }) {
     return ref.read(aiPlannerControllerProvider(trip.id).notifier).generate(
@@ -172,6 +206,7 @@ class AiTripPlannerPage extends ConsumerWidget {
             expenses: expenses,
             preferences: preferences,
             prompt: prompt,
+            travelContext: travelContext,
           ),
         );
   }

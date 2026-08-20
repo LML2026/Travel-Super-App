@@ -259,6 +259,7 @@ class AiPlannerContextFingerprint {
           activity.cost?.toStringAsFixed(2) ?? '',
           activity.status ?? '',
         ].join(':'),
+      context.travelContext?.fingerprint ?? '',
     ].join('|');
   }
 

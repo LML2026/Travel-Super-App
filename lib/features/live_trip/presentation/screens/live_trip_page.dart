@@ -181,10 +181,7 @@ class _LiveTripContent extends ConsumerWidget {
                   onOpenDocuments: () => context.pushTripDocuments(trip.id),
                   onTranslate: () =>
                       _openTranslator(context, liveTrip.nextEvent),
-                  onAskAi: () => context.pushTripAiPlanner(
-                    trip.id,
-                    initialTrip: trip,
-                  ),
+                  onAskAi: () => context.pushAiAssistant(trip: trip),
                   onAddExpense: () => _openAddExpense(context),
                   onNearby: () => context.pushNearbyEssentials(
                     initialService: _nearbyServiceFor(liveTrip.nextEvent),
@@ -216,10 +213,7 @@ class _LiveTripContent extends ConsumerWidget {
                   onDocuments: () => context.pushTripDocuments(trip.id),
                   onTranslate: () =>
                       _openTranslator(context, liveTrip.nextEvent),
-                  onAskAi: () => context.pushTripAiPlanner(
-                    trip.id,
-                    initialTrip: trip,
-                  ),
+                  onAskAi: () => context.pushAiAssistant(trip: trip),
                   onAddExpense: () => _openAddExpense(context),
                   onBooking: () => context.pushTripBookings(trip.id),
                   onNearby: () => context.pushNearbyEssentials(
@@ -269,9 +263,9 @@ class _LiveTripContent extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 _AiCompanionCard(
-                  onPrompt: (_) => context.pushTripAiPlanner(
-                    trip.id,
-                    initialTrip: trip,
+                  onPrompt: (prompt) => context.pushAiAssistant(
+                    trip: trip,
+                    initialPrompt: prompt,
                   ),
                 ),
                 const SizedBox(height: 12),

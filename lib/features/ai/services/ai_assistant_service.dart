@@ -4,6 +4,7 @@ import '../../flights/models/saved_flight.dart';
 import '../../hotels/models/saved_hotel.dart';
 import '../../trips/domain/entities/trip.dart';
 import '../../weather/models/weather_data.dart';
+import '../domain/ai_travel_context.dart';
 
 class AiAssistantService {
   AiAssistantService({ApiClient? apiClient})
@@ -18,6 +19,7 @@ class AiAssistantService {
     List<SavedHotel> hotels = const [],
     WeatherData? weather,
     List<String> nearbyAttractions = const [],
+    AiTravelContext? travelContext,
   }) async {
     try {
       final response = await _apiClient.post(
@@ -62,6 +64,7 @@ class AiAssistantService {
               .toList(),
           'weather': weather?.toJson(),
           'nearbyAttractions': nearbyAttractions,
+          'tripContext': travelContext?.toPromptData(),
         },
       );
 
@@ -82,6 +85,32 @@ class AiAssistantService {
     final linkedHotel = _findRelevantHotel(destination, hotels);
 
     final advice = <String>[];
+
+    if (travelContext != null) {
+      advice.add(
+        'For ${travelContext.trip.destination}, you have ${travelContext.activities.length} itinerary item${travelContext.activities.length == 1 ? '' : 's'} and ${travelContext.bookings.length} linked booking${travelContext.bookings.length == 1 ? '' : 's'}.',
+      );
+      advice.add(
+        'You have spent ${travelContext.trip.currency} ${travelContext.spent.toStringAsFixed(2)} and have approximately ${travelContext.trip.currency} ${travelContext.remainingBudget.toStringAsFixed(2)} left after confirmed bookings.',
+      );
+      if (travelContext.weatherSummary != null) {
+        advice.add('Weather context: ${travelContext.weatherSummary}.');
+      }
+      if (travelContext.readinessSummary != null) {
+        advice.add('Readiness: ${travelContext.readinessSummary}.');
+      }
+      if (travelContext.eventSummaries.isNotEmpty &&
+          (prompt.toLowerCase().contains('next') ||
+              prompt.toLowerCase().contains('today'))) {
+        advice.add(
+            'Upcoming: ${travelContext.eventSummaries.take(3).join('; ')}.');
+      }
+      if (travelContext.savedPlaces.isNotEmpty &&
+          prompt.toLowerCase().contains('nearby')) {
+        advice.add(
+            'Saved nearby places: ${travelContext.savedPlaces.take(3).join(', ')}.');
+      }
+    }
 
     if (trips.isNotEmpty || flights.isNotEmpty || hotels.isNotEmpty) {
       advice.add(

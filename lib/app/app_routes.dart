@@ -34,6 +34,13 @@ class TaxiBookingRouteArgs {
   final TaxiRideOption option;
 }
 
+class AiAssistantRouteArgs {
+  const AiAssistantRouteArgs({this.trip, this.initialPrompt});
+
+  final Trip? trip;
+  final String? initialPrompt;
+}
+
 enum AppRoute {
   splash,
   login,
@@ -274,8 +281,13 @@ extension AppNavigation on BuildContext {
         extra: initialService,
       );
 
-  Future<T?> pushAiAssistant<T>() =>
-      pushNamed<T>(AppRoute.aiAssistant.routeName);
+  Future<T?> pushAiAssistant<T>({Trip? trip, String? initialPrompt}) =>
+      pushNamed<T>(
+        AppRoute.aiAssistant.routeName,
+        extra: initialPrompt == null
+            ? trip
+            : AiAssistantRouteArgs(trip: trip, initialPrompt: initialPrompt),
+      );
 
   Future<T?> pushTrips<T>() => pushNamed<T>(AppRoute.trips.routeName);
 
