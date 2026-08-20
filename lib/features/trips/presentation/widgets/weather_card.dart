@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../weather/providers/weather_provider.dart';
+import '../../../weather/models/weather_data.dart';
 import 'dashboard_section.dart';
 
 class WeatherCard extends ConsumerWidget {
@@ -20,9 +21,18 @@ class WeatherCard extends ConsumerWidget {
 
     final content = weatherAsync.when<Widget>(
       loading: () => const Text('Loading weather...'),
-      error: (_, __) => const Text('Unable to load weather'),
-      data: (forecast) => Text(
-        '${forecast.tempC.toStringAsFixed(0)}°C • ${forecast.description}',
+      error: (_, __) => const Text('Weather currently unavailable'),
+      data: (weather) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+              '${weather.tempC.toStringAsFixed(0)}°C • ${weather.description}'),
+          const SizedBox(height: 2),
+          Text(
+            _sourceLabel(weather.dataSource),
+            style: const TextStyle(fontSize: 11, color: Colors.grey),
+          ),
+        ],
       ),
     );
 
@@ -37,5 +47,16 @@ class WeatherCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _sourceLabel(WeatherDataSource source) {
+    switch (source) {
+      case WeatherDataSource.openMeteo:
+        return 'Live weather';
+      case WeatherDataSource.backend:
+        return 'Backend weather';
+      case WeatherDataSource.demo:
+        return 'Demo weather';
+    }
   }
 }
