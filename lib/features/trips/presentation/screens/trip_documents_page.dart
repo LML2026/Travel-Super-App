@@ -166,28 +166,39 @@ class TripDocumentsPage extends ConsumerWidget {
                     }
 
                     final notes = notesController.text.trim();
-                    if (isEditing) {
-                      await ref
-                          .read(tripDocumentActionsProvider)
-                          .updateDocument(
-                            document.copyWith(
+                    try {
+                      if (isEditing) {
+                        await ref
+                            .read(tripDocumentActionsProvider)
+                            .updateDocument(
+                              document.copyWith(
+                                title: title,
+                                type: type,
+                                reference: reference,
+                                notes: notes.isEmpty ? null : notes,
+                              ),
+                            );
+                      } else {
+                        await ref.read(tripDocumentActionsProvider).addDocument(
+                              tripId: tripId,
                               title: title,
                               type: type,
-                              reference: reference,
+                              reference: reference.isEmpty
+                                  ? upload!.fileName
+                                  : reference,
                               notes: notes.isEmpty ? null : notes,
-                            ),
-                          );
-                    } else {
-                      await ref.read(tripDocumentActionsProvider).addDocument(
-                            tripId: tripId,
-                            title: title,
-                            type: type,
-                            reference: reference.isEmpty
-                                ? upload!.fileName
-                                : reference,
-                            notes: notes.isEmpty ? null : notes,
-                            upload: upload,
-                          );
+                              upload: upload,
+                            );
+                      }
+                    } catch (error) {
+                      setDialogState(() {
+                        uploadError = UserFacingError.message(
+                          error,
+                          fallback:
+                              'File upload is unavailable right now. You can add this document as a reference instead.',
+                        );
+                      });
+                      return;
                     }
 
                     if (context.mounted) {
@@ -250,11 +261,25 @@ class TripDocumentsPage extends ConsumerWidget {
       return;
     }
 
-    await ref.read(tripDocumentActionsProvider).deleteDocument(
-          tripId: tripId,
-          documentId: document.id,
-          document: document,
+    try {
+      await ref.read(tripDocumentActionsProvider).deleteDocument(
+            tripId: tripId,
+            documentId: document.id,
+            document: document,
+          );
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(UserFacingError.message(
+              error,
+              fallback: 'We could not remove this document right now.',
+            )),
+          ),
         );
+      }
+      return;
+    }
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -325,12 +350,12 @@ class TripDocumentsPage extends ConsumerWidget {
           Expanded(
             child: documentsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, _) => Center(
-                    child: Text(UserFacingError.message(
-                      error,
-                      fallback: 'Documents are unavailable right now.',
-                    )),
-                  ),
+              error: (error, _) => Center(
+                child: Text(UserFacingError.message(
+                  error,
+                  fallback: 'Documents are unavailable right now.',
+                )),
+              ),
               data: (documents) {
                 if (documents.isEmpty) {
                   return const Center(
