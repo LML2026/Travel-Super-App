@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
@@ -13,6 +16,8 @@ import '../../models/places_prefill.dart';
 import '../../models/selected_place.dart';
 import '../../providers/live_location_provider.dart';
 import '../../services/map_link_service.dart';
+import '../../services/map_route_service.dart';
+import '../../services/google_maps_platform_service.dart';
 
 class MapsHubPage extends ConsumerStatefulWidget {
   const MapsHubPage({
@@ -28,10 +33,14 @@ class MapsHubPage extends ConsumerStatefulWidget {
 
 class _MapsHubPageState extends ConsumerState<MapsHubPage> {
   final MapLinkService _mapLinkService = const MapLinkService();
+  final MapRouteService _mapRouteService = const MapRouteService();
+  final Future<bool> _googleMapsConfiguration =
+      const GoogleMapsPlatformService().isConfigured();
   final TextEditingController _searchController = TextEditingController();
   String? _selectedTripId;
   String? _submittedQuery;
   Future<List<PlaceResult>>? _placeResultsFuture;
+  Future<GoogleRoute?>? _routeFuture;
 
   @override
   void initState() {
@@ -88,13 +97,7 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
                 onRefresh: () => ref.invalidate(liveLocationProvider),
                 onUseInSearch: (location) {
                   _searchController.text = location.coordinatesLabel;
-                  return _launch(
-                    _mapLinkService.directionsUri(
-                      origin: location.coordinatesLabel,
-                      destination: selectedTrip.destination,
-                      travelMode: 'walking',
-                    ),
-                  );
+                  return _runRoute(location, selectedTrip);
                 },
               ),
               const SizedBox(height: 12),
@@ -110,6 +113,13 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
               const SizedBox(height: 12),
               MapCard(trip: selectedTrip),
               const SizedBox(height: 12),
+              if (defaultTargetPlatform == TargetPlatform.iOS)
+                _GoogleMapCard(
+                  configuration: _googleMapsConfiguration,
+                  currentLocationAsync: currentLocationAsync,
+                ),
+              if (defaultTargetPlatform == TargetPlatform.iOS)
+                const SizedBox(height: 12),
               _SearchCard(
                 controller: _searchController,
                 mapLinkService: _mapLinkService,
@@ -132,6 +142,10 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
                     ),
                   ),
                 ),
+              ],
+              if (_routeFuture != null) ...[
+                const SizedBox(height: 12),
+                _RoutePreviewCard(future: _routeFuture!),
               ],
             ],
           );
@@ -162,6 +176,24 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     });
   }
 
+  Future<void> _runRoute(LiveLocation location, Trip trip) async {
+    setState(() {
+      _routeFuture = _mapRouteService.computeRoute(
+        origin: location.coordinatesLabel,
+        destination: trip.destination,
+        travelMode: 'WALK',
+      );
+    });
+
+    await _launch(
+      _mapLinkService.directionsUri(
+        origin: location.coordinatesLabel,
+        destination: trip.destination,
+        travelMode: 'walking',
+      ),
+    );
+  }
+
   Trip _resolveSelectedTrip(List<Trip> trips) {
     final selectedTripId = _selectedTripId;
     if (selectedTripId != null) {
@@ -173,9 +205,12 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     }
 
     final now = DateTime.now();
-    final upcomingTrips = trips.where((trip) => trip.endDate.isAfter(now)).toList()
+    final upcomingTrips = trips
+        .where((trip) => trip.endDate.isAfter(now))
+        .toList()
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
-    final selected = upcomingTrips.isNotEmpty ? upcomingTrips.first : trips.first;
+    final selected =
+        upcomingTrips.isNotEmpty ? upcomingTrips.first : trips.first;
 
     if (_selectedTripId != selected.id) {
       _selectedTripId = selected.id;
@@ -192,6 +227,144 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Unable to open map link.')),
+    );
+  }
+}
+
+class _GoogleMapCard extends StatelessWidget {
+  const _GoogleMapCard({
+    required this.configuration,
+    required this.currentLocationAsync,
+  });
+
+  final Future<bool> configuration;
+  final AsyncValue<LiveLocation> currentLocationAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: FutureBuilder<bool>(
+        future: configuration,
+        builder: (context, configurationSnapshot) {
+          if (configurationSnapshot.connectionState != ConnectionState.done) {
+            return const SizedBox(
+              height: 220,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (configurationSnapshot.data != true) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(Icons.map_outlined),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Google Maps SDK is not configured for this build. External Maps links remain available.',
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return currentLocationAsync.when(
+            loading: () => const SizedBox(
+              height: 220,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (error, _) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('Live map location unavailable: $error'),
+            ),
+            data: (location) => SizedBox(
+              height: 220,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(location.latitude, location.longitude),
+                  zoom: 13,
+                ),
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('current-location'),
+                    position: LatLng(location.latitude, location.longitude),
+                    infoWindow: const InfoWindow(title: 'Current location'),
+                  ),
+                },
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: false,
+                compassEnabled: true,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RoutePreviewCard extends StatelessWidget {
+  const _RoutePreviewCard({required this.future});
+
+  final Future<GoogleRoute?> future;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: FutureBuilder<GoogleRoute?>(
+          future: future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Row(
+                children: [
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 10),
+                  Text('Calculating live walking route...'),
+                ],
+              );
+            }
+
+            final route = snapshot.data;
+            if (route == null) {
+              return const Text(
+                'Live Routes are unavailable. The external Maps handoff is still ready.',
+              );
+            }
+
+            final distance = route.distanceMeters >= 1000
+                ? '${(route.distanceMeters / 1000).toStringAsFixed(1)} km'
+                : '${route.distanceMeters} m';
+            final minutes = route.duration.inMinutes;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Live route',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text('$distance • $minutes min walking'),
+                const SizedBox(height: 4),
+                Text(
+                  'Google Routes API',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -216,7 +389,8 @@ class _EmptyMapsState extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            const Text('Create a trip to see map routes, hotels, airports, and nearby places here.'),
+            const Text(
+                'Create a trip to see map routes, hotels, airports, and nearby places here.'),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onOpenTrips,
@@ -558,7 +732,8 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
                       .toList(growable: false),
                 ),
               ),
-            if (prefill.locationHint != null && prefill.locationHint!.trim().isNotEmpty)
+            if (prefill.locationHint != null &&
+                prefill.locationHint!.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text('Location hint: ${prefill.locationHint}'),
@@ -635,7 +810,8 @@ class _PlacesResultsSection extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,12 +821,22 @@ class _PlacesResultsSection extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   place.name,
-                                  style: const TextStyle(fontWeight: FontWeight.w700),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700),
                                 ),
                               ),
                               if (place.rating != null)
-                                Chip(label: Text(place.rating!.toStringAsFixed(1))),
+                                Chip(
+                                    label:
+                                        Text(place.rating!.toStringAsFixed(1))),
                             ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            place.dataSource == TravelDataSource.live
+                                ? 'Live Google Places'
+                                : 'Demo place data',
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                           if ((place.address ?? '').isNotEmpty) ...[
                             const SizedBox(height: 4),
