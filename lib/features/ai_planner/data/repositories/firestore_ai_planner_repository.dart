@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/ai_planner_models.dart';
 import '../../domain/ai_planner_repository.dart';
 
-class FirestoreAiPlannerRepository implements AiPlannerRepository {
+class FirestoreAiPlannerRepository
+    implements AiPlannerRepository, AiPlannerPreferencesRepository {
   FirestoreAiPlannerRepository({
     FirebaseFirestore? firestore,
     required String userId,
@@ -20,6 +21,16 @@ class FirestoreAiPlannerRepository implements AiPlannerRepository {
         .collection('trips')
         .doc(tripId)
         .collection('aiPlannerPlans');
+  }
+
+  DocumentReference<Map<String, dynamic>> _preferencesDocument(String tripId) {
+    return _firestore
+        .collection('users')
+        .doc(_userId)
+        .collection('trips')
+        .doc(tripId)
+        .collection('aiPlannerPreferences')
+        .doc('current');
   }
 
   @override
@@ -48,6 +59,25 @@ class FirestoreAiPlannerRepository implements AiPlannerRepository {
     await _collection(plan.tripId)
         .doc(plan.id)
         .set(_toMap(plan), SetOptions(merge: true));
+  }
+
+  @override
+  Future<AiPlannerPreferences?> getPreferences(String tripId) async {
+    final snapshot = await _preferencesDocument(tripId).get();
+    final data = snapshot.data();
+    if (data == null) return null;
+    return AiPlannerPreferences.fromJson(data);
+  }
+
+  @override
+  Future<void> savePreferences(
+    String tripId,
+    AiPlannerPreferences preferences,
+  ) {
+    return _preferencesDocument(tripId).set({
+      ...preferences.toJson(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
   AiPlannerPlan _fromMap(Map<String, dynamic> data) {

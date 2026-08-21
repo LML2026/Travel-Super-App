@@ -77,8 +77,9 @@ class AiTripPlannerPage extends ConsumerWidget {
         ref
             .read(aiPlannerControllerProvider(trip.id).notifier)
             .setActivePlan(latestPersistedPlan);
-        ref.read(aiPlannerPreferencesProvider(trip.id).notifier).state =
-            latestPersistedPlan.preferences;
+        ref
+            .read(aiPlannerPreferencesProvider(trip.id).notifier)
+            .restore(latestPersistedPlan.preferences);
       });
     }
 
@@ -115,8 +116,9 @@ class AiTripPlannerPage extends ConsumerWidget {
             tripId: trip.id,
             preferences: preferences,
             onChanged: (updated) {
-              ref.read(aiPlannerPreferencesProvider(trip.id).notifier).state =
-                  updated;
+              ref
+                  .read(aiPlannerPreferencesProvider(trip.id).notifier)
+                  .update(updated);
             },
           ),
           const SizedBox(height: 12),
@@ -167,8 +169,9 @@ class AiTripPlannerPage extends ConsumerWidget {
                 await ref
                     .read(aiPlannerControllerProvider(trip.id).notifier)
                     .restorePlan(plan);
-                ref.read(aiPlannerPreferencesProvider(trip.id).notifier).state =
-                    plan.preferences;
+                ref
+                    .read(aiPlannerPreferencesProvider(trip.id).notifier)
+                    .restore(plan.preferences);
               },
             ),
             loading: () => const SizedBox.shrink(),

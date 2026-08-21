@@ -7,3 +7,12 @@ abstract interface class AiPlannerRepository {
 
   Future<void> savePlan(AiPlannerPlan plan);
 }
+
+abstract interface class AiPlannerPreferencesRepository {
+  Future<AiPlannerPreferences?> getPreferences(String tripId);
+
+  Future<void> savePreferences(
+    String tripId,
+    AiPlannerPreferences preferences,
+  );
+}

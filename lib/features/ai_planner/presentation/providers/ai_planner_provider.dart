@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,10 +38,64 @@ final aiPlannerHistoryProvider =
   return ref.watch(aiPlannerRepositoryProvider).watchPlanHistory(tripId);
 });
 
-final aiPlannerPreferencesProvider =
-    StateProvider.family<AiPlannerPreferences, String>((ref, tripId) {
-  return const AiPlannerPreferences();
-});
+final aiPlannerPreferencesProvider = StateNotifierProvider.autoDispose
+    .family<AiPlannerPreferencesController, AiPlannerPreferences, String>(
+  (ref, tripId) {
+    final controller = AiPlannerPreferencesController(
+      tripId: tripId,
+      repository: ref.watch(aiPlannerRepositoryProvider),
+    );
+    controller.load();
+    return controller;
+  },
+);
+
+class AiPlannerPreferencesController
+    extends StateNotifier<AiPlannerPreferences> {
+  AiPlannerPreferencesController({
+    required this.tripId,
+    required AiPlannerRepository repository,
+  })  : _repository = repository,
+        super(const AiPlannerPreferences());
+
+  final String tripId;
+  final AiPlannerRepository _repository;
+
+  Future<void> load() async {
+    final preferencesRepository = _preferencesRepository;
+    if (preferencesRepository == null) return;
+    try {
+      final restored = await preferencesRepository.getPreferences(tripId);
+      if (mounted && restored != null) state = restored;
+    } catch (_) {
+      // Defaults remain usable when cloud persistence is unavailable.
+    }
+  }
+
+  void update(AiPlannerPreferences preferences) {
+    state = preferences;
+    unawaited(_persist(preferences));
+  }
+
+  void restore(AiPlannerPreferences preferences) {
+    state = preferences;
+  }
+
+  Future<void> _persist(AiPlannerPreferences preferences) async {
+    final preferencesRepository = _preferencesRepository;
+    if (preferencesRepository == null) return;
+    try {
+      await preferencesRepository.savePreferences(tripId, preferences);
+    } catch (_) {
+      // Keep the in-memory selection; generation and the UI remain usable.
+    }
+  }
+
+  AiPlannerPreferencesRepository? get _preferencesRepository =>
+      _repository is AiPlannerPreferencesRepository
+          ? _repository as AiPlannerPreferencesRepository
+          : null;
+}
 
 final aiPlannerControllerProvider = StateNotifierProvider.autoDispose
     .family<AiPlannerController, AsyncValue<AiPlannerPlan?>, String>(
@@ -91,9 +147,22 @@ class AiPlannerController extends StateNotifier<AsyncValue<AiPlannerPlan?>> {
         preferences: context.preferences,
         prompt: context.prompt,
       );
+      await _persistPreferences(context.preferences);
       await _repository.savePlan(plan);
       return plan;
     });
+  }
+
+  Future<void> _persistPreferences(AiPlannerPreferences preferences) async {
+    final preferencesRepository = _repository is AiPlannerPreferencesRepository
+        ? _repository as AiPlannerPreferencesRepository
+        : null;
+    if (preferencesRepository == null) return;
+    try {
+      await preferencesRepository.savePreferences(tripId, preferences);
+    } catch (_) {
+      // Preference persistence must not prevent a plan from being generated.
+    }
   }
 
   Future<void> replan({String? prompt}) async {
