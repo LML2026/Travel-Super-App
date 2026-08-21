@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
-import 'create_trip_page.dart';
-import 'trip_dashboard_page.dart';
 
 class TripListPage extends ConsumerWidget {
   const TripListPage({super.key});
@@ -22,12 +21,7 @@ class TripListPage extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const CreateTripPage(),
-            ),
-          );
+          context.pushCreateTrip();
         },
       ),
       body: tripsAsync.when(
@@ -105,14 +99,7 @@ class TripCard extends StatelessWidget {
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TripDashboardPage(
-                trip: trip,
-              ),
-            ),
-          );
+          context.pushTripDetails(trip);
         },
       ),
     );

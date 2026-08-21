@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../domain/entities/expense.dart';
 import '../../domain/repositories/expense_repository.dart';
@@ -8,24 +7,17 @@ import '../models/expense_model.dart';
 class FirestoreExpenseRepository implements ExpenseRepository {
   FirestoreExpenseRepository({
     FirebaseFirestore? firestore,
-    FirebaseAuth? auth,
+    required String userId,
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+        _userId = userId;
 
   final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
-
-  String? get _userId => _auth.currentUser?.uid;
+  final String _userId;
 
   CollectionReference<Map<String, dynamic>> _expenseCollection(String tripId) {
-    final userId = _userId;
-    if (userId == null) {
-      throw Exception('User is not signed in.');
-    }
-
     return _firestore
         .collection('users')
-        .doc(userId)
+        .doc(_userId)
         .collection('trips')
         .doc(tripId)
         .collection('expenses');
@@ -33,11 +25,6 @@ class FirestoreExpenseRepository implements ExpenseRepository {
 
   @override
   Stream<List<Expense>> watchExpenses(String tripId) {
-    final userId = _userId;
-    if (userId == null) {
-      return Stream.value(const <Expense>[]);
-    }
-
     return _expenseCollection(tripId)
       .orderBy('date')
         .snapshots()

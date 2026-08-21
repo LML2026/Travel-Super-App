@@ -93,6 +93,11 @@ final currentUserProvider = Provider<AuthUser?>((ref) {
 });
 
 final immediateCurrentUserProvider = Provider<AuthUser?>((ref) {
+  final authState = ref.watch(authStateProvider);
+  if (authState.hasValue) {
+    return authState.value;
+  }
+
   return ref.watch(authenticationRepositoryProvider).currentUser;
 });
 

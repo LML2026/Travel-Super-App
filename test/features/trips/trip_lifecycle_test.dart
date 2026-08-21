@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:travel_super_app/features/flights/providers/flight_provider.dart';
 import 'package:travel_super_app/features/hotels/models/currency_rate.dart';
 import 'package:travel_super_app/features/hotels/models/nearby_bundle.dart';
@@ -12,6 +13,7 @@ import 'package:travel_super_app/features/trips/domain/entities/trip.dart'
 import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
+import 'package:travel_super_app/features/trips/presentation/screens/trip_dashboard_page.dart';
 import 'package:travel_super_app/features/weather/providers/weather_provider.dart';
 
 class _FakeTripRepository extends TripRepository {
@@ -115,12 +117,28 @@ void main() {
   }
 
   testWidgets('trip list opens trip dashboard on tap', (tester) async {
-    final fakeRepo = _FakeTripRepository(<domain.Trip>[makeTrip()]);
+    final trip = makeTrip();
+    final fakeRepo = _FakeTripRepository(<domain.Trip>[trip]);
+
+    final router = GoRouter(
+      initialLocation: '/trips',
+      routes: [
+        GoRoute(
+          path: '/trips',
+          builder: (context, state) => const TripListPage(),
+        ),
+        GoRoute(
+          path: '/trips/:id',
+          name: 'tripDetails',
+          builder: (context, state) => TripDashboardPage(trip: trip),
+        ),
+      ],
+    );
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: commonOverrides(fakeRepo),
-        child: const MaterialApp(home: TripListPage()),
+        child: MaterialApp.router(routerConfig: router),
       ),
     );
 
