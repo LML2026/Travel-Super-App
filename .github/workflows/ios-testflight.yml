@@ -6,9 +6,11 @@ on:
       build_name:
         description: "iOS CFBundleShortVersionString (e.g., 1.0.1)"
         required: false
+        default: "1.0.0"
       build_number:
         description: "iOS CFBundleVersion (numeric)"
         required: false
+        default: "2"
 
 jobs:
   build-and-upload-testflight:
@@ -36,9 +38,11 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
           IOS_SIGNING_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_P12_BASE64 }}
           IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: |
           set -euo pipefail
           missing=0
@@ -48,9 +52,11 @@ jobs:
             APP_STORE_CONNECT_API_KEY_P8 \
             IOS_BUNDLE_ID \
             IOS_DEVELOPMENT_TEAM \
+            IOS_PROVISIONING_PROFILE_NAME \
             IOS_SIGNING_CERTIFICATE_P12_BASE64 \
             IOS_SIGNING_CERTIFICATE_PASSWORD \
-            IOS_PROVISIONING_PROFILE_BASE64; do
+            IOS_PROVISIONING_PROFILE_BASE64 \
+            GOOGLE_MAPS_API_KEY; do
             value="${!name:-}"
             if [ -z "$value" ]; then
               echo "::error::Missing required secret: $name"
@@ -62,14 +68,23 @@ jobs:
             exit 1
           fi
 
+      - name: Configure release Maps key
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf 'GOOGLE_MAPS_API_KEY = %s\n' "$GOOGLE_MAPS_API_KEY" > ios/Flutter/Local.xcconfig
+
       - name: Configure Runner bundle identifier and signing mode
         env:
           IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
         run: |
           set -euo pipefail
           ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub(/PRODUCT_BUNDLE_IDENTIFIER = com\.example\.travelSuperApp;/, "PRODUCT_BUNDLE_IDENTIFIER = #{bundle};"); gsub(/CODE_SIGN_STYLE = Automatic;\n/, "CODE_SIGN_STYLE = Manual;\n\t\t\t\tDEVELOPMENT_TEAM = #{team};\n")' ios/Runner.xcodeproj/project.pbxproj
-          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); gsub("BUNDLE_ID_PLACEHOLDER", bundle); gsub("TEAM_ID_PLACEHOLDER", team)' ios/ExportOptionsAppStore.plist
+          ruby -pi -e 'bundle = ENV.fetch("IOS_BUNDLE_ID"); team = ENV.fetch("IOS_DEVELOPMENT_TEAM"); profile = ENV.fetch("IOS_PROVISIONING_PROFILE_NAME"); gsub("BUNDLE_ID_PLACEHOLDER", bundle); gsub("TEAM_ID_PLACEHOLDER", team); gsub("PROVISIONING_PROFILE_NAME_PLACEHOLDER", profile)' ios/ExportOptionsAppStore.plist
 
       - name: Import iOS signing certificate
         uses: apple-actions/import-codesign-certs@v3
@@ -88,7 +103,7 @@ jobs:
             echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -D > "$PROFILE_PATH"
 
       - name: Create placeholder .env for Flutter asset bundle
-        run: touch .env
+        run: touch .env .env.local
 
       - name: Flutter pub get
         run: flutter pub get
