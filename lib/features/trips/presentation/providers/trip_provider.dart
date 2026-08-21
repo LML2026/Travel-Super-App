@@ -50,6 +50,7 @@ class CreateTripNotifier extends AsyncNotifier<void> {
   late final CreateTrip _createTrip;
   late final UpdateTrip _updateTrip;
   late final DeleteTrip _deleteTrip;
+  bool _createInProgress = false;
 
   @override
   Future<void> build() async {
@@ -59,11 +60,22 @@ class CreateTripNotifier extends AsyncNotifier<void> {
   }
 
   Future<void> createTrip(Trip trip) async {
+    if (_createInProgress) {
+      return;
+    }
+
+    _createInProgress = true;
     state = const AsyncLoading();
 
-    state = await AsyncValue.guard(() async {
+    try {
       await _createTrip.call(trip);
-    });
+      state = const AsyncData(null);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      Error.throwWithStackTrace(error, stackTrace);
+    } finally {
+      _createInProgress = false;
+    }
   }
 
   Future<void> updateTrip(Trip trip) async {

@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 
 class CreateTripPage extends ConsumerStatefulWidget {
-  const CreateTripPage({super.key});
+  const CreateTripPage({
+    super.key,
+    this.initialDepartureDate,
+    this.initialReturnDate,
+  });
+
+  final DateTime? initialDepartureDate;
+  final DateTime? initialReturnDate;
 
   @override
   ConsumerState<CreateTripPage> createState() => _CreateTripPageState();
@@ -24,6 +32,14 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
 
   String _currency = 'GBP';
   int _travellers = 1;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _departureDate = widget.initialDepartureDate;
+    _returnDate = widget.initialReturnDate;
+  }
 
   @override
   void dispose() {
@@ -60,6 +76,10 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
   }
 
   Future<void> _saveTrip() async {
+    if (_isSubmitting) {
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -72,6 +92,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
       );
       return;
     }
+
+    setState(() => _isSubmitting = true);
 
     final notifier = ref.read(createTripProvider.notifier);
 
@@ -103,14 +125,21 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
       );
 
       Navigator.pop(context);
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not save your trip. Please try again.',
+          )),
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -234,8 +263,14 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _saveTrip,
-              child: const Text('Create Trip'),
+              onPressed: _isSubmitting ? null : _saveTrip,
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Create Trip'),
             ),
           ],
         ),

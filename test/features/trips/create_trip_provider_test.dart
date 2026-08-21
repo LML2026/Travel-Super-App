@@ -67,6 +67,42 @@ class _FailingRepo extends TripRepository {
   }
 }
 
+class _CountingRepo extends TripRepository {
+  _CountingRepo({this.failFirst = false, this.delay = Duration.zero});
+
+  final bool failFirst;
+  final Duration delay;
+  int createCalls = 0;
+  bool _hasFailed = false;
+
+  @override
+  Future<void> createTrip(domain.Trip trip) async {
+    createCalls++;
+    if (delay > Duration.zero) {
+      await Future<void>.delayed(delay);
+    }
+    if (failFirst && !_hasFailed) {
+      _hasFailed = true;
+      throw Exception('firestore unavailable');
+    }
+  }
+
+  @override
+  Future<void> updateTrip(domain.Trip trip) async {}
+
+  @override
+  Future<void> deleteTrip(String tripId) async {}
+
+  @override
+  Stream<List<domain.Trip>> watchTrips() => const Stream.empty();
+
+  @override
+  Future<domain.Trip?> get(String tripId) async => null;
+
+  @override
+  Future<List<domain.Trip>> getAll() async => const [];
+}
+
 void main() {
   Trip makeTrip() {
     return Trip(
@@ -130,10 +166,47 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(createTripProvider.notifier);
-    await notifier.createTrip(trip);
+    await expectLater(
+      notifier.createTrip(trip),
+      throwsA(isA<Exception>()),
+    );
 
     final state = container.read(createTripProvider);
     expect(state.hasError, isTrue);
     expect(state.error.toString(), contains('firestore unavailable'));
+  });
+
+  test('CreateTripProvider can retry after a failed create', () async {
+    final repo = _CountingRepo(failFirst: true);
+    final container = ProviderContainer(
+      overrides: [tripRepositoryProvider.overrideWithValue(repo)],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(createTripProvider.notifier);
+    final trip = makeTrip();
+
+    await expectLater(notifier.createTrip(trip), throwsA(isA<Exception>()));
+    await notifier.createTrip(trip);
+
+    expect(repo.createCalls, 2);
+    expect(container.read(createTripProvider).hasValue, isTrue);
+  });
+
+  test('CreateTripProvider ignores duplicate creates while loading', () async {
+    final repo = _CountingRepo(delay: const Duration(milliseconds: 20));
+    final container = ProviderContainer(
+      overrides: [tripRepositoryProvider.overrideWithValue(repo)],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(createTripProvider.notifier);
+    final trip = makeTrip();
+    final first = notifier.createTrip(trip);
+    final second = notifier.createTrip(trip);
+
+    await Future.wait([first, second]);
+
+    expect(repo.createCalls, 1);
   });
 }
