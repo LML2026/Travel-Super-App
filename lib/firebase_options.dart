@@ -53,11 +53,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDlT4eFeaMDd3GY9iLc24dRzXxTTTLnMR0',
-    appId: '1:819113789304:ios:f3c194e06713a7f444ea8d',
+    appId: '1:819113789304:ios:ddedf0e801efc42e44ea8d',
     messagingSenderId: '819113789304',
     projectId: 'travelsuperapp-f04a0',
     databaseURL: 'https://travelsuperapp-f04a0-default-rtdb.firebaseio.com',
     storageBucket: 'travelsuperapp-f04a0.firebasestorage.app',
-    iosBundleId: 'com.example.travelSuperApp',
+    iosBundleId: 'com.itarevo.travel',
   );
 }

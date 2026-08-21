@@ -27,7 +27,7 @@
       "ios": {
         "default": {
           "projectId": "travelsuperapp-f04a0",
-          "appId": "1:819113789304:ios:f3c194e06713a7f444ea8d",
+          "appId": "1:819113789304:ios:ddedf0e801efc42e44ea8d",
           "uploadDebugSymbols": false
         }
       }
@@ -37,7 +37,7 @@
         "projectId": "travelsuperapp-f04a0",
         "configurations": {
           "android": "1:819113789304:android:25b1a3761405aa5344ea8d",
-          "ios": "1:819113789304:ios:f3c194e06713a7f444ea8d",
+          "ios": "1:819113789304:ios:ddedf0e801efc42e44ea8d",
           "web": "1:819113789304:web:879ea9835015f97344ea8d"
         }
       }
