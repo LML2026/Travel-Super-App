@@ -106,7 +106,7 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Booking details')),
+      appBar: AppBar(title: const Text('Planned ride details')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -155,7 +155,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               final user = ref.read(immediateCurrentUserProvider);
               if (user == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please log in to book.')),
+                  const SnackBar(
+                      content: Text('Please log in to save a planned ride.')),
                 );
                 return;
               }
@@ -175,7 +176,7 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               }
             },
             icon: const Icon(Icons.open_in_new),
-            label: const Text('Book Transport'),
+            label: const Text('Save planned transport'),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(

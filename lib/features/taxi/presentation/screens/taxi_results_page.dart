@@ -57,9 +57,11 @@ class TaxiResultsPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(option.description),
+                      Text(
+                          '${option.description}. Estimated option; no provider order has been placed.'),
                       const SizedBox(height: 8),
-                      Text('Estimated pickup: ${option.estimatedPickupMinutes} min'),
+                      Text(
+                          'Estimated pickup: ${option.estimatedPickupMinutes} min'),
                       const SizedBox(height: 16),
                       Row(
                         children: [
@@ -74,7 +76,7 @@ class TaxiResultsPage extends ConsumerWidget {
                                 );
                               },
                               icon: const Icon(Icons.check_circle_outline),
-                              label: const Text('Book this ride'),
+                              label: const Text('Review planned ride'),
                             ),
                           ),
                         ],

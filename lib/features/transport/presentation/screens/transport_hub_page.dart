@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../maps/models/places_prefill.dart';
 
 class TransportHubPage extends StatelessWidget {
   const TransportHubPage({super.key});
@@ -23,59 +24,58 @@ class TransportHubPage extends StatelessWidget {
           _TransportTile(
             icon: Icons.directions_car,
             title: 'Ride Sharing',
-            subtitle: 'Compare app-based ride options',
-            onTap: () => _showComingSoon(context, 'Ride Sharing'),
+            subtitle: 'Compare available ride options',
+            onTap: () => context.pushTaxi(),
           ),
           _TransportTile(
             icon: Icons.airport_shuttle,
             title: 'Airport Transfer',
-            subtitle: 'Pre-book fixed airport transfer',
-            onTap: () => _showComingSoon(context, 'Airport Transfer'),
+            subtitle: 'Plan an airport ride with the existing taxi flow',
+            onTap: () => context.pushTaxi(),
           ),
           _TransportTile(
             icon: Icons.train,
             title: 'Train',
-            subtitle: 'Plan rail journeys and schedules',
-            onTap: () => _showComingSoon(context, 'Train'),
+            subtitle: 'Not available in this release',
+            onTap: null,
           ),
           _TransportTile(
             icon: Icons.directions_bus,
             title: 'Bus',
-            subtitle: 'Find local and intercity routes',
-            onTap: () => _showComingSoon(context, 'Bus'),
+            subtitle: 'Not available in this release',
+            onTap: null,
           ),
           _TransportTile(
             icon: Icons.directions_boat,
             title: 'Ferry',
-            subtitle: 'Browse crossings and booking links',
-            onTap: () => _showComingSoon(context, 'Ferry'),
+            subtitle: 'Not available in this release',
+            onTap: null,
           ),
           _TransportTile(
             icon: Icons.pedal_bike,
             title: 'Bike',
-            subtitle: 'Find nearby bike hire options',
-            onTap: () => _showComingSoon(context, 'Bike'),
+            subtitle: 'Not available in this release',
+            onTap: null,
           ),
           _TransportTile(
             icon: Icons.electric_scooter,
             title: 'Scooter',
-            subtitle: 'Find shared scooter zones',
-            onTap: () => _showComingSoon(context, 'Scooter'),
+            subtitle: 'Not available in this release',
+            onTap: null,
           ),
           _TransportTile(
             icon: Icons.directions_walk,
             title: 'Walking',
-            subtitle: 'Open walking route guidance',
-            onTap: () => _showComingSoon(context, 'Walking'),
+            subtitle: 'Open walking routes in Maps',
+            onTap: () => context.pushMaps(
+              prefill: const PlacesPrefill(
+                query: 'Walking route',
+                title: 'Walking route',
+              ),
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  static void _showComingSoon(BuildContext context, String mode) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$mode integration is coming soon.')),
     );
   }
 }
@@ -91,17 +91,19 @@ class _TransportTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
-        leading: Icon(icon),
+        leading: Icon(icon, color: onTap == null ? Colors.grey : null),
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
+        trailing: onTap == null
+            ? const Icon(Icons.remove_circle_outline)
+            : const Icon(Icons.chevron_right),
         onTap: onTap,
       ),
     );
