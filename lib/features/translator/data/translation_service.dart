@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../domain/translation_models.dart';
 
 abstract interface class TranslationService {
@@ -81,6 +83,142 @@ class DemoTranslationService implements TranslationService {
   bool _containsAny(String value, List<String> needles) {
     return needles.any(value.contains);
   }
+}
+
+typedef TranslationBackendSender = Future<Map<String, dynamic>> Function(
+  TranslationRequest request,
+);
+
+class BackendTranslationService implements TranslationService {
+  BackendTranslationService({
+    required String endpoint,
+    Dio? client,
+    TranslationBackendSender? sender,
+  })  : _endpoint = endpoint,
+        _dio = client ??
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 8),
+                receiveTimeout: const Duration(seconds: 15),
+                sendTimeout: const Duration(seconds: 15),
+                contentType: 'application/json',
+              ),
+            ),
+        _sender = sender;
+
+  final String _endpoint;
+  final Dio _dio;
+  final TranslationBackendSender? _sender;
+
+  @override
+  Future<TranslationResponse> translate(TranslationRequest request) async {
+    final text = request.text.trim();
+    if (text.isEmpty) {
+      throw ArgumentError('Enter text to translate.');
+    }
+
+    final payload = await (_sender?.call(request) ?? _send(request));
+    final translatedText = _readString(payload, const [
+      'translatedText',
+      'translated_text',
+      'translation',
+    ]);
+    if (translatedText == null || translatedText.trim().isEmpty) {
+      throw const TranslationProviderException();
+    }
+
+    final detectedLanguage = _readString(payload, const [
+      'detectedLanguageCode',
+      'detected_language_code',
+      'detectedLanguage',
+    ]);
+    final sourceLanguage = _readString(payload, const [
+          'sourceLanguageCode',
+          'source_language_code',
+        ]) ??
+        (detectedLanguage ?? request.sourceLanguageCode);
+    final targetLanguage = _readString(payload, const [
+          'targetLanguageCode',
+          'target_language_code',
+        ]) ??
+        request.targetLanguageCode;
+
+    return TranslationResponse(
+      originalText: text,
+      translatedText: translatedText.trim(),
+      sourceLanguageCode: sourceLanguage,
+      targetLanguageCode: targetLanguage,
+      detectedLanguageCode: detectedLanguage,
+      isDemo: false,
+      source: TranslationSource.backend,
+    );
+  }
+
+  Future<Map<String, dynamic>> _send(TranslationRequest request) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        _endpoint,
+        data: {
+          'text': request.text.trim(),
+          'sourceLanguageCode': request.sourceLanguageCode,
+          'targetLanguageCode': request.targetLanguageCode,
+          'autoDetect': request.autoDetect,
+        },
+      );
+      if (response.statusCode != 200 || response.data == null) {
+        throw const TranslationProviderException();
+      }
+      return _unwrapPayload(response.data!);
+    } on TranslationProviderException {
+      rethrow;
+    } catch (_) {
+      throw const TranslationProviderException();
+    }
+  }
+
+  Map<String, dynamic> _unwrapPayload(Map<String, dynamic> data) {
+    final nested = data['data'];
+    if (nested is Map) {
+      return Map<String, dynamic>.from(nested);
+    }
+    final result = data['result'];
+    if (result is Map) {
+      return Map<String, dynamic>.from(result);
+    }
+    return data;
+  }
+
+  String? _readString(Map<String, dynamic> data, List<String> keys) {
+    for (final key in keys) {
+      final value = data[key];
+      if (value is String && value.trim().isNotEmpty) {
+        return value.trim();
+      }
+    }
+    return null;
+  }
+}
+
+class FallbackTranslationService implements TranslationService {
+  const FallbackTranslationService({this.liveService});
+
+  final TranslationService? liveService;
+
+  @override
+  Future<TranslationResponse> translate(TranslationRequest request) async {
+    try {
+      if (liveService != null) {
+        return await liveService!.translate(request);
+      }
+    } catch (_) {
+      // Demo fallback keeps the translator usable when the backend is down.
+    }
+    return const DemoTranslationService().translate(request);
+  }
+}
+
+class TranslationProviderException implements Exception {
+  const TranslationProviderException();
 }
 
 const phrasebookPhrases = <PhrasebookPhrase>[

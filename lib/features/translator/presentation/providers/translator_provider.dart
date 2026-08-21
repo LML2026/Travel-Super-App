@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,7 +11,11 @@ import '../../data/translation_service.dart';
 import '../../domain/translation_models.dart';
 
 final translationServiceProvider = Provider<TranslationService>((ref) {
-  return const DemoTranslationService();
+  final endpoint = _translationEndpointFromEnvironment();
+  return FallbackTranslationService(
+    liveService:
+        endpoint == null ? null : BackendTranslationService(endpoint: endpoint),
+  );
 });
 
 final translationHistoryRepositoryProvider =
@@ -30,6 +35,24 @@ final translatorControllerProvider =
     AsyncNotifierProvider<TranslatorController, TranslatorState>(
   TranslatorController.new,
 );
+
+String? _translationEndpointFromEnvironment() {
+  final explicit = dotenv.maybeGet('TRANSLATION_API_URL')?.trim();
+  if (explicit != null && _isHttpUrl(explicit)) {
+    return explicit;
+  }
+
+  final baseUrl = dotenv.maybeGet('API_BASE_URL')?.trim();
+  if (baseUrl == null || !_isHttpUrl(baseUrl)) {
+    return null;
+  }
+  return '${baseUrl.replaceFirst(RegExp(r'/$'), '')}/api/translate';
+}
+
+bool _isHttpUrl(String value) {
+  final uri = Uri.tryParse(value);
+  return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+}
 
 class TranslatorState {
   const TranslatorState({

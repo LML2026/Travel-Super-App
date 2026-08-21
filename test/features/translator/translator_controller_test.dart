@@ -7,6 +7,59 @@ import 'package:travel_super_app/features/translator/domain/translation_models.d
 import 'package:travel_super_app/features/translator/presentation/providers/translator_provider.dart';
 
 void main() {
+  group('BackendTranslationService', () {
+    test('maps a backend response and marks it as live', () async {
+      TranslationRequest? sentRequest;
+      final service = BackendTranslationService(
+        endpoint: 'https://translation.example.test/api/translate',
+        sender: (request) async {
+          sentRequest = request;
+          return {
+            'translatedText': 'Bonjour',
+            'detectedLanguageCode': 'en',
+          };
+        },
+      );
+
+      final response = await service.translate(
+        const TranslationRequest(
+          text: 'Hello',
+          sourceLanguageCode: 'auto',
+          targetLanguageCode: 'fr',
+          autoDetect: true,
+        ),
+      );
+
+      expect(sentRequest?.autoDetect, isTrue);
+      expect(response.translatedText, 'Bonjour');
+      expect(response.source, TranslationSource.backend);
+      expect(response.isDemo, isFalse);
+      expect(response.sourceLanguageCode, 'en');
+    });
+
+    test('falls back to deterministic demo translation when backend fails',
+        () async {
+      final service = FallbackTranslationService(
+        liveService: BackendTranslationService(
+          endpoint: 'https://translation.example.test/api/translate',
+          sender: (_) async => throw const TranslationProviderException(),
+        ),
+      );
+
+      final response = await service.translate(
+        const TranslationRequest(
+          text: 'I have a reservation.',
+          sourceLanguageCode: 'en',
+          targetLanguageCode: 'fr',
+        ),
+      );
+
+      expect(response.translatedText, 'J ai une reservation.');
+      expect(response.source, TranslationSource.demo);
+      expect(response.isDemo, isTrue);
+    });
+  });
+
   group('DemoTranslationService', () {
     test('translates known travel phrases deterministically', () async {
       final response = await const DemoTranslationService().translate(

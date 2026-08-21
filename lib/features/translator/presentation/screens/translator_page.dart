@@ -622,11 +622,14 @@ class _TranslationResultCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
-                if (response!.isDemo)
-                  const Chip(
-                    visualDensity: VisualDensity.compact,
-                    label: Text('Demo'),
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  label: Text(
+                    response!.source == TranslationSource.backend
+                        ? 'Live'
+                        : 'Demo fallback',
                   ),
+                ),
                 FilledButton.icon(
                   onPressed: isSpeaking ? onStop : onPlay,
                   icon: Icon(isSpeaking ? Icons.stop : Icons.volume_up),

@@ -34,6 +34,8 @@ class TranslationRequest {
   final bool autoDetect;
 }
 
+enum TranslationSource { demo, backend }
+
 class TranslationResponse {
   const TranslationResponse({
     required this.originalText,
@@ -42,6 +44,7 @@ class TranslationResponse {
     required this.targetLanguageCode,
     required this.isDemo,
     this.detectedLanguageCode,
+    this.source = TranslationSource.demo,
   });
 
   final String originalText;
@@ -50,6 +53,7 @@ class TranslationResponse {
   final String targetLanguageCode;
   final String? detectedLanguageCode;
   final bool isDemo;
+  final TranslationSource source;
 }
 
 class SavedTranslation {

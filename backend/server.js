@@ -19,12 +19,15 @@ const createFlightsRoutes = require('./src/routes/flightsRoutes');
 const createWeatherRoutes = require('./src/routes/weatherRoutes');
 const createHotelsRoutes = require('./src/routes/hotelsRoutes');
 const createAiRoutes = require('./src/routes/aiRoutes');
+const createTranslationRoutes = require('./src/routes/translationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const DUFFEL_API_KEY = process.env.DUFFEL_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
+const DEEPL_API_HOST = process.env.DEEPL_API_HOST || 'api-free.deepl.com';
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_PRODUCTION = NODE_ENV === 'production';
@@ -37,7 +40,7 @@ const CORS_ALLOWED_ORIGINS = (process.env.CORS_ALLOWED_ORIGINS || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
-const AUTH_PROTECTED_PATHS = (process.env.AUTH_PROTECTED_PATHS || '/api/flights,/api/hotels,/api/ai')
+const AUTH_PROTECTED_PATHS = (process.env.AUTH_PROTECTED_PATHS || '/api/flights,/api/hotels,/api/ai,/api/translate')
   .split(',')
   .map((pathValue) => pathValue.trim())
   .filter(Boolean);
@@ -247,6 +250,7 @@ app.use(createFlightsRoutes({ DUFFEL_API_KEY, flightCache, CACHE_TTL }));
 app.use(createWeatherRoutes({ httpsJson, WEATHER_RETRIES }));
 app.use(createHotelsRoutes({ httpsJson }));
 app.use(createAiRoutes({ OPENAI_API_KEY, OPENAI_MODEL, httpsJsonRequest }));
+app.use(createTranslationRoutes({ DEEPL_API_KEY, DEEPL_API_HOST, httpsJsonRequest }));
 
 app.use(createPlacesRoutes({ httpsJson }));
 app.use(createCurrencyRoutes({ httpsJson }));
@@ -285,4 +289,5 @@ app.listen(PORT, () => {
   console.log(`Nearby places endpoint: GET http://localhost:${PORT}/api/places/nearby?city=Paris`);
   console.log(`Currency endpoint: GET http://localhost:${PORT}/api/currency/rate?base=GBP&target=EUR`);
   console.log(`AI planner endpoint: POST http://localhost:${PORT}/api/ai/travel-plan`);
+  console.log(`Translation endpoint: POST http://localhost:${PORT}/api/translate`);
 });
