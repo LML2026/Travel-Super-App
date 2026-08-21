@@ -137,7 +137,8 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
             error: (error, _) => _ErrorResults(
               message: UserFacingError.message(
                 error,
-                fallback: 'Discovery is unavailable right now. Try again shortly.',
+                fallback:
+                    'Discovery is unavailable right now. Try again shortly.',
               ),
             ),
             data: (state) {
@@ -188,11 +189,19 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
     final controller = ref.read(travelDiscoveryControllerProvider.notifier);
     try {
       if (result.isBookable) {
-        final booking = await controller.confirmBooking(result);
+        final link = await controller.linkBookableResult(result);
+        if (!link.isSuccess) {
+          throw StateError(
+              link.message ?? 'We could not add this to your trip.');
+        }
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${booking.type.name} booking added to trip.'),
+            content: Text(
+              link.wasAlreadyLinked
+                  ? 'This item is already linked to your trip.'
+                  : 'Travel plan added to your trip.',
+            ),
           ),
         );
       } else {
@@ -265,7 +274,8 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
               icon: Icon(result.isBookable
                   ? Icons.confirmation_num_outlined
                   : Icons.add_location_alt_outlined),
-              label: Text(result.isBookable ? 'Book to Trip' : 'Add to Trip'),
+              label:
+                  Text(result.isBookable ? 'Add plan to trip' : 'Add to Trip'),
             ),
           ],
         ),
@@ -706,8 +716,8 @@ class _DiscoveryResultCard extends StatelessWidget {
                   icon: Icon(result.isBookable
                       ? Icons.confirmation_num_outlined
                       : Icons.add_location_alt_outlined),
-                  label:
-                      Text(result.isBookable ? 'Book to Trip' : 'Add to Trip'),
+                  label: Text(
+                      result.isBookable ? 'Add plan to trip' : 'Add to Trip'),
                 ),
               ],
             ),

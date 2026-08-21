@@ -63,13 +63,21 @@ class FlightDetailsPage extends ConsumerWidget {
       ),
     );
     if (trip == null) return;
-    await ref.read(tripBookingLinkActionsProvider).linkFlight(
+    final link = await ref.read(tripBookingLinkActionsProvider).linkFlight(
           trip: trip,
           flight: flight,
         );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Flight added to ${trip.title}.')),
+        SnackBar(
+          content: Text(
+            link.isSuccess
+                ? link.wasAlreadyLinked
+                    ? 'This flight is already linked to ${trip.title}.'
+                    : 'Flight added to ${trip.title}.'
+                : 'We could not link this flight. Please try again.',
+          ),
+        ),
       );
     }
   }

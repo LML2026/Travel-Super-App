@@ -47,13 +47,21 @@ class HotelDetailsPage extends ConsumerWidget {
       ),
     );
     if (trip == null) return;
-    await ref.read(tripBookingLinkActionsProvider).linkHotel(
+    final link = await ref.read(tripBookingLinkActionsProvider).linkHotel(
           trip: trip,
           hotel: hotel,
         );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hotel added to ${trip.title}.')),
+        SnackBar(
+          content: Text(
+            link.isSuccess
+                ? link.wasAlreadyLinked
+                    ? 'This hotel is already linked to ${trip.title}.'
+                    : 'Hotel added to ${trip.title}.'
+                : 'We could not link this hotel. Please try again.',
+          ),
+        ),
       );
     }
   }

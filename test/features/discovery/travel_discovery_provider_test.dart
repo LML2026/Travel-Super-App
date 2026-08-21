@@ -1,16 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:travel_super_app/core/models/booking.dart';
-import 'package:travel_super_app/features/authentication/domain/entities/auth_user.dart';
-import 'package:travel_super_app/features/authentication/presentation/providers/auth_providers.dart';
 import 'package:travel_super_app/features/discovery/data/travel_discovery_service.dart';
 import 'package:travel_super_app/features/discovery/domain/travel_discovery_models.dart';
 import 'package:travel_super_app/features/discovery/presentation/providers/travel_discovery_provider.dart';
 import 'package:travel_super_app/features/saved_items/data/saved_items_repository.dart';
 import 'package:travel_super_app/features/saved_items/presentation/providers/saved_items_provider.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip_activity.dart';
+import 'package:travel_super_app/features/trips/domain/repositories/trip_repository.dart';
 import 'package:travel_super_app/features/trips/domain/repositories/trip_activity_repository.dart';
 import 'package:travel_super_app/features/trips/presentation/providers/trip_activity_provider.dart';
+import 'package:travel_super_app/features/trips/presentation/providers/trip_booking_link_provider.dart';
+import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
+import 'package:travel_super_app/features/trips/services/trip_booking_link_service.dart';
+import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 
 void main() {
   group('TravelDiscoveryController', () {
@@ -49,19 +51,22 @@ void main() {
           lessThanOrEqualTo(state.results.last.price));
     });
 
-    test('confirmed flight booking is saved against selected trip', () async {
-      final savedBookings = <Booking>[];
+    test('demo bookable result links as a trip plan, not a confirmed booking',
+        () async {
+      final savedFlights = <String>[];
+      Trip? updatedTrip;
+      final trip = _trip();
       final container = ProviderContainer(
         overrides: [
-          immediateCurrentUserProvider.overrideWithValue(
-            const AuthUser(
-              uid: 'user-1',
-              email: 'traveller@example.com',
-              emailVerified: true,
+          selectedTripProvider('trip-1').overrideWith((ref) async => trip),
+          tripBookingLinkServiceProvider.overrideWithValue(
+            TripBookingLinkService(
+              tripRepository: _TripRepository(
+                onUpdate: (value) => updatedTrip = value,
+              ),
+              flightSavedLookup: (_) async => false,
+              flightSaver: (flight) async => savedFlights.add(flight.id),
             ),
-          ),
-          travelDiscoveryBookingSaverProvider.overrideWithValue(
-            (booking) async => savedBookings.add(booking),
           ),
           savedItemsRepositoryProvider.overrideWithValue(
             MemorySavedItemsRepository(),
@@ -75,16 +80,13 @@ void main() {
           container.read(travelDiscoveryControllerProvider.notifier);
       controller.selectTrip('trip-1');
 
-      final booking = await controller.confirmBooking(
+      final link = await controller.linkBookableResult(
         _result(DiscoveryCategory.flights),
       );
 
-      expect(savedBookings, hasLength(1));
-      expect(booking.tripId, 'trip-1');
-      expect(booking.userId, 'user-1');
-      expect(booking.type, BookingType.flight);
-      expect(booking.status, BookingStatus.confirmed);
-      expect(booking.metadata['provider'], 'ITAREVO Demo Flights');
+      expect(link.status, TripBookingLinkStatus.linked);
+      expect(savedFlights, ['result-flights']);
+      expect(updatedTrip?.selectedFlightId, 'result-flights');
     });
 
     test('restaurant result is added through trip activity architecture',
@@ -115,6 +117,17 @@ void main() {
       expect(activity.cost, 64);
     });
   });
+}
+
+Trip _trip() {
+  return Trip(
+    id: 'trip-1',
+    title: 'Paris',
+    destination: 'Paris',
+    startDate: DateTime(2026, 9, 1),
+    endDate: DateTime(2026, 9, 4),
+    budget: 1200,
+  );
 }
 
 TravelDiscoveryQuery _query() {
@@ -173,4 +186,28 @@ class _MemoryTripActivityRepository implements TripActivityRepository {
   Stream<List<TripActivity>> watchActivities(String tripId) {
     return Stream.value(addedActivities);
   }
+}
+
+class _TripRepository implements TripRepository {
+  _TripRepository({this.onUpdate});
+
+  final void Function(Trip trip)? onUpdate;
+
+  @override
+  Future<void> createTrip(Trip trip) async {}
+
+  @override
+  Future<void> deleteTrip(String id) async {}
+
+  @override
+  Future<Trip?> get(String id) async => _trip();
+
+  @override
+  Future<List<Trip>> getAll() async => [_trip()];
+
+  @override
+  Future<void> updateTrip(Trip trip) async => onUpdate?.call(trip);
+
+  @override
+  Stream<List<Trip>> watchTrips() => Stream.value([_trip()]);
 }

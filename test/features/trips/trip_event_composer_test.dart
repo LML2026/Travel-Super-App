@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:travel_super_app/core/models/booking.dart';
 import 'package:travel_super_app/features/flights/models/saved_flight.dart';
 import 'package:travel_super_app/features/hotels/models/saved_hotel.dart';
+import 'package:travel_super_app/features/taxi/domain/entities/taxi_saved_ride.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip.dart';
 import 'package:travel_super_app/features/trips/domain/entities/trip_activity.dart';
 import 'package:travel_super_app/features/trips/domain/services/trip_event_composer.dart';
@@ -124,5 +125,101 @@ void main() {
       'Confirmed flight',
       'Confirmed hotel',
     ]);
+  });
+
+  test('TripEventComposer keeps distinct linked and confirmed flights', () {
+    final trip = Trip(
+      id: 'trip-1',
+      title: 'Paris',
+      destination: 'Paris',
+      startDate: DateTime(2026, 9, 1),
+      endDate: DateTime(2026, 9, 3),
+      budget: 1200,
+    );
+
+    final events = const TripEventComposer().compose(
+      trip: trip,
+      bookings: [
+        Booking.flight(
+          id: 'booking-flight',
+          tripId: 'trip-1',
+          userId: 'user-1',
+          amount: 220,
+          currency: 'GBP',
+          metadata: {'flightId': 'different-flight'},
+        ).copyWith(status: BookingStatus.confirmed),
+      ],
+      linkedFlight: SavedFlight(
+        id: 'saved-flight',
+        flightId: 'linked-flight',
+        airline: 'Demo Air',
+        airlineLogo: '',
+        flightNumber: 'DA100',
+        origin: 'LHR',
+        destination: 'CDG',
+        departureAt: '2026-09-01T08:00:00',
+        arrivalAt: '2026-09-01T10:00:00',
+        duration: '2h',
+        stops: 0,
+        amount: 220,
+        currency: 'GBP',
+        cabinClass: 'economy',
+        savedAt: DateTime(2026, 8, 1),
+      ),
+    );
+
+    expect(events.where((event) => event.type == TripEventType.flight),
+        hasLength(3));
+  });
+
+  test('TripEventComposer removes a duplicate transport representation', () {
+    final trip = Trip(
+      id: 'trip-1',
+      title: 'Paris',
+      destination: 'Paris',
+      startDate: DateTime(2026, 9, 1),
+      endDate: DateTime(2026, 9, 3),
+      budget: 1200,
+    );
+    final ride = TaxiSavedRide(
+      id: 'ride-1',
+      tripId: 'trip-1',
+      provider: 'Demo Taxi',
+      pickupAddress: 'CDG',
+      destinationAddress: 'Paris centre',
+      pickupLatitude: 0,
+      pickupLongitude: 0,
+      destinationLatitude: 0,
+      destinationLongitude: 0,
+      scheduledAt: DateTime(2026, 9, 1, 11),
+      status: 'planned',
+      estimatedFare: 30,
+      currency: 'GBP',
+      passengers: 1,
+      luggage: 1,
+    );
+
+    final events = const TripEventComposer().compose(
+      trip: trip,
+      rides: [ride],
+      bookings: [
+        Booking.transport(
+          id: 'booking-transport',
+          tripId: 'trip-1',
+          userId: 'user-1',
+          amount: 30,
+          currency: 'GBP',
+          metadata: {
+            'pickup': 'CDG',
+            'destination': 'Paris centre',
+          },
+        ).copyWith(status: BookingStatus.confirmed),
+      ],
+    );
+
+    final transportEvents =
+        events.where((event) => event.type == TripEventType.transport);
+    expect(transportEvents, hasLength(1));
+    expect(transportEvents.single.booking, isNotNull);
   });
 }

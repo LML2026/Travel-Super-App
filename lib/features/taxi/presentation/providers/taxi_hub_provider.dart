@@ -11,6 +11,7 @@ import '../../../expenses/domain/repositories/expense_repository.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
+import '../../../trips/services/trip_booking_link_service.dart';
 import '../../data/providers/airport_transfer_provider.dart';
 import '../../data/providers/local_taxi_provider.dart';
 import '../../data/providers/uber_taxi_provider.dart';
@@ -77,7 +78,8 @@ final taxiTransportRepositoryFactoryProvider =
       );
 });
 
-final taxiTransportRepositoryProvider = Provider<TaxiTransportRepository>((ref) {
+final taxiTransportRepositoryProvider =
+    Provider<TaxiTransportRepository>((ref) {
   final user = ref.watch(immediateCurrentUserProvider);
   if (user == null) {
     return const _UnauthenticatedTaxiTransportRepository();
@@ -151,12 +153,18 @@ final transportBookingProvider =
 );
 
 class TaxiTransportActions {
-  TaxiTransportActions(this._repository, this._expenseRepository);
+  TaxiTransportActions(
+    TaxiTransportRepository repository,
+    ExpenseRepository expenseRepository, {
+    TripBookingLinkService? bookingLinkService,
+  })  : _expenseRepository = expenseRepository,
+        _bookingLinkService = bookingLinkService ??
+            TripBookingLinkService(transportStore: repository);
 
-  final TaxiTransportRepository _repository;
   final ExpenseRepository _expenseRepository;
+  final TripBookingLinkService _bookingLinkService;
 
-  Future<void> saveRideToTrip({
+  Future<TripBookingLinkResult> saveRideToTrip({
     required String tripId,
     required String provider,
     required TaxiRideRequest request,
@@ -181,10 +189,13 @@ class TaxiTransportActions {
       createdAt: DateTime.now(),
     );
 
-    await _repository.saveRide(
-      tripId: tripId,
-      ride: ride,
-    );
+    final link = await _bookingLinkService.linkTransport(ride: ride);
+    if (!link.isSuccess) {
+      throw StateError(link.message ?? 'We could not save this ride.');
+    }
+    if (link.wasAlreadyLinked) {
+      return link;
+    }
 
     final expense = Expense(
       id: const Uuid().v4(),
@@ -198,6 +209,7 @@ class TaxiTransportActions {
     );
 
     await _expenseRepository.createExpense(expense);
+    return link;
   }
 
   Future<Booking> bookTransport({
@@ -223,7 +235,7 @@ class TaxiTransportActions {
       },
     );
 
-    return booking.copyWith(status: BookingStatus.confirmed);
+    return booking.copyWith(status: BookingStatus.pending);
   }
 }
 

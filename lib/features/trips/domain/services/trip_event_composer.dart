@@ -69,17 +69,24 @@ class TripEventComposer {
     final events = <TripEvent>[
       ...confirmedBookings.map(_eventFromBooking).whereType<TripEvent>(),
       ...activities.map((activity) => _eventFromActivity(trip, activity)),
-      ...rides.map(_eventFromRide),
+      ...rides
+          .where(
+              (ride) => !_hasMatchingTransportBooking(ride, confirmedBookings))
+          .map(_eventFromRide),
       ..._linkedFlightEvents(
         linkedFlight,
-        hasConfirmedFlight: confirmedBookings
-            .any((booking) => booking.type == BookingType.flight),
+        hasConfirmedFlight: _hasMatchingFlightBooking(
+          linkedFlight,
+          confirmedBookings,
+        ),
       ),
       ..._hotelEvents(
         trip: trip,
         linkedHotel: linkedHotel,
-        hasConfirmedHotel: confirmedBookings
-            .any((booking) => booking.type == BookingType.hotel),
+        hasConfirmedHotel: _hasMatchingHotelBooking(
+          linkedHotel,
+          confirmedBookings,
+        ),
       ),
       if (includeReadiness)
         ...reminders.map(_eventFromReminder).whereType<TripEvent>(),
@@ -265,6 +272,61 @@ class TripEventComposer {
       }
     }
     return deduped;
+  }
+
+  bool _hasMatchingFlightBooking(
+    SavedFlight? flight,
+    List<Booking> bookings,
+  ) {
+    if (flight == null) return false;
+    final flightBookings = bookings
+        .where((booking) => booking.type == BookingType.flight)
+        .toList();
+    return flightBookings.any((booking) {
+          final metadata = booking.metadata;
+          return metadata['flightId'] == flight.flightId ||
+              metadata['flightNumber'] == flight.flightNumber;
+        }) ||
+        (flightBookings.length == 1 &&
+            flightBookings.single.metadata['flightId'] == null &&
+            flightBookings.single.metadata['flightNumber'] == null);
+  }
+
+  bool _hasMatchingHotelBooking(
+    SavedHotel? hotel,
+    List<Booking> bookings,
+  ) {
+    if (hotel == null) return false;
+    final hotelBookings =
+        bookings.where((booking) => booking.type == BookingType.hotel).toList();
+    return hotelBookings.any((booking) {
+          final metadata = booking.metadata;
+          return metadata['hotelId'] == hotel.hotelId ||
+              metadata['hotelName'] == hotel.name ||
+              metadata['name'] == hotel.name;
+        }) ||
+        (hotelBookings.length == 1 &&
+            hotelBookings.single.metadata['hotelId'] == null &&
+            hotelBookings.single.metadata['hotelName'] == null &&
+            hotelBookings.single.metadata['name'] == null);
+  }
+
+  bool _hasMatchingTransportBooking(
+    TaxiSavedRide ride,
+    List<Booking> bookings,
+  ) {
+    final transportBookings = bookings
+        .where((booking) => booking.type == BookingType.transport)
+        .toList();
+    return transportBookings.any((booking) {
+          final metadata = booking.metadata;
+          return metadata['rideId'] == ride.id ||
+              (metadata['pickup'] == ride.pickupAddress &&
+                  metadata['destination'] == ride.destinationAddress);
+        }) ||
+        (transportBookings.length == 1 &&
+            transportBookings.single.metadata['rideId'] == null &&
+            transportBookings.single.metadata['pickup'] == null);
   }
 
   TripEventType _bookingEventType(Booking booking) {

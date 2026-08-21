@@ -1,23 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
-
-import '../../../../core/models/booking.dart';
-import '../../../../core/repositories/booking_repository.dart';
-import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../../saved_items/presentation/providers/saved_items_provider.dart';
 import '../../../trips/presentation/providers/trip_activity_provider.dart';
+import '../../../trips/presentation/providers/trip_booking_link_provider.dart';
+import '../../../trips/presentation/providers/trip_provider.dart';
+import '../../../trips/services/trip_booking_link_service.dart';
 import '../../data/travel_discovery_service.dart';
 import '../../domain/travel_discovery_models.dart';
 
 final travelDiscoveryServiceProvider = Provider<TravelDiscoveryService>((ref) {
   return const DemoTravelDiscoveryService();
-});
-
-final travelDiscoveryBookingSaverProvider =
-    Provider<Future<void> Function(Booking)>((ref) {
-  return ref.watch(bookingRepositoryProvider).saveBooking;
 });
 
 final travelDiscoveryControllerProvider =
@@ -83,20 +76,22 @@ class TravelDiscoveryController extends AsyncNotifier<TravelDiscoveryState> {
     state = AsyncData(current.copyWith(compareIds: compare));
   }
 
-  Future<Booking> confirmBooking(TravelDiscoveryResult result) async {
+  Future<TripBookingLinkResult> linkBookableResult(
+    TravelDiscoveryResult result,
+  ) async {
     final tripId = state.valueOrNull?.selectedTripId;
     if (tripId == null || tripId.isEmpty) {
-      throw StateError('Select a trip before booking.');
+      throw StateError('Select a trip before adding this plan.');
     }
-    final user = ref.read(immediateCurrentUserProvider);
-    if (user == null) {
-      throw StateError('Please sign in before booking.');
+    final trip = await ref.read(selectedTripProvider(tripId).future);
+    if (trip == null) {
+      throw StateError('The selected trip is no longer available.');
     }
 
-    final booking =
-        _bookingFromResult(result, tripId: tripId, userId: user.uid);
-    await ref.read(travelDiscoveryBookingSaverProvider).call(booking);
-    return booking;
+    return ref.read(tripBookingLinkActionsProvider).linkDiscoveryResult(
+          trip: trip,
+          result: result,
+        );
   }
 
   Future<void> addToTrip(TravelDiscoveryResult result) async {
@@ -118,52 +113,5 @@ class TravelDiscoveryController extends AsyncNotifier<TravelDiscoveryState> {
               ? 'Restaurant planned'
               : 'Activity planned',
         );
-  }
-
-  Booking _bookingFromResult(
-    TravelDiscoveryResult result, {
-    required String tripId,
-    required String userId,
-  }) {
-    final id = 'DISC-${const Uuid().v4()}';
-    final metadata = <String, dynamic>{
-      ...Map<String, dynamic>.from(result.metadata),
-      'title': result.title,
-      'provider': result.provider,
-      'location': result.location,
-      'startTime': result.startTime.toIso8601String(),
-      'endTime': result.endTime.toIso8601String(),
-      'duration': result.duration,
-    };
-
-    final booking = switch (result.category) {
-      DiscoveryCategory.flights => Booking.flight(
-          id: id,
-          tripId: tripId,
-          userId: userId,
-          amount: result.price,
-          currency: result.currency,
-          metadata: metadata,
-        ),
-      DiscoveryCategory.hotels => Booking.hotel(
-          id: id,
-          tripId: tripId,
-          userId: userId,
-          amount: result.price,
-          currency: result.currency,
-          metadata: metadata,
-        ),
-      DiscoveryCategory.transport => Booking.transport(
-          id: id,
-          tripId: tripId,
-          userId: userId,
-          amount: result.price,
-          currency: result.currency,
-          metadata: metadata,
-        ),
-      _ => throw StateError('This result cannot be booked.'),
-    };
-
-    return booking.copyWith(status: BookingStatus.confirmed);
   }
 }

@@ -16,6 +16,7 @@ class SavedHotel {
   final String description;
   final String image;
   final int nights;
+  final String source;
   final DateTime savedAt;
 
   const SavedHotel({
@@ -36,6 +37,7 @@ class SavedHotel {
     this.description = '',
     required this.image,
     required this.nights,
+    this.source = 'unknown',
     required this.savedAt,
   });
 
@@ -50,14 +52,17 @@ class SavedHotel {
       currency: json['currency'] as String? ?? 'GBP',
       rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
       pricePerNight: double.tryParse(
-            json['pricePerNight']?.toString() ?? json['price']?.toString() ?? '',
+            json['pricePerNight']?.toString() ??
+                json['price']?.toString() ??
+                '',
           ) ??
           0.0,
       totalPrice: double.tryParse(json['totalPrice']?.toString() ?? '') ?? 0.0,
       beds: json['beds'] as int? ?? 1,
       roomType: json['roomType'] as String? ?? 'Standard Room',
       amenities: (json['amenities'] is List)
-          ? List<String>.from((json['amenities'] as List).map((e) => e.toString()))
+          ? List<String>.from(
+              (json['amenities'] as List).map((e) => e.toString()))
           : const ['Free Wi-Fi', 'Breakfast Included'],
       freeCancellation: json['freeCancellation'] == null
           ? true
@@ -65,6 +70,7 @@ class SavedHotel {
       description: json['description'] as String? ?? '',
       image: json['image'] as String? ?? '🏨',
       nights: json['nights'] as int? ?? 1,
+      source: json['source'] as String? ?? 'unknown',
       savedAt: json['savedAt'] != null
           ? DateTime.parse(json['savedAt'] as String)
           : DateTime.now(),
@@ -72,24 +78,25 @@ class SavedHotel {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'hotelId': hotelId,
-    'name': name,
-    'city': city,
-    'country': country,
-    'address': address,
-    'currency': currency,
-    'rating': rating,
-    'price': pricePerNight,
-    'pricePerNight': pricePerNight,
-    'totalPrice': totalPrice,
-    'beds': beds,
-    'roomType': roomType,
-    'amenities': amenities,
-    'freeCancellation': freeCancellation,
-    'description': description,
-    'image': image,
-    'nights': nights,
-    'savedAt': savedAt.toIso8601String(),
-  };
+        'id': id,
+        'hotelId': hotelId,
+        'name': name,
+        'city': city,
+        'country': country,
+        'address': address,
+        'currency': currency,
+        'rating': rating,
+        'price': pricePerNight,
+        'pricePerNight': pricePerNight,
+        'totalPrice': totalPrice,
+        'beds': beds,
+        'roomType': roomType,
+        'amenities': amenities,
+        'freeCancellation': freeCancellation,
+        'description': description,
+        'image': image,
+        'nights': nights,
+        'source': source,
+        'savedAt': savedAt.toIso8601String(),
+      };
 }

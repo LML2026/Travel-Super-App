@@ -87,6 +87,7 @@ class FlightFirestoreService {
     required double amount,
     required String currency,
     required String cabinClass,
+    String source = 'unknown',
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('User not authenticated');
@@ -106,6 +107,7 @@ class FlightFirestoreService {
       amount: amount,
       currency: currency,
       cabinClass: cabinClass,
+      source: source,
       savedAt: DateTime.now(),
     );
 
