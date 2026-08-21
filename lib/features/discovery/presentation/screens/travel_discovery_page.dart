@@ -254,6 +254,7 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
             Text(result.details),
             const SizedBox(height: 12),
             Text('Provider: ${result.provider}'),
+            Text('Source: ${result.source.label}'),
             Text('Location: ${result.location}'),
             Text('Duration: ${result.duration}'),
             Text(
@@ -669,6 +670,7 @@ class _DiscoveryResultCard extends StatelessWidget {
                         ),
                       ),
                       Text(result.subtitle),
+                      Text(result.source.label),
                       Text(
                           '${result.location} · ${timeFormat.format(result.startTime)}'),
                     ],

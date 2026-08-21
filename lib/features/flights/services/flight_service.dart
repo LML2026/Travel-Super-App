@@ -14,6 +14,9 @@ class FlightService {
 
   final ApiClient _apiClient;
   final DuffelFlightService _duffelService;
+  bool _lastSearchUsedFallback = false;
+
+  bool get lastSearchUsedFallback => _lastSearchUsedFallback;
 
   Future<List<Flight>> searchFlights({
     required String from,
@@ -23,6 +26,7 @@ class FlightService {
     int passengers = 1,
     String cabinClass = 'economy',
   }) async {
+    _lastSearchUsedFallback = false;
     if (_duffelService.isConfigured) {
       try {
         final duffelFlights = await _duffelService.searchFlights(
@@ -87,6 +91,7 @@ class FlightService {
             'API Error ${response.statusCode}: ${jsonEncode(response.data)}');
       }
     } catch (e, st) {
+      _lastSearchUsedFallback = true;
       appLogger.e('FlightService: provider unavailable',
           error: e, stackTrace: st);
       return _demoFlights(

@@ -6,6 +6,18 @@ enum DiscoveryCategory {
   restaurants,
 }
 
+enum DiscoveryDataSource { live, test, backend, demo, fallback }
+
+extension DiscoveryDataSourceLabel on DiscoveryDataSource {
+  String get label => switch (this) {
+        DiscoveryDataSource.live => 'Live',
+        DiscoveryDataSource.test => 'Test',
+        DiscoveryDataSource.backend => 'Backend',
+        DiscoveryDataSource.demo => 'Demo',
+        DiscoveryDataSource.fallback => 'Offline fallback',
+      };
+}
+
 class TravelDiscoveryQuery {
   const TravelDiscoveryQuery({
     required this.destination,
@@ -46,6 +58,7 @@ class TravelDiscoveryResult {
     required this.rating,
     required this.details,
     this.metadata = const {},
+    this.source = DiscoveryDataSource.demo,
   });
 
   final String id;
@@ -62,6 +75,7 @@ class TravelDiscoveryResult {
   final double rating;
   final String details;
   final Map<String, Object?> metadata;
+  final DiscoveryDataSource source;
 
   bool get isBookable =>
       category == DiscoveryCategory.flights ||

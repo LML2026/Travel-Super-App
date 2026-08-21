@@ -15,14 +15,20 @@ class HotelApiService {
   final ApiClient _apiClient;
   final Future<List<Hotel>> Function(HotelSearchRequest request)?
       _backendSearch;
+  bool _lastSearchUsedFallback = false;
+
+  bool get lastSearchUsedFallback => _lastSearchUsedFallback;
 
   Future<List<Hotel>> searchHotels(HotelSearchRequest request) async {
+    _lastSearchUsedFallback = false;
     try {
       final hotels =
           await (_backendSearch?.call(request) ?? _searchBackend(request));
       if (hotels.isNotEmpty) return hotels;
+      _lastSearchUsedFallback = true;
     } catch (_) {
       // Use local results when the backend is unavailable.
+      _lastSearchUsedFallback = true;
     }
 
     return _demoHotels(request);

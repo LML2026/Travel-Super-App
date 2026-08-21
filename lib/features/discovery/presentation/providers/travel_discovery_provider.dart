@@ -6,11 +6,17 @@ import '../../../trips/presentation/providers/trip_activity_provider.dart';
 import '../../../trips/presentation/providers/trip_booking_link_provider.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../../trips/services/trip_booking_link_service.dart';
+import '../../../nearby/services/nearby_places_service.dart';
+import '../../../providers/provider_gateway.dart';
 import '../../data/travel_discovery_service.dart';
 import '../../domain/travel_discovery_models.dart';
 
 final travelDiscoveryServiceProvider = Provider<TravelDiscoveryService>((ref) {
-  return const DemoTravelDiscoveryService();
+  return ProviderTravelDiscoveryService(
+    nearbyService: GoogleNearbyPlacesService(
+      gateway: ref.watch(providerGatewayProvider),
+    ),
+  );
 });
 
 final travelDiscoveryControllerProvider =
