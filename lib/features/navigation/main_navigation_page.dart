@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_super_app/features/ai/screens/ai_assistant_page.dart';
-import 'package:travel_super_app/features/transport/presentation/screens/transport_hub_page.dart';
+import 'package:travel_super_app/features/discovery/presentation/screens/travel_discovery_page.dart';
 import 'package:travel_super_app/features/trips/presentation/screens/trip_list_page.dart';
 import 'package:travel_super_app/features/wallet/presentation/screens/wallet_page.dart';
 import '../home/home_page.dart';
@@ -19,7 +19,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     HomePage(),
     TripListPage(),
     WalletPage(),
-    TransportHubPage(),
+    TravelDiscoveryPage(),
     AiAssistantPage(),
   ];
 
@@ -51,9 +51,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Wallet',
           ),
           NavigationDestination(
-            icon: Icon(Icons.alt_route_outlined),
-            selectedIcon: Icon(Icons.alt_route),
-            label: 'Transport',
+            icon: Icon(Icons.travel_explore_outlined),
+            selectedIcon: Icon(Icons.travel_explore),
+            label: 'Discover',
           ),
           NavigationDestination(
             icon: Icon(Icons.smart_toy_outlined),

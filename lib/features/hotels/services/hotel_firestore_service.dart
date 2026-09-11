@@ -52,7 +52,8 @@ class HotelFirestoreService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
-          .map((doc) => RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}))
+          .map((doc) =>
+              RecentHotelSearch.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }
@@ -88,6 +89,7 @@ class HotelFirestoreService {
     String description = '',
     required String image,
     required int nights,
+    String source = 'unknown',
   }) async {
     final userId = _userId;
     if (userId == null) throw Exception('User not authenticated');
@@ -110,6 +112,7 @@ class HotelFirestoreService {
       description: description,
       image: image,
       nights: nights,
+      source: source,
       savedAt: DateTime.now(),
     );
 

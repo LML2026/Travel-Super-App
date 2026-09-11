@@ -3,6 +3,7 @@ import '../../hotels/models/saved_hotel.dart';
 import '../../trips/domain/entities/trip.dart';
 import '../../weather/models/weather_data.dart';
 import '../services/ai_assistant_service.dart';
+import '../domain/ai_travel_context.dart';
 
 class AiAssistantRepository {
   AiAssistantRepository(this._service);
@@ -16,6 +17,7 @@ class AiAssistantRepository {
     List<SavedHotel> hotels = const [],
     WeatherData? weather,
     List<String> nearbyAttractions = const [],
+    AiTravelContext? travelContext,
   }) {
     return _service.generateResponse(
       prompt,
@@ -24,6 +26,7 @@ class AiAssistantRepository {
       hotels: hotels,
       weather: weather,
       nearbyAttractions: nearbyAttractions,
+      travelContext: travelContext,
     );
   }
 }

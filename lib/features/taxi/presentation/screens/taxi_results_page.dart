@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/taxi_ride_request.dart';
 import '../providers/taxi_hub_provider.dart';
 
@@ -56,9 +57,11 @@ class TaxiResultsPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(option.description),
+                      Text(
+                          '${option.description}. Estimated option; no provider order has been placed.'),
                       const SizedBox(height: 8),
-                      Text('Estimated pickup: ${option.estimatedPickupMinutes} min'),
+                      Text(
+                          'Estimated pickup: ${option.estimatedPickupMinutes} min'),
                       const SizedBox(height: 16),
                       Row(
                         children: [
@@ -73,7 +76,7 @@ class TaxiResultsPage extends ConsumerWidget {
                                 );
                               },
                               icon: const Icon(Icons.check_circle_outline),
-                              label: const Text('Book this ride'),
+                              label: const Text('Review planned ride'),
                             ),
                           ),
                         ],
@@ -88,7 +91,10 @@ class TaxiResultsPage extends ConsumerWidget {
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Text('Failed to load ride options: $error'),
+            child: Text(UserFacingError.message(
+              error,
+              fallback: 'Ride options are unavailable right now.',
+            )),
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),

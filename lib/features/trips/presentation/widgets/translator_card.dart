@@ -3,14 +3,25 @@ import 'package:flutter/material.dart';
 import 'dashboard_section.dart';
 
 class TranslatorCard extends StatelessWidget {
-  const TranslatorCard({super.key});
+  const TranslatorCard({
+    super.key,
+    required this.onOpenTranslator,
+  });
+
+  final VoidCallback onOpenTranslator;
 
   @override
   Widget build(BuildContext context) {
-    return const DashboardSection(
+    return DashboardSection(
       icon: Icons.translate_outlined,
       title: 'Translator',
-      child: Text('Voice and text translation will appear here.'),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: const Text('Travel Translator'),
+        subtitle: const Text('Text, conversation mode and phrasebook.'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onOpenTranslator,
+      ),
     );
   }
 }

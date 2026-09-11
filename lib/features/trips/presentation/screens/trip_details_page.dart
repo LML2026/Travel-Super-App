@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../../../flights/providers/flight_provider.dart';
@@ -83,7 +84,10 @@ class TripDetailsPage extends ConsumerWidget {
           return Scaffold(
             appBar: AppBar(title: const Text('Trip Dashboard')),
             body: Center(
-              child: Text(snapshot.error.toString()),
+              child: Text(UserFacingError.message(
+                snapshot.error!,
+                fallback: 'We could not load this trip. Please try again.',
+              )),
             ),
           );
         }
@@ -246,7 +250,10 @@ class TripDetailsPage extends ConsumerWidget {
                 title: 'Transport Timeline',
                 child: ridesAsync.when(
                   loading: () => const Text('Loading transport rides...'),
-                  error: (error, _) => Text('Could not load rides: $error'),
+                  error: (error, _) => Text(UserFacingError.message(
+                    error,
+                    fallback: 'Transport rides are unavailable right now.',
+                  )),
                   data: (rides) {
                     if (rides.isEmpty) {
                       return const Text('No saved transport rides yet.');

@@ -79,6 +79,19 @@ async function seedTripsAndActivities() {
       title: 'Louvre',
       ownerUid: 'userB',
     });
+
+    await setDoc(doc(db, 'users/userB/sharedTrips/tripA'), {
+      tripId: 'tripA',
+      ownerUserId: 'userA',
+      role: 'editor',
+      status: 'active',
+    });
+    await setDoc(doc(db, 'users/userC/sharedTrips/tripA'), {
+      tripId: 'tripA',
+      ownerUserId: 'userA',
+      role: 'viewer',
+      status: 'active',
+    });
   });
 }
 
@@ -150,5 +163,58 @@ test('activities enforce the same ownership boundaries as trips', async () => {
       title: 'Tampered',
       ownerUid: 'userA',
     }),
+  );
+});
+
+test('active editor can access and update shared trip data', async () => {
+  await seedTripsAndActivities();
+  const db = testEnv.authenticatedContext('userB').firestore();
+
+  await assertSucceeds(getDoc(doc(db, 'users/userA/trips/tripA')));
+  await assertSucceeds(
+    setDoc(doc(db, 'users/userA/trips/tripA/activities/activityA'), {
+      id: 'activityA',
+      tripId: 'tripA',
+      title: 'Colosseum updated',
+    }),
+  );
+  await assertSucceeds(
+    setDoc(doc(db, 'users/userA/trips/tripA/expenses/expenseA'), {
+      id: 'expenseA',
+      tripId: 'tripA',
+      amount: 20,
+    }),
+  );
+  await assertFails(
+    setDoc(doc(db, 'users/userA/trips/tripA/collaborators/other'), {
+      userId: 'userC',
+      role: 'viewer',
+    }),
+  );
+});
+
+test('active viewer can read shared data but cannot write it', async () => {
+  await seedTripsAndActivities();
+  const db = testEnv.authenticatedContext('userC').firestore();
+
+  await assertSucceeds(
+    getDoc(doc(db, 'users/userA/trips/tripA/activities/activityA')),
+  );
+  await assertFails(
+    setDoc(doc(db, 'users/userA/trips/tripA/activities/activityA'), {
+      id: 'activityA',
+      tripId: 'tripA',
+      title: 'Viewer tampered',
+    }),
+  );
+});
+
+test('unrelated users cannot use a shared owner path', async () => {
+  await seedTripsAndActivities();
+  const db = testEnv.authenticatedContext('userD').firestore();
+
+  await assertFails(getDoc(doc(db, 'users/userA/trips/tripA')));
+  await assertFails(
+    getDoc(doc(db, 'users/userA/trips/tripA/documents/documentA')),
   );
 });

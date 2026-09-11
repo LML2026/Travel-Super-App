@@ -163,7 +163,10 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Exception: firestore unavailable'), findsOneWidget);
-    expect(find.textContaining('firestore unavailable'), findsOneWidget);
+    expect(
+      find.text('We could not load your trips. Please try again.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('firestore unavailable'), findsNothing);
   });
 }

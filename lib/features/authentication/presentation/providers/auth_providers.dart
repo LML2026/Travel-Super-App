@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/repositories/firebase_auth_repository.dart';
 import '../../data/repositories/firestore_user_profile_repository.dart';
+import '../../data/services/account_deletion_service.dart';
 import '../../domain/entities/auth_user.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/authentication_repository.dart';
@@ -32,6 +33,10 @@ final authenticationRepositoryProvider =
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
   return FirestoreUserProfileRepository();
+});
+
+final accountDeletionServiceProvider = Provider<AccountDeletionService>((ref) {
+  return FirebaseAccountDeletionService();
 });
 
 final watchAuthStateProvider = Provider<WatchAuthState>((ref) {
@@ -88,6 +93,11 @@ final currentUserProvider = Provider<AuthUser?>((ref) {
 });
 
 final immediateCurrentUserProvider = Provider<AuthUser?>((ref) {
+  final authState = ref.watch(authStateProvider);
+  if (authState.hasValue) {
+    return authState.value;
+  }
+
   return ref.watch(authenticationRepositoryProvider).currentUser;
 });
 
@@ -265,6 +275,19 @@ class AuthActionController extends AutoDisposeAsyncNotifier<void> {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
       await ref.read(signOutUseCaseProvider).call();
+    });
+    state = result;
+    if (result.hasError) {
+      throw result.error!;
+    }
+  }
+
+  Future<void> deleteAccount({String? password}) async {
+    state = const AsyncLoading();
+    final result = await AsyncValue.guard(() async {
+      await ref
+          .read(accountDeletionServiceProvider)
+          .deleteAccount(password: password);
     });
     state = result;
     if (result.hasError) {

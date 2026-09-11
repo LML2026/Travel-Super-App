@@ -15,9 +15,23 @@ Future<void> bootstrap() async {
   final loggerService = LoggerService();
   final networkService = NetworkService();
 
-  await dotenv.load();
   await loggerService.initialize();
   loggerService.info('Bootstrapping Travel Super App');
+
+  try {
+    await dotenv.load(isOptional: true);
+    final baseEnvironment = Map<String, String>.from(dotenv.env);
+    await dotenv.load(
+      fileName: '.env.local',
+      mergeWith: baseEnvironment,
+      isOptional: true,
+    );
+  } catch (error, stackTrace) {
+    // Local/demo providers do not require environment configuration.
+    loggerService.warning('Optional environment configuration unavailable.');
+    loggerService.error(
+        'Environment configuration load failed.', error, stackTrace);
+  }
 
   await firebaseService.initialize();
   await storageService.initialize();

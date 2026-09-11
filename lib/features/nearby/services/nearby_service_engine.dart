@@ -33,6 +33,12 @@ class NearbyServiceEngine {
         return const <PlaceCategory>{PlaceCategory.restaurant};
       case NearbyServiceType.cafe:
         return const <PlaceCategory>{PlaceCategory.cafe};
+      case NearbyServiceType.attraction:
+        return const <PlaceCategory>{PlaceCategory.attraction};
+      case NearbyServiceType.museum:
+        return const <PlaceCategory>{PlaceCategory.museum};
+      case NearbyServiceType.shopping:
+        return const <PlaceCategory>{PlaceCategory.shopping};
       case NearbyServiceType.fuel:
         return const <PlaceCategory>{PlaceCategory.fuelStation};
       case NearbyServiceType.parking:
@@ -43,6 +49,8 @@ class NearbyServiceEngine {
         return const <PlaceCategory>{PlaceCategory.accommodation};
       case NearbyServiceType.taxi:
         return const <PlaceCategory>{PlaceCategory.taxiStand};
+      case NearbyServiceType.transit:
+        return const <PlaceCategory>{PlaceCategory.transportStation};
     }
   }
 
@@ -85,6 +93,12 @@ class NearbyServiceEngine {
         return 'restaurant';
       case NearbyServiceType.cafe:
         return 'cafe';
+      case NearbyServiceType.attraction:
+        return 'things to do';
+      case NearbyServiceType.museum:
+        return 'museum';
+      case NearbyServiceType.shopping:
+        return 'shopping';
       case NearbyServiceType.fuel:
         return 'fuel station';
       case NearbyServiceType.parking:
@@ -95,6 +109,8 @@ class NearbyServiceEngine {
         return 'hotel';
       case NearbyServiceType.taxi:
         return 'taxi stand';
+      case NearbyServiceType.transit:
+        return 'public transport station';
     }
   }
 }

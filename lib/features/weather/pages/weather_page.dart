@@ -58,15 +58,13 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                 ),
               ],
             ),
-
             const SizedBox(height: AppSpacing.xl),
-
             weatherAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => AppEmptyState(
                 icon: Icons.error_outline,
                 title: 'Weather unavailable',
-                message: e.toString(),
+                message: 'We could not load weather for this destination.',
                 iconColor: AppColors.error,
               ),
               data: (weather) => _WeatherCard(weather: weather),
@@ -106,18 +104,75 @@ class _WeatherCard extends StatelessWidget {
             weather.description,
             style: const TextStyle(fontSize: 18, color: Colors.grey),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            _sourceLabel(weather.dataSource),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
           const SizedBox(height: AppSpacing.xl),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _Stat(label: 'Humidity', value: '${weather.humidity}%', icon: Icons.water_drop),
-              _Stat(label: 'Wind', value: '${weather.windKph.toStringAsFixed(0)} km/h', icon: Icons.air),
-              _Stat(label: 'Feels like', value: '${weather.tempF.toStringAsFixed(0)}°F', icon: Icons.thermostat),
+              _Stat(
+                label: 'Humidity',
+                value: '${weather.humidity}%',
+                icon: Icons.water_drop,
+              ),
+              _Stat(
+                label: 'Wind',
+                value: '${weather.windKph.toStringAsFixed(0)} km/h',
+                icon: Icons.air,
+              ),
+              _Stat(
+                label: 'Feels like',
+                value: '${weather.tempF.toStringAsFixed(0)}°F',
+                icon: Icons.thermostat,
+              ),
             ],
           ),
+          if (weather.forecast.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xl),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '3-day forecast',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: weather.forecast.take(3).map((day) {
+                return Column(
+                  children: [
+                    Text(_dayLabel(day.date)),
+                    Text(day.emoji, style: const TextStyle(fontSize: 22)),
+                    Text(
+                      '${day.maxTempC.toStringAsFixed(0)}° / ${day.minTempC.toStringAsFixed(0)}°',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  String _dayLabel(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
+
+  String _sourceLabel(WeatherDataSource source) {
+    switch (source) {
+      case WeatherDataSource.openMeteo:
+        return 'Live weather from Open-Meteo';
+      case WeatherDataSource.backend:
+        return 'Backend weather';
+      case WeatherDataSource.demo:
+        return 'Demo weather';
+    }
   }
 }
 
@@ -133,7 +188,8 @@ class _Stat extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.primary),
         const SizedBox(height: AppSpacing.xs),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );

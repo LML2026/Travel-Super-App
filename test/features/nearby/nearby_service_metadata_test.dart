@@ -11,6 +11,11 @@ void main() {
       NearbyServiceType.hospital,
       NearbyServiceType.restaurant,
       NearbyServiceType.cafe,
+      NearbyServiceType.attraction,
+      NearbyServiceType.museum,
+      NearbyServiceType.shopping,
+      NearbyServiceType.supermarket,
+      NearbyServiceType.transit,
     ]);
   });
 

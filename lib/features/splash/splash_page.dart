@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_routes.dart';
+import '../authentication/domain/entities/auth_user.dart';
 import '../authentication/presentation/providers/auth_providers.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
@@ -13,32 +13,18 @@ class SplashPage extends ConsumerStatefulWidget {
 }
 
 class _SplashPageState extends ConsumerState<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    Timer(const Duration(seconds: 3), () {
-      if (!mounted) {
-        return;
-      }
-
-      final currentUser = ref.read(immediateCurrentUserProvider);
-      if (currentUser == null) {
-        context.goLogin();
-        return;
-      }
-
-      if (requiresEmailVerification(currentUser)) {
-        context.goEmailVerification();
-        return;
-      }
-
-      context.goHome();
-    });
-  }
+  bool _navigationScheduled = false;
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
+
+    if (authState.hasValue) {
+      _navigateAfterAuthResolution(authState.value);
+    } else if (authState.hasError) {
+      _navigateAfterAuthResolution(null);
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade700,
       body: const Center(
@@ -67,5 +53,26 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         ),
       ),
     );
+  }
+
+  void _navigateAfterAuthResolution(AuthUser? user) {
+    if (_navigationScheduled) {
+      return;
+    }
+
+    _navigationScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      if (user == null) {
+        context.goLogin();
+      } else if (requiresEmailVerification(user)) {
+        context.goEmailVerification();
+      } else {
+        context.goHome();
+      }
+    });
   }
 }

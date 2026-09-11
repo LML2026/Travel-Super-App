@@ -118,7 +118,10 @@ void main() {
       expect(result, isA<Failure>());
       switch (result) {
         case Failure<List<Hotel>>(:final message):
-          expect(message, contains('Network error'));
+          expect(
+            message,
+            'We could not search hotels right now. Please try again.',
+          );
         case Success<List<Hotel>>(:final data):
           fail('Expected Failure but got Success with ${data.length} hotels');
       }

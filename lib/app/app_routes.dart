@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/destination.dart';
+import '../core/models/booking.dart';
 import '../features/maps/models/places_prefill.dart';
 import '../features/nearby/models/nearby_service_type.dart';
 import '../features/taxi/domain/entities/taxi_ride_option.dart';
@@ -10,6 +11,7 @@ import '../features/flights/models/flight.dart';
 import '../features/flights/models/saved_flight.dart';
 import '../features/hotels/models/hotel.dart';
 import '../features/hotels/models/saved_hotel.dart';
+import '../features/translator/domain/translation_models.dart';
 import '../features/trips/domain/entities/trip.dart';
 
 class TripCreateRouteArgs {
@@ -32,6 +34,13 @@ class TaxiBookingRouteArgs {
   final TaxiRideOption option;
 }
 
+class AiAssistantRouteArgs {
+  const AiAssistantRouteArgs({this.trip, this.initialPrompt});
+
+  final Trip? trip;
+  final String? initialPrompt;
+}
+
 enum AppRoute {
   splash,
   login,
@@ -40,6 +49,10 @@ enum AppRoute {
   emailVerification,
   home,
   wallet,
+  liveTrip,
+  travelDiscovery,
+  savedItems,
+  myBookings,
   transport,
   taxi,
   taxiResults,
@@ -67,8 +80,15 @@ enum AppRoute {
   tripNotes,
   tripDocuments,
   tripActivities,
+  tripAiPlanner,
+  tripLive,
+  tripReadiness,
+  translator,
   profile,
   destination,
+  bookingStatus,
+  tripBookings,
+  confirmedBookingDetails,
 }
 
 extension AppRouteConfig on AppRoute {
@@ -90,6 +110,14 @@ extension AppRouteConfig on AppRoute {
         return '/home';
       case AppRoute.wallet:
         return '/wallet';
+      case AppRoute.liveTrip:
+        return '/live-trip';
+      case AppRoute.travelDiscovery:
+        return '/discover';
+      case AppRoute.savedItems:
+        return '/saved';
+      case AppRoute.myBookings:
+        return '/bookings';
       case AppRoute.transport:
         return '/transport';
       case AppRoute.taxi:
@@ -144,10 +172,24 @@ extension AppRouteConfig on AppRoute {
         return '/trips/:id/documents';
       case AppRoute.tripActivities:
         return '/trips/:id/activities';
+      case AppRoute.tripAiPlanner:
+        return '/trips/:id/ai-planner';
+      case AppRoute.tripLive:
+        return '/trips/:id/live';
+      case AppRoute.tripReadiness:
+        return '/trips/:id/readiness';
+      case AppRoute.translator:
+        return '/translator';
       case AppRoute.profile:
         return '/profile';
       case AppRoute.destination:
         return '/destination';
+      case AppRoute.bookingStatus:
+        return '/booking-status';
+      case AppRoute.tripBookings:
+        return '/trips/:id/bookings';
+      case AppRoute.confirmedBookingDetails:
+        return '/trips/:id/bookings/details';
     }
   }
 }
@@ -161,19 +203,27 @@ extension AppNavigation on BuildContext {
 
   Future<T?> pushWallet<T>() => pushNamed<T>(AppRoute.wallet.routeName);
 
-  Future<T?> pushTransport<T>() =>
-      pushNamed<T>(AppRoute.transport.routeName);
+  Future<T?> pushLiveTrip<T>({Trip? trip}) =>
+      pushNamed<T>(AppRoute.liveTrip.routeName, extra: trip);
 
-    Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+  Future<T?> pushTravelDiscovery<T>() =>
+      pushNamed<T>(AppRoute.travelDiscovery.routeName);
 
-    Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
+  Future<T?> pushSavedItems<T>() => pushNamed<T>(AppRoute.savedItems.routeName);
+
+  Future<T?> pushMyBookings<T>() => pushNamed<T>(AppRoute.myBookings.routeName);
+
+  Future<T?> pushTransport<T>() => pushNamed<T>(AppRoute.transport.routeName);
+
+  Future<T?> pushTaxi<T>() => pushNamed<T>(AppRoute.taxi.routeName);
+
+  Future<T?> pushTaxiResults<T>(TaxiRideRequest request) =>
       pushNamed<T>(AppRoute.taxiResults.routeName, extra: request);
 
-    Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
+  Future<T?> pushTaxiBookingDetails<T>(TaxiBookingRouteArgs args) =>
       pushNamed<T>(AppRoute.taxiBookingDetails.routeName, extra: args);
 
-    Future<T?> pushSavedRides<T>() =>
-      pushNamed<T>(AppRoute.savedRides.routeName);
+  Future<T?> pushSavedRides<T>() => pushNamed<T>(AppRoute.savedRides.routeName);
 
   Future<T?> pushRegister<T>() => pushNamed<T>(AppRoute.register.routeName);
 
@@ -231,8 +281,13 @@ extension AppNavigation on BuildContext {
         extra: initialService,
       );
 
-  Future<T?> pushAiAssistant<T>() =>
-      pushNamed<T>(AppRoute.aiAssistant.routeName);
+  Future<T?> pushAiAssistant<T>({Trip? trip, String? initialPrompt}) =>
+      pushNamed<T>(
+        AppRoute.aiAssistant.routeName,
+        extra: initialPrompt == null
+            ? trip
+            : AiAssistantRouteArgs(trip: trip, initialPrompt: initialPrompt),
+      );
 
   Future<T?> pushTrips<T>() => pushNamed<T>(AppRoute.trips.routeName);
 
@@ -276,8 +331,44 @@ extension AppNavigation on BuildContext {
         pathParameters: {'id': tripId},
       );
 
+  Future<T?> pushTripAiPlanner<T>(String tripId, {Trip? initialTrip}) =>
+      pushNamed<T>(
+        AppRoute.tripAiPlanner.routeName,
+        pathParameters: {'id': tripId},
+        extra: initialTrip,
+      );
+
+  Future<T?> pushTripLive<T>(Trip trip) => pushNamed<T>(
+        AppRoute.tripLive.routeName,
+        pathParameters: {'id': trip.id},
+        extra: trip,
+      );
+
+  Future<T?> pushTripReadiness<T>(Trip trip) => pushNamed<T>(
+        AppRoute.tripReadiness.routeName,
+        pathParameters: {'id': trip.id},
+        extra: trip,
+      );
+
+  Future<T?> pushTranslator<T>({TranslatorContext? context}) =>
+      pushNamed<T>(AppRoute.translator.routeName, extra: context);
+
   Future<T?> pushProfile<T>() => pushNamed<T>(AppRoute.profile.routeName);
 
   Future<T?> pushDestination<T>(Destination destination) =>
       pushNamed<T>(AppRoute.destination.routeName, extra: destination);
+
+  Future<T?> pushBookingStatus<T>(BookingType type) =>
+      pushNamed<T>(AppRoute.bookingStatus.routeName, extra: type);
+
+  Future<T?> pushTripBookings<T>(String tripId) => pushNamed<T>(
+        AppRoute.tripBookings.routeName,
+        pathParameters: {'id': tripId},
+      );
+
+  Future<T?> pushConfirmedBookingDetails<T>(Booking booking) => pushNamed<T>(
+        AppRoute.confirmedBookingDetails.routeName,
+        pathParameters: {'id': booking.tripId},
+        extra: booking,
+      );
 }

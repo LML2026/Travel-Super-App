@@ -20,8 +20,8 @@ class NearbyServiceMetadata {
   final bool isMvp;
 }
 
-const Map<NearbyServiceType, NearbyServiceMetadata> nearbyServiceMetadataByType =
-    <NearbyServiceType, NearbyServiceMetadata>{
+const Map<NearbyServiceType, NearbyServiceMetadata>
+    nearbyServiceMetadataByType = <NearbyServiceType, NearbyServiceMetadata>{
   NearbyServiceType.toilet: NearbyServiceMetadata(
     type: NearbyServiceType.toilet,
     label: 'Toilets',
@@ -76,6 +76,30 @@ const Map<NearbyServiceType, NearbyServiceMetadata> nearbyServiceMetadataByType 
     previewFilters: <String>['Open now', 'High rating', 'Within 500 m'],
     isMvp: true,
   ),
+  NearbyServiceType.attraction: NearbyServiceMetadata(
+    type: NearbyServiceType.attraction,
+    label: 'Attractions',
+    icon: Icons.local_activity_outlined,
+    description: 'Things to do, landmarks, and local experiences.',
+    previewFilters: <String>['Top rated', 'Within 2 km'],
+    isMvp: true,
+  ),
+  NearbyServiceType.museum: NearbyServiceMetadata(
+    type: NearbyServiceType.museum,
+    label: 'Museums',
+    icon: Icons.museum_outlined,
+    description: 'Museums, galleries, and cultural stops.',
+    previewFilters: <String>['Open now', 'Top rated'],
+    isMvp: true,
+  ),
+  NearbyServiceType.shopping: NearbyServiceMetadata(
+    type: NearbyServiceType.shopping,
+    label: 'Shopping',
+    icon: Icons.shopping_bag_outlined,
+    description: 'Markets, shops, and useful local retail.',
+    previewFilters: <String>['Open now', 'Within 2 km'],
+    isMvp: true,
+  ),
   NearbyServiceType.fuel: NearbyServiceMetadata(
     type: NearbyServiceType.fuel,
     label: 'Fuel',
@@ -111,16 +135,28 @@ const Map<NearbyServiceType, NearbyServiceMetadata> nearbyServiceMetadataByType 
     description: 'Taxi pickup, ride access, and transport fallback.',
     previewFilters: <String>['Available now', 'Within 2 km'],
   ),
+  NearbyServiceType.transit: NearbyServiceMetadata(
+    type: NearbyServiceType.transit,
+    label: 'Transit',
+    icon: Icons.directions_transit_outlined,
+    description: 'Stations and public transport points nearby.',
+    previewFilters: <String>['Within 1 km'],
+    isMvp: true,
+  ),
 };
 
-const List<NearbyServiceType> nearbyEssentialsMvpServices =
-    <NearbyServiceType>[
+const List<NearbyServiceType> nearbyEssentialsMvpServices = <NearbyServiceType>[
   NearbyServiceType.toilet,
   NearbyServiceType.atm,
   NearbyServiceType.pharmacy,
   NearbyServiceType.hospital,
   NearbyServiceType.restaurant,
   NearbyServiceType.cafe,
+  NearbyServiceType.attraction,
+  NearbyServiceType.museum,
+  NearbyServiceType.shopping,
+  NearbyServiceType.supermarket,
+  NearbyServiceType.transit,
 ];
 
 extension NearbyServiceTypeMetadata on NearbyServiceType {

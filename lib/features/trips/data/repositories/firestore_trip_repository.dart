@@ -5,12 +5,14 @@ import '../../domain/repositories/trip_repository.dart';
 import '../models/trip_model.dart';
 
 class FirestoreTripRepository implements TripRepository {
-  FirestoreTripRepository(this._firestore);
+  FirestoreTripRepository(this._firestore, {required String userId})
+      : _userId = userId;
 
   final FirebaseFirestore _firestore;
+  final String _userId;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
-      _firestore.collection('trips');
+      _firestore.collection('users').doc(_userId).collection('trips');
 
   @override
   Stream<List<Trip>> watchTrips() {

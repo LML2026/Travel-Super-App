@@ -13,6 +13,7 @@ class SavedFlight {
   final double amount;
   final String currency;
   final String cabinClass;
+  final String source;
   final DateTime savedAt;
 
   const SavedFlight({
@@ -30,6 +31,7 @@ class SavedFlight {
     required this.amount,
     required this.currency,
     required this.cabinClass,
+    this.source = 'unknown',
     required this.savedAt,
   });
 
@@ -49,6 +51,7 @@ class SavedFlight {
       amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0,
       currency: json['currency'] as String? ?? 'GBP',
       cabinClass: json['cabinClass'] as String? ?? 'economy',
+      source: json['source'] as String? ?? 'unknown',
       savedAt: json['savedAt'] != null
           ? DateTime.parse(json['savedAt'] as String)
           : DateTime.now(),
@@ -56,20 +59,21 @@ class SavedFlight {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'flightId': flightId,
-    'airline': airline,
-    'airlineLogo': airlineLogo,
-    'flightNumber': flightNumber,
-    'origin': origin,
-    'destination': destination,
-    'departureAt': departureAt,
-    'arrivalAt': arrivalAt,
-    'duration': duration,
-    'stops': stops,
-    'amount': amount,
-    'currency': currency,
-    'cabinClass': cabinClass,
-    'savedAt': savedAt.toIso8601String(),
-  };
+        'id': id,
+        'flightId': flightId,
+        'airline': airline,
+        'airlineLogo': airlineLogo,
+        'flightNumber': flightNumber,
+        'origin': origin,
+        'destination': destination,
+        'departureAt': departureAt,
+        'arrivalAt': arrivalAt,
+        'duration': duration,
+        'stops': stops,
+        'amount': amount,
+        'currency': currency,
+        'cabinClass': cabinClass,
+        'source': source,
+        'savedAt': savedAt.toIso8601String(),
+      };
 }

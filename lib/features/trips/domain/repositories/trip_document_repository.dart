@@ -5,8 +5,11 @@ abstract interface class TripDocumentRepository {
 
   Future<void> addDocument(TripDocument document);
 
+  Future<void> updateDocument(TripDocument document);
+
   Future<void> deleteDocument({
     required String tripId,
     required String documentId,
+    TripDocument? document,
   });
 }

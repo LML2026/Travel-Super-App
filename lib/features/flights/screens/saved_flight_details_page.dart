@@ -190,11 +190,15 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Booking ${flight.flightNumber} - Coming soon!')),
+                              SnackBar(
+                                content: Text(
+                                  '${flight.flightNumber} is saved. Live ticket purchase is not available yet.',
+                                ),
+                              ),
                             );
                           },
                           icon: const Icon(Icons.flight_takeoff),
-                          label: const Text('Book Flight'),
+                          label: const Text('Save Flight Plan'),
                         ),
                       ),
                     ],

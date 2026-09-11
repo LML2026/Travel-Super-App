@@ -1,7 +1,9 @@
 import '../../../core/utils/app_logger.dart';
 import '../../../core/utils/result.dart';
+import '../../../core/models/booking.dart';
 import '../models/flight.dart';
 import '../models/flight_search_request.dart';
+import '../services/duffel_flight_service.dart';
 import '../services/flight_service.dart';
 
 /// Repository layer — the UI and providers talk only to this class.
@@ -11,9 +13,11 @@ class FlightRepository {
 
   FlightRepository({FlightService? api}) : _api = api ?? FlightService();
 
-  Future<Result<List<Flight>>> searchFlights(FlightSearchRequest request) async {
+  Future<Result<List<Flight>>> searchFlights(
+      FlightSearchRequest request) async {
     try {
-      appLogger.i('FlightRepository: searching ${request.from} → ${request.to}');
+      appLogger
+          .i('FlightRepository: searching ${request.from} → ${request.to}');
       final flights = await _api.searchFlights(
         from: request.from,
         to: request.to,
@@ -26,8 +30,56 @@ class FlightRepository {
       return Success(flights);
     } catch (e, st) {
       appLogger.e('FlightRepository: search failed', error: e, stackTrace: st);
+      return Failure(_friendlySearchMessage(e), error: e);
+    }
+  }
+
+  String _friendlySearchMessage(Object error) {
+    if (error is DuffelApiException &&
+        (error.statusCode == 401 || error.statusCode == 403)) {
+      return 'Flight search is temporarily unavailable. Please try again later.';
+    }
+    return 'We could not search flights right now. Please try again.';
+  }
+
+  Future<Result<Booking>> bookFlight(
+    String tripId,
+    String userId,
+    Flight flight,
+  ) async {
+    try {
+      appLogger.i(
+        'FlightRepository: booking flight ${flight.id} for trip $tripId',
+      );
+      // Mocked booking process
+      await Future.delayed(const Duration(seconds: 2));
+
+      final booking = Booking.flight(
+        id: 'FL-${DateTime.now().millisecondsSinceEpoch}',
+        tripId: tripId,
+        userId: userId,
+        amount: flight.amount,
+        currency: flight.currency,
+        metadata: {
+          'flightId': flight.id,
+          'origin': flight.origin,
+          'destination': flight.destination,
+          'airline': flight.airline,
+          'flightNumber': flight.flightNumber,
+          'departure': flight.departureAt,
+          'arrival': flight.arrivalAt,
+          'duration': flight.duration,
+          'stops': flight.stops,
+          'cabinClass': flight.cabinClass,
+          'source': flight.dataSource.name,
+        },
+      );
+
+      appLogger.i('FlightRepository: flight booked successfully');
+      return Success(booking.copyWith(status: BookingStatus.confirmed));
+    } catch (e, st) {
+      appLogger.e('FlightRepository: booking failed', error: e, stackTrace: st);
       return Failure(e.toString(), error: e);
     }
   }
 }
-

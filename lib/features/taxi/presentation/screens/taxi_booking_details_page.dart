@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../../core/models/booking.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
-import '../../domain/providers/taxi_provider.dart';
 import '../providers/taxi_hub_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class TaxiBookingDetailsPage extends ConsumerWidget {
   const TaxiBookingDetailsPage({
@@ -15,15 +17,6 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   });
 
   final TaxiBookingRouteArgs args;
-
-  TaxiProvider? _resolveProvider(List<TaxiProvider> providers, String name) {
-    for (final provider in providers) {
-      if (provider.name == name) {
-        return provider;
-      }
-    }
-    return null;
-  }
 
   Future<String?> _selectTripId(
     BuildContext context,
@@ -99,7 +92,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   Future<void> _openRouteOnMap(BuildContext context) async {
     final query =
         '${args.request.pickupAddress} to ${args.request.destinationAddress}';
-    final uri = Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
+    final uri =
+        Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'query': query});
 
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
         context.mounted) {
@@ -111,13 +105,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final providers = <TaxiProvider>[
-      ref.watch(taxiPrimaryProvider),
-      ...ref.watch(taxiProvidersProvider),
-    ];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Booking details')),
+      appBar: AppBar(title: const Text('Planned ride details')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -163,29 +152,31 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {
-              final provider = _resolveProvider(providers, args.option.providerName);
-              if (provider == null) {
+              final user = ref.read(immediateCurrentUserProvider);
+              if (user == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Provider is not available.')),
+                  const SnackBar(
+                      content: Text('Please log in to save a planned ride.')),
                 );
                 return;
               }
 
-              try {
-                await provider.openBooking(args.request);
-                if (context.mounted) {
-                  ref.read(selectedTaxiProviderNameProvider.notifier).state = provider.name;
-                }
-              } catch (error) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Could not open provider: $error')),
+              final trips = await ref.read(tripsProvider.future);
+              final tripId = trips.isNotEmpty ? trips.first.id : 'mock-trip-id';
+
+              ref.read(transportBookingProvider.notifier).book(
+                    tripId: tripId,
+                    userId: user.uid,
+                    request: args.request,
+                    option: args.option,
                   );
-                }
+
+              if (context.mounted) {
+                context.pushBookingStatus(BookingType.transport);
               }
             },
             icon: const Icon(Icons.open_in_new),
-            label: const Text('Open provider booking'),
+            label: const Text('Save planned transport'),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
@@ -221,7 +212,12 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               } catch (error) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Could not save ride: $error')),
+                    SnackBar(
+                      content: Text(UserFacingError.message(
+                        error,
+                        fallback: 'We could not save this ride to your trip.',
+                      )),
+                    ),
                   );
                 }
               }

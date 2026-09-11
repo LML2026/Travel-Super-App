@@ -5,6 +5,7 @@ import '../../app/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/widgets.dart';
+import '../../core/utils/user_facing_error.dart';
 import '../wallet/domain/entities/wallet.dart';
 import '../wallet/presentation/providers/wallet_provider.dart';
 import 'models/dashboard_summary.dart';
@@ -21,10 +22,14 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('ITAREVO')),
       body: summaryAsync.when(
-        loading: () => const LoadingIndicator(message: 'Preparing your dashboard...'),
+        loading: () =>
+            const LoadingIndicator(message: 'Preparing your dashboard...'),
         error: (error, _) => ErrorView(
           title: 'Dashboard unavailable',
-          message: error.toString(),
+          message: UserFacingError.message(
+            error,
+            fallback: 'We could not load your travel summary.',
+          ),
           onRetry: () => ref.invalidate(dashboardSummaryProvider),
         ),
         data: (summary) => SingleChildScrollView(
@@ -49,19 +54,119 @@ class HomePage extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               if (summary.hasUpcomingTrip)
-                _UpcomingTripCard(summary: summary, onOpenTrip: () {
-                  context.pushTripDetails(summary.upcomingTrip!);
-                })
+                _UpcomingTripCard(
+                    summary: summary,
+                    onOpenTrip: () {
+                      context.pushTripDetails(summary.upcomingTrip!);
+                    },
+                    onOpenLiveTrip: () {
+                      context.pushLiveTrip(trip: summary.upcomingTrip!);
+                    })
               else
                 const AppEmptyState(
                   icon: Icons.luggage_outlined,
                   title: 'No upcoming trip',
-                  message: 'Save a trip to see flights, hotels, weather, and budget here.',
+                  message:
+                      'Save a trip to see flights, hotels, weather, and budget here.',
                 ),
               const SizedBox(height: AppSpacing.lg),
               _WalletSnapshotCard(walletAsync: walletAsync),
               const SizedBox(height: AppSpacing.lg),
-              Text('Book Transport', style: Theme.of(context).textTheme.titleMedium),
+              AppCard(
+                onTap: () => context.pushMyBookings(),
+                child: Row(
+                  children: [
+                    const Icon(Icons.confirmation_number_outlined, size: 40),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('My Bookings',
+                              style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 4),
+                          const Text(
+                              'Flights, stays and transport across your trips.'),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                onTap: () => context.pushTravelDiscovery(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.travel_explore_outlined),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Travel Discovery',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Search flights, hotels, rides, activities and restaurants, then add them to a trip.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                onTap: () => context.pushSavedItems(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.bookmark_border),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Saved Items',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Flights, hotels, rides, restaurants and places you want to remember.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text('Quick Booking',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),
               Wrap(
                 spacing: AppSpacing.sm,
@@ -134,6 +239,41 @@ class HomePage extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              AppCard(
+                onTap: () => context.pushTranslator(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.translate_outlined),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Translator',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Text, conversation mode and travel phrases.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -152,10 +292,12 @@ class _UpcomingTripCard extends StatelessWidget {
   const _UpcomingTripCard({
     required this.summary,
     required this.onOpenTrip,
+    required this.onOpenLiveTrip,
   });
 
   final DashboardSummary summary;
   final VoidCallback onOpenTrip;
+  final VoidCallback onOpenLiveTrip;
 
   @override
   Widget build(BuildContext context) {
@@ -169,14 +311,27 @@ class _UpcomingTripCard extends StatelessWidget {
         children: [
           Text('Upcoming Trip', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.md),
-          Text(trip.destination, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Text(trip.destination,
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
           const SizedBox(height: AppSpacing.sm),
           Text(dateLine),
           const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
-            onPressed: onOpenTrip,
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('Open Trip'),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              FilledButton.icon(
+                onPressed: onOpenLiveTrip,
+                icon: const Icon(Icons.explore_outlined),
+                label: const Text('Live Trip'),
+              ),
+              OutlinedButton.icon(
+                onPressed: onOpenTrip,
+                icon: const Icon(Icons.dashboard_outlined),
+                label: const Text('Dashboard'),
+              ),
+            ],
           ),
         ],
       ),
@@ -185,8 +340,18 @@ class _UpcomingTripCard extends StatelessWidget {
 
   static String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }

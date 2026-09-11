@@ -1,0 +1,40 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function sharedTrip(ownerId, tripId) {
+      return signedIn()
+          && firestore.get(
+                /databases/(default)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)
+              ).data.ownerUserId == ownerId
+          && (firestore.get(
+                /databases/(default)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)
+              ).data.status == 'invited'
+              || firestore.get(
+                /databases/(default)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)
+              ).data.status == 'active');
+    }
+
+    function canRead(ownerId, tripId) {
+      return signedIn()
+          && (request.auth.uid == ownerId || sharedTrip(ownerId, tripId));
+    }
+
+    function canEdit(ownerId, tripId) {
+      return signedIn()
+          && (request.auth.uid == ownerId
+              || (sharedTrip(ownerId, tripId)
+                  && firestore.get(
+                        /databases/(default)/documents/users/$(request.auth.uid)/sharedTrips/$(tripId)
+                      ).data.role == 'editor'));
+    }
+
+    match /users/{ownerId}/trips/{tripId}/documents/{documentId}/{fileName} {
+      allow read: if canRead(ownerId, tripId);
+      allow create, update, delete: if canEdit(ownerId, tripId);
+    }
+  }
+}

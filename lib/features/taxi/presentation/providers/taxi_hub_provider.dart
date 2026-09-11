@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../../core/models/booking.dart';
+import '../../../../core/repositories/booking_repository.dart';
 import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/domain/repositories/expense_repository.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
+import '../../../trips/services/trip_booking_link_service.dart';
 import '../../data/providers/airport_transfer_provider.dart';
 import '../../data/providers/local_taxi_provider.dart';
 import '../../data/providers/uber_taxi_provider.dart';
@@ -74,7 +78,8 @@ final taxiTransportRepositoryFactoryProvider =
       );
 });
 
-final taxiTransportRepositoryProvider = Provider<TaxiTransportRepository>((ref) {
+final taxiTransportRepositoryProvider =
+    Provider<TaxiTransportRepository>((ref) {
   final user = ref.watch(immediateCurrentUserProvider);
   if (user == null) {
     return const _UnauthenticatedTaxiTransportRepository();
@@ -113,13 +118,53 @@ final taxiTransportActionsProvider = Provider<TaxiTransportActions>((ref) {
 
 final selectedTaxiProviderNameProvider = StateProvider<String?>((ref) => null);
 
+// ── Transport Booking provider ─────────────────────────────────────────────
+class TransportBookingNotifier extends AutoDisposeAsyncNotifier<Booking?> {
+  @override
+  FutureOr<Booking?> build() => null;
+
+  Future<void> book({
+    required String tripId,
+    required String userId,
+    required TaxiRideRequest request,
+    required TaxiRideOption option,
+  }) async {
+    state = const AsyncLoading();
+    final actions = ref.read(taxiTransportActionsProvider);
+
+    try {
+      final booking = await actions.bookTransport(
+        tripId: tripId,
+        userId: userId,
+        request: request,
+        option: option,
+      );
+      state = AsyncData(booking);
+      await ref.read(bookingRepositoryProvider).saveBooking(booking);
+    } catch (e, st) {
+      state = AsyncError(e.toString(), st);
+    }
+  }
+}
+
+final transportBookingProvider =
+    AsyncNotifierProvider.autoDispose<TransportBookingNotifier, Booking?>(
+  TransportBookingNotifier.new,
+);
+
 class TaxiTransportActions {
-  TaxiTransportActions(this._repository, this._expenseRepository);
+  TaxiTransportActions(
+    TaxiTransportRepository repository,
+    ExpenseRepository expenseRepository, {
+    TripBookingLinkService? bookingLinkService,
+  })  : _expenseRepository = expenseRepository,
+        _bookingLinkService = bookingLinkService ??
+            TripBookingLinkService(transportStore: repository);
 
-  final TaxiTransportRepository _repository;
   final ExpenseRepository _expenseRepository;
+  final TripBookingLinkService _bookingLinkService;
 
-  Future<void> saveRideToTrip({
+  Future<TripBookingLinkResult> saveRideToTrip({
     required String tripId,
     required String provider,
     required TaxiRideRequest request,
@@ -144,10 +189,13 @@ class TaxiTransportActions {
       createdAt: DateTime.now(),
     );
 
-    await _repository.saveRide(
-      tripId: tripId,
-      ride: ride,
-    );
+    final link = await _bookingLinkService.linkTransport(ride: ride);
+    if (!link.isSuccess) {
+      throw StateError(link.message ?? 'We could not save this ride.');
+    }
+    if (link.wasAlreadyLinked) {
+      return link;
+    }
 
     final expense = Expense(
       id: const Uuid().v4(),
@@ -161,6 +209,33 @@ class TaxiTransportActions {
     );
 
     await _expenseRepository.createExpense(expense);
+    return link;
+  }
+
+  Future<Booking> bookTransport({
+    required String tripId,
+    required String userId,
+    required TaxiRideRequest request,
+    required TaxiRideOption option,
+  }) async {
+    // Mocked booking process
+    await Future.delayed(const Duration(seconds: 2));
+
+    final booking = Booking.transport(
+      id: 'TRP-${DateTime.now().millisecondsSinceEpoch}',
+      tripId: tripId,
+      userId: userId,
+      amount: option.estimatedFare,
+      currency: option.currency,
+      metadata: {
+        'provider': option.providerName,
+        'pickup': request.pickupAddress,
+        'destination': request.destinationAddress,
+        'passengers': request.passengers,
+      },
+    );
+
+    return booking.copyWith(status: BookingStatus.pending);
   }
 }
 

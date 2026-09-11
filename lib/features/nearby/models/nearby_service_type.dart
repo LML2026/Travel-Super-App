@@ -5,9 +5,13 @@ enum NearbyServiceType {
   hospital,
   restaurant,
   cafe,
+  attraction,
+  museum,
+  shopping,
   fuel,
   parking,
   supermarket,
   hotel,
   taxi,
+  transit,
 }

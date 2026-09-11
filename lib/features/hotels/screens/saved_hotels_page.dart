@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/utils/user_facing_error.dart';
 import '../providers/hotel_provider.dart';
 
 class SavedHotelsPage extends ConsumerWidget {
@@ -28,7 +29,10 @@ class SavedHotelsPage extends ConsumerWidget {
               const Text('Failed to load saved hotels'),
               const SizedBox(height: 8),
               Text(
-                error.toString(),
+                UserFacingError.message(
+                  error,
+                  fallback: 'Saved hotels are unavailable right now.',
+                ),
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
                 textAlign: TextAlign.center,
               ),

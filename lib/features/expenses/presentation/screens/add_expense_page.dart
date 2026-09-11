@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/expense.dart';
 import '../providers/expense_provider.dart';
+import '../../../../core/utils/user_facing_error.dart';
 
 class AddExpensePage extends ConsumerStatefulWidget {
   const AddExpensePage({
@@ -128,7 +129,12 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
     if (mutationState.hasError) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save expense: ${mutationState.error}')),
+        SnackBar(
+          content: Text(UserFacingError.message(
+            mutationState.error!,
+            fallback: 'We could not save this expense.',
+          )),
+        ),
       );
       return;
     }

@@ -5,6 +5,8 @@ abstract interface class TripActivityRepository {
 
   Future<void> addActivity(TripActivity activity);
 
+  Future<void> updateActivity(TripActivity activity);
+
   Future<void> deleteActivity({
     required String tripId,
     required String activityId,

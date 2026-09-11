@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../data/repositories/firestore_trip_repository.dart';
 import '../../domain/entities/trip.dart';
 import '../../domain/repositories/trip_repository.dart';
@@ -12,7 +13,15 @@ import '../../domain/usecases/get_trips.dart';
 import '../../domain/usecases/update_trip.dart';
 
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
-  return FirestoreTripRepository(FirebaseFirestore.instance);
+  final user = ref.watch(immediateCurrentUserProvider);
+  if (user == null) {
+    return const _UnauthenticatedTripRepository();
+  }
+
+  return FirestoreTripRepository(
+    FirebaseFirestore.instance,
+    userId: user.uid,
+  );
 });
 
 final getTripsUseCaseProvider = Provider<GetTrips>((ref) {
@@ -46,10 +55,45 @@ final selectedTripProvider =
 
 final tripListProvider = tripsProvider;
 
+class _UnauthenticatedTripRepository implements TripRepository {
+  const _UnauthenticatedTripRepository();
+
+  @override
+  Future<void> createTrip(Trip trip) async {
+    throw StateError('Authentication required to manage trips.');
+  }
+
+  @override
+  Future<void> deleteTrip(String id) async {
+    throw StateError('Authentication required to manage trips.');
+  }
+
+  @override
+  Future<Trip?> get(String id) async {
+    return null;
+  }
+
+  @override
+  Future<List<Trip>> getAll() async {
+    return const [];
+  }
+
+  @override
+  Future<void> updateTrip(Trip trip) async {
+    throw StateError('Authentication required to manage trips.');
+  }
+
+  @override
+  Stream<List<Trip>> watchTrips() {
+    return Stream.value(const []);
+  }
+}
+
 class CreateTripNotifier extends AsyncNotifier<void> {
   late final CreateTrip _createTrip;
   late final UpdateTrip _updateTrip;
   late final DeleteTrip _deleteTrip;
+  bool _createInProgress = false;
 
   @override
   Future<void> build() async {
@@ -59,11 +103,22 @@ class CreateTripNotifier extends AsyncNotifier<void> {
   }
 
   Future<void> createTrip(Trip trip) async {
+    if (_createInProgress) {
+      return;
+    }
+
+    _createInProgress = true;
     state = const AsyncLoading();
 
-    state = await AsyncValue.guard(() async {
+    try {
       await _createTrip.call(trip);
-    });
+      state = const AsyncData(null);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      Error.throwWithStackTrace(error, stackTrace);
+    } finally {
+      _createInProgress = false;
+    }
   }
 
   Future<void> updateTrip(Trip trip) async {

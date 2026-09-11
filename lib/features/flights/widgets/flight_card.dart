@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../app/app_routes.dart';
 import '../models/flight.dart';
 import '../../../core/utils/flight_formatter.dart';
+import '../../../core/utils/user_facing_error.dart';
 
 class FlightCard extends ConsumerStatefulWidget {
   final Flight flight;
@@ -30,9 +31,20 @@ class _FlightCardState extends ConsumerState<FlightCard> {
   }
 
   String _getStopsText() {
-    return widget.flight.stops == 0 
-        ? '🟢 Direct' 
+    return widget.flight.stops == 0
+        ? '🟢 Direct'
         : '🟠 ${widget.flight.stops} Stop${widget.flight.stops > 1 ? 's' : ''}';
+  }
+
+  String get _sourceLabel {
+    switch (widget.flight.dataSource) {
+      case FlightDataSource.duffelTest:
+        return 'Duffel TEST data';
+      case FlightDataSource.backend:
+        return 'Backend fallback data';
+      case FlightDataSource.demo:
+        return 'Demo flight data';
+    }
   }
 
   void _navigateToDetails() {
@@ -89,7 +101,10 @@ class _FlightCardState extends ConsumerState<FlightCard> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not save flight: $error'),
+          content: Text(UserFacingError.message(
+            error,
+            fallback: 'We could not save this flight. Please try again.',
+          )),
         ),
       );
     }
@@ -114,6 +129,14 @@ class _FlightCardState extends ConsumerState<FlightCard> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  _sourceLabel,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                ),
+              ),
+              const SizedBox(height: 8),
               // Header: Airline, Logo, Price, Heart
               Row(
                 children: [
@@ -123,14 +146,14 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       widget.flight.airlineLogo,
                       width: 40,
                       height: 40,
-                      errorBuilder: (_, __, ___) => 
+                      errorBuilder: (_, __, ___) =>
                           const Icon(Icons.flight, size: 40),
                     )
                   else
                     const Icon(Icons.flight, size: 40),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Airline name and flight number
                   Expanded(
                     child: Column(
@@ -153,7 +176,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ],
                     ),
                   ),
-                  
+
                   // Price
                   Text(
                     '${widget.flight.currency} ${widget.flight.amount.toStringAsFixed(2)}',
@@ -163,9 +186,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       color: Color(0xFF1976D2),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 8),
-                  
+
                   // Heart button
                   IconButton(
                     tooltip: 'Save flight',
@@ -174,9 +197,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Route airports
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -199,9 +222,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Timeline with times
               Row(
                 children: [
@@ -217,9 +240,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Timeline arrow
                   Expanded(
                     child: Column(
@@ -240,9 +263,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(width: 12),
-                  
+
                   // Arrival time
                   Column(
                     children: [
@@ -257,10 +280,10 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
-              // Duration, stops, and details
+
+              // Duration, stops, and cabin
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -306,22 +329,46 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       ),
                     ],
                   ),
+                  if (widget.flight.cabinClass.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Cabin',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.flight.cabinClass,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Book button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: widget.onBookPressed ?? () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Booking ${widget.flight.flightNumber} - Coming soon!'),
-                      ),
-                    );
-                  },
+                  onPressed: widget.onBookPressed ??
+                      () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                '${widget.flight.flightNumber} is ready to save to a trip. Live ticket purchase is not available yet.'),
+                          ),
+                        );
+                      },
                   icon: const Icon(Icons.flight_takeoff),
                   label: const Text('Book Flight'),
                   style: ElevatedButton.styleFrom(
@@ -349,7 +396,7 @@ class _TimelinePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final center = size.height / 2;
-    
+
     // Draw line
     canvas.drawLine(
       Offset(0, center),

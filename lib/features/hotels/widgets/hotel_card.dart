@@ -21,15 +21,30 @@ class HotelCard extends ConsumerStatefulWidget {
 }
 
 class _HotelCardState extends ConsumerState<HotelCard> {
+  String get _sourceLabel {
+    switch (widget.hotel.dataSource) {
+      case HotelDataSource.amadeusTest:
+        return 'Amadeus TEST data';
+      case HotelDataSource.backend:
+        return 'Backend hotel data';
+      case HotelDataSource.duffelStays:
+        return 'Duffel Stays data';
+      case HotelDataSource.demo:
+        return 'Demo hotel data';
+    }
+  }
+
   void _navigateToDetails() {
     context.pushHotelDetails(widget.hotel);
   }
 
   Future<void> _toggleSave() async {
-    final isSaved = await ref.read(isHotelSavedProvider(widget.hotel.id).future);
+    final isSaved =
+        await ref.read(isHotelSavedProvider(widget.hotel.id).future);
 
     if (isSaved) {
-      final saveId = await ref.read(getSavedHotelIdProvider(widget.hotel.id).future);
+      final saveId =
+          await ref.read(getSavedHotelIdProvider(widget.hotel.id).future);
       if (saveId != null) {
         await ref.read(removeSavedHotelProvider(saveId).future);
       }
@@ -63,9 +78,8 @@ class _HotelCardState extends ConsumerState<HotelCard> {
   @override
   Widget build(BuildContext context) {
     final isSavedAsync = ref.watch(isHotelSavedProvider(widget.hotel.id));
-    final displayAddress = widget.hotel.address.isEmpty
-        ? widget.hotel.city
-        : widget.hotel.address;
+    final displayAddress =
+        widget.hotel.address.isEmpty ? widget.hotel.city : widget.hotel.address;
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
@@ -101,6 +115,11 @@ class _HotelCardState extends ConsumerState<HotelCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  _sourceLabel,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -167,7 +186,8 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                       child: isSavedAsync.when(
                         data: (isSaved) => AppSecondaryButton(
                           onPressed: _toggleSave,
-                          icon: isSaved ? Icons.favorite : Icons.favorite_border,
+                          icon:
+                              isSaved ? Icons.favorite : Icons.favorite_border,
                           label: 'Save',
                         ),
                         loading: () => OutlinedButton.icon(
