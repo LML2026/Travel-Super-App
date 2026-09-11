@@ -81,6 +81,8 @@ def main() -> int:
             errors.append("missing tablet media query")
     if ".language-selector" not in css:
         errors.append("missing language selector CSS")
+    if "order: -1" not in css:
+        errors.append("mobile language selector is not ordered first")
 
     for locale, lang, prefix in CHECKS:
         for page in PAGES:

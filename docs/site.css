@@ -659,7 +659,7 @@ h3 { margin: 0 0 8px; color: var(--navy-soft); font-size: 1.12rem; }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { flex: 0 0 auto; min-height: 40px; font-size: 0.82rem; }
   .nav-links .nav-cta { padding: 7px 10px; }
-  .language-selector { flex: 0 0 auto; min-height: 40px; font-size: 0.82rem; }
+  .language-selector { flex: 0 0 auto; order: -1; min-height: 40px; font-size: 0.82rem; }
   .language-selector select { min-height: 40px; max-width: 112px; padding-top: 7px; padding-bottom: 7px; }
   .hero { padding: 58px 0 62px; }
   h1 { font-size: 2.85rem; }
