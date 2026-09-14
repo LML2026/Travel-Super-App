@@ -27,6 +27,7 @@ const DUFFEL_API_KEY = process.env.DUFFEL_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 const DEEPL_API_HOST = process.env.DEEPL_API_HOST || 'api-free.deepl.com';
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -252,7 +253,7 @@ app.use(createHotelsRoutes({ httpsJson }));
 app.use(createAiRoutes({ OPENAI_API_KEY, OPENAI_MODEL, httpsJsonRequest }));
 app.use(createTranslationRoutes({ DEEPL_API_KEY, DEEPL_API_HOST, httpsJsonRequest }));
 
-app.use(createPlacesRoutes({ httpsJson }));
+app.use(createPlacesRoutes({ httpsJsonRequest, GOOGLE_MAPS_API_KEY }));
 app.use(createCurrencyRoutes({ httpsJson }));
 
 app.use((error, req, res, next) => {

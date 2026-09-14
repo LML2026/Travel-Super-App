@@ -1,11 +1,21 @@
 const express = require('express');
+const {
+  createGetNearbyPlaces,
+} = require('../controllers/placesController');
 
-const { getNearbyPlaces } = require('../controllers/placesController');
-
-const createPlacesRoutes = () => {
+const createPlacesRoutes = ({
+  httpsJsonRequest,
+  GOOGLE_MAPS_API_KEY,
+} = {}) => {
   const router = express.Router();
 
-  router.get('/api/places/nearby', getNearbyPlaces);
+  router.get(
+    '/api/places/nearby',
+    createGetNearbyPlaces({
+      httpsJsonRequest,
+      GOOGLE_MAPS_API_KEY,
+    }),
+  );
 
   return router;
 };
