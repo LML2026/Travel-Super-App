@@ -5,7 +5,6 @@ import '../../../app/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/travel_card.dart';
 import '../../maps/models/places_prefill.dart';
-import '../../providers/provider_gateway.dart';
 import '../../saved_items/presentation/providers/saved_items_provider.dart';
 import '../../trips/domain/entities/trip.dart';
 import '../../trips/presentation/providers/trip_activity_provider.dart';
@@ -14,7 +13,9 @@ import '../models/nearby_service_filter.dart';
 import '../models/nearby_service_metadata.dart';
 import '../models/nearby_service_result.dart';
 import '../models/nearby_service_type.dart';
+import 'providers/nearby_places_provider.dart';
 import '../services/nearby_places_service.dart';
+import '../services/nearby_service_engine.dart';
 
 class NearbyEssentialsPage extends ConsumerStatefulWidget {
   const NearbyEssentialsPage({
@@ -58,12 +59,11 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
     }
     setState(() {
       _submittedLocation = location;
-      _resultsFuture = GoogleNearbyPlacesService(
-        gateway: ref.read(providerGatewayProvider),
-      ).search(NearbyPlacesQuery(
-        location: location,
-        serviceType: _selectedService,
-      ));
+      _resultsFuture =
+          ref.read(nearbyPlacesServiceProvider).search(NearbyPlacesQuery(
+                location: location,
+                serviceType: _selectedService,
+              ));
     });
   }
 
@@ -99,7 +99,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xs),
                 const Text(
-                    'Live Google Places results with a clear demo fallback when live search is unavailable.'),
+                    'Nearby results with a clear demo fallback when live search is unavailable.'),
                 const SizedBox(height: AppSpacing.md),
                 TextField(
                   controller: _locationController,
@@ -248,11 +248,14 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
                   onPressed: () {
                     Navigator.pop(sheetContext);
                     context.pushMaps(
-                        prefill: PlacesPrefill(
-                      query: place.name,
-                      locationHint: place.address,
-                      title: place.name,
-                    ));
+                      prefill: PlacesPrefill(
+                        query: place.name,
+                        locationHint: place.address,
+                        title: place.name,
+                        categories: const NearbyServiceEngine()
+                            .categoriesFor(place.serviceType),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -274,10 +277,11 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
     );
   }
 
-  String _sourceLabel(NearbyServiceResult place) =>
-      place.source == NearbyDataSource.google
-          ? 'Live Google Places'
-          : 'Demo place data';
+  String _sourceLabel(NearbyServiceResult place) => switch (place.source) {
+        NearbyDataSource.google => 'Live Google Places',
+        NearbyDataSource.backend => 'Nearby results',
+        _ => 'Demo place data',
+      };
 
   void _message(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
@@ -369,6 +373,9 @@ class _Results extends ConsumerWidget {
           if (places.isEmpty)
             return const _NearbyError(
                 message: 'No places found. Try a wider destination search.');
+          final showingFallback = places.any((place) =>
+              place.sourceMetadata['liveUnavailable'] == true ||
+              place.source == NearbyDataSource.fallback);
           final saved =
               ref.watch(savedItemsControllerProvider).valueOrNull ?? const [];
           return Column(
@@ -376,6 +383,11 @@ class _Results extends ConsumerWidget {
               children: [
                 Text('Places near $location',
                     style: Theme.of(context).textTheme.titleMedium),
+                if (showingFallback) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                      'Live nearby results unavailable — showing fallback results.'),
+                ],
                 const SizedBox(height: 8),
                 ...places.map((place) {
                   final isSaved = saved.any((item) => item.id == place.id);
@@ -426,9 +438,11 @@ class _PlaceCard extends StatelessWidget {
             const SizedBox(height: 6),
             Wrap(spacing: 8, children: [
               Text(
-                  place.source == NearbyDataSource.google
-                      ? 'Live Google Places'
-                      : 'Demo fallback',
+                  switch (place.source) {
+                    NearbyDataSource.google => 'Live Google Places',
+                    NearbyDataSource.backend => 'Nearby results',
+                    _ => 'Demo fallback',
+                  },
                   style: Theme.of(context).textTheme.labelSmall),
               if (place.isOpenNow != null)
                 Text(place.isOpenNow! ? 'Open now' : 'Closed',

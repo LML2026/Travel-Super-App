@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import '../../../../app/app_routes.dart';
 import '../../../../core/providers/travel_provider_contracts.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../../providers/provider_gateway.dart';
+import '../../../nearby/models/nearby_service_type.dart';
+import '../../../nearby/services/nearby_places_service.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../../trips/presentation/widgets/map_card.dart';
@@ -121,6 +124,7 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
                 _GoogleMapCard(
                   configuration: _googleMapsConfiguration,
                   currentLocationAsync: currentLocationAsync,
+                  placesFuture: _placeResultsFuture,
                 ),
               if (defaultTargetPlatform == TargetPlatform.iOS)
                 const SizedBox(height: 12),
@@ -172,12 +176,74 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
 
     setState(() {
       _submittedQuery = query;
-      _placeResultsFuture = ref.read(providerGatewayProvider).searchPlaces(
-            query: query,
-            categories: categories,
-            limit: 8,
-          );
+
+      if (categories.isNotEmpty) {
+        final category = categories.first;
+        final serviceType = _nearbyServiceTypeFor(category);
+        final location = widget.prefill?.locationHint?.trim().isNotEmpty == true
+            ? widget.prefill!.locationHint!.trim()
+            : query;
+
+        _placeResultsFuture = BackendNearbyPlacesService()
+            .search(
+              NearbyPlacesQuery(
+                location: location,
+                serviceType: serviceType,
+                limit: 8,
+              ),
+            )
+            .then(
+              (places) => places
+                  .map(
+                    (place) => PlaceResult(
+                      id: place.id,
+                      name: place.name,
+                      category: category,
+                      address: place.address,
+                      location: GeoPoint(place.latitude, place.longitude),
+                      rating: place.rating,
+                      description:
+                          place.metadata['description'] as String?,
+                      dataSource: TravelDataSource.live,
+                      isOpenNow: place.isOpenNow,
+                    ),
+                  )
+                  .toList(growable: false),
+            );
+      } else {
+        _placeResultsFuture = ref.read(providerGatewayProvider).searchPlaces(
+              query: query,
+              categories: categories,
+              limit: 8,
+            );
+      }
     });
+  }
+
+  NearbyServiceType _nearbyServiceTypeFor(
+    PlaceCategory category,
+  ) {
+    return switch (category) {
+      PlaceCategory.toilet => NearbyServiceType.toilet,
+      PlaceCategory.atm => NearbyServiceType.atm,
+      PlaceCategory.pharmacy => NearbyServiceType.pharmacy,
+      PlaceCategory.hospital => NearbyServiceType.hospital,
+      PlaceCategory.restaurant => NearbyServiceType.restaurant,
+      PlaceCategory.cafe => NearbyServiceType.cafe,
+      PlaceCategory.attraction => NearbyServiceType.attraction,
+      PlaceCategory.museum => NearbyServiceType.museum,
+      PlaceCategory.shopping => NearbyServiceType.shopping,
+      PlaceCategory.fuelStation => NearbyServiceType.fuel,
+      PlaceCategory.parking => NearbyServiceType.parking,
+      PlaceCategory.supermarket => NearbyServiceType.supermarket,
+      PlaceCategory.airport => NearbyServiceType.airport,
+      PlaceCategory.trainStation => NearbyServiceType.trainStation,
+      PlaceCategory.busStation => NearbyServiceType.busStation,
+      PlaceCategory.evChargingStation => NearbyServiceType.evCharging,
+      PlaceCategory.taxiStand => NearbyServiceType.taxi,
+      PlaceCategory.transportStation => NearbyServiceType.transit,
+      PlaceCategory.accommodation => NearbyServiceType.hotel,
+    };
   }
 
   Future<void> _runRoute(LiveLocation location, Trip trip) async {
@@ -239,10 +305,12 @@ class _GoogleMapCard extends StatelessWidget {
   const _GoogleMapCard({
     required this.configuration,
     required this.currentLocationAsync,
+    required this.placesFuture,
   });
 
   final Future<bool> configuration;
   final AsyncValue<LiveLocation> currentLocationAsync;
+  final Future<List<PlaceResult>>? placesFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -287,24 +355,68 @@ class _GoogleMapCard extends StatelessWidget {
                 fallback: 'Live location is unavailable right now.',
               )),
             ),
-            data: (location) => SizedBox(
-              height: 220,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(location.latitude, location.longitude),
-                  zoom: 13,
-                ),
-                markers: {
+            data: (location) => FutureBuilder<List<PlaceResult>>(
+              future: placesFuture,
+              builder: (context, placesSnapshot) {
+                final places = placesSnapshot.data ?? const <PlaceResult>[];
+
+                final markers = <Marker>{
                   Marker(
                     markerId: const MarkerId('current-location'),
                     position: LatLng(location.latitude, location.longitude),
                     infoWindow: const InfoWindow(title: 'Current location'),
                   ),
-                },
-                zoomControlsEnabled: false,
-                myLocationButtonEnabled: false,
-                compassEnabled: true,
-              ),
+                  ...places
+                      .where((place) =>
+                          place.location != null &&
+                          place.location!.latitude != 0 &&
+                          place.location!.longitude != 0)
+                      .map(
+                        (place) => Marker(
+                          markerId: MarkerId('place-${place.id}'),
+                          position: LatLng(
+                            place.location!.latitude,
+                            place.location!.longitude,
+                          ),
+                          infoWindow: InfoWindow(
+                            title: place.name,
+                            snippet: place.address,
+                          ),
+                        ),
+                      ),
+                };
+
+                final validPlaces = places
+                    .where((place) =>
+                        place.location != null &&
+                        place.location!.latitude != 0 &&
+                        place.location!.longitude != 0)
+                    .toList(growable: false);
+
+                final mapTarget = validPlaces.isNotEmpty
+                    ? LatLng(
+                        validPlaces.first.location!.latitude,
+                        validPlaces.first.location!.longitude,
+                      )
+                    : LatLng(location.latitude, location.longitude);
+
+                return SizedBox(
+                  height: 220,
+                  child: GoogleMap(
+                    key: ValueKey(
+                      '${mapTarget.latitude},${mapTarget.longitude}',
+                    ),
+                    initialCameraPosition: CameraPosition(
+                      target: mapTarget,
+                      zoom: 13,
+                    ),
+                    markers: markers,
+                    zoomControlsEnabled: false,
+                    myLocationButtonEnabled: false,
+                    compassEnabled: true,
+                  ),
+                );
+              },
             ),
           );
         },
