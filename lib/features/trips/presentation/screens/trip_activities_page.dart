@@ -6,6 +6,7 @@ import '../../../../core/utils/user_facing_error.dart';
 
 import '../../domain/entities/trip_activity.dart';
 import '../providers/trip_activity_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripActivitiesPage extends ConsumerWidget {
   const TripActivitiesPage({
@@ -48,18 +49,18 @@ class TripActivitiesPage extends ConsumerWidget {
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
+                  decoration: InputDecoration(labelText: context.ui('title')),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: locationController,
-                  decoration: const InputDecoration(labelText: 'Location'),
+                  decoration: InputDecoration(labelText: context.ui('location')),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date and time',
+                  decoration: InputDecoration(
+                    labelText: context.ui('dateTime'),
                     hintText: '2026-08-25 14:30',
                   ),
                 ),
@@ -70,8 +71,8 @@ class TripActivitiesPage extends ConsumerWidget {
                       child: TextField(
                         controller: costController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Cost',
+                        decoration: InputDecoration(
+                          labelText: context.ui('cost'),
                         ),
                       ),
                     ),
@@ -81,8 +82,8 @@ class TripActivitiesPage extends ConsumerWidget {
                       child: TextField(
                         controller: currencyController,
                         textCapitalization: TextCapitalization.characters,
-                        decoration: const InputDecoration(
-                          labelText: 'Currency',
+                        decoration: InputDecoration(
+                          labelText: context.ui('currency'),
                         ),
                       ),
                     ),
@@ -91,9 +92,9 @@ class TripActivitiesPage extends ConsumerWidget {
                 const SizedBox(height: 8),
                 TextField(
                   controller: statusController,
-                  decoration: const InputDecoration(
-                    labelText: 'Status',
-                    hintText: 'Planned, booked, optional',
+                  decoration: InputDecoration(
+                    labelText: context.ui('status'),
+                    hintText: context.ui('activityStatusHint'),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -101,7 +102,7 @@ class TripActivitiesPage extends ConsumerWidget {
                   controller: notesController,
                   minLines: 2,
                   maxLines: 4,
-                  decoration: const InputDecoration(labelText: 'Notes'),
+                  decoration: InputDecoration(labelText: context.ui('notes')),
                 ),
               ],
             ),
@@ -109,14 +110,14 @@ class TripActivitiesPage extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.ui('cancel')),
             ),
             FilledButton(
               onPressed: () async {
                 final title = titleController.text.trim();
                 if (title.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Title is required.')),
+                    SnackBar(content: Text(context.ui('titleRequired'))),
                   );
                   return;
                 }
@@ -127,8 +128,8 @@ class TripActivitiesPage extends ConsumerWidget {
                     : DateTime.tryParse(rawDate.replaceFirst(' ', 'T'));
                 if (rawDate.isNotEmpty && parsedDate == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Invalid date format. Use yyyy-mm-dd hh:mm'),
+                    SnackBar(
+                      content: Text(context.ui('invalidDateFormat')),
                     ),
                   );
                   return;
@@ -139,7 +140,7 @@ class TripActivitiesPage extends ConsumerWidget {
                     rawCost.isEmpty ? null : double.tryParse(rawCost);
                 if (rawCost.isNotEmpty && cost == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Enter a valid cost.')),
+                    SnackBar(content: Text(context.ui('enterValidCost'))),
                   );
                   return;
                 }
@@ -207,14 +208,14 @@ class TripActivitiesPage extends ConsumerWidget {
     final activitiesAsync = ref.watch(tripActivitiesProvider(tripId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip Activities')),
+      appBar: AppBar(title: Text(context.ui('tripActivities'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showActivityDialog(context, ref),
         icon: const Icon(Icons.add),
-        label: const Text('Add'),
+        label: Text(context.ui('add')),
       ),
       body: activitiesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Text(UserFacingError.message(
             error,
@@ -223,8 +224,8 @@ class TripActivitiesPage extends ConsumerWidget {
         ),
         data: (activities) {
           if (activities.isEmpty) {
-            return const Center(
-              child: Text('No activities yet. Add your first trip plan.'),
+            return Center(
+              child: Text(context.ui('noActivitiesYet')),
             );
           }
 
@@ -272,9 +273,9 @@ class TripActivitiesPage extends ConsumerWidget {
                             activityId: activity.id,
                           );
                     },
-                    itemBuilder: (context) => const [
-                      PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      PopupMenuItem(value: 'delete', child: Text('Remove')),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(value: 'edit', child: Text(context.ui('edit'))),
+                      PopupMenuItem(value: 'delete', child: Text(context.ui('remove'))),
                     ],
                   ),
                 ),

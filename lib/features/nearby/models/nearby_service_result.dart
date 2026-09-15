@@ -2,6 +2,7 @@ import 'nearby_service_type.dart';
 
 enum NearbyDataSource {
   google,
+  backend,
   osm,
   here,
   fallback,

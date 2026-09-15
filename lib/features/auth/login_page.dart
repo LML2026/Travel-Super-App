@@ -8,6 +8,7 @@ import 'presentation/utils/auth_error_mapper.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -135,8 +136,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: Column(
                       children: [
                         AppTextField(
-                          label: 'Email',
-                          hintText: 'your@email.com',
+                          label: context.ui('email'),
+                          hintText: context.ui('yourEmailExample'),
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: Icons.email,
@@ -146,7 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: 16),
                         AppTextField(
                           label: 'Password',
-                          hintText: 'Enter your password',
+                          hintText: context.ui('enterPassword'),
                           controller: _passwordController,
                           obscureText: true,
                           prefixIcon: Icons.lock,
@@ -165,12 +166,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           : () {
                               context.pushForgotPassword();
                             },
-                      child: const Text('Forgot Password?'),
+                      child: Text(context.ui('forgotPasswordQuestion')),
                     ),
                   ),
                   const SizedBox(height: 24),
                   AppButton(
-                    label: 'Sign In',
+                    label: context.ui('signIn'),
                     isLoading: _loading,
                     onPressed: _loading ? null : _login,
                   ),
@@ -192,7 +193,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   OutlinedButton.icon(
                     onPressed: _loading ? null : _signInWithGoogle,
                     icon: const Icon(Icons.account_circle_outlined),
-                    label: const Text('Continue with Google'),
+                    label: Text(context.ui('continueWithGoogle')),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -201,7 +202,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   OutlinedButton.icon(
                     onPressed: _loading ? null : _signInWithApple,
                     icon: const Icon(Icons.apple),
-                    label: const Text('Continue with Apple'),
+                    label: Text(context.ui('continueWithApple')),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),

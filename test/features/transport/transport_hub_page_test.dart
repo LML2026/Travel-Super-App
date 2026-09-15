@@ -12,6 +12,10 @@ void main() {
     expect(find.text('Taxi'), findsOneWidget);
     expect(find.text('Ride Sharing'), findsOneWidget);
     expect(find.text('Airport Transfer'), findsOneWidget);
+    expect(
+      find.text('Plan and save estimated rides to your trips'),
+      findsOneWidget,
+    );
     expect(find.text('Plan an airport ride with the existing taxi flow'),
         findsOneWidget);
     await tester.dragUntilVisible(

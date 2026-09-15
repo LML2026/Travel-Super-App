@@ -106,7 +106,7 @@ bool requiresEmailVerification(AuthUser user) {
     return false;
   }
 
-  return !user.emailVerified;
+  return !user.isAnonymous && !user.emailVerified;
 }
 
 class AuthActionController extends AutoDisposeAsyncNotifier<void> {

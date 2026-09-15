@@ -19,6 +19,7 @@ import '../providers/trip_document_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'edit_trip_page.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripDetailsPage extends ConsumerWidget {
   const TripDetailsPage({
@@ -36,16 +37,16 @@ class TripDetailsPage extends ConsumerWidget {
     final delete = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Trip'),
-        content: Text('Delete "${trip.destination}"?'),
+        title: Text(context.ui('deleteTrip')),
+        content: Text('${context.ui('delete')} "${trip.destination}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.ui('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(context.ui('delete')),
           ),
         ],
       ),
@@ -82,7 +83,7 @@ class TripDetailsPage extends ConsumerWidget {
 
         if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Trip Dashboard')),
+            appBar: AppBar(title: Text(context.ui('tripDashboard'))),
             body: Center(
               child: Text(UserFacingError.message(
                 snapshot.error!,
@@ -96,9 +97,9 @@ class TripDetailsPage extends ConsumerWidget {
 
         if (trip == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Trip Dashboard')),
-            body: const Center(
-              child: Text('Trip not found'),
+            appBar: AppBar(title: Text(context.ui('tripDashboard'))),
+            body: Center(
+              child: Text(context.ui('tripNotFound')),
             ),
           );
         }
@@ -130,7 +131,7 @@ class TripDetailsPage extends ConsumerWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Trip Dashboard'),
+            title: Text(context.ui('tripDashboard')),
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -170,8 +171,8 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: Icons.wb_sunny_outlined,
                 title: 'Weather',
                 child: weatherAsync.when(
-                  loading: () => const Text('Loading weather...'),
-                  error: (_, __) => const Text('Weather unavailable.'),
+                  loading: () => Text(context.ui('loadingWeather')),
+                  error: (_, __) => Text(context.ui('weatherUnavailable')),
                   data: (weather) => _WeatherLine(weather: weather),
                 ),
               ),
@@ -180,7 +181,7 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: Icons.flight_takeoff,
                 title: 'Flights',
                 child: linkedFlight == null
-                    ? const Text('No linked flight yet.')
+                    ? Text(context.ui('noLinkedFlight'))
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -201,7 +202,7 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: Icons.hotel,
                 title: 'Hotel',
                 child: linkedHotel == null
-                    ? const Text('No linked hotel yet.')
+                    ? Text(context.ui('noLinkedHotel'))
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -229,7 +230,7 @@ class TripDetailsPage extends ConsumerWidget {
                   children: [
                     Text('${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
                     const SizedBox(height: 4),
-                    Text('Spent ${trip.currency} ${spent.toStringAsFixed(2)}'),
+                    Text('${context.ui('spent')} ${trip.currency} ${spent.toStringAsFixed(2)}'),
                     Text(
                         'Remaining ${trip.currency} ${remaining.toStringAsFixed(2)}'),
                   ],
@@ -241,7 +242,7 @@ class TripDetailsPage extends ConsumerWidget {
                 title: 'Itinerary',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _buildDayItems(_tripDays(trip)),
+                  children: _buildDayItems(context, _tripDays(trip)),
                 ),
               ),
               const _SectionDivider(),
@@ -249,14 +250,14 @@ class TripDetailsPage extends ConsumerWidget {
                 icon: Icons.alt_route,
                 title: 'Transport Timeline',
                 child: ridesAsync.when(
-                  loading: () => const Text('Loading transport rides...'),
+                  loading: () => Text(context.ui('loadingTransportRides')),
                   error: (error, _) => Text(UserFacingError.message(
                     error,
                     fallback: 'Transport rides are unavailable right now.',
                   )),
                   data: (rides) {
                     if (rides.isEmpty) {
-                      return const Text('No saved transport rides yet.');
+                      return Text(context.ui('noSavedTransportRides'));
                     }
 
                     return Column(
@@ -294,33 +295,33 @@ class TripDetailsPage extends ConsumerWidget {
                 ),
               ],
               const _SectionDivider(),
-              const _DashboardSection(
+              _DashboardSection(
                 icon: Icons.map_outlined,
-                title: 'Map',
-                child: Text('Map integration coming next.'),
+                title: context.ui('maps'),
+                child: Text(context.ui('mapIntegrationComingNext')),
               ),
               const _SectionDivider(),
-              const _DashboardSection(
+              _DashboardSection(
                 icon: Icons.description_outlined,
-                title: 'Documents',
-                child: Text('Travel documents module coming next.'),
+                title: context.ui('tripDocuments'),
+                child: Text(context.ui('travelDocumentsComingNext')),
               ),
               const _SectionDivider(),
-              const _DashboardSection(
+              _DashboardSection(
                 icon: Icons.translate_outlined,
-                title: 'Translator',
-                child: Text('AI translator module coming next.'),
+                title: context.ui('translator'),
+                child: Text(context.ui('aiTranslatorComingNext')),
               ),
               const _SectionDivider(),
-              const _DashboardSection(
+              _DashboardSection(
                 icon: Icons.smart_toy_outlined,
-                title: 'AI Assistant',
-                child: Text('Trip AI assistant coming next.'),
+                title: context.ui('askAi'),
+                child: Text(context.ui('tripAiAssistantComingNext')),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.edit),
-                label: const Text('Edit Trip'),
+                label: Text(context.ui('editTrip')),
                 onPressed: () {
                   final router = GoRouter.maybeOf(context);
                   if (router != null) {
@@ -339,7 +340,7 @@ class TripDetailsPage extends ConsumerWidget {
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 icon: const Icon(Icons.delete),
-                label: const Text('Delete Trip'),
+                label: Text(context.ui('deleteTrip')),
                 onPressed: () => _confirmDelete(context, ref, trip),
               ),
             ],
@@ -381,12 +382,12 @@ class TripDetailsPage extends ConsumerWidget {
     return days < 1 ? 1 : days;
   }
 
-  List<Widget> _buildDayItems(int count) {
+  List<Widget> _buildDayItems(BuildContext context, int count) {
     return List<Widget>.generate(
       count,
       (index) => Padding(
         padding: const EdgeInsets.only(bottom: 4),
-        child: Text('Day ${index + 1}'),
+        child: Text('${context.ui('day')} ${index + 1}'),
       ),
     );
   }
@@ -426,7 +427,7 @@ class _TransportRideLine extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 2),
               child: Icon(Icons.local_taxi, size: 18),
             ),
@@ -450,7 +451,7 @@ class _TransportRideLine extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: onBookReturnRide,
                       icon: const Icon(Icons.swap_horiz),
-                      label: const Text('Book Return Ride'),
+                      label: Text(context.ui('bookReturnRide')),
                     ),
                   ),
                 ],
@@ -534,34 +535,34 @@ class _AiArrivalSuggestionCard extends StatelessWidget {
                   context.pushTaxiResults(request);
                 },
                 icon: const Icon(Icons.local_taxi),
-                label: const Text('Book Taxi'),
+                label: Text(context.ui('bookTaxi')),
               ),
               OutlinedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Hotel notification workflow coming next.'),
+                    SnackBar(
+                      content: Text(context.ui('hotelNotificationComingNext')),
                     ),
                   );
                 },
                 icon: const Icon(Icons.hotel_outlined),
-                label: const Text('Notify Hotel'),
+                label: Text(context.ui('notifyHotel')),
               ),
               OutlinedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Receipt capture assistant is queued for next step.'),
+                    SnackBar(
+                      content: Text(context.ui('receiptCaptureQueued')),
                     ),
                   );
                 },
                 icon: const Icon(Icons.receipt_long_outlined),
-                label: const Text('Save Receipt'),
+                label: Text(context.ui('saveReceipt')),
               ),
               OutlinedButton.icon(
                 onPressed: () => context.pushAiAssistant(),
                 icon: const Icon(Icons.translate_outlined),
-                label: const Text('Translate Destination'),
+                label: Text(context.ui('translateDestination')),
               ),
             ],
           ),
@@ -629,7 +630,7 @@ class _TripWorkspaceSection extends StatelessWidget {
       child: Column(
         children: [
           _WorkspaceItem(
-            label: 'Flights',
+            label: context.ui('flights'),
             completed: hasFlight,
             completedText: 'Flight linked',
             pendingText: 'Link a flight to this trip',
@@ -661,7 +662,7 @@ class _TripWorkspaceSection extends StatelessWidget {
             onAction: onOpenWallet,
           ),
           _WorkspaceItem(
-            label: 'Notes',
+            label: context.ui('notes'),
             completed: hasNotes,
             completedText: 'Trip notes added',
             pendingText: 'No notes yet',
@@ -677,7 +678,7 @@ class _TripWorkspaceSection extends StatelessWidget {
             onAction: onOpenDocuments,
           ),
           _WorkspaceItem(
-            label: 'Weather',
+            label: context.ui('weather'),
             completed: hasWeather,
             completedText: 'Forecast available',
             pendingText: 'Forecast loading or unavailable',
@@ -797,7 +798,7 @@ class _SectionDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Divider(height: 1),
     );

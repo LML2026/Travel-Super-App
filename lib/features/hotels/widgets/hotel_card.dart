@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/widgets.dart';
 import '../models/hotel.dart';
 import '../models/saved_hotel.dart';
 import '../providers/hotel_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class HotelCard extends ConsumerStatefulWidget {
   const HotelCard({
@@ -21,12 +25,12 @@ class HotelCard extends ConsumerStatefulWidget {
 }
 
 class _HotelCardState extends ConsumerState<HotelCard> {
-  String get _sourceLabel {
+  String? get _sourceLabel {
     switch (widget.hotel.dataSource) {
       case HotelDataSource.amadeusTest:
-        return 'Amadeus TEST data';
+        return 'Test data';
       case HotelDataSource.backend:
-        return 'Backend hotel data';
+        return null;
       case HotelDataSource.duffelStays:
         return 'Duffel Stays data';
       case HotelDataSource.demo:
@@ -85,12 +89,11 @@ class _HotelCardState extends ConsumerState<HotelCard> {
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       padding: EdgeInsets.zero,
       onTap: _navigateToDetails,
-      elevation: 2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             child: Image.network(
               widget.hotel.image,
               height: 220,
@@ -99,11 +102,12 @@ class _HotelCardState extends ConsumerState<HotelCard> {
               errorBuilder: (_, __, ___) {
                 return Container(
                   height: 220,
-                  color: Colors.grey.shade300,
+                  color: AppColors.navy50,
                   child: const Center(
                     child: Icon(
                       Icons.hotel,
                       size: 70,
+                      color: AppColors.navy600,
                     ),
                   ),
                 );
@@ -115,11 +119,15 @@ class _HotelCardState extends ConsumerState<HotelCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _sourceLabel,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: AppSpacing.xs),
+                if (_sourceLabel case final label?) ...[
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                ],
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -128,10 +136,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                         widget.hotel.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
@@ -139,15 +144,13 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                       children: [
                         const Icon(
                           Icons.star,
-                          color: Colors.amber,
+                          color: AppColors.champagne,
                           size: 20,
                         ),
                         const SizedBox(width: AppSpacing.xs),
                         Text(
                           widget.hotel.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ],
                     ),
@@ -156,7 +159,9 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   displayAddress,
-                  style: TextStyle(color: Colors.grey[700]),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Wrap(
@@ -173,11 +178,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                 const SizedBox(height: 14),
                 Text(
                   '${widget.hotel.currency} ${widget.hotel.price.toStringAsFixed(0)} / night',
-                  style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                  ),
+                  style: AppTextStyles.price,
                 ),
                 const SizedBox(height: 14),
                 Row(
@@ -188,7 +189,7 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                           onPressed: _toggleSave,
                           icon:
                               isSaved ? Icons.favorite : Icons.favorite_border,
-                          label: 'Save',
+                          label: context.ui('save'),
                         ),
                         loading: () => OutlinedButton.icon(
                           onPressed: null,
@@ -197,12 +198,12 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                             height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                          label: const Text('Save'),
+                          label: Text(context.ui('save')),
                         ),
                         error: (_, __) => AppSecondaryButton(
                           onPressed: _toggleSave,
                           icon: Icons.favorite_border,
-                          label: 'Save',
+                          label: context.ui('save'),
                         ),
                       ),
                     ),
@@ -210,8 +211,8 @@ class _HotelCardState extends ConsumerState<HotelCard> {
                     Expanded(
                       child: AppPrimaryButton(
                         onPressed: _navigateToDetails,
-                        icon: Icons.calendar_month,
-                        label: 'Book Now',
+                        icon: Icons.info_outline,
+                        label: context.ui('viewDetails'),
                       ),
                     ),
                   ],

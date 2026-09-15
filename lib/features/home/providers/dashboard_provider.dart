@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../authentication/domain/entities/auth_user.dart';
+import '../../authentication/presentation/providers/auth_providers.dart';
 import '../../flights/models/saved_flight.dart';
 import '../../flights/providers/flight_provider.dart';
 import '../../hotels/models/saved_hotel.dart';
@@ -12,7 +13,7 @@ import '../../weather/providers/weather_provider.dart';
 import '../models/dashboard_summary.dart';
 
 final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
-  final user = FirebaseAuth.instance.currentUser;
+  final user = ref.watch(immediateCurrentUserProvider);
   final userName = _userName(user);
 
   final trips = await ref.watch(tripsProvider.future);
@@ -50,10 +51,7 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
   );
 });
 
-String _userName(User? user) {
-  if (user?.displayName != null && user!.displayName!.isNotEmpty) {
-    return user.displayName!.split(' ').first;
-  }
+String _userName(AuthUser? user) {
   return user?.email?.split('@').first ?? 'Traveler';
 }
 

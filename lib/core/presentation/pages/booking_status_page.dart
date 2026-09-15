@@ -6,6 +6,7 @@ import '../../../features/flights/providers/flight_provider.dart';
 import '../../../features/hotels/providers/hotel_provider.dart';
 import '../../../features/taxi/presentation/providers/taxi_hub_provider.dart';
 import '../../utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class BookingStatusPage extends ConsumerWidget {
   final BookingType type;
@@ -21,14 +22,14 @@ class BookingStatusPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Booking Status'),
+        title: Text(context.ui('bookingStatus')),
         automaticallyImplyLeading: false,
       ),
       body: Center(
         child: bookingState.when(
           data: (booking) {
             if (booking == null) {
-              return const Text('No booking in progress');
+              return Text(context.ui('noBookingInProgress'));
             }
             return _SuccessView(booking: booking);
           },
@@ -61,17 +62,17 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CircularProgressIndicator(),
-        SizedBox(height: 24),
+        const CircularProgressIndicator(),
+        const SizedBox(height: 24),
         Text(
           'Processing your booking...',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
-        SizedBox(height: 8),
-        Text('Please wait while we confirm with the provider.'),
+        const SizedBox(height: 8),
+        Text(context.ui('waitConfirmProvider')),
       ],
     );
   }
@@ -111,7 +112,7 @@ class _SuccessView extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => context.pop(),
-              child: const Text('Back to Trip'),
+              child: Text(context.ui('backToTrip')),
             ),
           ),
         ],
@@ -149,7 +150,7 @@ class _ErrorView extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => context.pop(),
-              child: const Text('Go Back'),
+              child: Text(context.ui('goBack')),
             ),
           ),
         ],

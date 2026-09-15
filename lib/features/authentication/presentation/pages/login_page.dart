@@ -8,6 +8,7 @@ import '../../../../core/validators/auth_validators.dart';
 import '../../../../shared/widgets/loading_overlay.dart';
 import '../../../auth/presentation/utils/auth_error_mapper.dart';
 import '../providers/auth_providers.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AuthenticationLoginPage extends ConsumerStatefulWidget {
   const AuthenticationLoginPage({super.key});
@@ -120,7 +121,7 @@ class _AuthenticationLoginPageState
     return LoadingOverlay(
       isLoading: _loading,
       child: AppScaffold(
-        appBar: AppBar(title: const Text('Sign In')),
+        appBar: AppBar(title: Text(context.ui('signIn'))),
         maxContentWidth: 420,
         body: SingleChildScrollView(
           child: Form(
@@ -145,9 +146,9 @@ class _AuthenticationLoginPageState
                         keyboardType: TextInputType.emailAddress,
                         enabled: !_loading,
                         validator: AuthValidators.validateEmail,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'you@example.com',
+                        decoration: InputDecoration(
+                          labelText: context.ui('email'),
+                          hintText: context.ui('youExampleEmail'),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -161,7 +162,7 @@ class _AuthenticationLoginPageState
                 CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
-                        title: const Text('Remember me'),
+                        title: Text(context.ui('rememberMe')),
                         subtitle: const Text(
                           'Session is securely persisted on this device.',
                         ),
@@ -180,19 +181,19 @@ class _AuthenticationLoginPageState
                         : () {
                             context.pushForgotPassword();
                           },
-                    child: const Text('Forgot password?'),
+                    child: Text(context.ui('forgotPasswordQuestion')),
                   ),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _loading ? null : _signInWithEmail,
-                  child: const Text('Sign In'),
+                  child: Text(context.ui('signIn')),
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: _loading ? null : _signInWithGoogle,
                   icon: const Icon(Icons.account_circle_outlined),
-                  label: const Text('Continue with Google'),
+                  label: Text(context.ui('continueWithGoogle')),
                 ),
                 if (!kIsWeb)
                   Padding(
@@ -200,7 +201,7 @@ class _AuthenticationLoginPageState
                     child: OutlinedButton.icon(
                       onPressed: _loading ? null : _signInWithApple,
                       icon: const Icon(Icons.apple),
-                      label: const Text('Continue with Apple'),
+                      label: Text(context.ui('continueWithApple')),
                     ),
                   ),
                 const SizedBox(height: 12),
@@ -210,7 +211,7 @@ class _AuthenticationLoginPageState
                       : () {
                           context.pushRegister();
                         },
-                  child: const Text('Create an account'),
+                  child: Text(context.ui('createAccountLower')),
                 ),
               ],
             ),

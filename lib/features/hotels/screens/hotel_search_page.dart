@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/widgets.dart';
 import '../models/hotel_search_request.dart';
 import '../providers/hotel_provider.dart';
 import '../widgets/hotel_card.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class HotelSearchPage extends ConsumerStatefulWidget {
   const HotelSearchPage({super.key});
@@ -40,14 +43,14 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
   void _triggerSearch() {
     if (_cityController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a destination.')),
+        SnackBar(content: Text(context.ui('enterDestination'))),
       );
       return;
     }
 
     if (_checkOutDate.isBefore(_checkInDate)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Check-out must be after check-in.')),
+        SnackBar(content: Text(context.ui('checkoutAfterCheckin'))),
       );
       return;
     }
@@ -104,14 +107,14 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Hotels'),
+        title: Text(context.ui('searchHotels')),
         actions: [
           IconButton(
             onPressed: () {
               context.pushSavedHotels();
             },
             icon: const Icon(Icons.favorite_outline),
-            tooltip: 'Saved Hotels',
+            tooltip: context.ui('savedHotels'),
           ),
         ],
       ),
@@ -126,7 +129,7 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                 children: [
                   AppInputField(
                     controller: _cityController,
-                    label: 'Destination',
+                    label: context.ui('destination'),
                     hint: 'e.g. Paris, London, Tokyo',
                     prefixIcon: Icons.location_city,
                   ),
@@ -157,8 +160,9 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                         child: _Counter(
                           label: 'Guests',
                           value: _guests,
-                          onDecrement:
-                              _guests > 1 ? () => setState(() => _guests--) : null,
+                          onDecrement: _guests > 1
+                              ? () => setState(() => _guests--)
+                              : null,
                           onIncrement: () => setState(() => _guests++),
                         ),
                       ),
@@ -167,8 +171,9 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                         child: _Counter(
                           label: 'Rooms',
                           value: _rooms,
-                          onDecrement:
-                              _rooms > 1 ? () => setState(() => _rooms--) : null,
+                          onDecrement: _rooms > 1
+                              ? () => setState(() => _rooms--)
+                              : null,
                           onIncrement: () => setState(() => _rooms++),
                         ),
                       ),
@@ -178,7 +183,7 @@ class _HotelSearchPageState extends ConsumerState<HotelSearchPage> {
                   AppPrimaryButton(
                     onPressed: _triggerSearch,
                     icon: Icons.search,
-                    label: 'Search Hotels',
+                    label: context.ui('searchHotels'),
                   ),
                 ],
               ),
@@ -202,16 +207,16 @@ class _HotelResults extends ConsumerWidget {
     final hotelsAsync = ref.watch(hotelSearchProvider(request));
 
     return hotelsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: CircularProgressIndicator()),
       error: (_, __) => AppEmptyState(
         icon: Icons.error_outline,
         title: 'Search failed',
         message: 'We could not load hotels right now. Please try again.',
-        iconColor: Colors.red,
+        iconColor: AppColors.error,
         action: AppPrimaryButton(
           onPressed: () => ref.invalidate(hotelSearchProvider(request)),
           icon: Icons.refresh,
-          label: 'Try Again',
+          label: context.ui('tryAgain'),
           expand: false,
         ),
       ),
@@ -239,7 +244,7 @@ class _HotelResults extends ConsumerWidget {
           children: [
             Text(
               '${hotels.length} hotels found',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.md),
             ListView.builder(
@@ -271,20 +276,24 @@ class _DateField extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Theme.of(context).colorScheme.outline),
-        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppRadii.input),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadii.input),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.lg,
+          ),
           child: Row(
             children: [
               const Icon(Icons.calendar_month),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('$label: ${value.day}/${value.month}/${value.year}'),
+                child:
+                    Text('$label: ${value.day}/${value.month}/${value.year}'),
               ),
             ],
           ),
@@ -310,15 +319,19 @@ class _Counter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.warmWhite,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppRadii.input),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text(label, style: Theme.of(context).textTheme.labelMedium),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -330,7 +343,7 @@ class _Counter extends StatelessWidget {
               ),
               Text(
                 '$value',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               IconButton(
                 onPressed: onIncrement,

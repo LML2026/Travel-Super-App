@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class RecentFlightSearchesPage extends StatelessWidget {
   const RecentFlightSearchesPage({super.key});
@@ -12,10 +16,10 @@ class RecentFlightSearchesPage extends StatelessWidget {
     if (user == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Recent Searches'),
+          title: Text(context.ui('recentSearches')),
         ),
-        body: const Center(
-          child: Text('Please sign in to view recent searches.'),
+        body: Center(
+          child: Text(context.ui('signInViewRecentSearches')),
         ),
       );
     }
@@ -30,7 +34,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recent Searches'),
+        title: Text(context.ui('recentSearches')),
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: searchesStream,
@@ -38,7 +42,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
           if (snapshot.hasError) {
             return Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Text(
                   'Failed to load recent searches:\n${snapshot.error}',
                   textAlign: TextAlign.center,
@@ -48,7 +52,7 @@ class RecentFlightSearchesPage extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -56,23 +60,21 @@ class RecentFlightSearchesPage extends StatelessWidget {
           final documents = snapshot.data?.docs ?? [];
 
           if (documents.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.history,
                     size: 64,
+                    color: AppColors.textSubtle,
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: AppSpacing.lg),
                   Text(
                     'No recent searches yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.title,
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: AppSpacing.sm),
                   Text(
                     'Your flight searches will appear here.',
                   ),
@@ -82,9 +84,9 @@ class RecentFlightSearchesPage extends StatelessWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: documents.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final document = documents[index];
               final data = document.data();
@@ -93,38 +95,34 @@ class RecentFlightSearchesPage extends StatelessWidget {
               final to = data['to']?.toString() ?? '';
               final passengers =
                   int.tryParse(data['passengers']?.toString() ?? '') ?? 1;
-              final cabinClass =
-                  data['cabinClass']?.toString() ?? 'Economy';
+              final cabinClass = data['cabinClass']?.toString() ?? 'Economy';
 
               final departureDate =
                   _formatDate(data['departureDate']?.toString());
 
-              final returnDate =
-                  _formatDate(data['returnDate']?.toString());
+              final returnDate = _formatDate(data['returnDate']?.toString());
 
               return Card(
                 child: ListTile(
                   leading: const CircleAvatar(
+                    backgroundColor: AppColors.navy50,
                     child: Icon(Icons.flight),
                   ),
                   title: Text(
                     '$from → $to',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   subtitle: Text(
                     [
                       'Departure: $departureDate',
-                      if (returnDate != 'Not selected')
-                        'Return: $returnDate',
+                      if (returnDate != 'Not selected') 'Return: $returnDate',
                       '$passengers passenger${passengers == 1 ? '' : 's'}',
                       cabinClass,
                     ].join('\n'),
                   ),
                   isThreeLine: true,
                   trailing: IconButton(
-                    tooltip: 'Delete',
+                    tooltip: context.ui('delete'),
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
                       await document.reference.delete();

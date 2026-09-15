@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/wallet_transaction.dart';
 import '../providers/wallet_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class WalletPage extends ConsumerStatefulWidget {
   const WalletPage({super.key});
@@ -32,17 +33,17 @@ class _WalletPageState extends ConsumerState<WalletPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Travel Wallet'),
+        title: Text(context.ui('travelWallet')),
         actions: [
           IconButton(
-            tooltip: 'Add currency',
+            tooltip: context.ui('addCurrency'),
             onPressed: () => _showAddCurrencySheet(context),
             icon: const Icon(Icons.add_circle_outline),
           ),
         ],
       ),
       body: walletAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -111,7 +112,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 ),
                 const SizedBox(height: 8),
                 transactionsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      Center(child: CircularProgressIndicator()),
                   error: (error, _) => Text(UserFacingError.message(
                     error,
                     fallback: 'Transactions are unavailable right now.',
@@ -143,18 +145,18 @@ class _WalletPageState extends ConsumerState<WalletPage> {
       context: context,
       builder: (context) {
         if (options.isEmpty) {
-          return const Padding(
+          return Padding(
             padding: EdgeInsets.all(24),
-            child: Text('All supported currencies are already added.'),
+            child: Text(context.ui('allCurrenciesAdded')),
           );
         }
 
         return ListView(
           shrinkWrap: true,
           children: [
-            const ListTile(
-              title: Text('Add Currency'),
-              subtitle: Text('Enable a new currency wallet balance.'),
+            ListTile(
+              title: Text(context.ui('addCurrency')),
+              subtitle: Text(context.ui('enableCurrencyWallet')),
             ),
             ...options.map(
               (currency) => ListTile(
@@ -182,7 +184,7 @@ class _WalletPageState extends ConsumerState<WalletPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Receive Funds'),
+          title: Text(context.ui('receiveFunds')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -205,14 +207,14 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 controller: amountController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Amount'),
+                decoration: InputDecoration(labelText: context.ui('amount')),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(context.ui('cancel')),
             ),
             FilledButton(
               onPressed: () async {
@@ -223,7 +225,7 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 Navigator.of(context).pop();
                 await ref.read(walletActionsProvider).deposit(amount, selected);
               },
-              child: const Text('Receive'),
+              child: Text(context.ui('receive')),
             ),
           ],
         );
@@ -235,7 +237,8 @@ class _WalletPageState extends ConsumerState<WalletPage> {
 
   Future<void> _showSendDialog(BuildContext context) async {
     final amountController = TextEditingController(text: '25');
-    final destinationController = TextEditingController(text: 'wallet-recipient');
+    final destinationController =
+        TextEditingController(text: 'wallet-recipient');
     final wallet = ref.read(walletProvider).valueOrNull;
     final currencies = wallet?.balances.keys.toList() ?? <String>[];
     String selected = currencies.isNotEmpty ? currencies.first : 'GBP';
@@ -244,7 +247,7 @@ class _WalletPageState extends ConsumerState<WalletPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Send Funds'),
+          title: Text(context.ui('sendFunds')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -267,20 +270,20 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                 controller: amountController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Amount'),
+                decoration: InputDecoration(labelText: context.ui('amount')),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: destinationController,
                 decoration:
-                    const InputDecoration(labelText: 'Destination wallet ID'),
+                    InputDecoration(labelText: context.ui('destinationWalletId')),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(context.ui('cancel')),
             ),
             FilledButton(
               onPressed: () async {
@@ -294,7 +297,7 @@ class _WalletPageState extends ConsumerState<WalletPage> {
                     .read(walletActionsProvider)
                     .transfer(amount, selected, destination);
               },
-              child: const Text('Send'),
+              child: Text(context.ui('send')),
             ),
           ],
         );
@@ -310,125 +313,135 @@ class _WalletPageState extends ConsumerState<WalletPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          child: Consumer(
-            builder: (context, ref, _) {
-              final wallet = ref.watch(walletProvider).valueOrNull;
-              final currencies = wallet?.balances.keys.toList() ?? <String>[];
-              if (currencies.isEmpty) {
-                return const SizedBox.shrink();
-              }
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final wallet = ref.watch(walletProvider).valueOrNull;
+                  final currencies =
+                      wallet?.balances.keys.toList() ?? <String>[];
+                  if (currencies.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
 
-              _fromCurrency ??= currencies.first;
-              _toCurrency ??= currencies.length > 1 ? currencies[1] : currencies.first;
+                  _fromCurrency ??= currencies.first;
+                  _toCurrency ??=
+                      currencies.length > 1 ? currencies[1] : currencies.first;
 
-              final from = _fromCurrency!;
-              final to = _toCurrency!;
-              final amount =
-                  double.tryParse(_convertAmountController.text.trim()) ?? 0;
+                  final from = _fromCurrency!;
+                  final to = _toCurrency!;
+                  final amount =
+                      double.tryParse(_convertAmountController.text.trim()) ??
+                          0;
 
-              final rateAsync = from == to
-                  ? const AsyncValue<double>.data(1)
-                  : ref.watch(fxRateProvider(FxPair(base: from, target: to)));
+                  final rateAsync = from == to
+                      ? const AsyncValue<double>.data(1)
+                      : ref.watch(
+                          fxRateProvider(FxPair(base: from, target: to)));
 
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Convert Currency',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 12),
-                  Row(
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: from,
-                          items: currencies
-                              .map((currency) => DropdownMenuItem<String>(
-                                    value: currency,
-                                    child: Text(currency),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() => _fromCurrency = value);
-                            }
-                          },
-                          decoration: const InputDecoration(labelText: 'From'),
-                        ),
+                      Text(context.ui('convertCurrency'),
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              initialValue: from,
+                              items: currencies
+                                  .map((currency) => DropdownMenuItem<String>(
+                                        value: currency,
+                                        child: Text(currency),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setModalState(() => _fromCurrency = value);
+                                }
+                              },
+                              decoration:
+                                  InputDecoration(labelText: context.ui('from')),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              initialValue: to,
+                              items: currencies
+                                  .map((currency) => DropdownMenuItem<String>(
+                                        value: currency,
+                                        child: Text(currency),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setModalState(() => _toCurrency = value);
+                                }
+                              },
+                              decoration:
+                                  InputDecoration(labelText: context.ui('to')),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: to,
-                          items: currencies
-                              .map((currency) => DropdownMenuItem<String>(
-                                    value: currency,
-                                    child: Text(currency),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() => _toCurrency = value);
-                            }
-                          },
-                          decoration: const InputDecoration(labelText: 'To'),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _convertAmountController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: InputDecoration(labelText: context.ui('amount')),
+                        onChanged: (_) => setModalState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      rateAsync.when(
+                        loading: () => const LinearProgressIndicator(),
+                        error: (error, _) => Text(UserFacingError.message(
+                          error,
+                          fallback: 'Exchange rate unavailable right now.',
+                        )),
+                        data: (rate) {
+                          final converted = amount * rate;
+                          return Text(
+                            'Rate: 1 $from = ${rate.toStringAsFixed(4)} $to\n'
+                            'You receive: ${converted.toStringAsFixed(2)} $to',
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: rateAsync.value == null || amount <= 0
+                              ? null
+                              : () async {
+                                  final rate = rateAsync.value!;
+                                  Navigator.of(context).pop();
+                                  await ref.read(walletActionsProvider).convert(
+                                        amount: amount,
+                                        from: from,
+                                        to: to,
+                                        rate: rate,
+                                      );
+                                },
+                          child: Text(context.ui('convert')),
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _convertAmountController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(labelText: 'Amount'),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  rateAsync.when(
-                    loading: () => const LinearProgressIndicator(),
-                    error: (error, _) => Text(UserFacingError.message(
-                      error,
-                      fallback: 'Exchange rate unavailable right now.',
-                    )),
-                    data: (rate) {
-                      final converted = amount * rate;
-                      return Text(
-                        'Rate: 1 $from = ${rate.toStringAsFixed(4)} $to\n'
-                        'You receive: ${converted.toStringAsFixed(2)} $to',
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: rateAsync.value == null || amount <= 0
-                          ? null
-                          : () async {
-                              final rate = rateAsync.value!;
-                              Navigator.of(context).pop();
-                              await ref.read(walletActionsProvider).convert(
-                                    amount: amount,
-                                    from: from,
-                                    to: to,
-                                    rate: rate,
-                                  );
-                            },
-                      child: const Text('Convert'),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
@@ -448,9 +461,10 @@ class _WalletHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Fintech Wallet', style: Theme.of(context).textTheme.titleLarge),
+            Text(context.ui('fintechWallet'),
+                style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 4),
-            Text('Base currency: $baseCurrency'),
+            Text('${context.ui('baseCurrency')}: $baseCurrency'),
           ],
         ),
       ),
@@ -474,7 +488,8 @@ class _CurrencyCard extends ConsumerWidget {
     final money = NumberFormat.currency(symbol: '$currency ');
     final rateAsync = currency == baseCurrency
         ? const AsyncValue<double>.data(1)
-        : ref.watch(fxRateProvider(FxPair(base: baseCurrency, target: currency)));
+        : ref.watch(
+            fxRateProvider(FxPair(base: baseCurrency, target: currency)));
 
     return Card(
       child: Padding(
@@ -489,12 +504,13 @@ class _CurrencyCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(currency, style: Theme.of(context).textTheme.titleMedium),
+                  Text(currency,
+                      style: Theme.of(context).textTheme.titleMedium),
                   Text(money.format(balance)),
                   const SizedBox(height: 2),
                   rateAsync.when(
-                    loading: () => const Text('Fetching rate...'),
-                    error: (_, __) => const Text('Rate unavailable'),
+                    loading: () => Text(context.ui('fetchingRate')),
+                    error: (_, __) => Text(context.ui('rateUnavailable')),
                     data: (rate) => Text(
                       '1 $baseCurrency = ${rate.toStringAsFixed(4)} $currency',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -529,7 +545,7 @@ class _ActionRow extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onReceive,
             icon: const Icon(Icons.call_received),
-            label: const Text('Receive'),
+            label: Text(context.ui('receive')),
           ),
         ),
         const SizedBox(width: 8),
@@ -537,7 +553,7 @@ class _ActionRow extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onSend,
             icon: const Icon(Icons.call_made),
-            label: const Text('Send'),
+            label: Text(context.ui('send')),
           ),
         ),
         const SizedBox(width: 8),
@@ -545,7 +561,7 @@ class _ActionRow extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onConvert,
             icon: const Icon(Icons.currency_exchange),
-            label: const Text('Convert'),
+            label: Text(context.ui('convert')),
           ),
         ),
       ],
@@ -572,7 +588,7 @@ class _SpendingAnalytics extends StatelessWidget {
     }
 
     if (outboundByCurrency.isEmpty) {
-      return const Text('No spending activity yet.');
+      return Text(context.ui('noSpendingActivity'));
     }
 
     final rows = outboundByCurrency.entries.toList()
@@ -609,7 +625,7 @@ class _TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (transactions.isEmpty) {
-      return const Text('No transactions yet.');
+      return Text(context.ui('noTransactions'));
     }
 
     final formatter = DateFormat('dd MMM, HH:mm');

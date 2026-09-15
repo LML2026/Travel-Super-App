@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app/app_routes.dart';
-import '../../authentication/presentation/providers/auth_providers.dart';
-import '../../../core/models/booking.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../trips/presentation/providers/trip_provider.dart';
 import '../../trips/presentation/providers/trip_booking_link_provider.dart';
 import '../../trips/domain/entities/trip.dart';
@@ -10,6 +11,7 @@ import '../models/flight.dart';
 import '../models/saved_flight.dart';
 import '../providers/flight_provider.dart';
 import '../../../core/utils/flight_formatter.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class FlightDetailsPage extends ConsumerWidget {
   final Flight flight;
@@ -41,8 +43,8 @@ class FlightDetailsPage extends ConsumerWidget {
     if (trips.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Create a trip before linking a flight.')),
+          SnackBar(
+              content: Text(context.ui('createTripBeforeLinkingFlight'))),
         );
       }
       return;
@@ -89,7 +91,7 @@ class FlightDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flight Details'),
+        title: Text(context.ui('flightDetails')),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -98,8 +100,8 @@ class FlightDetailsPage extends ConsumerWidget {
           children: [
             // Hero section with airline info
             Container(
-              color: const Color(0xFF1976D2).withValues(alpha: 0.1),
-              padding: const EdgeInsets.all(20),
+              color: AppColors.navy50,
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 children: [
                   // Airline logo and name
@@ -115,56 +117,51 @@ class FlightDetailsPage extends ConsumerWidget {
                         )
                       else
                         const Icon(Icons.flight, size: 60),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: AppSpacing.lg),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               flight.airline,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                             Text(
                               'Flight ${flight.flightNumber}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: AppColors.textMuted,
+                                  ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // Price
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                        horizontal: AppSpacing.lg, vertical: AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1976D2),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.navy,
+                      borderRadius: BorderRadius.circular(AppRadii.md),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Total Price',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: AppColors.champagne100),
                         ),
                         Text(
                           '${flight.currency} ${flight.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: AppTextStyles.price.copyWith(
+                            color: AppColors.warmWhite,
                             fontSize: 28,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -175,7 +172,7 @@ class FlightDetailsPage extends ConsumerWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -191,30 +188,29 @@ class FlightDetailsPage extends ConsumerWidget {
                           isFirst: true,
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.xl,
+                          ),
                           child: Column(
                             children: [
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
                               Container(
                                 width: 2,
                                 height: 40,
-                                color: Colors.grey.shade300,
+                                color: AppColors.border,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
                               Text(
                                 formattedDuration,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.labelMedium,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
                               Container(
                                 width: 2,
                                 height: 40,
-                                color: Colors.grey.shade300,
+                                color: AppColors.border,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
                             ],
                           ),
                         ),
@@ -228,7 +224,7 @@ class FlightDetailsPage extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // Flight details grid
                   _DetailSection(
@@ -244,23 +240,24 @@ class FlightDetailsPage extends ConsumerWidget {
                           value: _getStopsText(),
                         ),
                         _DetailsRow(
-                          label: 'Cabin Class',
+                          label: context.ui('cabinClass'),
                           value: flight.stops == 0 ? 'Economy' : 'Mixed',
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // Route information
                   _DetailSection(
                     title: 'Route',
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade200),
-                        borderRadius: BorderRadius.circular(8),
+                        color: AppColors.warmWhite,
+                        border: Border.all(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(AppRadii.md),
                       ),
                       child: Column(
                         children: [
@@ -272,36 +269,28 @@ class FlightDetailsPage extends ConsumerWidget {
                                 children: [
                                   Text(
                                     flight.origin,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                    'From',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(context.ui('from'),
+                                    style: AppTextStyles.label,
                                   ),
                                 ],
                               ),
                               const Icon(Icons.arrow_forward,
-                                  size: 32, color: Color(0xFF1976D2)),
+                                  size: 32, color: AppColors.champagne),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
                                     flight.destination,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                    'To',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(context.ui('to'),
+                                    style: AppTextStyles.label,
                                   ),
                                 ],
                               ),
@@ -312,7 +301,7 @@ class FlightDetailsPage extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.xxl),
 
                   // Action buttons
                   Row(
@@ -356,7 +345,7 @@ class FlightDetailsPage extends ConsumerWidget {
                             },
                             icon: Icon(
                               isSaved ? Icons.favorite : Icons.favorite_border,
-                              color: isSaved ? Colors.red : null,
+                              color: isSaved ? AppColors.error : null,
                             ),
                             label: Text(isSaved ? 'Saved' : 'Save Flight'),
                           ),
@@ -367,59 +356,23 @@ class FlightDetailsPage extends ConsumerWidget {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
-                            label: const Text('Loading...'),
+                            label: Text(context.ui('loading')),
                           ),
                           error: (_, __) => OutlinedButton.icon(
                             onPressed: null,
                             icon: const Icon(Icons.error),
-                            label: const Text('Error'),
+                            label: Text(context.ui('error')),
                           ),
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.md),
 
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () => _addToTrip(context, ref),
                           icon: const Icon(Icons.add_location_alt_outlined),
-                          label: const Text('Add to trip'),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Book button
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final user = ref.read(immediateCurrentUserProvider);
-                            if (user == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please log in to book.'),
-                                ),
-                              );
-                              return;
-                            }
-
-                            final trips = await ref.read(tripsProvider.future);
-                            final tripId = trips.isNotEmpty
-                                ? trips.first.id
-                                : 'mock-trip-id';
-
-                            ref.read(flightBookingProvider.notifier).book(
-                                  tripId,
-                                  user.uid,
-                                  flight,
-                                );
-
-                            if (context.mounted) {
-                              context.pushBookingStatus(BookingType.flight);
-                            }
-                          },
-                          icon: const Icon(Icons.flight_takeoff),
-                          label: const Text('Book Flight'),
+                          label: Text(context.ui('addToTrip')),
                         ),
                       ),
                     ],
@@ -450,12 +403,9 @@ class _DetailSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         child,
       ],
     );
@@ -478,7 +428,10 @@ class _TimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.xl,
+      ),
       child: Row(
         children: [
           Column(
@@ -488,40 +441,30 @@ class _TimelineItem extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF1976D2),
-                  border: Border.all(color: Colors.white, width: 3),
+                  color: AppColors.champagne,
+                  border: Border.all(color: AppColors.warmWhite, width: 3),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.label,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   airport,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   time,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -544,23 +487,19 @@ class _DetailsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textMuted,
+                ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ],
       ),

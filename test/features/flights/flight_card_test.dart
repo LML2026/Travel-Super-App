@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:travel_super_app/app/app_routes.dart';
 import 'package:travel_super_app/features/flights/models/flight.dart';
+import 'package:travel_super_app/features/flights/pages/flight_details_page.dart';
+import 'package:travel_super_app/features/flights/providers/flight_provider.dart';
 import 'package:travel_super_app/features/flights/widgets/flight_card.dart';
+import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 
 void main() {
   group('FlightCard Widget Tests', () {
@@ -75,7 +81,8 @@ void main() {
       expect(find.text('GBP 180.00'), findsOneWidget);
     });
 
-    testWidgets('FlightCard displays airline logo', (WidgetTester tester) async {
+    testWidgets('FlightCard displays airline logo',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -88,21 +95,7 @@ void main() {
       expect(find.byType(Image), findsWidgets);
     });
 
-    testWidgets('FlightCard has a book button', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlightCard(flight: testFlight),
-          ),
-        ),
-      );
-
-      // Verify book button exists
-      expect(find.text('Book Flight'), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
-    });
-
-    testWidgets('FlightCard book button shows snackbar on tap',
+    testWidgets('FlightCard has a View Details CTA and no Book Flight CTA',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -112,17 +105,91 @@ void main() {
         ),
       );
 
-      // Tap the book button
-      await tester.tap(find.byType(ElevatedButton));
+      expect(find.text('View Details'), findsOneWidget);
+      expect(find.text('Book Flight'), findsNothing);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+    });
+
+    testWidgets('FlightCard View Details CTA opens flight details route',
+        (WidgetTester tester) async {
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: FlightCard(flight: testFlight),
+            ),
+          ),
+          GoRoute(
+            name: AppRoute.flightDetails.routeName,
+            path: AppRoute.flightDetails.path,
+            builder: (context, state) => const Scaffold(
+              body: Text('Details opened'),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+        ),
+      );
+
+      await tester.tap(find.text('View Details'));
       await tester.pumpAndSettle();
 
-      // Verify the non-transactional save-plan message with flight number.
-      expect(
-        find.text(
-          'BA123 is ready to save to a trip. Live ticket purchase is not available yet.',
-        ),
-        findsOneWidget,
+      expect(find.text('Details opened'), findsOneWidget);
+    });
+
+    testWidgets('FlightCard omits internal backend fallback source label',
+        (WidgetTester tester) async {
+      final backendFlight = Flight(
+        id: 'flight-backend',
+        airline: 'British Airways',
+        airlineLogo: '',
+        flightNumber: 'BA123',
+        origin: 'LHR',
+        destination: 'CDG',
+        departureAt: '2026-08-20T08:00:00',
+        arrivalAt: '2026-08-20T12:35:00',
+        duration: 'PT4H35M',
+        stops: 0,
+        amount: 245.50,
+        currency: 'GBP',
+        dataSource: FlightDataSource.backend,
       );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FlightCard(flight: backendFlight),
+          ),
+        ),
+      );
+
+      expect(find.text('Backend fallback data'), findsNothing);
+    });
+
+    testWidgets('FlightDetails exposes truthful actions only',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            isFlightSavedProvider.overrideWith((ref, flightId) async => false),
+            tripsProvider.overrideWith((ref) => Stream.value(const [])),
+          ],
+          child: MaterialApp(
+            home: FlightDetailsPage(flight: testFlight),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Save Flight'), findsOneWidget);
+      expect(find.text('Add to trip'), findsOneWidget);
+      expect(find.text('Book Flight'), findsNothing);
     });
 
     testWidgets('FlightCard displays multiple stops correctly',

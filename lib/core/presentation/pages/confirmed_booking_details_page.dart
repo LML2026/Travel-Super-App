@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/booking.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class ConfirmedBookingDetailsPage extends StatelessWidget {
   final Booking booking;
@@ -17,7 +18,7 @@ class ConfirmedBookingDetailsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${booking.type.name.toUpperCase()} Details'),
+        title: Text('${booking.type.name.toUpperCase()} ${context.ui('details')}'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -30,15 +31,15 @@ class ConfirmedBookingDetailsPage extends StatelessWidget {
               title: 'Booking Information',
               children: [
                 _DetailRow(label: 'Booking ID', value: booking.id),
-                _DetailRow(label: 'Status', value: booking.status.name.toUpperCase(), isStatus: true),
+                _DetailRow(label: context.ui('status'), value: booking.status.name.toUpperCase(), isStatus: true),
                 _DetailRow(label: 'Booked on', value: dateFormat.format(booking.createdAt)),
                 _DetailRow(label: 'Total Paid', value: currencyFormat.format(booking.amount), isPrice: true),
               ],
             ),
             const SizedBox(height: 24),
-            _getTypeSpecificDetails(),
+            _getTypeSpecificDetails(context),
             const SizedBox(height: 48),
-            const Center(
+            Center(
               child: Text(
                 'A confirmation email has been sent to your registered address.',
                 textAlign: TextAlign.center,
@@ -51,7 +52,7 @@ class ConfirmedBookingDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _getTypeSpecificDetails() {
+  Widget _getTypeSpecificDetails(BuildContext context) {
     switch (booking.type) {
       case BookingType.flight:
         return _Section(
@@ -77,8 +78,8 @@ class ConfirmedBookingDetailsPage extends StatelessWidget {
           title: 'Transport Details',
           children: [
             _DetailRow(label: 'Service', value: booking.metadata['providerName'] ?? 'N/A'),
-            _DetailRow(label: 'Pickup', value: booking.metadata['pickup'] ?? 'N/A'),
-            _DetailRow(label: 'Destination', value: booking.metadata['destination'] ?? 'N/A'),
+            _DetailRow(label: context.ui('pickup'), value: booking.metadata['pickup'] ?? 'N/A'),
+            _DetailRow(label: context.ui('destination'), value: booking.metadata['destination'] ?? 'N/A'),
           ],
         );
     }

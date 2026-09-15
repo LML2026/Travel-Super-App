@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_routes.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/travel_discovery_models.dart';
 import '../providers/travel_discovery_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TravelDiscoveryPage extends ConsumerStatefulWidget {
   const TravelDiscoveryPage({super.key});
@@ -60,7 +62,7 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
   Future<void> _search() async {
     if (_destinationController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a destination.')),
+        SnackBar(content: Text(context.ui('enterDestination'))),
       );
       return;
     }
@@ -86,7 +88,7 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Travel Discovery'),
+        title: Text(context.ui('travelDiscovery')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -113,6 +115,10 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
             onSearch: _search,
           ),
           const SizedBox(height: 12),
+          _NearbyEssentialsEntry(
+            onTap: () => context.pushNearbyEssentials(),
+          ),
+          const SizedBox(height: 12),
           tripsAsync.when(
             data: (trips) => _TripSelector(
               trips: trips,
@@ -124,7 +130,7 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
               },
             ),
             loading: () => const LinearProgressIndicator(),
-            error: (_, __) => const Text('Sign in to add bookings to a trip.'),
+            error: (_, __) => Text(context.ui('signInAddBookings')),
           ),
           const SizedBox(height: 12),
           _CategoryFilter(
@@ -208,7 +214,7 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
         await controller.addToTrip(result);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Added to trip itinerary.')),
+          SnackBar(content: Text(context.ui('addedToTripItinerary'))),
         );
       }
     } catch (error) {
@@ -253,15 +259,15 @@ class _TravelDiscoveryPageState extends ConsumerState<TravelDiscoveryPage> {
             const SizedBox(height: 12),
             Text(result.details),
             const SizedBox(height: 12),
-            Text('Provider: ${result.provider}'),
-            Text('Source: ${result.source.label}'),
-            Text('Location: ${result.location}'),
-            Text('Duration: ${result.duration}'),
+            Text('${context.ui('provider')}: ${result.provider}'),
+            Text('${context.ui('source')}: ${result.source.label}'),
+            Text('${context.ui('location')}: ${result.location}'),
+            Text('${context.ui('duration')}: ${result.duration}'),
             Text(
               'Estimated price: ${result.currency} ${result.price.toStringAsFixed(0)}',
             ),
             if (result.category == DiscoveryCategory.restaurants)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
                     'Demo restaurant data only. Not live reservation availability.'),
@@ -322,10 +328,33 @@ class _HeroPanel extends StatelessWidget {
             IconButton(
               onPressed: onSearch,
               icon: const Icon(Icons.search),
-              tooltip: 'Search',
+              tooltip: context.ui('search'),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NearbyEssentialsEntry extends StatelessWidget {
+  const _NearbyEssentialsEntry({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: const CircleAvatar(
+          child: Icon(Icons.place_outlined),
+        ),
+        title: Text(context.ui('nearbyEssentials')),
+        subtitle: const Text(
+          'Find toilets, supermarkets, transport, pharmacies and other practical places.',
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
       ),
     );
   }
@@ -384,8 +413,8 @@ class _SearchPanel extends StatelessWidget {
                   child: TextField(
                     controller: originController,
                     textCapitalization: TextCapitalization.characters,
-                    decoration: const InputDecoration(
-                      labelText: 'Origin',
+                    decoration: InputDecoration(
+                      labelText: context.ui('origin'),
                       prefixIcon: Icon(Icons.flight_takeoff),
                     ),
                   ),
@@ -394,8 +423,8 @@ class _SearchPanel extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: destinationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Destination',
+                    decoration: InputDecoration(
+                      labelText: context.ui('destination'),
                       prefixIcon: Icon(Icons.place_outlined),
                     ),
                   ),
@@ -427,7 +456,7 @@ class _SearchPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: _Stepper(
-                    label: 'Travellers',
+                    label: context.ui('travellers'),
                     value: travellers,
                     min: 1,
                     onChanged: onTravellersChanged,
@@ -450,13 +479,13 @@ class _SearchPanel extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: cabinClass,
-                    decoration: const InputDecoration(labelText: 'Cabin'),
-                    items: const [
+                    decoration: InputDecoration(labelText: context.ui('cabin')),
+                    items: [
                       DropdownMenuItem(
-                          value: 'economy', child: Text('Economy')),
+                          value: 'economy', child: Text(context.ui('economy'))),
                       DropdownMenuItem(
-                          value: 'business', child: Text('Business')),
-                      DropdownMenuItem(value: 'first', child: Text('First')),
+                          value: 'business', child: Text(context.ui('business'))),
+                      DropdownMenuItem(value: 'first', child: Text(context.ui('first'))),
                     ],
                     onChanged: (value) =>
                         onCabinClassChanged(value ?? 'economy'),
@@ -466,14 +495,14 @@ class _SearchPanel extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: interest,
-                    decoration: const InputDecoration(labelText: 'Interest'),
-                    items: const [
+                    decoration: InputDecoration(labelText: context.ui('interest')),
+                    items: [
                       DropdownMenuItem(
-                          value: 'culture', child: Text('Culture')),
-                      DropdownMenuItem(value: 'food', child: Text('Food')),
-                      DropdownMenuItem(value: 'family', child: Text('Family')),
+                          value: 'culture', child: Text(context.ui('culture'))),
+                      DropdownMenuItem(value: 'food', child: Text(context.ui('food'))),
+                      DropdownMenuItem(value: 'family', child: Text(context.ui('family'))),
                       DropdownMenuItem(
-                          value: 'relaxation', child: Text('Relaxation')),
+                          value: 'relaxation', child: Text(context.ui('relaxation'))),
                     ],
                     onChanged: (value) => onInterestChanged(value ?? 'culture'),
                   ),
@@ -484,13 +513,13 @@ class _SearchPanel extends StatelessWidget {
             DropdownButtonFormField<String>(
               initialValue: cuisine,
               decoration:
-                  const InputDecoration(labelText: 'Restaurant cuisine'),
-              items: const [
-                DropdownMenuItem(value: 'local', child: Text('Local')),
+                  InputDecoration(labelText: context.ui('restaurantCuisine')),
+              items: [
+                DropdownMenuItem(value: 'local', child: Text(context.ui('local'))),
                 DropdownMenuItem(
-                    value: 'vegetarian', child: Text('Vegetarian')),
-                DropdownMenuItem(value: 'seafood', child: Text('Seafood')),
-                DropdownMenuItem(value: 'casual', child: Text('Casual')),
+                    value: 'vegetarian', child: Text(context.ui('vegetarian'))),
+                DropdownMenuItem(value: 'seafood', child: Text(context.ui('seafood'))),
+                DropdownMenuItem(value: 'casual', child: Text(context.ui('casual'))),
               ],
               onChanged: (value) => onCuisineChanged(value ?? 'local'),
             ),
@@ -498,7 +527,7 @@ class _SearchPanel extends StatelessWidget {
             FilledButton.icon(
               onPressed: onSearch,
               icon: const Icon(Icons.travel_explore),
-              label: const Text('Search Everything'),
+              label: Text(context.ui('searchEverything')),
             ),
           ],
         ),
@@ -521,10 +550,10 @@ class _TripSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (trips.isEmpty) {
-      return const Card(
+      return Card(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: Text('Create a trip to add bookings and itinerary items.'),
+          child: Text(context.ui('createTripToAddBookings')),
         ),
       );
     }
@@ -538,8 +567,8 @@ class _TripSelector extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: DropdownButtonFormField<String>(
           initialValue: selected,
-          decoration: const InputDecoration(
-            labelText: 'Add bookings to trip',
+          decoration: InputDecoration(
+            labelText: context.ui('addBookingsToTrip'),
             prefixIcon: Icon(Icons.luggage_outlined),
           ),
           items: [
@@ -569,7 +598,7 @@ class _CategoryFilter extends StatelessWidget {
       child: Row(
         children: [
           ChoiceChip(
-            label: const Text('All'),
+            label: Text(context.ui('all')),
             selected: selected == null,
             onSelected: (_) => onChanged(null),
           ),
@@ -609,7 +638,7 @@ class _CompareStrip extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Compare selected options',
+            Text(context.ui('compareSelectedOptions'),
                 style: TextStyle(fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             for (final result in comparing)
@@ -710,7 +739,7 @@ class _DiscoveryResultCard extends StatelessWidget {
                 ),
                 ActionChip(
                   avatar: const Icon(Icons.info_outline),
-                  label: const Text('Details'),
+                  label: Text(context.ui('details')),
                   onPressed: onDetails,
                 ),
                 FilledButton.icon(
@@ -790,14 +819,14 @@ class _LoadingResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
             LinearProgressIndicator(),
             SizedBox(height: 12),
-            Text('Searching demo travel providers...'),
+            Text(context.ui('searchingDemoTravelProviders')),
           ],
         ),
       ),
@@ -815,7 +844,7 @@ class _ErrorResults extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text('Discovery failed: $message'),
+        child: Text('${context.ui('discoveryFailed')}: $message'),
       ),
     );
   }
@@ -826,7 +855,7 @@ class _EmptyResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Text(

@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripListPage extends ConsumerWidget {
   const TripListPage({super.key});
@@ -16,9 +21,11 @@ class TripListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Trips'),
+        title: Text(context.ui('myTrips')),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.navy,
+        foregroundColor: AppColors.warmWhite,
         child: const Icon(Icons.add),
         onPressed: () {
           context.pushCreateTrip();
@@ -40,7 +47,7 @@ class TripListPage extends ConsumerWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: trips.length,
             itemBuilder: (context, index) {
               return TripCard(
@@ -67,37 +74,55 @@ class TripCard extends StatelessWidget {
     final formatter = DateFormat('dd MMM yyyy');
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      elevation: 1,
+      color: AppColors.cardSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.flight_takeoff),
+        contentPadding: const EdgeInsets.all(AppSpacing.lg),
+        leading: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.navy50,
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(AppRadii.md),
+          ),
+          child: const Icon(Icons.flight_takeoff, color: AppColors.navy),
         ),
         title: Text(
           trip.destination,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.textNavy,
+                fontWeight: FontWeight.w700,
+              ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               "${formatter.format(trip.departureDate)}"
               " → "
               "${formatter.format(trip.returnDate)}",
+              style: AppTextStyles.bodyMuted,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               "Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}",
+              style: AppTextStyles.label.copyWith(color: AppColors.textNavy),
             ),
             Text(
               "Travellers: ${trip.travellers}",
+              style: AppTextStyles.label,
             ),
           ],
         ),
-        trailing: const Icon(Icons.chevron_right),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.champagne),
         onTap: () {
           context.pushTripDetails(trip);
         },
@@ -118,19 +143,17 @@ class _EmptyTripsView extends StatelessWidget {
           Icon(
             Icons.luggage,
             size: 80,
-            color: Colors.grey,
+            color: AppColors.navy,
           ),
-          SizedBox(height: 20),
+          SizedBox(height: AppSpacing.xl),
           Text(
             "No trips yet",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.title,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: AppSpacing.sm),
           Text(
             "Tap + to create your first trip.",
+            style: AppTextStyles.bodyMuted,
           ),
         ],
       ),

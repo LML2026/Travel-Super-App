@@ -45,6 +45,14 @@ class NearbyServiceEngine {
         return const <PlaceCategory>{PlaceCategory.parking};
       case NearbyServiceType.supermarket:
         return const <PlaceCategory>{PlaceCategory.supermarket};
+      case NearbyServiceType.airport:
+        return const <PlaceCategory>{PlaceCategory.airport};
+      case NearbyServiceType.trainStation:
+        return const <PlaceCategory>{PlaceCategory.trainStation};
+      case NearbyServiceType.busStation:
+        return const <PlaceCategory>{PlaceCategory.busStation};
+      case NearbyServiceType.evCharging:
+        return const <PlaceCategory>{PlaceCategory.evChargingStation};
       case NearbyServiceType.hotel:
         return const <PlaceCategory>{PlaceCategory.accommodation};
       case NearbyServiceType.taxi:
@@ -105,6 +113,14 @@ class NearbyServiceEngine {
         return 'parking';
       case NearbyServiceType.supermarket:
         return 'supermarket';
+      case NearbyServiceType.airport:
+        return 'airport';
+      case NearbyServiceType.trainStation:
+        return 'train station';
+      case NearbyServiceType.busStation:
+        return 'bus station';
+      case NearbyServiceType.evCharging:
+        return 'ev charging station';
       case NearbyServiceType.hotel:
         return 'hotel';
       case NearbyServiceType.taxi:

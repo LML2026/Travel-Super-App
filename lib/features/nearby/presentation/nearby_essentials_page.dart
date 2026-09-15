@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../l10n/app_localizations.dart';
+
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/travel_card.dart';
 import '../../maps/models/places_prefill.dart';
@@ -16,6 +18,7 @@ import '../models/nearby_service_type.dart';
 import 'providers/nearby_places_provider.dart';
 import '../services/nearby_places_service.dart';
 import '../services/nearby_service_engine.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class NearbyEssentialsPage extends ConsumerStatefulWidget {
   const NearbyEssentialsPage({
@@ -79,10 +82,10 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
     final trips = ref.watch(tripsProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nearby Essentials'),
+        title: Text(AppLocalizations.of(context)!.nearbyEssentials),
         actions: [
           IconButton(
-            tooltip: 'Open saved places',
+            tooltip: AppLocalizations.of(context)!.openSavedPlaces,
             icon: const Icon(Icons.bookmarks_outlined),
             onPressed: () => context.pushSavedItems(),
           ),
@@ -95,22 +98,21 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Explore around your trip',
+                Text(AppLocalizations.of(context)!.exploreAroundTrip,
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
-                    'Nearby results with a clear demo fallback when live search is unavailable.'),
+                Text(context.ui('nearbyDemoFallback')),
                 const SizedBox(height: AppSpacing.md),
                 TextField(
                   controller: _locationController,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => _search(),
                   decoration: InputDecoration(
-                    labelText: 'Destination or map location',
-                    hintText: 'e.g. Lisbon city centre',
+                    labelText: context.ui('destinationOrMapLocation'),
+                    hintText: context.ui('exampleLisbonCityCentre'),
                     prefixIcon: const Icon(Icons.location_on_outlined),
                     suffixIcon: IconButton(
-                      tooltip: 'Search nearby',
+                      tooltip: AppLocalizations.of(context)!.searchNearby,
                       onPressed: _search,
                       icon: const Icon(Icons.search),
                     ),
@@ -119,8 +121,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
                 const SizedBox(height: AppSpacing.sm),
                 trips.when(
                   loading: () => const LinearProgressIndicator(),
-                  error: (_, __) => const Text(
-                      'Trip context unavailable. Enter a location to search.'),
+                  error: (_, __) => Text(context.ui('tripContextUnavailableSearch')),
                   data: (items) => _TripContextPicker(
                     trips: items,
                     selectedTripId: _selectedTripId,
@@ -138,7 +139,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text('What are you looking for?',
+          Text(AppLocalizations.of(context)!.whatAreYouLookingFor,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.sm),
           Wrap(
@@ -158,13 +159,13 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
             spacing: AppSpacing.sm,
             children: [
               FilterChip(
-                label: const Text('Open now'),
+                label: Text(AppLocalizations.of(context)!.openNow),
                 selected: _filter.openNow,
                 onSelected: (value) =>
                     setState(() => _filter = _filter.copyWith(openNow: value)),
               ),
               FilterChip(
-                label: const Text('Top rated'),
+                label: Text(AppLocalizations.of(context)!.topRated),
                 selected: _filter.minRating != null,
                 onSelected: (value) => setState(() =>
                     _filter = _filter.copyWith(minRating: value ? 4 : null)),
@@ -235,7 +236,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
             Text(place.address),
             Text('${place.categoryLabel} • ${_sourceLabel(place)}'),
             if (place.rating != null)
-              Text('Rating ${place.rating!.toStringAsFixed(1)} / 5'),
+              Text(AppLocalizations.of(context)!.ratingOutOfFive(place.rating!.toStringAsFixed(1))),
             if (place.isOpenNow != null)
               Text(place.isOpenNow! ? 'Open now' : 'Closed now'),
             if (place.metadata['description'] is String)
@@ -244,7 +245,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
               Expanded(
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.map_outlined),
-                  label: const Text('Map & route'),
+                  label: Text(AppLocalizations.of(context)!.mapAndRoute),
                   onPressed: () {
                     Navigator.pop(sheetContext);
                     context.pushMaps(
@@ -263,7 +264,7 @@ class _NearbyEssentialsPageState extends ConsumerState<NearbyEssentialsPage> {
               Expanded(
                 child: FilledButton.icon(
                   icon: const Icon(Icons.add_location_alt_outlined),
-                  label: const Text('Add to trip'),
+                  label: Text(AppLocalizations.of(context)!.addToTrip),
                   onPressed: () {
                     Navigator.pop(sheetContext);
                     _addToTrip(place);
@@ -299,13 +300,13 @@ class _TripContextPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (trips.isEmpty)
-      return const Text('No trips yet. Search any destination above.');
+      return Text(AppLocalizations.of(context)!.noTripsYetSearchDestination);
     final current =
         trips.where((trip) => trip.id == selectedTripId).firstOrNull ??
             trips.first;
     return DropdownButtonFormField<String>(
       initialValue: current.id,
-      decoration: const InputDecoration(labelText: 'Trip context'),
+      decoration: InputDecoration(labelText: context.ui('tripContext')),
       items: trips
           .map((trip) => DropdownMenuItem(
               value: trip.id,
@@ -329,7 +330,7 @@ class _NearbyEmpty extends StatelessWidget {
         child: Column(children: [
           Icon(service.metadata.icon, size: 42),
           const SizedBox(height: 10),
-          Text('Search for ${service.metadata.label.toLowerCase()} nearby',
+          Text(AppLocalizations.of(context)!.searchForNearby(service.metadata.label.toLowerCase()),
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 6),
           Text(service.metadata.description, textAlign: TextAlign.center),
@@ -337,7 +338,7 @@ class _NearbyEmpty extends StatelessWidget {
           FilledButton.icon(
               onPressed: onSearch,
               icon: const Icon(Icons.search),
-              label: const Text('Search destination')),
+              label: Text(AppLocalizations.of(context)!.searchDestination)),
         ]),
       );
 }
@@ -381,7 +382,7 @@ class _Results extends ConsumerWidget {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Places near $location',
+                Text(AppLocalizations.of(context)!.placesNear(location),
                     style: Theme.of(context).textTheme.titleMedium),
                 if (showingFallback) ...[
                   const SizedBox(height: 8),
@@ -453,7 +454,7 @@ class _PlaceCard extends StatelessWidget {
               TextButton.icon(
                   onPressed: () => onDetails(place),
                   icon: const Icon(Icons.info_outline),
-                  label: const Text('Details')),
+                  label: Text(AppLocalizations.of(context)!.details)),
               TextButton.icon(
                   onPressed: () => onSave(place),
                   icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
@@ -462,7 +463,7 @@ class _PlaceCard extends StatelessWidget {
                 TextButton.icon(
                     onPressed: () => onAddToTrip(place),
                     icon: const Icon(Icons.add_location_alt_outlined),
-                    label: const Text('Add to trip')),
+                    label: Text(AppLocalizations.of(context)!.addToTrip)),
             ]),
           ]),
         ),

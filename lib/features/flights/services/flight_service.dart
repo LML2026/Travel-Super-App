@@ -3,17 +3,13 @@ import '../../../core/utils/app_logger.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../models/flight.dart';
-import 'duffel_flight_service.dart';
 
 class FlightService {
   FlightService({
     ApiClient? apiClient,
-    DuffelFlightService? duffelService,
-  })  : _apiClient = apiClient ?? ApiClient(),
-        _duffelService = duffelService ?? DuffelFlightService();
+  }) : _apiClient = apiClient ?? ApiClient();
 
   final ApiClient _apiClient;
-  final DuffelFlightService _duffelService;
   bool _lastSearchUsedFallback = false;
 
   bool get lastSearchUsedFallback => _lastSearchUsedFallback;
@@ -27,25 +23,6 @@ class FlightService {
     String cabinClass = 'economy',
   }) async {
     _lastSearchUsedFallback = false;
-    if (_duffelService.isConfigured) {
-      try {
-        final duffelFlights = await _duffelService.searchFlights(
-          from: from,
-          to: to,
-          departureDate: departureDate,
-          returnDate: returnDate,
-          passengers: passengers,
-          cabinClass: cabinClass,
-        );
-        if (duffelFlights.isNotEmpty) {
-          appLogger.i('FlightService: received Duffel TEST offers');
-          return duffelFlights;
-        }
-      } catch (_) {
-        // Fall through to the existing provider and deterministic demo data.
-      }
-    }
-
     try {
       appLogger.i('FlightService: $from → $to on $departureDate');
 

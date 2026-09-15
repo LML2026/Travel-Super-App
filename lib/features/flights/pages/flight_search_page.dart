@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../providers/flight_provider.dart';
 import '../models/flight.dart';
 import '../widgets/flight_card.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 enum _SortType { cheapest, fastest, direct }
 
@@ -43,13 +47,16 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
 
     if (origin.isEmpty || destination.isEmpty || date.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in From, To and Departure Date.')),
+        SnackBar(
+            content: Text(context.ui('fillFlightSearchFields'))),
       );
       return;
     }
     if (origin.length != 3 || destination.length != 3) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter valid 3-letter IATA codes, e.g. LHR and CDG.')),
+        SnackBar(
+            content:
+                Text(context.ui('enterValidIataCodes'))),
       );
       return;
     }
@@ -61,7 +68,9 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
       from: origin,
       to: destination,
       departureDate: date,
-      returnDate: _returnDateController.text.isEmpty ? null : _returnDateController.text,
+      returnDate: _returnDateController.text.isEmpty
+          ? null
+          : _returnDateController.text,
       passengers: _passengers,
       cabinClass: _cabinClass,
     );
@@ -84,7 +93,8 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
     }
   }
 
-  Future<void> _selectDate(TextEditingController controller, {DateTime? firstDate}) async {
+  Future<void> _selectDate(TextEditingController controller,
+      {DateTime? firstDate}) async {
     final date = await showDatePicker(
       context: context,
       initialDate: firstDate ?? DateTime.now().add(const Duration(days: 1)),
@@ -111,7 +121,9 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
       'from': _fromController.text.trim().toUpperCase(),
       'to': _toController.text.trim().toUpperCase(),
       'departureDate': _dateController.text,
-      'returnDate': _returnDateController.text.isNotEmpty ? _returnDateController.text : null,
+      'returnDate': _returnDateController.text.isNotEmpty
+          ? _returnDateController.text
+          : null,
       'passengers': _passengers,
       'cabinClass': _cabinClass,
       'searchedAt': FieldValue.serverTimestamp(),
@@ -137,46 +149,47 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
     final isLoading = flightsAsync?.isLoading ?? false;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Flights')),
+      appBar: AppBar(title: Text(context.ui('searchFlights'))),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           children: [
             // ── Search Form ──────────────────────────────
             Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadii.card),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   children: [
                     TextField(
                       controller: _fromController,
                       textCapitalization: TextCapitalization.characters,
-                      decoration: const InputDecoration(
-                        labelText: 'From (IATA Code)',
-                        hintText: 'e.g., LHR',
+                      decoration: InputDecoration(
+                        labelText: context.ui('fromIataCode'),
+                        hintText: context.ui('exampleLhr'),
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.flight_takeoff),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     TextField(
                       controller: _toController,
                       textCapitalization: TextCapitalization.characters,
-                      decoration: const InputDecoration(
-                        labelText: 'To (IATA Code)',
-                        hintText: 'e.g., CDG',
+                      decoration: InputDecoration(
+                        labelText: context.ui('toIataCode'),
+                        hintText: context.ui('exampleCdg'),
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.flight_land),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     TextField(
                       controller: _dateController,
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: 'Departure Date',
+                        labelText: context.ui('departureDate'),
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.calendar_today),
                         suffixIcon: IconButton(
@@ -186,12 +199,12 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                       ),
                       onTap: () => _selectDate(_dateController),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     TextField(
                       controller: _returnDateController,
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: 'Return Date (Optional)',
+                        labelText: context.ui('returnDateOptional'),
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.event_repeat),
                         suffixIcon: Row(
@@ -200,13 +213,15 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                             if (_returnDateController.text.isNotEmpty)
                               IconButton(
                                 icon: const Icon(Icons.clear),
-                                onPressed: () => setState(() => _returnDateController.clear()),
+                                onPressed: () => setState(
+                                    () => _returnDateController.clear()),
                               ),
                             IconButton(
                               icon: const Icon(Icons.edit_calendar),
                               onPressed: () => _selectDate(
                                 _returnDateController,
-                                firstDate: DateTime.now().add(const Duration(days: 1)),
+                                firstDate:
+                                    DateTime.now().add(const Duration(days: 1)),
                               ),
                             ),
                           ],
@@ -217,41 +232,52 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                         firstDate: DateTime.now().add(const Duration(days: 1)),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<String>(
                       initialValue: _cabinClass,
-                      decoration: const InputDecoration(
-                        labelText: 'Cabin Class',
+                      decoration: InputDecoration(
+                        labelText: context.ui('cabinClass'),
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.airline_seat_recline_extra),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 'economy', child: Text('Economy')),
-                        DropdownMenuItem(value: 'premium_economy', child: Text('Premium Economy')),
-                        DropdownMenuItem(value: 'business', child: Text('Business')),
-                        DropdownMenuItem(value: 'first', child: Text('First Class')),
+                      items: [
+                        DropdownMenuItem(
+                            value: 'economy', child: Text(context.ui('economy'))),
+                        DropdownMenuItem(
+                            value: 'premium_economy',
+                            child: Text(context.ui('premiumEconomy'))),
+                        DropdownMenuItem(
+                            value: 'business', child: Text(context.ui('business'))),
+                        DropdownMenuItem(
+                            value: 'first', child: Text(context.ui('firstClass'))),
                       ],
-                      onChanged: (v) => setState(() => _cabinClass = v ?? 'economy'),
+                      onChanged: (v) =>
+                          setState(() => _cabinClass = v ?? 'economy'),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
-                        const Icon(Icons.person, color: Colors.grey),
-                        const SizedBox(width: 8),
-                        const Text('Passengers:'),
+                        const Icon(Icons.person, color: AppColors.textMuted),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(context.ui('passengers')),
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: _passengers > 1 ? () => setState(() => _passengers--) : null,
+                          onPressed: _passengers > 1
+                              ? () => setState(() => _passengers--)
+                              : null,
                         ),
-                        Text('$_passengers', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          '$_passengers',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                         IconButton(
                           icon: const Icon(Icons.add_circle_outline),
                           onPressed: () => setState(() => _passengers++),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -261,10 +287,14 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.warmWhite,
+                                ),
                               )
                             : const Icon(Icons.search),
-                        label: Text(isLoading ? _searchStatus : 'Search Flights'),
+                        label:
+                            Text(isLoading ? _searchStatus : 'Search Flights'),
                       ),
                     ),
                   ],
@@ -272,7 +302,7 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // ── Results area ────────────────────────────
             if (flightsAsync == null)
@@ -283,27 +313,41 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                 loading: () => Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.md),
                       child: Text(
                         _searchStatus,
-                        style: TextStyle(fontSize: 15, color: Colors.grey[600], fontStyle: FontStyle.italic),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textMuted,
+                              fontStyle: FontStyle.italic,
+                            ),
                       ),
                     ),
                     ...List.generate(3, (_) => const _SkeletonFlightCard()),
                   ],
                 ),
                 error: (e, _) => Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    border: Border.all(color: Colors.red.shade200),
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.error.withValues(alpha: 0.08),
+                    border: Border.all(
+                      color: AppColors.error.withValues(alpha: 0.28),
+                    ),
+                    borderRadius: BorderRadius.circular(AppRadii.md),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.red),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text('$e', style: const TextStyle(color: Colors.red))),
+                      const Icon(Icons.error_outline, color: AppColors.error),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          '$e',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.error),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -321,17 +365,26 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
 
                   if (flights.isEmpty) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      padding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
                       child: Column(
                         children: [
-                          Icon(Icons.flight_takeoff, size: 72, color: Colors.grey.shade300),
-                          const SizedBox(height: 16),
-                          Text('No flights found', style: Theme.of(context).textTheme.titleLarge),
-                          const SizedBox(height: 8),
+                          const Icon(
+                            Icons.flight_takeoff,
+                            size: 72,
+                            color: AppColors.textSubtle,
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          Text(context.ui('noFlightsFound'),
+                              style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: AppSpacing.sm),
                           Text(
                             'Try changing your travel dates\nor choose another airport.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textMuted),
                           ),
                         ],
                       ),
@@ -355,9 +408,9 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                       // Results count
                       Text(
                         '${visible.length} flights found',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.md),
 
                       // Sort chips
                       SingleChildScrollView(
@@ -365,26 +418,29 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                         child: Row(
                           children: [
                             ChoiceChip(
-                              label: const Text('💷 Cheapest'),
+                              label: Text(context.ui('cheapest')),
                               selected: _sortType == _SortType.cheapest,
-                              onSelected: (_) => setState(() => _sortType = _SortType.cheapest),
+                              onSelected: (_) => setState(
+                                  () => _sortType = _SortType.cheapest),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSpacing.sm),
                             ChoiceChip(
-                              label: const Text('⚡ Fastest'),
+                              label: Text(context.ui('fastest')),
                               selected: _sortType == _SortType.fastest,
-                              onSelected: (_) => setState(() => _sortType = _SortType.fastest),
+                              onSelected: (_) =>
+                                  setState(() => _sortType = _SortType.fastest),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSpacing.sm),
                             ChoiceChip(
-                              label: const Text('🛫 Direct only'),
+                              label: Text(context.ui('directOnly')),
                               selected: _sortType == _SortType.direct,
-                              onSelected: (_) => setState(() => _sortType = _SortType.direct),
+                              onSelected: (_) =>
+                                  setState(() => _sortType = _SortType.direct),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
 
                       // Flight list with pull-to-refresh
                       RefreshIndicator(
@@ -393,7 +449,8 @@ class _FlightSearchPageState extends ConsumerState<FlightSearchPage> {
                           shrinkWrap: true,
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: visible.length,
-                          itemBuilder: (context, index) => FlightCard(flight: visible[index]),
+                          itemBuilder: (context, index) =>
+                              FlightCard(flight: visible[index]),
                         ),
                       ),
                     ],
@@ -423,7 +480,8 @@ class _SkeletonFlightCardState extends State<_SkeletonFlightCard>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1000))
       ..repeat(reverse: true);
     _anim = Tween<double>(begin: 0.3, end: 0.7).animate(_ctrl);
   }
@@ -439,10 +497,10 @@ class _SkeletonFlightCardState extends State<_SkeletonFlightCard>
         builder: (_, __) => Container(
           width: width,
           height: height,
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
           decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: _anim.value),
-            borderRadius: BorderRadius.circular(6),
+            color: AppColors.navy100.withValues(alpha: _anim.value),
+            borderRadius: BorderRadius.circular(AppRadii.sm),
           ),
         ),
       );
@@ -450,11 +508,12 @@ class _SkeletonFlightCardState extends State<_SkeletonFlightCard>
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -22,6 +22,7 @@ import '../../providers/live_location_provider.dart';
 import '../../services/map_link_service.dart';
 import '../../services/map_route_service.dart';
 import '../../services/google_maps_platform_service.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class MapsHubPage extends ConsumerStatefulWidget {
   const MapsHubPage({
@@ -68,10 +69,10 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Maps'),
+        title: Text(context.ui('maps')),
       ),
       body: tripsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -296,7 +297,7 @@ class _MapsHubPageState extends ConsumerState<MapsHubPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Unable to open map link.')),
+      SnackBar(content: Text(context.ui('unableToOpenMapLink'))),
     );
   }
 }
@@ -327,7 +328,7 @@ class _GoogleMapCard extends StatelessWidget {
           }
 
           if (configurationSnapshot.data != true) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.all(16),
               child: Row(
                 children: [
@@ -439,15 +440,15 @@ class _RoutePreviewCard extends StatelessWidget {
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Row(
+              return Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  SizedBox(width: 10),
-                  Text('Calculating live walking route...'),
+                  const SizedBox(width: 10),
+                  Text(context.ui('calculatingLiveWalkingRoute')),
                 ],
               );
             }
@@ -473,7 +474,7 @@ class _RoutePreviewCard extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 4),
-                Text('$distance • $minutes min walking'),
+                Text('$distance • $minutes ${context.ui('minWalking')}'),
                 const SizedBox(height: 4),
                 Text(
                   'Google Routes API',
@@ -514,7 +515,7 @@ class _EmptyMapsState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onOpenTrips,
               icon: const Icon(Icons.luggage_outlined),
-              label: const Text('Open Trips'),
+              label: Text(context.ui('openTrips')),
             ),
           ],
         ),
@@ -570,12 +571,12 @@ class _MapsIntroCard extends StatelessWidget {
                 FilledButton.tonalIcon(
                   onPressed: onOpenTrips,
                   icon: const Icon(Icons.luggage_outlined),
-                  label: const Text('All trips'),
+                  label: Text(context.ui('allTrips')),
                 ),
                 FilledButton.tonalIcon(
                   onPressed: onOpenTransport,
                   icon: const Icon(Icons.alt_route_outlined),
-                  label: const Text('Transport hub'),
+                  label: Text(context.ui('transportHub')),
                 ),
               ],
             ),
@@ -605,8 +606,7 @@ class _TripSelectorCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Trip context',
+            Text(context.ui('tripContext'),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -614,8 +614,8 @@ class _TripSelectorCard extends StatelessWidget {
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: selectedTripId,
-              decoration: const InputDecoration(
-                labelText: 'Selected trip',
+              decoration: InputDecoration(
+                labelText: context.ui('selectedTrip'),
                 border: OutlineInputBorder(),
               ),
               items: trips
@@ -667,8 +667,8 @@ class _SearchCard extends StatelessWidget {
             const SizedBox(height: 12),
             TextField(
               controller: controller,
-              decoration: const InputDecoration(
-                labelText: 'Search a place, station, or venue',
+              decoration: InputDecoration(
+                labelText: context.ui('searchPlaceStationVenue'),
                 border: OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.search,
@@ -686,7 +686,7 @@ class _SearchCard extends StatelessWidget {
               child: FilledButton.icon(
                 onPressed: () => onSearchSubmitted(controller.text),
                 icon: const Icon(Icons.search),
-                label: const Text('Search in app'),
+                label: Text(context.ui('searchInApp')),
               ),
             ),
             const SizedBox(height: 12),
@@ -782,9 +782,9 @@ class _LiveLocationCard extends StatelessWidget {
               data: (location) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Coordinates: ${location.coordinatesLabel}'),
+                  Text('${context.ui('coordinates')}: ${location.coordinatesLabel}'),
                   const SizedBox(height: 4),
-                  Text('Accuracy: ${location.accuracy.toStringAsFixed(1)} m'),
+                  Text('${context.ui('accuracy')}: ${location.accuracy.toStringAsFixed(1)} m'),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
@@ -793,12 +793,12 @@ class _LiveLocationCard extends StatelessWidget {
                       FilledButton.tonalIcon(
                         onPressed: () => onUseInSearch(location),
                         icon: const Icon(Icons.navigation_outlined),
-                        label: const Text('Use in route'),
+                        label: Text(context.ui('useInRoute')),
                       ),
                       OutlinedButton.icon(
                         onPressed: onRefresh,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh'),
+                        label: Text(context.ui('refresh')),
                       ),
                     ],
                   ),
@@ -842,7 +842,7 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text('Suggested search: ${prefill.query}'),
+            Text('${context.ui('suggestedSearch')}: ${prefill.query}'),
             if (prefill.categories.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
@@ -858,12 +858,12 @@ class _AiPlacesPrefillBanner extends StatelessWidget {
                 prefill.locationHint!.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text('Location hint: ${prefill.locationHint}'),
+                child: Text('${context.ui('locationHint')}: ${prefill.locationHint}'),
               ),
             if (scheduledAt != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text('Suggested time: ${scheduledAt.toLocal()}'),
+                child: Text('${context.ui('suggestedTime')}: ${scheduledAt.toLocal()}'),
               ),
           ],
         ),
@@ -896,7 +896,7 @@ class _PlacesResultsSection extends StatelessWidget {
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
@@ -908,7 +908,7 @@ class _PlacesResultsSection extends StatelessWidget {
 
             final places = snapshot.data ?? const <PlaceResult>[];
             if (places.isEmpty) {
-              return Text('No places found for "$query".');
+              return Text('${context.ui('noPlacesFoundFor')} "$query".');
             }
 
             return Column(
@@ -979,13 +979,13 @@ class _PlacesResultsSection extends StatelessWidget {
                               OutlinedButton.icon(
                                 onPressed: () => onOpenMap(selected),
                                 icon: const Icon(Icons.map_outlined),
-                                label: const Text('Open Map'),
+                                label: Text(context.ui('openMap')),
                               ),
                               if (prefill != null)
                                 FilledButton.icon(
                                   onPressed: () => onAddToTrip(selected),
                                   icon: const Icon(Icons.bookmark_add_outlined),
-                                  label: const Text('Add to Trip'),
+                                  label: Text(context.ui('addToTrip')),
                                 ),
                             ],
                           ),

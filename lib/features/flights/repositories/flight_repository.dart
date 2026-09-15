@@ -3,7 +3,6 @@ import '../../../core/utils/result.dart';
 import '../../../core/models/booking.dart';
 import '../models/flight.dart';
 import '../models/flight_search_request.dart';
-import '../services/duffel_flight_service.dart';
 import '../services/flight_service.dart';
 
 /// Repository layer — the UI and providers talk only to this class.
@@ -35,10 +34,6 @@ class FlightRepository {
   }
 
   String _friendlySearchMessage(Object error) {
-    if (error is DuffelApiException &&
-        (error.statusCode == 401 || error.statusCode == 403)) {
-      return 'Flight search is temporarily unavailable. Please try again later.';
-    }
     return 'We could not search flights right now. Please try again.';
   }
 

@@ -7,6 +7,7 @@ import 'presentation/utils/auth_error_mapper.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -34,8 +35,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       if (mounted) {
         setState(() => _emailSent = true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset email sent. Check your inbox.'),
+          SnackBar(
+            content: Text(context.ui('passwordResetEmailSent')),
             duration: Duration(seconds: 3),
           ),
         );
@@ -59,7 +60,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       isLoading: _loading,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Reset Password'),
+          title: Text(context.ui('resetPassword')),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -83,8 +84,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 Form(
                   key: _formKey,
                   child: AppTextField(
-                    label: 'Email',
-                    hintText: 'your@email.com',
+                    label: context.ui('email'),
+                    hintText: context.ui('yourEmailExample'),
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email,
@@ -103,7 +104,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Back to Login'),
+                      child: Text(context.ui('backToLogin')),
                     ),
                   ),
                 ],

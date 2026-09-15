@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/app_routes.dart';
-import '../../../authentication/presentation/providers/auth_providers.dart';
-import '../../../../core/models/booking.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/user_facing_error.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../providers/taxi_hub_provider.dart';
-import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TaxiBookingDetailsPage extends ConsumerWidget {
   const TaxiBookingDetailsPage({
@@ -26,8 +29,8 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
     if (trips.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Create a trip first to save taxi rides.'),
+          SnackBar(
+            content: Text(context.ui('createTripFirstSaveTaxi')),
           ),
         );
       }
@@ -43,7 +46,7 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) {
             return AlertDialog(
-              title: const Text('Select trip'),
+              title: Text(context.ui('selectTrip')),
               content: SizedBox(
                 width: 360,
                 child: DropdownButtonFormField<String>(
@@ -69,11 +72,11 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(context.ui('cancel')),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.of(dialogContext).pop(selected),
-                  child: const Text('Save'),
+                  child: Text(context.ui('save')),
                 ),
               ],
             );
@@ -98,7 +101,7 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
         context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open map preview.')),
+        SnackBar(content: Text(context.ui('couldNotOpenMapPreview'))),
       );
     }
   }
@@ -106,86 +109,69 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Planned ride details')),
+      appBar: AppBar(title: Text(context.ui('plannedRideDetails'))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    args.option.providerName,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Estimated fare: ${args.option.currency} ${args.option.estimatedFare.toStringAsFixed(2)}',
-                  ),
-                  Text('Pickup ETA: ${args.option.estimatedPickupMinutes} min'),
-                ],
-              ),
+          _TaxiDetailsCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  args.option.providerName,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppColors.textNavy,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Estimated fare: ${args.option.currency} ${args.option.estimatedFare.toStringAsFixed(2)}',
+                  style: AppTextStyles.price,
+                ),
+                Text(
+                  'Estimated pickup: ${args.option.estimatedPickupMinutes} min',
+                  style: AppTextStyles.bodyMuted,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Planning estimate only. No payment or provider order has been placed.',
+                  style: AppTextStyles.bodyMuted,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Journey'),
-                  const SizedBox(height: 8),
-                  Text('Pickup: ${args.request.pickupAddress}'),
-                  Text('Destination: ${args.request.destinationAddress}'),
-                  Text('Passengers: ${args.request.passengers}'),
-                  Text('Luggage: ${args.request.luggage}'),
-                  Text(
-                    'When: ${args.request.pickupTime?.toString() ?? 'ASAP'}',
-                  ),
-                ],
-              ),
+          const SizedBox(height: AppSpacing.md),
+          _TaxiDetailsCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Journey',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.textNavy,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text('${context.ui('pickup')}: ${args.request.pickupAddress}'),
+                Text('${context.ui('destination')}: ${args.request.destinationAddress}'),
+                Text('${context.ui('passengers')}: ${args.request.passengers}'),
+                Text('${context.ui('luggage')}: ${args.request.luggage}'),
+                Text(
+                  'When: ${args.request.pickupTime?.toString() ?? 'ASAP'}',
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () async {
-              final user = ref.read(immediateCurrentUserProvider);
-              if (user == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Please log in to save a planned ride.')),
-                );
-                return;
-              }
-
-              final trips = await ref.read(tripsProvider.future);
-              final tripId = trips.isNotEmpty ? trips.first.id : 'mock-trip-id';
-
-              ref.read(transportBookingProvider.notifier).book(
-                    tripId: tripId,
-                    userId: user.uid,
-                    request: args.request,
-                    option: args.option,
-                  );
-
-              if (context.mounted) {
-                context.pushBookingStatus(BookingType.transport);
-              }
-            },
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('Save planned transport'),
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.lg),
           OutlinedButton.icon(
             onPressed: () => _openRouteOnMap(context),
             icon: const Icon(Icons.map_outlined),
-            label: const Text('View route on map'),
+            label: Text(context.ui('viewRouteOnMap')),
           ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
+          const SizedBox(height: AppSpacing.sm),
+          FilledButton.icon(
             onPressed: () async {
               final tripId = await _selectTripId(context, ref);
               if (tripId == null) {
@@ -202,7 +188,7 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(
                         'Ride saved to trip transport itinerary and expense log.',
                       ),
@@ -223,23 +209,45 @@ class TaxiBookingDetailsPage extends ConsumerWidget {
               }
             },
             icon: const Icon(Icons.bookmark_add_outlined),
-            label: const Text('Save ride to itinerary'),
+            label: Text(context.ui('saveRideToItinerary')),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'Fare is added automatically when you save the ride to a trip.',
+                    'Estimated fare is added as a trip expense when you save the ride to a trip.',
                   ),
                 ),
               );
             },
             icon: const Icon(Icons.receipt_long_outlined),
-            label: const Text('Expense auto-logging info'),
+            label: Text(context.ui('expenseAutoLoggingInfo')),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TaxiDetailsCard extends StatelessWidget {
+  const _TaxiDetailsCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: child,
       ),
     );
   }

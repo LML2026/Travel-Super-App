@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/supported_currencies.dart';
 import '../../../authentication/presentation/providers/auth_providers.dart';
 import '../../data/repositories/firestore_wallet_repository.dart';
 import '../../data/repositories/in_memory_wallet_repository.dart';
@@ -13,17 +14,18 @@ class FxPair {
 
   final String base;
   final String target;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is FxPair && other.base == base && other.target == target;
+  }
+
+  @override
+  int get hashCode => Object.hash(base, target);
 }
 
-const List<String> kSupportedWalletCurrencies = <String>[
-  'GBP',
-  'EUR',
-  'USD',
-  'GEL',
-  'RUB',
-  'TRY',
-  'AED',
-];
+const List<String> kSupportedWalletCurrencies = kSupportedTravelCurrencies;
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
   final userId = ref.watch(walletUserIdProvider);

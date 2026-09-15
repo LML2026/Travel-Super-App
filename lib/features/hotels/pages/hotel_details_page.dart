@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app/app_routes.dart';
-import '../../authentication/presentation/providers/auth_providers.dart';
-import '../../../core/models/booking.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../trips/presentation/providers/trip_provider.dart';
 import '../../trips/presentation/providers/trip_booking_link_provider.dart';
 import '../../trips/domain/entities/trip.dart';
@@ -11,6 +12,7 @@ import '../models/hotel.dart';
 import '../models/saved_hotel.dart';
 import '../providers/hotel_experience_provider.dart';
 import '../providers/hotel_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class HotelDetailsPage extends ConsumerWidget {
   const HotelDetailsPage({
@@ -25,8 +27,8 @@ class HotelDetailsPage extends ConsumerWidget {
     if (trips.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Create a trip before linking a hotel.')),
+          SnackBar(
+              content: Text(context.ui('createTripBeforeLinkingHotel'))),
         );
       }
       return;
@@ -77,20 +79,20 @@ class HotelDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hotel Details'),
+        title: Text(context.ui('hotelDetails')),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _HeroCard(hotel: hotel),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             _SectionCard(
               title: 'Description',
               child: Text(hotel.description),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'Room & Facilities',
               child: Column(
@@ -117,10 +119,10 @@ class HotelDetailsPage extends ConsumerWidget {
                     label: 'Price',
                     value: '£${hotel.pricePerNight.toStringAsFixed(0)} / night',
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
                     children: [
                       ...hotel.amenities.map((a) => _AmenityPill(label: a)),
                       if (hotel.freeCancellation)
@@ -130,7 +132,7 @@ class HotelDetailsPage extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'Interactive Map',
               child: Column(
@@ -140,7 +142,7 @@ class HotelDetailsPage extends ConsumerWidget {
                     height: 220,
                     width: double.infinity,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadii.md),
                       child: InteractiveViewer(
                         minScale: 1,
                         maxScale: 4,
@@ -151,29 +153,29 @@ class HotelDetailsPage extends ConsumerWidget {
                           ),
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            color: const Color(0xFFF0F4FA),
+                            color: AppColors.navy50,
                             alignment: Alignment.center,
-                            child: const Text('Map unavailable'),
+                            child: Text(context.ui('mapUnavailable')),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     '${hotel.latitude.toStringAsFixed(4)}, ${hotel.longitude.toStringAsFixed(4)}',
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'Nearby Attractions, Restaurants & Transport',
               child: nearbyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
                 error: (_, __) =>
-                    const Text('Nearby places are unavailable right now.'),
+                    Text(context.ui('nearbyPlacesUnavailable')),
                 data: (nearby) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -185,7 +187,7 @@ class HotelDetailsPage extends ConsumerWidget {
                               '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)')
                           .toList(),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     _NearbyList(
                       title: 'Restaurants',
                       icon: Icons.restaurant_outlined,
@@ -194,7 +196,7 @@ class HotelDetailsPage extends ConsumerWidget {
                               '${p.name} (${p.distanceKm.toStringAsFixed(1)} km)')
                           .toList(),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     _NearbyList(
                       title: 'Transport',
                       icon: Icons.directions_transit_outlined,
@@ -207,17 +209,20 @@ class HotelDetailsPage extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'Live Weather',
               child: weatherAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
                 error: (_, __) =>
-                    const Text('Weather is currently unavailable.'),
+                    Text(context.ui('weatherUnavailableNow')),
                 data: (weather) => Row(
                   children: [
-                    Text(weather.emoji, style: const TextStyle(fontSize: 30)),
-                    const SizedBox(width: 10),
+                    Text(
+                      weather.emoji,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
                         '${weather.city}, ${weather.country} | ${weather.tempC.toStringAsFixed(0)}°C | ${weather.description}',
@@ -227,20 +232,20 @@ class HotelDetailsPage extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'Currency Conversion',
               child: currencyAsync.when(
                 loading: () => const LinearProgressIndicator(minHeight: 6),
                 error: (_, __) =>
-                    const Text('Currency conversion unavailable.'),
+                    Text(context.ui('currencyConversionUnavailable')),
                 data: (rate) => Text(
                   '1 ${rate.base} = ${rate.rate.toStringAsFixed(2)} ${rate.target}\n'
                   'Estimated nightly price: ${(hotel.pricePerNight * rate.rate).toStringAsFixed(0)} ${rate.target}',
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             _SectionCard(
               title: 'AI Travel Recommendations',
               child: Column(
@@ -248,7 +253,7 @@ class HotelDetailsPage extends ConsumerWidget {
                 children: _aiRecommendations(hotel)
                     .map(
                       (tip) => Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -261,7 +266,7 @@ class HotelDetailsPage extends ConsumerWidget {
                     .toList(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             Row(
               children: [
                 Expanded(
@@ -303,52 +308,20 @@ class HotelDetailsPage extends ConsumerWidget {
                       },
                       icon: Icon(
                         isSaved ? Icons.favorite : Icons.favorite_border,
-                        color: isSaved ? Colors.red : null,
+                        color: isSaved ? AppColors.error : null,
                       ),
                       label: Text(isSaved ? 'Saved' : 'Save Hotel'),
                     ),
                     loading: () => const LinearProgressIndicator(minHeight: 6),
-                    error: (_, __) => const Text('Save unavailable'),
+                    error: (_, __) => Text(context.ui('saveUnavailable')),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _addToTrip(context, ref),
                     icon: const Icon(Icons.add_location_alt_outlined),
-                    label: const Text('Add to trip'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () async {
-                      final user = ref.read(immediateCurrentUserProvider);
-                      if (user == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please log in to book.'),
-                          ),
-                        );
-                        return;
-                      }
-
-                      final trips = await ref.read(tripsProvider.future);
-                      final tripId =
-                          trips.isNotEmpty ? trips.first.id : 'mock-trip-id';
-
-                      ref.read(hotelBookingProvider.notifier).book(
-                            tripId,
-                            user.uid,
-                            hotel,
-                          );
-
-                      if (context.mounted) {
-                        context.pushBookingStatus(BookingType.hotel);
-                      }
-                    },
-                    icon: const Icon(Icons.calendar_month_outlined),
-                    label: const Text('Book Now'),
+                    label: Text(context.ui('addToTrip')),
                   ),
                 ),
               ],
@@ -392,15 +365,15 @@ class _HeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFEFF4FF), Color(0xFFF8FAFF)],
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        gradient: LinearGradient(
+          colors: [AppColors.navy50, AppColors.warmWhite],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: const Color(0xFFDDE7FB)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,21 +387,21 @@ class _HeroCard extends StatelessWidget {
                   width: 120,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFDCE5F7)),
+                    borderRadius: BorderRadius.circular(AppRadii.md),
+                    color: AppColors.warmWhite,
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: Text(
                     hotel.imageGallery[index],
-                    style: const TextStyle(fontSize: 32),
+                    style: Theme.of(context).textTheme.displayLarge,
                   ),
                 );
               },
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
               itemCount: hotel.imageGallery.length,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -440,24 +413,20 @@ class _HeroCard extends StatelessWidget {
                       ),
                 ),
               ),
-              const Icon(Icons.star_rounded, color: Colors.amber),
-              const SizedBox(width: 2),
+              const Icon(Icons.star_rounded, color: AppColors.champagne),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 hotel.rating.toStringAsFixed(1),
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(hotel.address),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             '£${hotel.pricePerNight.toStringAsFixed(0)} / night',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1D4E89),
-            ),
+            style: AppTextStyles.price,
           ),
         ],
       ),
@@ -475,11 +444,11 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE8EEF8)),
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        color: AppColors.warmWhite,
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -490,7 +459,7 @@ class _SectionCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           child,
         ],
       ),
@@ -509,12 +478,12 @@ class _IconLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: const Color(0xFF3669B3)),
-          const SizedBox(width: 8),
+          Icon(icon, size: 18, color: AppColors.navy600),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text('$label: $value'),
           ),
@@ -535,12 +504,12 @@ class _AmenityPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
-        color: const Color(0xFFF7FAFF),
-        border: Border.all(color: const Color(0xFFDCE7FB)),
+        color: AppColors.navy50,
+        border: Border.all(color: AppColors.border),
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.labelMedium,
       ),
     );
   }
@@ -562,8 +531,8 @@ class _NearbyList extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: const Color(0xFF3669B3)),
-        const SizedBox(width: 8),
+        Icon(icon, size: 18, color: AppColors.navy600),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Text('$title: ${entries.join(', ')}'),
         ),

@@ -6,6 +6,7 @@ import '../../features/flights/models/flight_search_request.dart';
 import '../../features/hotels/models/hotel.dart';
 import '../../features/hotels/models/hotel_search_request.dart';
 import '../../features/weather/models/weather_data.dart';
+import '../models/booking.dart';
 
 enum TravelProviderCapability {
   search,
@@ -239,6 +240,10 @@ enum PlaceCategory {
   fuelStation,
   parking,
   supermarket,
+  airport,
+  trainStation,
+  busStation,
+  evChargingStation,
   taxiStand,
   transportStation,
   accommodation,
@@ -259,11 +264,12 @@ abstract class TravelProvider {
 }
 
 abstract class TransportProvider implements TravelProvider {
-  Future<void> openBooking(TaxiRideRequest request);
+  Future<Booking> bookTransport(String tripId, TaxiRideRequest request);
 }
 
 abstract class FlightProvider implements TravelProvider {
   Future<List<Flight>> searchFlights(FlightSearchRequest request);
+  Future<Booking> bookFlight(String tripId, Flight flight);
 }
 
 abstract class WeatherProvider implements TravelProvider {
@@ -272,6 +278,7 @@ abstract class WeatherProvider implements TravelProvider {
 
 abstract class HotelProvider implements TravelProvider {
   Future<List<Hotel>> searchHotels(HotelSearchRequest request);
+  Future<Booking> bookHotel(String tripId, Hotel hotel);
 }
 
 abstract class PaymentProvider implements TravelProvider {

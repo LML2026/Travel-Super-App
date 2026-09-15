@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/supported_currencies.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class CreateTripPage extends ConsumerStatefulWidget {
   const CreateTripPage({
@@ -86,8 +88,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
 
     if (_departureDate == null || _returnDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select both dates.'),
+        SnackBar(
+          content: Text(context.ui('selectBothDates')),
         ),
       );
       return;
@@ -119,8 +121,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Trip created successfully.'),
+        SnackBar(
+          content: Text(context.ui('tripCreatedSuccessfully')),
         ),
       );
 
@@ -147,7 +149,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Trip'),
+        title: Text(context.ui('createTrip')),
       ),
       body: Form(
         key: _formKey,
@@ -156,8 +158,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
           children: [
             TextFormField(
               controller: _destinationController,
-              decoration: const InputDecoration(
-                labelText: 'Destination',
+              decoration: InputDecoration(
+                labelText: context.ui('destination'),
               ),
               validator: (value) =>
                   value == null || value.isEmpty ? 'Enter destination' : null,
@@ -186,8 +188,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
               controller: _budgetController,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Budget',
+              decoration: InputDecoration(
+                labelText: context.ui('budget'),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -204,23 +206,17 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: _currency,
-              decoration: const InputDecoration(
-                labelText: 'Currency',
+              decoration: InputDecoration(
+                labelText: context.ui('currency'),
               ),
-              items: const [
-                DropdownMenuItem(
-                  value: 'GBP',
-                  child: Text('GBP'),
-                ),
-                DropdownMenuItem(
-                  value: 'EUR',
-                  child: Text('EUR'),
-                ),
-                DropdownMenuItem(
-                  value: 'USD',
-                  child: Text('USD'),
-                ),
-              ],
+              items: kSupportedTravelCurrencies
+                  .map(
+                    (currency) => DropdownMenuItem<String>(
+                      value: currency,
+                      child: Text(currency),
+                    ),
+                  )
+                  .toList(growable: false),
               onChanged: (value) {
                 setState(() => _currency = value!);
               },
@@ -228,8 +224,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text(
-                  'Travellers',
+                Text(context.ui('travellers'),
                   style: TextStyle(fontSize: 16),
                 ),
                 const Spacer(),
@@ -257,8 +252,8 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
             TextFormField(
               controller: _notesController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
+              decoration: InputDecoration(
+                labelText: context.ui('notes'),
               ),
             ),
             const SizedBox(height: 30),
@@ -270,7 +265,7 @@ class _CreateTripPageState extends ConsumerState<CreateTripPage> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Create Trip'),
+                  : Text(context.ui('createTrip')),
             ),
           ],
         ),

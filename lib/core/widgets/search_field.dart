@@ -24,7 +24,7 @@ class SearchField extends StatelessWidget {
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: TextInputAction.search,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         prefixIcon: Icon(Icons.search),
       ).copyWith(
         hintText: hintText,

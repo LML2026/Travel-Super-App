@@ -7,6 +7,7 @@ import '../../../../core/validators/auth_validators.dart';
 import '../../../../shared/widgets/loading_overlay.dart';
 import '../../../auth/presentation/utils/auth_error_mapper.dart';
 import '../providers/auth_providers.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AuthenticationRegisterPage extends ConsumerStatefulWidget {
   const AuthenticationRegisterPage({super.key});
@@ -33,7 +34,7 @@ class _AuthenticationRegisterPageState
     }
     if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please accept terms to continue.')),
+        SnackBar(content: Text(context.ui('acceptTermsToContinue'))),
       );
       return;
     }
@@ -75,7 +76,7 @@ class _AuthenticationRegisterPageState
     return LoadingOverlay(
       isLoading: _loading,
       child: AppScaffold(
-        appBar: AppBar(title: const Text('Create Account')),
+        appBar: AppBar(title: Text(context.ui('createAccount'))),
         maxContentWidth: 420,
         body: SingleChildScrollView(
           child: Form(
@@ -94,8 +95,8 @@ class _AuthenticationRegisterPageState
                         controller: _nameController,
                         enabled: !_loading,
                         validator: AuthValidators.validateName,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
+                        decoration: InputDecoration(
+                          labelText: context.ui('name'),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -105,8 +106,8 @@ class _AuthenticationRegisterPageState
                         keyboardType: TextInputType.emailAddress,
                         enabled: !_loading,
                         validator: AuthValidators.validateEmail,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
+                        decoration: InputDecoration(
+                          labelText: context.ui('email'),
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -120,7 +121,7 @@ class _AuthenticationRegisterPageState
                 PasswordField(
                   controller: _confirmPasswordController,
                   enabled: !_loading,
-                  labelText: 'Confirm Password',
+                  labelText: context.ui('confirmPassword'),
                   validator: (value) => AuthValidators.validateConfirmPassword(
                     value,
                     _passwordController.text,
@@ -136,12 +137,12 @@ class _AuthenticationRegisterPageState
                               },
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
-                        title: const Text('I accept Terms and Privacy Policy'),
+                        title: Text(context.ui('acceptTermsPrivacy')),
                       ),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _loading ? null : _register,
-                  child: const Text('Create Account'),
+                  child: Text(context.ui('createAccount')),
                 ),
               ],
             ),

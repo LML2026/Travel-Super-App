@@ -244,14 +244,13 @@ class ProviderTravelDiscoveryService implements TravelDiscoveryService {
             cabinClass: query.cabinClass,
           ));
       if (flights.isNotEmpty) {
-        final markFallback = _flightSearch == null &&
-            _flightService.lastSearchUsedFallback;
+        final markFallback =
+            _flightSearch == null && _flightService.lastSearchUsedFallback;
         return flights
             .map((flight) => _flightResult(
                   flight,
-                  sourceOverride: markFallback
-                      ? DiscoveryDataSource.fallback
-                      : null,
+                  sourceOverride:
+                      markFallback ? DiscoveryDataSource.fallback : null,
                 ))
             .toList(growable: false);
       }
@@ -276,14 +275,13 @@ class ProviderTravelDiscoveryService implements TravelDiscoveryService {
       final hotels = await (_hotelSearch?.call(request) ??
           _hotelService.searchHotels(request));
       if (hotels.isNotEmpty) {
-        final markFallback = _hotelSearch == null &&
-            _hotelService.lastSearchUsedFallback;
+        final markFallback =
+            _hotelSearch == null && _hotelService.lastSearchUsedFallback;
         return hotels
             .map((hotel) => _hotelResult(
                   hotel,
-                  sourceOverride: markFallback
-                      ? DiscoveryDataSource.fallback
-                      : null,
+                  sourceOverride:
+                      markFallback ? DiscoveryDataSource.fallback : null,
                 ))
             .toList(growable: false);
       }
@@ -393,9 +391,11 @@ class ProviderTravelDiscoveryService implements TravelDiscoveryService {
     final category = place.serviceType == NearbyServiceType.restaurant
         ? DiscoveryCategory.restaurants
         : DiscoveryCategory.activities;
-    final source = place.source == NearbyDataSource.google
-        ? DiscoveryDataSource.live
-        : DiscoveryDataSource.fallback;
+    final source = switch (place.source) {
+      NearbyDataSource.google => DiscoveryDataSource.live,
+      NearbyDataSource.backend => DiscoveryDataSource.backend,
+      _ => DiscoveryDataSource.fallback,
+    };
     return TravelDiscoveryResult(
       id: place.id,
       category: category,

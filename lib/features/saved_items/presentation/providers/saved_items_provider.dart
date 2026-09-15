@@ -62,9 +62,11 @@ class SavedItemsController extends AsyncNotifier<List<SavedItem>> {
       title: place.name,
       subtitle: place.categoryLabel,
       location: place.address,
-      provider: place.source == NearbyDataSource.google
-          ? 'Google Places'
-          : 'ITAREVO Demo Places',
+      provider: switch (place.source) {
+        NearbyDataSource.google => 'Google Places',
+        NearbyDataSource.backend => 'ITAREVO nearby backend',
+        _ => 'ITAREVO Demo Places',
+      },
       savedAt: DateTime.now(),
       notes: place.metadata['description'] as String?,
       metadata: <String, dynamic>{

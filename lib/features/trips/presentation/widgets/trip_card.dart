@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/trip.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripCard extends StatelessWidget {
   const TripCard({
@@ -74,19 +75,19 @@ class TripCard extends StatelessWidget {
                   },
                   itemBuilder: (context) => [
                     if (onEdit != null)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'edit',
-                        child: Text('Edit'),
+                        child: Text(context.ui('edit')),
                       ),
                     if (onDuplicate != null)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'duplicate',
-                        child: Text('Duplicate'),
+                        child: Text(context.ui('duplicate')),
                       ),
                     if (onDelete != null)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'delete',
-                        child: Text('Delete'),
+                        child: Text(context.ui('delete')),
                       ),
                   ],
                 ),

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/user_facing_error.dart';
 import '../providers/hotel_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class RecentHotelSearchesPage extends ConsumerWidget {
   const RecentHotelSearchesPage({super.key});
@@ -19,8 +22,18 @@ class RecentHotelSearchesPage extends ConsumerWidget {
 
   String _monthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -31,26 +44,30 @@ class RecentHotelSearchesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recent Searches'),
+        title: Text(context.ui('recentSearches')),
       ),
       body: recentSearchesAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(),
         ),
         error: (error, stackTrace) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              const Text('Failed to load searches'),
-              const SizedBox(height: 8),
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: AppColors.textSubtle,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(context.ui('failedLoadSearches')),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 UserFacingError.message(
                   error,
                   fallback: 'Recent searches are unavailable right now.',
                 ),
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -62,16 +79,22 @@ class RecentHotelSearchesPage extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search, size: 64, color: Colors.grey[300]),
-                  const SizedBox(height: 16),
+                  const Icon(
+                    Icons.search,
+                    size: 64,
+                    color: AppColors.textSubtle,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   Text(
                     'No recent searches',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     'Your searches will appear here',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
                   ),
                 ],
               ),
@@ -79,7 +102,7 @@ class RecentHotelSearchesPage extends ConsumerWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: searches.length,
             itemBuilder: (context, index) {
               final search = searches[index];
@@ -89,34 +112,32 @@ class RecentHotelSearchesPage extends ConsumerWidget {
                   .inDays;
 
               return Card(
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: const Icon(Icons.hotel, color: Color(0xFF1976D2)),
+                  contentPadding: const EdgeInsets.all(AppSpacing.lg),
+                  leading: const Icon(Icons.hotel, color: AppColors.navy600),
                   title: Text(
                     search.city,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(checkInDate),
-                      const SizedBox(height: 4),
-                      Text('$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}'),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                          '$nights nights • ${search.guests} Guest${search.guests > 1 ? 's' : ''} • ${search.rooms} Room${search.rooms > 1 ? 's' : ''}'),
                     ],
                   ),
                   trailing: PopupMenuButton(
                     itemBuilder: (context) => [
                       PopupMenuItem(
-                        child: const Text('Delete'),
+                        child: Text(context.ui('delete')),
                         onTap: () {
                           ref.read(deleteRecentHotelSearchProvider(search.id));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Search deleted')),
+                            SnackBar(content: Text(context.ui('searchDeleted'))),
                           );
                         },
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../../l10n/l10n_extensions.dart';
 import 'primary_button.dart';
 
 class ErrorView extends StatelessWidget {
@@ -35,7 +36,7 @@ class ErrorView extends StatelessWidget {
             if (onRetry != null) ...[
               const SizedBox(height: 16),
               PrimaryButton(
-                text: 'Try Again',
+                text: context.ui('tryAgain'),
                 icon: Icons.refresh,
                 onPressed: onRetry!,
               ),

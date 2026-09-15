@@ -56,7 +56,7 @@ final taxiRideOptionsProvider =
         currency: 'GBP',
         estimatedPickupMinutes: 4 + (i * 3),
         description: request.pickupTime == null
-            ? 'Fast pickup from nearby drivers'
+            ? 'Fast pickup planning estimate'
             : 'Scheduled pickup for your selected time',
       ),
     );

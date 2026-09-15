@@ -13,6 +13,7 @@ import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/saved_item.dart';
 import '../providers/saved_items_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class SavedItemsPage extends ConsumerStatefulWidget {
   const SavedItemsPage({super.key});
@@ -38,15 +39,15 @@ class _SavedItemsPageState extends ConsumerState<SavedItemsPage> {
         : ref.watch(taxiSavedRidesForTripProvider(effectiveTripId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Items')),
+      appBar: AppBar(title: Text(context.ui('savedItems'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           tripsAsync.when(
             data: (trips) => DropdownButtonFormField<String>(
               initialValue: effectiveTripId,
-              decoration: const InputDecoration(
-                labelText: 'Trip for saved transport and add-to-trip actions',
+              decoration: InputDecoration(
+                labelText: context.ui('tripForSavedTransportActions'),
               ),
               items: [
                 for (final trip in trips)
@@ -59,7 +60,7 @@ class _SavedItemsPageState extends ConsumerState<SavedItemsPage> {
             ),
             loading: () => const LinearProgressIndicator(),
             error: (_, __) =>
-                const Text('Sign in to add saved items to trips.'),
+                Text(context.ui('signInAddSavedItems')),
           ),
           const SizedBox(height: 12),
           _CategoryFilter(
@@ -92,7 +93,7 @@ class _SavedItemsPageState extends ConsumerState<SavedItemsPage> {
                       .addToTrip(item: item, tripId: tripId);
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${item.title} added to trip.')),
+                    SnackBar(content: Text('${item.title} ${context.ui('addedToTripSuffix')}')),
                   );
                 },
               );
@@ -138,7 +139,7 @@ class _CategoryFilter extends StatelessWidget {
       child: Row(
         children: [
           ChoiceChip(
-            label: const Text('All'),
+            label: Text(context.ui('all')),
             selected: selected == null,
             onSelected: (_) => onChanged(null),
           ),
@@ -186,7 +187,7 @@ class _DiscoverySavedSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Saved discovery',
+        Text(context.ui('savedDiscovery'),
             style: TextStyle(fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
         for (final item in items)
@@ -203,14 +204,14 @@ class _DiscoverySavedSection extends StatelessWidget {
                 },
                 itemBuilder: (context) => [
                   if (item.isTripActivity && tripId != null)
-                    const PopupMenuItem(
-                        value: 'add', child: Text('Add to trip')),
+                    PopupMenuItem(
+                        value: 'add', child: Text(context.ui('addToTrip'))),
                   PopupMenuItem(
                     value: 'book',
                     enabled: item.isBookable,
-                    child: const Text('Proceed to booking'),
+                    child: Text(context.ui('proceedToBooking')),
                   ),
-                  const PopupMenuItem(value: 'remove', child: Text('Remove')),
+                  PopupMenuItem(value: 'remove', child: Text(context.ui('remove'))),
                 ],
               ),
             ),
@@ -236,15 +237,17 @@ class _SavedFlightsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GenericSavedSection(
-      title: 'Saved flights',
+      title: context.ui('savedFlights'),
       isLoading: isLoading,
-      empty: 'No saved flights.',
+      empty: context.ui('noSavedFlightsAvailable'),
       children: [
         for (final flight in flights)
           ListTile(
             leading: const Icon(Icons.flight_takeoff),
             title: Text(flight.flightNumber),
-            subtitle: Text('${flight.origin} to ${flight.destination}'),
+            subtitle: Text(
+              '${flight.origin} ${context.ui('to')} ${flight.destination}',
+            ),
             onTap: () => onOpen(flight),
             trailing: IconButton(
               icon: const Icon(Icons.delete_outline),
@@ -272,9 +275,9 @@ class _SavedHotelsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GenericSavedSection(
-      title: 'Saved hotels',
+      title: context.ui('savedHotels'),
       isLoading: isLoading,
-      empty: 'No saved hotels.',
+      empty: context.ui('noSavedHotelsAvailable'),
       children: [
         for (final hotel in hotels)
           ListTile(
@@ -302,16 +305,17 @@ class _SavedRidesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GenericSavedSection(
-      title: 'Saved transport',
+      title: context.ui('savedTransport'),
       isLoading: isLoading,
-      empty: 'No saved rides for the selected trip.',
+      empty: context.ui('noSavedRidesForSelectedTrip'),
       children: [
         for (final ride in rides)
           ListTile(
             leading: const Icon(Icons.local_taxi_outlined),
             title: Text(ride.provider),
-            subtitle:
-                Text('${ride.pickupAddress} to ${ride.destinationAddress}'),
+            subtitle: Text(
+              '${ride.pickupAddress} ${context.ui('to')} ${ride.destinationAddress}',
+            ),
           ),
       ],
     );

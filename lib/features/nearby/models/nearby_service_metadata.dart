@@ -102,10 +102,11 @@ const Map<NearbyServiceType, NearbyServiceMetadata>
   ),
   NearbyServiceType.fuel: NearbyServiceMetadata(
     type: NearbyServiceType.fuel,
-    label: 'Fuel',
+    label: 'Petrol / Gas',
     icon: Icons.local_gas_station_outlined,
     description: 'Fuel stations for road-trip and car hire scenarios.',
     previewFilters: <String>['Open now', 'Within 3 km'],
+    isMvp: true,
   ),
   NearbyServiceType.parking: NearbyServiceMetadata(
     type: NearbyServiceType.parking,
@@ -113,6 +114,7 @@ const Map<NearbyServiceType, NearbyServiceMetadata>
     icon: Icons.local_parking_outlined,
     description: 'Parking areas and drop-off options nearby.',
     previewFilters: <String>['Open now', 'Within 1 km'],
+    isMvp: true,
   ),
   NearbyServiceType.supermarket: NearbyServiceMetadata(
     type: NearbyServiceType.supermarket,
@@ -120,6 +122,39 @@ const Map<NearbyServiceType, NearbyServiceMetadata>
     icon: Icons.local_grocery_store_outlined,
     description: 'Groceries, water, and daily supplies nearby.',
     previewFilters: <String>['Open now', 'Within 1 km'],
+    isMvp: true,
+  ),
+  NearbyServiceType.airport: NearbyServiceMetadata(
+    type: NearbyServiceType.airport,
+    label: 'Airports',
+    icon: Icons.local_airport_outlined,
+    description: 'Airport terminals and aviation hubs nearby.',
+    previewFilters: <String>['Within 10 km', 'Transport links'],
+    isMvp: true,
+  ),
+  NearbyServiceType.trainStation: NearbyServiceMetadata(
+    type: NearbyServiceType.trainStation,
+    label: 'Train stations',
+    icon: Icons.train_outlined,
+    description: 'Rail stations and train connections nearby.',
+    previewFilters: <String>['Within 2 km', 'Transit links'],
+    isMvp: true,
+  ),
+  NearbyServiceType.busStation: NearbyServiceMetadata(
+    type: NearbyServiceType.busStation,
+    label: 'Bus stations',
+    icon: Icons.directions_bus_outlined,
+    description: 'Bus stations and coach connections nearby.',
+    previewFilters: <String>['Within 2 km', 'Transit links'],
+    isMvp: true,
+  ),
+  NearbyServiceType.evCharging: NearbyServiceMetadata(
+    type: NearbyServiceType.evCharging,
+    label: 'EV charging',
+    icon: Icons.ev_station_outlined,
+    description: 'Electric vehicle charging points nearby.',
+    previewFilters: <String>['Open now', 'Within 3 km'],
+    isMvp: true,
   ),
   NearbyServiceType.hotel: NearbyServiceMetadata(
     type: NearbyServiceType.hotel,
@@ -130,10 +165,11 @@ const Map<NearbyServiceType, NearbyServiceMetadata>
   ),
   NearbyServiceType.taxi: NearbyServiceMetadata(
     type: NearbyServiceType.taxi,
-    label: 'Taxi',
+    label: 'Taxi / transport',
     icon: Icons.local_taxi_outlined,
     description: 'Taxi pickup, ride access, and transport fallback.',
     previewFilters: <String>['Available now', 'Within 2 km'],
+    isMvp: true,
   ),
   NearbyServiceType.transit: NearbyServiceMetadata(
     type: NearbyServiceType.transit,
@@ -156,6 +192,13 @@ const List<NearbyServiceType> nearbyEssentialsMvpServices = <NearbyServiceType>[
   NearbyServiceType.museum,
   NearbyServiceType.shopping,
   NearbyServiceType.supermarket,
+  NearbyServiceType.parking,
+  NearbyServiceType.fuel,
+  NearbyServiceType.trainStation,
+  NearbyServiceType.busStation,
+  NearbyServiceType.airport,
+  NearbyServiceType.evCharging,
+  NearbyServiceType.taxi,
   NearbyServiceType.transit,
 ];
 

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../providers/trip_readiness_provider.dart';
 import '../../domain/entities/trip_readiness_item.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripReadinessPage extends ConsumerWidget {
   const TripReadinessPage({super.key, required this.trip});
@@ -22,11 +23,11 @@ class TripReadinessPage extends ConsumerWidget {
         suggestions.where((item) => !savedTitles.contains(item.title)).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip Readiness')),
+      appBar: AppBar(title: Text(context.ui('tripReadiness'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTask(context, ref),
         icon: const Icon(Icons.add_task),
-        label: const Text('Task'),
+        label: Text(context.ui('task')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -85,12 +86,12 @@ class TripReadinessPage extends ConsumerWidget {
             children: [
               TextField(
                 controller: titleController,
-                decoration: const InputDecoration(labelText: 'Task'),
+                decoration: InputDecoration(labelText: context.ui('task')),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<ReadinessCategory>(
                 initialValue: category,
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: InputDecoration(labelText: context.ui('category')),
                 items: [
                   for (final item in ReadinessCategory.values)
                     DropdownMenuItem(value: item, child: Text(_label(item))),
@@ -101,7 +102,7 @@ class TripReadinessPage extends ConsumerWidget {
               const SizedBox(height: 8),
               TextField(
                 controller: notesController,
-                decoration: const InputDecoration(labelText: 'Notes'),
+                decoration: InputDecoration(labelText: context.ui('notes')),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
@@ -134,7 +135,7 @@ class TripReadinessPage extends ConsumerWidget {
                   if (context.mounted) Navigator.pop(context);
                 },
                 icon: const Icon(Icons.save_outlined),
-                label: const Text('Save Task'),
+                label: Text(context.ui('saveTask')),
               ),
             ],
           ),
@@ -159,7 +160,7 @@ class TripReadinessPage extends ConsumerWidget {
         );
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Reminder added for ${item.title}.')),
+      SnackBar(content: Text('${context.ui('reminderAddedFor')} ${item.title}.')),
     );
   }
 }
@@ -178,14 +179,14 @@ class _ProgressCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Readiness $percent%',
+            Text('${context.ui('readiness')} $percent%',
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             LinearProgressIndicator(value: summary.progress),
             const SizedBox(height: 8),
-            Text('${summary.remainingCount} tasks remaining'),
+            Text('${summary.remainingCount} ${context.ui('tasksRemaining')}'),
             if (summary.nextTask != null)
-              Text('Next: ${summary.nextTask!.title}'),
+              Text('${context.ui('next')}: ${summary.nextTask!.title}'),
           ],
         ),
       ),
@@ -207,7 +208,7 @@ class _SuggestionsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Suggested preparation',
+            Text(context.ui('suggestedPreparation'),
                 style: TextStyle(fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
             for (final item in suggestions.take(6))
@@ -257,9 +258,9 @@ class _ChecklistCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
-                  child: Text('Checklist',
-                      style: TextStyle(fontWeight: FontWeight.w800)),
+                Expanded(
+                  child: Text(context.ui('checklist'),
+                      style: const TextStyle(fontWeight: FontWeight.w800)),
                 ),
                 if (isLoading)
                   const SizedBox(
@@ -270,10 +271,10 @@ class _ChecklistCard extends StatelessWidget {
               ],
             ),
             if (sorted.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8),
                 child:
-                    Text('Add suggested or custom tasks to prepare this trip.'),
+                    Text(context.ui('addTasksPrepareTrip')),
               )
             else
               for (final item in sorted)
@@ -289,10 +290,10 @@ class _ChecklistCard extends StatelessWidget {
                       if (value == 'reminder') onReminder(item);
                       if (value == 'delete') onDelete(item);
                     },
-                    itemBuilder: (context) => const [
+                    itemBuilder: (context) => [
                       PopupMenuItem(
-                          value: 'reminder', child: Text('Add reminder')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                          value: 'reminder', child: Text(context.ui('addReminder'))),
+                      PopupMenuItem(value: 'delete', child: Text(context.ui('delete'))),
                     ],
                   ),
                 ),
@@ -325,13 +326,13 @@ class _RemindersCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Reminders',
+            Text(context.ui('reminders'),
                 style: TextStyle(fontWeight: FontWeight.w800)),
             if (isLoading) const LinearProgressIndicator(),
             if (sorted.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8),
-                child: Text('No reminders yet.'),
+                child: Text(context.ui('noRemindersYet')),
               )
             else
               for (final reminder in sorted)

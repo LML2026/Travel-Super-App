@@ -7,6 +7,7 @@ class AuthUserModel extends AuthUser {
     required super.uid,
     required super.email,
     required super.emailVerified,
+    super.isAnonymous,
   });
 
   factory AuthUserModel.fromFirebaseUser(User user) {
@@ -14,6 +15,7 @@ class AuthUserModel extends AuthUser {
       uid: user.uid,
       email: user.email,
       emailVerified: user.emailVerified,
+      isAnonymous: user.isAnonymous,
     );
   }
 }

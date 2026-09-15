@@ -6,6 +6,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/widgets.dart';
 import '../providers/weather_provider.dart';
 import '../models/weather_data.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class WeatherPage extends ConsumerStatefulWidget {
   const WeatherPage({super.key});
@@ -30,7 +31,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather'),
+        title: Text(context.ui('weather')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -53,7 +54,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                     if (city.isNotEmpty) setState(() => _searchCity = city);
                   },
                   icon: Icons.search,
-                  label: 'Search',
+                  label: context.ui('search'),
                   expand: false,
                 ),
               ],

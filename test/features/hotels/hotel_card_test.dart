@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:travel_super_app/app/app_routes.dart';
 import 'package:travel_super_app/features/hotels/models/hotel.dart';
 import 'package:travel_super_app/features/hotels/pages/hotel_details_page.dart';
+import 'package:travel_super_app/features/hotels/providers/hotel_provider.dart';
 import 'package:travel_super_app/features/hotels/widgets/hotel_card.dart';
+import 'package:travel_super_app/features/trips/presentation/providers/trip_provider.dart';
 
 void main() {
   group('HotelCard Widget Tests', () {
@@ -72,7 +74,7 @@ void main() {
       expect(find.text('Free Wi-Fi'), findsOneWidget);
     });
 
-    testWidgets('HotelCard displays night information',
+    testWidgets('HotelCard displays View Details CTA',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -84,7 +86,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Book Now'), findsOneWidget);
+      expect(find.text('View Details'), findsOneWidget);
+      expect(find.text('Book Now'), findsNothing);
     });
 
     testWidgets('HotelCard displays emoji icon', (WidgetTester tester) async {
@@ -101,7 +104,8 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
     });
 
-    testWidgets('HotelCard has a book button', (WidgetTester tester) async {
+    testWidgets('HotelCard has Save and View Details actions',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -118,11 +122,12 @@ void main() {
           find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
 
       expect(hasSaveButton || hasLoading, isTrue);
-      expect(find.text('Book Now'), findsOneWidget);
+      expect(find.text('View Details'), findsOneWidget);
+      expect(find.text('Book Now'), findsNothing);
       expect(find.byType(FilledButton), findsOneWidget);
     });
 
-    testWidgets('HotelCard book button navigates to details page',
+    testWidgets('HotelCard View Details button navigates to details page',
         (WidgetTester tester) async {
       final router = GoRouter(
         initialLocation: '/',
@@ -151,10 +156,73 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Book Now'));
+      await tester.tap(find.text('View Details'));
       await tester.pumpAndSettle();
 
       expect(find.text('Hotel Details'), findsOneWidget);
+    });
+
+    testWidgets('HotelCard omits internal backend source label',
+        (WidgetTester tester) async {
+      final backendHotel = Hotel(
+        id: 'backend-hotel',
+        name: 'Backend Paris Hotel',
+        image: 'https://example.com/hotel.jpg',
+        city: 'Paris',
+        rating: 4.6,
+        address: 'Paris, France',
+        price: 180,
+        currency: 'GBP',
+        amenities: const ['Free Wi-Fi'],
+        dataSource: HotelDataSource.backend,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: HotelCard(hotel: backendHotel),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Backend hotel data'), findsNothing);
+    });
+
+    testWidgets('HotelCard keeps demo data disclosure',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: HotelCard(hotel: testHotel),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Demo hotel data'), findsOneWidget);
+    });
+
+    testWidgets('HotelDetails exposes truthful actions only',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            isHotelSavedProvider.overrideWith((ref, hotelId) async => false),
+            tripsProvider.overrideWith((ref) => Stream.value(const [])),
+          ],
+          child: MaterialApp(
+            home: HotelDetailsPage(hotel: testHotel),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Save Hotel'), findsOneWidget);
+      expect(find.text('Add to trip'), findsOneWidget);
+      expect(find.text('Book Now'), findsNothing);
     });
 
     testWidgets('HotelCard with single bed displays correctly',
@@ -220,7 +288,7 @@ void main() {
 
       // Verify visible action and rating icons
       expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.byIcon(Icons.calendar_month), findsOneWidget);
+      expect(find.byIcon(Icons.info_outline), findsOneWidget);
     });
 
     testWidgets('HotelCard layout is responsive', (WidgetTester tester) async {

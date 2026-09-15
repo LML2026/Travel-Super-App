@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/expense.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class ExpenseListItem extends StatelessWidget {
   const ExpenseListItem({
@@ -45,14 +46,14 @@ class ExpenseListItem extends StatelessWidget {
             onDelete();
           }
         },
-        itemBuilder: (context) => const [
+        itemBuilder: (context) => [
           PopupMenuItem<String>(
             value: 'edit',
-            child: Text('Edit'),
+            child: Text(context.ui('edit')),
           ),
           PopupMenuItem<String>(
             value: 'delete',
-            child: Text('Delete'),
+            child: Text(context.ui('delete')),
           ),
         ],
       ),

@@ -68,6 +68,18 @@ String speechLocaleFor(String languageCode) {
     'de' => 'de-DE',
     'pt' => 'pt-PT',
     'ja' => 'ja-JP',
+    'ar' => 'ar-SA',
+    'bg' => 'bg-BG',
+    'cs' => 'cs-CZ',
+    'da' => 'da-DK',
+    'el' => 'el-GR',
+    'nl' => 'nl-NL',
+    'pl' => 'pl-PL',
+    'ro' => 'ro-RO',
+    'ru' => 'ru-RU',
+    'sv' => 'sv-SE',
+    'tr' => 'tr-TR',
+    'zh' => 'zh-CN',
     _ => 'en-US',
   };
 }

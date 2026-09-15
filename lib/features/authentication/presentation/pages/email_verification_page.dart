@@ -5,6 +5,7 @@ import '../../../../app/app_routes.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../auth/presentation/utils/auth_error_mapper.dart';
 import '../providers/auth_providers.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class EmailVerificationPage extends ConsumerStatefulWidget {
   const EmailVerificationPage({super.key});
@@ -25,7 +26,7 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
           .resendEmailVerification();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email sent again.')),
+          SnackBar(content: Text(context.ui('verificationEmailSentAgain'))),
         );
       }
     } catch (error) {
@@ -56,7 +57,7 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
         context.goHome();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email is not verified yet.')),
+          SnackBar(content: Text(context.ui('emailNotVerifiedYet'))),
         );
       }
     } catch (error) {
@@ -98,7 +99,7 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
         ref.watch(immediateCurrentUserProvider);
 
     return AppScaffold(
-      appBar: AppBar(title: const Text('Verify Email')),
+      appBar: AppBar(title: Text(context.ui('verifyEmail'))),
       maxContentWidth: 560,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -116,17 +117,17 @@ class _EmailVerificationPageState extends ConsumerState<EmailVerificationPage> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: _loading ? null : _continueAfterVerification,
-            child: const Text('I have verified my email'),
+            child: Text(context.ui('iVerifiedEmail')),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: _loading ? null : _resend,
-            child: const Text('Resend verification email'),
+            child: Text(context.ui('resendVerificationEmail')),
           ),
           const SizedBox(height: 12),
           TextButton(
             onPressed: _loading ? null : _signOut,
-            child: const Text('Sign out'),
+            child: Text(context.ui('signOut')),
           ),
         ],
       ),

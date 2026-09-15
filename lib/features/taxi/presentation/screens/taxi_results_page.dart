@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../domain/entities/taxi_ride_request.dart';
 import '../providers/taxi_hub_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TaxiResultsPage extends ConsumerWidget {
   const TaxiResultsPage({
@@ -19,25 +25,32 @@ class TaxiResultsPage extends ConsumerWidget {
     final optionsAsync = ref.watch(taxiRideOptionsProvider(request));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ride options')),
+      appBar: AppBar(title: Text(context.ui('rideOptions'))),
       body: optionsAsync.when(
         data: (options) {
           if (options.isEmpty) {
-            return const Center(
-              child: Text('No providers are currently available.'),
+            return Center(
+              child: Text(context.ui('noProvidersAvailable')),
             );
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: options.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, index) {
               final option = options[index];
 
               return Card(
+                color: AppColors.cardSurface,
+                elevation: 0,
+                shadowColor: AppShadows.shadowColor.withValues(alpha: 0.08),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadii.card),
+                  side: const BorderSide(color: AppColors.border),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -46,23 +59,40 @@ class TaxiResultsPage extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               option.providerName,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: AppColors.textNavy,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                           ),
                           Chip(
+                            backgroundColor: AppColors.champagne100,
+                            side: const BorderSide(color: AppColors.champagne),
                             label: Text(
                               '${option.currency} ${option.estimatedFare.toStringAsFixed(2)}',
+                              style: AppTextStyles.label.copyWith(
+                                color: AppColors.champagne700,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
-                          '${option.description}. Estimated option; no provider order has been placed.'),
-                      const SizedBox(height: 8),
+                        '${option.description}. Planning estimate only; no provider order has been placed.',
+                        style: AppTextStyles.bodyMuted,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
-                          'Estimated pickup: ${option.estimatedPickupMinutes} min'),
-                      const SizedBox(height: 16),
+                        'Estimated pickup: ${option.estimatedPickupMinutes} min',
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.textNavy,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
                       Row(
                         children: [
                           Expanded(
@@ -76,7 +106,7 @@ class TaxiResultsPage extends ConsumerWidget {
                                 );
                               },
                               icon: const Icon(Icons.check_circle_outline),
-                              label: const Text('Review planned ride'),
+                              label: Text(context.ui('reviewPlannedRide')),
                             ),
                           ),
                         ],
@@ -90,7 +120,7 @@ class TaxiResultsPage extends ConsumerWidget {
         },
         error: (error, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(UserFacingError.message(
               error,
               fallback: 'Ride options are unavailable right now.',

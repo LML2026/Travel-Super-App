@@ -8,6 +8,7 @@ import '../../../trips/presentation/providers/trip_dashboard_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import 'add_expense_page.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripExpensesPage extends ConsumerStatefulWidget {
   const TripExpensesPage({
@@ -51,16 +52,16 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete expense?'),
-        content: Text('Delete "${expense.title}" from this trip?'),
+        title: Text(context.ui('deleteExpenseQuestion')),
+        content: Text('${context.ui('delete')} "${expense.title}" ${context.ui('fromThisTripQuestion')}'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(context.ui('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
+            child: Text(context.ui('delete')),
           ),
         ],
       ),
@@ -99,12 +100,12 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trip Expenses'),
+        title: Text(context.ui('tripExpenses')),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createExpense,
         icon: const Icon(Icons.add),
-        label: const Text('Add Expense'),
+        label: Text(context.ui('addExpense')),
       ),
       body: Column(
         children: [
@@ -117,7 +118,7 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
           ),
           Expanded(
             child: expensesAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => Center(child: CircularProgressIndicator()),
               error: (error, _) => Center(
                 child: Text(UserFacingError.message(
                   error,
@@ -126,8 +127,8 @@ class _TripExpensesPageState extends ConsumerState<TripExpensesPage> {
               ),
               data: (expenses) {
                 if (expenses.isEmpty) {
-                  return const Center(
-                    child: Text('No expenses yet. Tap Add Expense to start.'),
+                  return Center(
+                    child: Text(context.ui('noExpensesYet')),
                   );
                 }
 
@@ -167,14 +168,14 @@ class _ExpenseSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = budgetAsync.when<Widget>(
-      loading: () => const Text('Loading totals...'),
-      error: (_, __) => const Text('Unable to calculate totals'),
+      loading: () => Text(context.ui('loadingTotals')),
+      error: (_, __) => Text(context.ui('unableCalculateTotals')),
       data: (summary) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Trip Budget: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
-          Text('Spent: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
-          Text('Remaining: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
+          Text('${context.ui('tripBudget')}: ${summary.currency} ${summary.budget.toStringAsFixed(2)}'),
+          Text('${context.ui('spent')}: ${summary.currency} ${summary.spent.toStringAsFixed(2)}'),
+          Text('${context.ui('remaining')}: ${summary.currency} ${summary.remaining.toStringAsFixed(2)}'),
         ],
       ),
     );

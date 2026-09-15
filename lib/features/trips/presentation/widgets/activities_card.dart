@@ -4,7 +4,11 @@ import '../providers/trip_activity_provider.dart';
 import 'dashboard_section.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class ActivitiesCard extends ConsumerWidget {
   const ActivitiesCard({
@@ -24,7 +28,7 @@ class ActivitiesCard extends ConsumerWidget {
       icon: Icons.event_note,
       title: 'Activities',
       child: activitiesAsync.when(
-        loading: () => const Text('Loading activities...'),
+        loading: () => Text(context.ui('loadingActivities')),
         error: (error, _) => Text(UserFacingError.message(
           error,
           fallback: 'Activities are unavailable right now.',
@@ -34,12 +38,13 @@ class ActivitiesCard extends ConsumerWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('No activities planned yet.'),
-                const SizedBox(height: 8),
+                Text(context.ui('noActivitiesPlanned'),
+                    style: AppTextStyles.bodyMuted),
+                const SizedBox(height: AppSpacing.sm),
                 OutlinedButton.icon(
                   onPressed: onOpenActivities,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Activity'),
+                  label: Text(context.ui('addActivity')),
                 ),
               ],
             );
@@ -53,17 +58,23 @@ class ActivitiesCard extends ConsumerWidget {
                 (activity) {
                   final schedule = activity.scheduledAt == null
                       ? 'Unscheduled'
-                      : DateFormat('dd MMM, HH:mm').format(activity.scheduledAt!);
+                      : DateFormat('dd MMM, HH:mm')
+                          .format(activity.scheduledAt!);
                   final location = activity.location?.trim().isNotEmpty == true
                       ? activity.location!.trim()
                       : 'No location';
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text('• ${activity.title} | $location | $schedule'),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Text(
+                      '• ${activity.title} | $location | $schedule',
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.textNavy,
+                      ),
+                    ),
                   );
                 },
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.xs),
               TextButton(
                 onPressed: onOpenActivities,
                 child: Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'dashboard_section.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AiAssistantCard extends StatelessWidget {
   const AiAssistantCard({
@@ -25,7 +26,7 @@ class AiAssistantCard extends StatelessWidget {
           FilledButton.icon(
             onPressed: onOpenPlanner,
             icon: const Icon(Icons.auto_awesome),
-            label: const Text('Open AI Planner'),
+            label: Text(context.ui('openAiPlanner')),
           ),
         ],
       ),

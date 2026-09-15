@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
+import '../../../core/api/backend_auth.dart';
 import '../domain/translation_models.dart';
 
 abstract interface class TranslationService {
@@ -14,6 +16,11 @@ class DemoTranslationService implements TranslationService {
     final text = request.text.trim();
     if (text.isEmpty) {
       throw ArgumentError('Enter text to translate.');
+    }
+    if (text.length > translationMaxTextLength) {
+      throw ArgumentError(
+        'Enter $translationMaxTextLength characters or fewer.',
+      );
     }
 
     final sourceCode =
@@ -94,6 +101,7 @@ class BackendTranslationService implements TranslationService {
     required String endpoint,
     Dio? client,
     TranslationBackendSender? sender,
+    BackendAuth? backendAuth,
   })  : _endpoint = endpoint,
         _dio = client ??
             Dio(
@@ -104,17 +112,24 @@ class BackendTranslationService implements TranslationService {
                 contentType: 'application/json',
               ),
             ),
-        _sender = sender;
+        _sender = sender,
+        _backendAuth = backendAuth ?? FirebaseBackendAuth();
 
   final String _endpoint;
   final Dio _dio;
   final TranslationBackendSender? _sender;
+  final BackendAuth _backendAuth;
 
   @override
   Future<TranslationResponse> translate(TranslationRequest request) async {
     final text = request.text.trim();
     if (text.isEmpty) {
       throw ArgumentError('Enter text to translate.');
+    }
+    if (text.length > translationMaxTextLength) {
+      throw ArgumentError(
+        'Enter $translationMaxTextLength characters or fewer.',
+      );
     }
 
     final payload = await (_sender?.call(request) ?? _send(request));
@@ -156,6 +171,11 @@ class BackendTranslationService implements TranslationService {
 
   Future<Map<String, dynamic>> _send(TranslationRequest request) async {
     try {
+      if (kDebugMode) {
+        debugPrint(
+          '[TranslatorDiagnostics] Attempting POST translation request: $_endpoint',
+        );
+      }
       final response = await _dio.post<Map<String, dynamic>>(
         _endpoint,
         data: {
@@ -164,16 +184,40 @@ class BackendTranslationService implements TranslationService {
           'targetLanguageCode': request.targetLanguageCode,
           'autoDetect': request.autoDetect,
         },
+        options: Options(headers: await _headers()),
       );
       if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          debugPrint(
+            '[TranslatorDiagnostics] Translation POST returned unusable response; status: ${response.statusCode}; has data: ${response.data != null}',
+          );
+        }
         throw const TranslationProviderException();
+      }
+      if (kDebugMode) {
+        debugPrint(
+          '[TranslatorDiagnostics] Translation POST succeeded; status: ${response.statusCode}',
+        );
       }
       return _unwrapPayload(response.data!);
     } on TranslationProviderException {
       rethrow;
-    } catch (_) {
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint(
+          '[TranslatorDiagnostics] Translation POST failed before backend response handling: $error',
+        );
+      }
       throw const TranslationProviderException();
     }
+  }
+
+  Future<Map<String, String>> _headers() async {
+    final token = await _backendAuth.idToken();
+    if (token == null || token.isEmpty) {
+      return const <String, String>{};
+    }
+    return <String, String>{'Authorization': 'Bearer $token'};
   }
 
   Map<String, dynamic> _unwrapPayload(Map<String, dynamic> data) {
@@ -210,7 +254,17 @@ class FallbackTranslationService implements TranslationService {
       if (liveService != null) {
         return await liveService!.translate(request);
       }
-    } catch (_) {
+      if (kDebugMode) {
+        debugPrint(
+          '[TranslatorDiagnostics] Translation live service is not configured; using demo fallback.',
+        );
+      }
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint(
+          '[TranslatorDiagnostics] Translation live service failed; using demo fallback: $error',
+        );
+      }
       // Demo fallback keeps the translator usable when the backend is down.
     }
     return const DemoTranslationService().translate(request);

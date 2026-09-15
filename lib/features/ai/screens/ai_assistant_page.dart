@@ -8,6 +8,7 @@ import '../widgets/assistant_message_bubble.dart';
 import '../domain/ai_companion_actions.dart';
 import '../../trips/domain/entities/trip.dart';
 import '../../../app/app_routes.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AiAssistantPage extends ConsumerStatefulWidget {
   const AiAssistantPage({super.key, this.trip, this.initialPrompt});
@@ -60,7 +61,7 @@ class _AiAssistantPageState extends ConsumerState<AiAssistantPage> {
     final isLoading = ref.watch(aiAssistantLoadingProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('AI Assistant')),
+      appBar: AppBar(title: Text(context.ui('aiAssistant'))),
       body: Column(
         children: [
           Expanded(

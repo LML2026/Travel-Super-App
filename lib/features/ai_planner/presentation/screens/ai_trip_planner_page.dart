@@ -16,6 +16,7 @@ import '../../../trip_readiness/presentation/providers/trip_readiness_provider.d
 import '../../../ai/domain/ai_travel_context.dart';
 import '../../domain/ai_planner_models.dart';
 import '../providers/ai_planner_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AiTripPlannerPage extends ConsumerWidget {
   const AiTripPlannerPage({super.key, required this.trip});
@@ -85,7 +86,7 @@ class AiTripPlannerPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Travel Planner'),
+        title: Text(context.ui('aiTravelPlanner')),
         actions: [
           TextButton.icon(
             onPressed: () => _generate(
@@ -98,7 +99,7 @@ class AiTripPlannerPage extends ConsumerWidget {
               prompt: 'Replan with latest trip context',
             ),
             icon: const Icon(Icons.autorenew),
-            label: const Text('Replan'),
+            label: Text(context.ui('replan')),
           ),
         ],
       ),
@@ -158,7 +159,7 @@ class AiTripPlannerPage extends ConsumerWidget {
               travelContext: currentContext.travelContext,
             ),
             icon: const Icon(Icons.auto_awesome),
-            label: const Text('Generate Plan'),
+            label: Text(context.ui('generatePlan')),
           ),
           const SizedBox(height: 16),
           historyState.when(
@@ -353,21 +354,21 @@ class _PreferencesCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             SegmentedButton<AiPlannerPace>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: AiPlannerPace.relaxed,
                   icon: Icon(Icons.spa_outlined),
-                  label: Text('Relaxed'),
+                  label: Text(context.ui('relaxed')),
                 ),
                 ButtonSegment(
                   value: AiPlannerPace.balanced,
                   icon: Icon(Icons.balance_outlined),
-                  label: Text('Balanced'),
+                  label: Text(context.ui('balanced')),
                 ),
                 ButtonSegment(
                   value: AiPlannerPace.packed,
                   icon: Icon(Icons.directions_run),
-                  label: Text('Packed'),
+                  label: Text(context.ui('packed')),
                 ),
               ],
               selected: {preferences.pace},
@@ -377,14 +378,14 @@ class _PreferencesCard extends StatelessWidget {
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Accessibility-aware'),
+              title: Text(context.ui('accessibilityAware')),
               value: preferences.accessibility,
               onChanged: (value) =>
                   onChanged(preferences.copyWith(accessibility: value)),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Family-friendly'),
+              title: Text(context.ui('familyFriendly')),
               value: preferences.familyFriendly,
               onChanged: (value) =>
                   onChanged(preferences.copyWith(familyFriendly: value)),
@@ -512,7 +513,7 @@ class _DayPlanCard extends ConsumerWidget {
                         ),
                   ),
                 ),
-                Text('${day.estimatedCost.toStringAsFixed(0)} est.'),
+                Text('${day.estimatedCost.toStringAsFixed(0)} ${context.ui('estimatedAbbrev')}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -561,14 +562,14 @@ class _SuggestionTile extends ConsumerWidget {
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'accept', child: Text('Accept and add')),
-            const PopupMenuItem(value: 'replace', child: Text('Replace')),
-            const PopupMenuItem(value: 'reject', child: Text('Reject')),
+            PopupMenuItem(value: 'accept', child: Text(context.ui('acceptAndAdd'))),
+            PopupMenuItem(value: 'replace', child: Text(context.ui('replace'))),
+            PopupMenuItem(value: 'reject', child: Text(context.ui('reject'))),
           ],
           child: accepted
-              ? const Chip(
-                  avatar: Icon(Icons.check, size: 18),
-                  label: Text('Added'),
+              ? Chip(
+                  avatar: const Icon(Icons.check, size: 18),
+                  label: Text(context.ui('added')),
                 )
               : const Icon(Icons.more_vert),
         ),
@@ -592,12 +593,12 @@ class _TripChangedBanner extends StatelessWidget {
           children: [
             const Icon(Icons.change_circle_outlined),
             const SizedBox(width: 12),
-            const Expanded(
-              child: Text('Your trip changed - update your plan?'),
+            Expanded(
+              child: Text(context.ui('tripChangedUpdatePlan')),
             ),
             FilledButton(
               onPressed: onUpdatePlan,
-              child: const Text('Update'),
+              child: Text(context.ui('update')),
             ),
           ],
         ),
@@ -648,10 +649,10 @@ class _PlanHistoryCard extends StatelessWidget {
                   '${plan.currency} ${plan.totalEstimatedCost.toStringAsFixed(0)} estimated · ${_planSourceLabel(plan.source)}',
                 ),
                 trailing: activePlanId == plan.id
-                    ? const Chip(label: Text('Current'))
+                    ? Chip(label: Text(context.ui('current')))
                     : TextButton(
                         onPressed: () => onRestore(plan),
-                        child: const Text('Restore'),
+                        child: Text(context.ui('restore')),
                       ),
               ),
           ],
@@ -690,7 +691,7 @@ class _EmptyPlannerState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Text(
@@ -706,14 +707,14 @@ class _PlannerLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
             LinearProgressIndicator(),
             SizedBox(height: 12),
-            Text('Building a trip-aware itinerary...'),
+            Text(context.ui('buildingTripAwareItinerary')),
           ],
         ),
       ),
@@ -731,7 +732,7 @@ class _PlannerErrorState extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text('Planner failed: $message'),
+        child: Text('${context.ui('plannerFailed')}: $message'),
       ),
     );
   }

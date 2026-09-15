@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../providers/trip_bookings_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class BookingsCard extends ConsumerWidget {
   final String tripId;
@@ -18,12 +23,19 @@ class BookingsCard extends ConsumerWidget {
     final bookingsAsync = ref.watch(tripBookingsProvider(tripId));
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      elevation: 1,
+      color: AppColors.cardSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: InkWell(
         onTap: () => context.pushTripBookings(tripId),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -33,19 +45,20 @@ class BookingsCard extends ConsumerWidget {
                   Text(
                     'Bookings',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          color: AppColors.textNavy,
+                          fontWeight: FontWeight.w700,
                         ),
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.grey),
+                  const Icon(Icons.chevron_right, color: AppColors.champagne),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               bookingsAsync.when(
                 data: (bookings) {
                   if (bookings.isEmpty) {
                     return const Text(
                       'No saved booking plans yet. Search for flights or hotels to add one.',
-                      style: TextStyle(color: Colors.grey),
+                      style: AppTextStyles.bodyMuted,
                     );
                   }
 
@@ -53,19 +66,25 @@ class BookingsCard extends ConsumerWidget {
                     children: [
                       _BookingBadge(
                         icon: Icons.flight_takeoff,
-                        count: bookings.where((b) => b.type == BookingType.flight).length,
-                        label: 'Flights',
+                        count: bookings
+                            .where((b) => b.type == BookingType.flight)
+                            .length,
+                        label: context.ui('flights'),
                       ),
                       const SizedBox(width: 16),
                       _BookingBadge(
                         icon: Icons.hotel,
-                        count: bookings.where((b) => b.type == BookingType.hotel).length,
+                        count: bookings
+                            .where((b) => b.type == BookingType.hotel)
+                            .length,
                         label: 'Hotels',
                       ),
                       const SizedBox(width: 16),
                       _BookingBadge(
                         icon: Icons.local_taxi,
-                        count: bookings.where((b) => b.type == BookingType.transport).length,
+                        count: bookings
+                            .where((b) => b.type == BookingType.transport)
+                            .length,
                         label: 'Transport',
                       ),
                     ],
@@ -77,7 +96,7 @@ class BookingsCard extends ConsumerWidget {
                     error,
                     fallback: 'Bookings are unavailable right now.',
                   ),
-                  style: const TextStyle(color: Colors.red),
+                  style: const TextStyle(color: AppColors.error),
                 ),
               ),
             ],
@@ -101,7 +120,7 @@ class _BookingBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = count > 0 ? Theme.of(context).primaryColor : Colors.grey;
+    final color = count > 0 ? AppColors.navy : AppColors.textSubtle;
 
     return Column(
       children: [
@@ -116,7 +135,7 @@ class _BookingBadge extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: count > 0 ? Colors.black87 : Colors.grey,
+            color: count > 0 ? AppColors.textNavy : AppColors.textMuted,
             fontWeight: count > 0 ? FontWeight.bold : FontWeight.normal,
           ),
         ),

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/flight.dart';
@@ -12,7 +11,7 @@ class DuffelFlightService {
     http.Client? client,
     DuffelTokenReader? tokenReader,
   })  : _client = client ?? http.Client(),
-        _tokenReader = tokenReader ?? _readConfiguredToken;
+        _tokenReader = tokenReader ?? _noConfiguredToken;
 
   static final Uri _offerRequestsUri =
       Uri.parse('https://api.duffel.com/air/offer_requests');
@@ -177,8 +176,8 @@ class DuffelFlightService {
     return '';
   }
 
-  static String? _readConfiguredToken() {
-    return dotenv.maybeGet('DUFFEL_ACCESS_TOKEN');
+  static String? _noConfiguredToken() {
+    return null;
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'dashboard_section.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class ItineraryCard extends StatelessWidget {
   const ItineraryCard({
@@ -21,7 +22,7 @@ class ItineraryCard extends StatelessWidget {
           days,
           (index) => Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: Text('Day ${index + 1}'),
+            child: Text('${context.ui('day')} ${index + 1}'),
           ),
         ),
       ),

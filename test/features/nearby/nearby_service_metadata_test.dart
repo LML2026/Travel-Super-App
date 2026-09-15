@@ -15,6 +15,13 @@ void main() {
       NearbyServiceType.museum,
       NearbyServiceType.shopping,
       NearbyServiceType.supermarket,
+      NearbyServiceType.parking,
+      NearbyServiceType.fuel,
+      NearbyServiceType.trainStation,
+      NearbyServiceType.busStation,
+      NearbyServiceType.airport,
+      NearbyServiceType.evCharging,
+      NearbyServiceType.taxi,
       NearbyServiceType.transit,
     ]);
   });

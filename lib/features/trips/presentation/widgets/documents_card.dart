@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import 'dashboard_section.dart';
 
 class DocumentsCard extends StatelessWidget {
@@ -24,8 +27,9 @@ class DocumentsCard extends StatelessWidget {
             hasDocuments
                 ? 'Travel documents are available for this trip.'
                 : 'No trip documents yet. Add passport, visa, and ticket references.',
+            style: AppTextStyles.body.copyWith(color: AppColors.textNavy),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             onPressed: onOpenDocuments,
             icon: const Icon(Icons.folder_open_outlined),

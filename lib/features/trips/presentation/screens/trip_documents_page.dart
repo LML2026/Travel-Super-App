@@ -5,6 +5,7 @@ import '../../domain/entities/trip_document.dart';
 import '../../domain/entities/trip_document_upload.dart';
 import '../providers/trip_document_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripDocumentsPage extends ConsumerWidget {
   const TripDocumentsPage({
@@ -43,21 +44,21 @@ class TripDocumentsPage extends ConsumerWidget {
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
+                      decoration: InputDecoration(labelText: context.ui('title')),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: typeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Type',
-                        hintText: 'Ticket, confirmation, passport, visa',
+                      decoration: InputDecoration(
+                        labelText: context.ui('type'),
+                        hintText: context.ui('documentTypeHint'),
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: referenceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Reference / URL / Code',
+                      decoration: InputDecoration(
+                        labelText: context.ui('referenceUrlCode'),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -65,15 +66,15 @@ class TripDocumentsPage extends ConsumerWidget {
                       controller: notesController,
                       minLines: 2,
                       maxLines: 4,
-                      decoration: const InputDecoration(labelText: 'Notes'),
+                      decoration: InputDecoration(labelText: context.ui('notes')),
                     ),
                     if (!isEditing) ...[
                       const SizedBox(height: 12),
                       TextField(
                         controller: filePathController,
-                        decoration: const InputDecoration(
-                          labelText: 'Local file path',
-                          hintText: '/path/to/confirmation.pdf',
+                        decoration: InputDecoration(
+                          labelText: context.ui('localFilePath'),
+                          hintText: context.ui('confirmationPdfPath'),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -110,7 +111,7 @@ class TripDocumentsPage extends ConsumerWidget {
                             }
                           },
                           icon: const Icon(Icons.upload_file),
-                          label: const Text('Attach File'),
+                          label: Text(context.ui('attachFile')),
                         ),
                       ),
                       if (upload != null)
@@ -139,7 +140,7 @@ class TripDocumentsPage extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text(context.ui('cancel')),
                 ),
                 FilledButton(
                   onPressed: () async {
@@ -148,15 +149,15 @@ class TripDocumentsPage extends ConsumerWidget {
                     final reference = referenceController.text.trim();
                     if (title.isEmpty || type.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Title and type are required.'),
+                        SnackBar(
+                          content: Text(context.ui('titleAndTypeRequired')),
                         ),
                       );
                       return;
                     }
                     if (reference.isEmpty && upload == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
                             'Add a reference, URL, code, or uploaded file.',
                           ),
@@ -238,7 +239,7 @@ class TripDocumentsPage extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Remove document?'),
+        title: Text(context.ui('removeDocumentQuestion')),
         content: Text(
           document.hasUploadedFile
               ? 'This removes the document metadata and uploaded trip file from this trip.'
@@ -247,11 +248,11 @@ class TripDocumentsPage extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.ui('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Remove'),
+            child: Text(context.ui('remove')),
           ),
         ],
       ),
@@ -283,7 +284,7 @@ class TripDocumentsPage extends ConsumerWidget {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trip document removed.')),
+        SnackBar(content: Text(context.ui('tripDocumentRemoved'))),
       );
     }
   }
@@ -317,11 +318,11 @@ class TripDocumentsPage extends ConsumerWidget {
     final mutation = ref.watch(tripDocumentMutationProvider).valueOrNull;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip Documents')),
+      appBar: AppBar(title: Text(context.ui('tripDocuments'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showDocumentDialog(context, ref),
         icon: const Icon(Icons.add),
-        label: const Text('Add'),
+        label: Text(context.ui('add')),
       ),
       body: Column(
         children: [
@@ -333,7 +334,7 @@ class TripDocumentsPage extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: ScaffoldMessenger.of(context).clearMaterialBanners,
-                  child: const Text('Dismiss'),
+                  child: Text(context.ui('dismiss')),
                 ),
               ],
             ),
@@ -343,13 +344,13 @@ class TripDocumentsPage extends ConsumerWidget {
               actions: [
                 TextButton(
                   onPressed: ScaffoldMessenger.of(context).clearMaterialBanners,
-                  child: const Text('Dismiss'),
+                  child: Text(context.ui('dismiss')),
                 ),
               ],
             ),
           Expanded(
             child: documentsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => Center(child: CircularProgressIndicator()),
               error: (error, _) => Center(
                 child: Text(UserFacingError.message(
                   error,
@@ -358,7 +359,7 @@ class TripDocumentsPage extends ConsumerWidget {
               ),
               data: (documents) {
                 if (documents.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
                       'No trip documents yet. Add confirmations, tickets, passport or visa references.',
                     ),
@@ -409,12 +410,12 @@ class TripDocumentsPage extends ConsumerWidget {
                             }
                             await _confirmDelete(context, ref, document);
                           },
-                          itemBuilder: (context) => const [
-                            PopupMenuItem(value: 'open', child: Text('Open')),
-                            PopupMenuItem(value: 'edit', child: Text('Edit')),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(value: 'open', child: Text(context.ui('open'))),
+                            PopupMenuItem(value: 'edit', child: Text(context.ui('edit'))),
                             PopupMenuItem(
                               value: 'delete',
-                              child: Text('Remove'),
+                              child: Text(context.ui('remove')),
                             ),
                           ],
                         ),

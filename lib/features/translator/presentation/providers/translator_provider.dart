@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../app/providers.dart';
+import '../../../../core/constants/api_config.dart';
 import '../../data/translation_history_repository.dart';
 import '../../data/speech_service.dart';
 import '../../data/translation_service.dart';
@@ -12,6 +13,11 @@ import '../../domain/translation_models.dart';
 
 final translationServiceProvider = Provider<TranslationService>((ref) {
   final endpoint = _translationEndpointFromEnvironment();
+  if (kDebugMode) {
+    debugPrint(
+      '[TranslatorDiagnostics] Resolved translation backend URL: ${endpoint ?? 'not configured'}',
+    );
+  }
   return FallbackTranslationService(
     liveService:
         endpoint == null ? null : BackendTranslationService(endpoint: endpoint),
@@ -37,13 +43,15 @@ final translatorControllerProvider =
 );
 
 String? _translationEndpointFromEnvironment() {
-  final explicit = dotenv.maybeGet('TRANSLATION_API_URL')?.trim();
-  if (explicit != null && _isHttpUrl(explicit)) {
+  const configuredTranslationUrl =
+      String.fromEnvironment('TRANSLATION_API_URL');
+  final explicit = configuredTranslationUrl.trim();
+  if (_isHttpUrl(explicit)) {
     return explicit;
   }
 
-  final baseUrl = dotenv.maybeGet('API_BASE_URL')?.trim();
-  if (baseUrl == null || !_isHttpUrl(baseUrl)) {
+  final baseUrl = apiBaseUrl.trim();
+  if (!_isHttpUrl(baseUrl)) {
     return null;
   }
   return '${baseUrl.replaceFirst(RegExp(r'/$'), '')}/api/translate';
@@ -355,9 +363,15 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
   Future<TranslationResponse?> translate([String? text]) async {
     final current = state.valueOrNull ?? const TranslatorState();
     final sourceText = (text ?? current.inputText).trim();
-    if (sourceText.isEmpty) {
+    final validationError = _validateTranslationInput(
+      text: sourceText,
+      sourceLanguageCode: current.sourceLanguageCode,
+      targetLanguageCode: current.targetLanguageCode,
+      allowAutoSource: true,
+    );
+    if (validationError != null) {
       state = AsyncData(
-        current.copyWith(errorMessage: 'Enter text to translate.'),
+        current.copyWith(errorMessage: validationError),
       );
       return null;
     }
@@ -404,19 +418,24 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
   }) async {
     final current = state.valueOrNull ?? const TranslatorState();
     final trimmed = text.trim();
-    if (trimmed.isEmpty) {
-      state = AsyncData(
-        current.copyWith(errorMessage: 'Enter conversation text.'),
-      );
-      return;
-    }
-
     final source = travellerSpeaking
         ? current.travellerLanguageCode
         : current.localLanguageCode;
     final target = travellerSpeaking
         ? current.localLanguageCode
         : current.travellerLanguageCode;
+    final validationError = _validateTranslationInput(
+      text: trimmed,
+      sourceLanguageCode: source,
+      targetLanguageCode: target,
+      allowAutoSource: false,
+    );
+    if (validationError != null) {
+      state = AsyncData(
+        current.copyWith(errorMessage: validationError),
+      );
+      return;
+    }
 
     state = const AsyncLoading<TranslatorState>().copyWithPrevious(state);
     try {
@@ -435,6 +454,7 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
         sourceLanguageCode: source,
         targetLanguageCode: target,
         createdAt: DateTime.now(),
+        source: response.source,
       );
       final updatedHistory = await _saveToHistory(
         current,
@@ -552,5 +572,29 @@ class TranslatorController extends AsyncNotifier<TranslatorState> {
       return error.message?.toString() ?? 'Enter text to translate.';
     }
     return 'Translation is temporarily unavailable. You can try again or continue with text mode.';
+  }
+
+  String? _validateTranslationInput({
+    required String text,
+    required String sourceLanguageCode,
+    required String targetLanguageCode,
+    required bool allowAutoSource,
+  }) {
+    if (text.isEmpty) {
+      return 'Enter text to translate.';
+    }
+    if (text.length > translationMaxTextLength) {
+      return 'Enter $translationMaxTextLength characters or fewer.';
+    }
+    final supportedSources = allowAutoSource
+        ? supportedTranslationLanguageCodes
+        : supportedTranslationTargetLanguageCodes;
+    if (!supportedSources.contains(sourceLanguageCode)) {
+      return 'Choose a supported source language.';
+    }
+    if (!supportedTranslationTargetLanguageCodes.contains(targetLanguageCode)) {
+      return 'Choose a supported target language.';
+    }
+    return null;
   }
 }

@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../app/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../models/flight.dart';
 import '../../../core/utils/flight_formatter.dart';
 import '../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class FlightCard extends ConsumerStatefulWidget {
   final Flight flight;
@@ -36,12 +41,12 @@ class _FlightCardState extends ConsumerState<FlightCard> {
         : '🟠 ${widget.flight.stops} Stop${widget.flight.stops > 1 ? 's' : ''}';
   }
 
-  String get _sourceLabel {
+  String? get _sourceLabel {
     switch (widget.flight.dataSource) {
       case FlightDataSource.duffelTest:
-        return 'Duffel TEST data';
+        return 'Test data';
       case FlightDataSource.backend:
-        return 'Backend fallback data';
+        return null;
       case FlightDataSource.demo:
         return 'Demo flight data';
     }
@@ -56,8 +61,8 @@ class _FlightCardState extends ConsumerState<FlightCard> {
 
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please sign in to save flights.'),
+        SnackBar(
+          content: Text(context.ui('signInSaveFlights')),
         ),
       );
       return;
@@ -71,6 +76,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
           .doc(widget.flight.id)
           .set({
         'id': widget.flight.id,
+        'flightId': widget.flight.id,
         'airline': widget.flight.airline,
         'airlineLogo': widget.flight.airlineLogo,
         'flightNumber': widget.flight.flightNumber,
@@ -82,7 +88,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
         'stops': widget.flight.stops,
         'amount': widget.flight.amount,
         'currency': widget.flight.currency,
-        'savedAt': FieldValue.serverTimestamp(),
+        'cabinClass': widget.flight.cabinClass,
+        'source': widget.flight.dataSource.name,
+        'savedAt': DateTime.now().toIso8601String(),
       });
 
       if (!context.mounted) {
@@ -90,8 +98,8 @@ class _FlightCardState extends ConsumerState<FlightCard> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Flight saved'),
+        SnackBar(
+          content: Text(context.ui('flightSaved')),
         ),
       );
     } catch (error) {
@@ -120,23 +128,26 @@ class _FlightCardState extends ConsumerState<FlightCard> {
     return GestureDetector(
       onTap: _navigateToDetails,
       child: Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        elevation: 2,
+        margin: const EdgeInsets.only(bottom: AppSpacing.lg),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadii.card),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _sourceLabel,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+              if (_sourceLabel case final label?) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               // Header: Airline, Logo, Price, Heart
               Row(
                 children: [
@@ -152,7 +163,7 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   else
                     const Icon(Icons.flight, size: 40),
 
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
 
                   // Airline name and flight number
                   Expanded(
@@ -161,17 +172,11 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       children: [
                         Text(
                           widget.flight.airline,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         Text(
                           widget.flight.flightNumber,
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
@@ -180,25 +185,21 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                   // Price
                   Text(
                     '${widget.flight.currency} ${widget.flight.amount.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1976D2),
-                    ),
+                    style: AppTextStyles.price,
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
 
                   // Heart button
                   IconButton(
-                    tooltip: 'Save flight',
+                    tooltip: context.ui('saveFlight'),
                     onPressed: () => _saveFlight(context),
                     icon: const Icon(Icons.favorite_border),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // Route airports
               Row(
@@ -206,24 +207,20 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                 children: [
                   Text(
                     widget.flight.origin,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.navy600,
+                        ),
                   ),
                   Text(
                     widget.flight.destination,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.navy600,
+                        ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
 
               // Timeline with times
               Row(
@@ -233,15 +230,12 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                     children: [
                       Text(
                         departureTime,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
                   ),
 
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
 
                   // Timeline arrow
                   Expanded(
@@ -249,13 +243,9 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                       children: [
                         Text(
                           formattedDuration,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
-                          ),
+                          style: Theme.of(context).textTheme.labelMedium,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         CustomPaint(
                           painter: _TimelinePainter(),
                           size: const Size(double.infinity, 20),
@@ -264,24 +254,21 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                     ),
                   ),
 
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
 
                   // Arrival time
                   Column(
                     children: [
                       Text(
                         arrivalTime,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
                   ),
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
 
               // Duration, stops, and cabin
               Row(
@@ -292,19 +279,12 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                     children: [
                       const Text(
                         'Duration',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.label,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         formattedDuration,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ],
                   ),
@@ -313,19 +293,12 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                     children: [
                       const Text(
                         'Stops',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.label,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         stopsText,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ],
                   ),
@@ -333,49 +306,28 @@ class _FlightCardState extends ConsumerState<FlightCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Cabin',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Text(context.ui('cabin'),
+                          style: AppTextStyles.label,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           widget.flight.cabinClass,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ],
                     ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
-              // Book button
+              // Details button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: widget.onBookPressed ??
-                      () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                '${widget.flight.flightNumber} is ready to save to a trip. Live ticket purchase is not available yet.'),
-                          ),
-                        );
-                      },
-                  icon: const Icon(Icons.flight_takeoff),
-                  label: const Text('Book Flight'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    backgroundColor: const Color(0xFF1976D2),
-                    foregroundColor: Colors.white,
-                  ),
+                  onPressed: widget.onBookPressed ?? _navigateToDetails,
+                  icon: const Icon(Icons.info_outline),
+                  label: Text(context.ui('viewDetails')),
                 ),
               ),
             ],
@@ -391,7 +343,7 @@ class _TimelinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.shade400
+      ..color = AppColors.borderStrong
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
 

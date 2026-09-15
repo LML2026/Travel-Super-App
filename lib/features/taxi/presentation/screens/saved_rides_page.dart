@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
 
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../providers/taxi_hub_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class SavedRidesPage extends ConsumerWidget {
   const SavedRidesPage({super.key});
@@ -15,7 +20,7 @@ class SavedRidesPage extends ConsumerWidget {
     final tripsAsync = ref.watch(tripsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved rides')),
+      appBar: AppBar(title: Text(context.ui('savedRides'))),
       body: tripsAsync.when(
         data: (trips) {
           if (trips.isEmpty) {
@@ -43,11 +48,16 @@ class SavedRidesPage extends ConsumerWidget {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
                 child: DropdownButtonFormField<String>(
                   initialValue: effectiveTripId,
-                  decoration: const InputDecoration(
-                    labelText: 'Trip',
+                  decoration: InputDecoration(
+                    labelText: context.ui('trip'),
                     border: OutlineInputBorder(),
                   ),
                   items: trips
@@ -79,24 +89,45 @@ class SavedRidesPage extends ConsumerWidget {
                     }
 
                     return ListView.separated(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       itemCount: rides.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: AppSpacing.md),
                       itemBuilder: (context, index) {
                         final ride = rides[index];
                         return Card(
+                          color: AppColors.cardSurface,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadii.card),
+                            side: const BorderSide(color: AppColors.border),
+                          ),
                           child: ListTile(
-                            leading: const Icon(Icons.route_outlined),
+                            leading: const Icon(
+                              Icons.route_outlined,
+                              color: AppColors.navy,
+                            ),
                             title: Text(
                               '${ride.pickupAddress} -> ${ride.destinationAddress}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(
+                                    color: AppColors.textNavy,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                             subtitle: Text(
                               '${ride.provider} | ${ride.currency} ${ride.estimatedFare.toStringAsFixed(2)}',
+                              style: AppTextStyles.bodyMuted,
                             ),
                             trailing: Text(
                               ride.scheduledAt == null
                                   ? 'ASAP'
                                   : '${ride.scheduledAt}',
+                              style: AppTextStyles.label.copyWith(
+                                color: AppColors.champagne700,
+                              ),
                             ),
                           ),
                         );
@@ -107,7 +138,7 @@ class SavedRidesPage extends ConsumerWidget {
                       const Center(child: CircularProgressIndicator()),
                   error: (error, _) => Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Text(UserFacingError.message(
                         error,
                         fallback: 'Saved rides are unavailable right now.',
@@ -122,7 +153,7 @@ class SavedRidesPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(UserFacingError.message(
               error,
               fallback: 'Trips are unavailable right now.',

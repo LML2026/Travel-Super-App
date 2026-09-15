@@ -7,6 +7,10 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../expenses/presentation/screens/trip_expenses_page.dart';
@@ -40,6 +44,7 @@ import '../widgets/map_card.dart';
 import '../widgets/translator_card.dart';
 import '../widgets/weather_card.dart';
 import 'edit_trip_page.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripDashboardPage extends ConsumerStatefulWidget {
   const TripDashboardPage({
@@ -106,15 +111,15 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trip Dashboard'),
+        title: Text(context.ui('tripDashboard')),
         actions: [
           IconButton(
-            tooltip: 'Live Trip',
+            tooltip: context.ui('liveTrip'),
             icon: const Icon(Icons.explore_outlined),
             onPressed: () => context.pushTripLive(_trip),
           ),
           IconButton(
-            tooltip: 'Edit Trip',
+            tooltip: context.ui('editTrip'),
             icon: const Icon(Icons.edit),
             onPressed: () {
               final router = GoRouter.maybeOf(context);
@@ -140,7 +145,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
           constraints: const BoxConstraints(maxWidth: 760),
           child: ListView(
             scrollCacheExtent: const ScrollCacheExtent.pixels(12000),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               _TripHero(
                 trip: _trip,
@@ -162,6 +167,13 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
                 ridesAsync,
               ]))
                 _CloudDataErrorBanner(
+                  message: _cloudErrorMessage(
+                    activitiesAsync: activitiesAsync,
+                    bookingsAsync: bookingsAsync,
+                    documentsAsync: documentsAsync,
+                    expensesAsync: expensesAsync,
+                    ridesAsync: ridesAsync,
+                  ),
                   onRetry: () {
                     ref.invalidate(tripActivitiesProvider(_trip.id));
                     ref.invalidate(tripBookingsProvider(_trip.id));
@@ -385,7 +397,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
           );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Collaborator invited.')),
+          SnackBar(content: Text(context.ui('collaboratorInvited'))),
         );
       }
     } catch (error) {
@@ -467,7 +479,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     if (flights.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No saved flights available.')),
+        SnackBar(content: Text(context.ui('noSavedFlightsAvailable'))),
       );
       return;
     }
@@ -547,7 +559,7 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
     if (hotels.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No saved hotels available.')),
+        SnackBar(content: Text(context.ui('noSavedHotelsAvailable'))),
       );
       return;
     }
@@ -633,11 +645,11 @@ class _TripDashboardPageState extends ConsumerState<TripDashboardPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(context.ui('cancel')),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Unlink'),
+            child: Text(context.ui('unlink')),
           ),
         ],
       ),
@@ -682,8 +694,15 @@ class _TripHero extends StatelessWidget {
 
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      color: AppColors.cardSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -698,13 +717,18 @@ class _TripHero extends StatelessWidget {
                         trip.title.isEmpty ? trip.destination : trip.title,
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textNavy,
+                                  fontWeight: FontWeight.w700,
                                 ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         trip.destination,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                     ],
                   ),
@@ -712,17 +736,22 @@ class _TripHero extends StatelessWidget {
                 _StatusPill(label: status),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Text(
               '${dateFormatter.format(trip.startDate)} -> ${dateFormatter.format(trip.endDate)}',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textNavy,
+                  ),
             ),
-            const SizedBox(height: 4),
-            Text(countdown),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              countdown,
+              style: AppTextStyles.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.lg),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: [
                 _MetricChip(
                   icon: Icons.group_outlined,
@@ -798,13 +827,13 @@ class _ReadinessSummarySection extends StatelessWidget {
           if (summary.nextTask != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text('Next: ${summary.nextTask!.title}'),
+              child: Text('${context.ui('next')}: ${summary.nextTask!.title}'),
             ),
           const SizedBox(height: 10),
           FilledButton.icon(
             onPressed: onOpenReadiness,
             icon: const Icon(Icons.checklist_outlined),
-            label: const Text('Open readiness'),
+            label: Text(context.ui('openReadiness')),
           ),
         ],
       ),
@@ -813,34 +842,40 @@ class _ReadinessSummarySection extends StatelessWidget {
 }
 
 class _CloudDataErrorBanner extends StatelessWidget {
-  const _CloudDataErrorBanner({required this.onRetry});
+  const _CloudDataErrorBanner({
+    required this.message,
+    required this.onRetry,
+  });
 
+  final String message;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).colorScheme.errorContainer,
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.warning.withValues(alpha: 0.1),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.32)),
+        borderRadius: BorderRadius.circular(AppRadii.card),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
           children: [
-            Icon(
-              Icons.cloud_off_outlined,
-              color: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-            const SizedBox(width: 10),
+            const Icon(Icons.cloud_off_outlined, color: AppColors.warning),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
-                'Some trip data could not sync. Existing local/demo sections are unchanged.',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                message,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textNavy,
                 ),
               ),
             ),
             TextButton(
               onPressed: onRetry,
-              child: const Text('Retry'),
+              child: Text(context.ui('retry')),
             ),
           ],
         ),
@@ -883,7 +918,7 @@ class _QuickActions extends StatelessWidget {
         children: [
           _ActionButton(
             icon: Icons.explore_outlined,
-            label: 'Live Trip',
+            label: context.ui('liveTrip'),
             onPressed: onOpenLiveTrip,
           ),
           _ActionButton(
@@ -893,7 +928,7 @@ class _QuickActions extends StatelessWidget {
           ),
           _ActionButton(
             icon: Icons.bookmark_border,
-            label: 'Saved',
+            label: context.ui('saved'),
             onPressed: onOpenSavedItems,
           ),
           _ActionButton(
@@ -961,12 +996,12 @@ class _OverviewSection extends StatelessWidget {
         children: [
           _InfoRow(
             icon: Icons.location_on_outlined,
-            label: 'Destination',
+            label: context.ui('destination'),
             value: trip.destination,
           ),
           _InfoRow(
             icon: Icons.groups_outlined,
-            label: 'Travellers',
+            label: context.ui('travellers'),
             value:
                 '${trip.travellers} traveller${trip.travellers == 1 ? '' : 's'}',
           ),
@@ -991,14 +1026,14 @@ class _OverviewSection extends StatelessWidget {
           ),
           _InfoRow(
             icon: Icons.account_balance_wallet_outlined,
-            label: 'Budget',
+            label: context.ui('budget'),
             value:
                 '${trip.currency} ${spent.toStringAsFixed(2)} spent, ${remaining.toStringAsFixed(2)} remaining',
           ),
           if ((trip.notes ?? '').trim().isNotEmpty)
             _InfoRow(
               icon: Icons.notes_outlined,
-              label: 'Notes',
+              label: context.ui('notes'),
               value: trip.notes!.trim(),
             ),
         ],
@@ -1046,20 +1081,20 @@ class _TravelPlanSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Flights',
+          Text(context.ui('flights'),
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppColors.textNavy,
                   fontWeight: FontWeight.w700,
                 ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           if (linkedFlight == null)
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('No flight added yet.'),
-                SizedBox(height: 2),
-                Text('Tap to attach a flight.'),
+                Text(context.ui('noFlightAdded'), style: AppTextStyles.bodyMuted),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(context.ui('tapAttachFlight'), style: AppTextStyles.bodyMuted),
               ],
             )
           else
@@ -1068,36 +1103,43 @@ class _TravelPlanSection extends StatelessWidget {
               children: [
                 Text(
                   '${linkedFlight!.airline} ${linkedFlight!.flightNumber}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.body.copyWith(
+                    color: AppColors.textNavy,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text('${linkedFlight!.origin} -> ${linkedFlight!.destination}'),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  '${linkedFlight!.origin} -> ${linkedFlight!.destination}',
+                  style: AppTextStyles.bodyMuted,
+                ),
                 Text(
                   '${_formatTime(linkedFlight!.departureAt)} -> ${_formatTime(linkedFlight!.arrivalAt)}',
+                  style: AppTextStyles.bodyMuted,
                 ),
               ],
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
+            spacing: AppSpacing.sm,
             children: [
               OutlinedButton(
                 onPressed: onOpenFlights,
-                child: const Text('Open Flights'),
+                child: Text(context.ui('openFlights')),
               ),
               if (linkedFlight == null)
                 FilledButton(
                   onPressed: onLinkFlight,
-                  child: const Text('Link Flight'),
+                  child: Text(context.ui('linkFlight')),
                 )
               else ...[
                 OutlinedButton(
                   onPressed: () => onViewFlightDetails(linkedFlight!),
-                  child: const Text('View Details'),
+                  child: Text(context.ui('viewDetails')),
                 ),
                 OutlinedButton(
                   onPressed: onUnlinkFlight,
-                  child: const Text('Unlink'),
+                  child: Text(context.ui('unlink')),
                 ),
               ],
             ],
@@ -1106,49 +1148,59 @@ class _TravelPlanSection extends StatelessWidget {
           Text(
             'Hotel',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: AppColors.textNavy,
                   fontWeight: FontWeight.w700,
                 ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           if (linkedHotel == null)
-            const Text('No hotel linked yet. Tap to add one.')
+            Text(context.ui('noHotelLinkedTap'),
+                style: AppTextStyles.bodyMuted)
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   linkedHotel!.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: AppTextStyles.body.copyWith(
+                    color: AppColors.textNavy,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text('Rating: ${linkedHotel!.rating.toStringAsFixed(1)} ★'),
-                Text(_hotelAddress(linkedHotel!)),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Rating: ${linkedHotel!.rating.toStringAsFixed(1)} ★',
+                  style: AppTextStyles.bodyMuted,
+                ),
+                Text(_hotelAddress(linkedHotel!),
+                    style: AppTextStyles.bodyMuted),
                 Text(
                   'Check-in ${formatter.format(checkInDate)} • Check-out ${formatter.format(checkOutDate)}',
+                  style: AppTextStyles.bodyMuted,
                 ),
               ],
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
+            spacing: AppSpacing.sm,
             children: [
               OutlinedButton(
                 onPressed: onOpenHotels,
-                child: const Text('Open Hotels'),
+                child: Text(context.ui('openHotels')),
               ),
               if (linkedHotel == null)
                 FilledButton(
                   onPressed: onLinkHotel,
-                  child: const Text('Link Hotel'),
+                  child: Text(context.ui('linkHotel')),
                 )
               else ...[
                 OutlinedButton(
                   onPressed: () => onViewHotelDetails(linkedHotel!),
-                  child: const Text('View Details'),
+                  child: Text(context.ui('viewDetails')),
                 ),
                 OutlinedButton(
                   onPressed: onUnlinkHotel,
-                  child: const Text('Unlink'),
+                  child: Text(context.ui('unlink')),
                 ),
               ],
             ],
@@ -1196,12 +1248,12 @@ class _ItinerarySection extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onAddActivity,
                 icon: const Icon(Icons.add),
-                label: const Text('Add itinerary item'),
+                label: Text(context.ui('addItineraryItem')),
               ),
               OutlinedButton.icon(
                 onPressed: onOpenTransport,
                 icon: const Icon(Icons.local_taxi_outlined),
-                label: const Text('Add transport'),
+                label: Text(context.ui('addTransport')),
               ),
             ],
           ),
@@ -1330,7 +1382,7 @@ class _ExpensesSection extends StatelessWidget {
               children: [
                 Text(
                     'Trip Budget: ${trip.currency} ${trip.budget.toStringAsFixed(2)}'),
-                Text('Spent: ${trip.currency} ${spent.toStringAsFixed(2)}'),
+                Text('${context.ui('spent')}: ${trip.currency} ${spent.toStringAsFixed(2)}'),
                 Text(
                     'Remaining: ${trip.currency} ${remaining.toStringAsFixed(2)}'),
                 const SizedBox(height: 8),
@@ -1348,7 +1400,7 @@ class _ExpensesSection extends StatelessWidget {
                   ),
                 TextButton(
                   onPressed: onOpenExpenses,
-                  child: const Text('Manage expenses'),
+                  child: Text(context.ui('manageExpenses')),
                 ),
               ],
             ),
@@ -1474,11 +1526,11 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
-                title: const Text('Trip owner'),
+                title: Text(context.ui('tripOwner')),
                 subtitle: Text(
                   '${widget.travellers} traveller${widget.travellers == 1 ? '' : 's'} planned',
                 ),
-                trailing: const Chip(label: Text('owner')),
+                trailing: Chip(label: Text(context.ui('owner'))),
               ),
               collaboratorsAsync.when(
                 loading: () => const LinearProgressIndicator(),
@@ -1488,9 +1540,9 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
                 )),
                 data: (collaborators) {
                   if (collaborators.isEmpty) {
-                    return const Padding(
+                    return Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text('No collaborators invited yet.'),
+                      child: Text(context.ui('noCollaboratorsYet')),
                     );
                   }
                   return Column(
@@ -1517,18 +1569,18 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
                                 ),
                               );
                             },
-                            itemBuilder: (context) => const [
+                            itemBuilder: (context) => [
                               PopupMenuItem(
                                 value: 'editor',
-                                child: Text('Make editor'),
+                                child: Text(context.ui('makeEditor')),
                               ),
                               PopupMenuItem(
                                 value: 'viewer',
-                                child: Text('Make viewer'),
+                                child: Text(context.ui('makeViewer')),
                               ),
                               PopupMenuItem(
                                 value: 'remove',
-                                child: Text('Remove'),
+                                child: Text(context.ui('remove')),
                               ),
                             ],
                             child: Chip(label: Text(collaborator.role.name)),
@@ -1542,30 +1594,30 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Collaborator email',
+                decoration: InputDecoration(
+                  labelText: context.ui('collaboratorEmail'),
                 ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _userIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Collaborator user ID (optional)',
-                  hintText: 'Used to mirror shared trip access',
+                decoration: InputDecoration(
+                  labelText: context.ui('collaboratorUserIdOptional'),
+                  hintText: context.ui('mirrorSharedTripAccess'),
                 ),
               ),
               const SizedBox(height: 8),
               SegmentedButton<TripCollaboratorRole>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: TripCollaboratorRole.editor,
                     icon: Icon(Icons.edit_outlined),
-                    label: Text('Editor'),
+                    label: Text(context.ui('editor')),
                   ),
                   ButtonSegment(
                     value: TripCollaboratorRole.viewer,
                     icon: Icon(Icons.visibility_outlined),
-                    label: Text('Viewer'),
+                    label: Text(context.ui('viewer')),
                   ),
                 ],
                 selected: {_role},
@@ -1586,7 +1638,7 @@ class _CollaboratorSheetState extends ConsumerState<_CollaboratorSheet> {
                   _userIdController.clear();
                 },
                 icon: const Icon(Icons.person_add_alt),
-                label: const Text('Invite collaborator'),
+                label: Text(context.ui('inviteCollaborator')),
               ),
             ],
           ),
@@ -1632,7 +1684,7 @@ class _TravellersSection extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onInvite,
             icon: const Icon(Icons.person_add_alt),
-            label: const Text('Invite collaborator'),
+            label: Text(context.ui('inviteCollaborator')),
           ),
         ],
       ),
@@ -1678,7 +1730,7 @@ class _MapRouteSection extends StatelessWidget {
               'Open the maps hub with this trip context and route-ready places.'),
           const SizedBox(height: 8),
           if (uniqueLocations.isEmpty)
-            const Text('Add itinerary locations to build a route.')
+            Text(context.ui('addItineraryLocationsRoute'))
           else
             Wrap(
               spacing: 8,
@@ -1713,21 +1765,26 @@ class _TimelineRow extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 18,
-          child: Icon(item.icon, size: 18),
+          backgroundColor: AppColors.navy50,
+          child: Icon(item.icon, size: 18, color: AppColors.navy),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(time, style: Theme.of(context).textTheme.labelMedium),
-              const SizedBox(height: 2),
+              Text(time, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 item.title,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textNavy,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              Text(item.subtitle),
-              Text('${item.location} • ${item.status}'),
+              Text(item.subtitle, style: AppTextStyles.bodyMuted),
+              Text('${item.location} • ${item.status}',
+                  style: AppTextStyles.bodyMuted),
             ],
           ),
         ),
@@ -1781,16 +1838,21 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
+          Icon(icon, size: 18, color: AppColors.navy),
+          const SizedBox(width: AppSpacing.sm),
           SizedBox(
             width: 92,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: AppTextStyles.label.copyWith(color: AppColors.textNavy),
             ),
           ),
-          Expanded(child: Text(value)),
+          Expanded(
+            child: Text(
+              value,
+              style: AppTextStyles.body.copyWith(color: AppColors.textMuted),
+            ),
+          ),
         ],
       ),
     );
@@ -1810,7 +1872,10 @@ class _MetricChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       avatar: Icon(icon, size: 18),
+      backgroundColor: AppColors.navy50,
+      side: const BorderSide(color: AppColors.border),
       label: Text(label),
+      labelStyle: AppTextStyles.label.copyWith(color: AppColors.textNavy),
       visualDensity: VisualDensity.compact,
     );
   }
@@ -1826,13 +1891,14 @@ class _StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+        color: AppColors.champagne100,
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.champagne.withValues(alpha: 0.35)),
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
+        style: AppTextStyles.label.copyWith(
+          color: AppColors.champagne700,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -1902,6 +1968,27 @@ DateTime _endOfDay(DateTime date) =>
 
 bool _hasCloudError(List<AsyncValue<dynamic>> values) {
   return values.any((value) => value.hasError);
+}
+
+String _cloudErrorMessage({
+  required AsyncValue<dynamic> activitiesAsync,
+  required AsyncValue<dynamic> bookingsAsync,
+  required AsyncValue<dynamic> documentsAsync,
+  required AsyncValue<dynamic> expensesAsync,
+  required AsyncValue<dynamic> ridesAsync,
+}) {
+  final nonTransportFailed = [
+    activitiesAsync,
+    bookingsAsync,
+    documentsAsync,
+    expensesAsync,
+  ].any((value) => value.hasError);
+
+  if (ridesAsync.hasError && !nonTransportFailed) {
+    return 'Transport information could not sync. Your other trip details are still available.';
+  }
+
+  return 'Some trip data could not sync. Existing local/demo sections are unchanged.';
 }
 
 String _formatTime(String value) {

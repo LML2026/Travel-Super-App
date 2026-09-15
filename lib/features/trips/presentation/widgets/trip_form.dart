@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/supported_currencies.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
+
 class TripForm extends StatelessWidget {
   const TripForm({
     super.key,
@@ -30,7 +33,7 @@ class TripForm extends StatelessWidget {
       children: [
         TextFormField(
           controller: destinationController,
-          decoration: const InputDecoration(labelText: 'Destination'),
+          decoration: InputDecoration(labelText: context.ui('destination')),
           validator: (value) =>
               value == null || value.isEmpty ? 'Enter destination' : null,
         ),
@@ -38,7 +41,7 @@ class TripForm extends StatelessWidget {
         TextFormField(
           controller: budgetController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Budget'),
+          decoration: InputDecoration(labelText: context.ui('budget')),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Enter budget';
@@ -53,18 +56,21 @@ class TripForm extends StatelessWidget {
         DropdownButtonFormField<String>(
           // ignore: deprecated_member_use
           value: currency,
-          decoration: const InputDecoration(labelText: 'Currency'),
-          items: const [
-            DropdownMenuItem(value: 'GBP', child: Text('GBP')),
-            DropdownMenuItem(value: 'EUR', child: Text('EUR')),
-            DropdownMenuItem(value: 'USD', child: Text('USD')),
-          ],
+          decoration: InputDecoration(labelText: context.ui('currency')),
+          items: kSupportedTravelCurrencies
+              .map(
+                (currency) => DropdownMenuItem<String>(
+                  value: currency,
+                  child: Text(currency),
+                ),
+              )
+              .toList(growable: false),
           onChanged: onCurrencyChanged,
         ),
         const SizedBox(height: 16),
         Row(
           children: [
-            const Text('Travellers', style: TextStyle(fontSize: 16)),
+            Text(context.ui('travellers'), style: TextStyle(fontSize: 16)),
             const Spacer(),
             IconButton(
               onPressed: () {
@@ -85,7 +91,7 @@ class TripForm extends StatelessWidget {
         TextFormField(
           controller: notesController,
           maxLines: 4,
-          decoration: const InputDecoration(labelText: 'Notes'),
+          decoration: InputDecoration(labelText: context.ui('notes')),
         ),
         const SizedBox(height: 30),
         ElevatedButton(

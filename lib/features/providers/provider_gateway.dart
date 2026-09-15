@@ -158,7 +158,16 @@ class GoogleMapsProviderGateway implements ProviderGateway {
       if (type.contains('pharmacy')) return PlaceCategory.pharmacy;
       if (type.contains('hospital')) return PlaceCategory.hospital;
       if (type.contains('shopping')) return PlaceCategory.shopping;
+      if (type.contains('gas_station')) return PlaceCategory.fuelStation;
+      if (type.contains('parking')) return PlaceCategory.parking;
       if (type.contains('supermarket')) return PlaceCategory.supermarket;
+      if (type.contains('airport')) return PlaceCategory.airport;
+      if (type.contains('train_station')) return PlaceCategory.trainStation;
+      if (type.contains('bus_station')) return PlaceCategory.busStation;
+      if (type.contains('electric_vehicle_charging_station')) {
+        return PlaceCategory.evChargingStation;
+      }
+      if (type.contains('taxi')) return PlaceCategory.taxiStand;
       if (type.contains('transit')) return PlaceCategory.transportStation;
     }
     return PlaceCategory.attraction;

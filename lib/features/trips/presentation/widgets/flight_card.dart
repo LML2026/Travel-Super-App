@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../flights/models/saved_flight.dart';
 import '../providers/trip_dashboard_provider.dart';
 import 'dashboard_section.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class FlightCard extends ConsumerWidget {
   const FlightCard({
@@ -30,16 +34,16 @@ class FlightCard extends ConsumerWidget {
 
     Widget details;
     if (linkedFlightAsync.isLoading) {
-      details = const Text('Loading flight...');
+      details = Text(context.ui('loadingFlight'));
     } else if (linkedFlightAsync.hasError) {
-      details = const Text('Unable to load flight');
+      details = Text(context.ui('unableLoadFlight'));
     } else if (linkedFlight == null) {
-      details = const Column(
+      details = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('No flight added yet.'),
-          SizedBox(height: 2),
-          Text('Tap to attach a flight.'),
+          Text(context.ui('noFlightAdded')),
+          const SizedBox(height: 2),
+          Text(context.ui('tapAttachFlight')),
         ],
       );
     } else {
@@ -48,12 +52,19 @@ class FlightCard extends ConsumerWidget {
         children: [
           Text(
             '${linkedFlight.airline} ${linkedFlight.flightNumber}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.textNavy,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          const SizedBox(height: 4),
-          Text('${linkedFlight.origin} → ${linkedFlight.destination}'),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '${linkedFlight.origin} → ${linkedFlight.destination}',
+            style: AppTextStyles.bodyMuted,
+          ),
           Text(
             '${_formatFlightTime(linkedFlight.departureAt)} → ${_formatFlightTime(linkedFlight.arrivalAt)}',
+            style: AppTextStyles.bodyMuted,
           ),
         ],
       );
@@ -66,28 +77,28 @@ class FlightCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           details,
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
+            spacing: AppSpacing.sm,
             children: [
               OutlinedButton(
                 onPressed: onOpenFlights,
-                child: const Text('Open Flights'),
+                child: Text(context.ui('openFlights')),
               ),
               if (hasFlight)
                 OutlinedButton(
                   onPressed: () => onViewFlightDetails?.call(linkedFlight),
-                  child: const Text('View Details'),
+                  child: Text(context.ui('viewDetails')),
                 ),
               if (hasFlight)
                 OutlinedButton(
                   onPressed: onUnlinkFlight,
-                  child: const Text('Unlink'),
+                  child: Text(context.ui('unlink')),
                 )
               else
                 FilledButton(
                   onPressed: onLinkFlight,
-                  child: const Text('Link Flight'),
+                  child: Text(context.ui('linkFlight')),
                 ),
             ],
           ),

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../maps/models/places_prefill.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TransportHubPage extends StatelessWidget {
   const TransportHubPage({super.key});
@@ -10,15 +15,15 @@ class TransportHubPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transport Hub'),
+        title: Text(context.ui('transportHub')),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           _TransportTile(
             icon: Icons.local_taxi,
             title: 'Taxi',
-            subtitle: 'Book rides with provider deep-link handoff',
+            subtitle: 'Plan and save estimated rides to your trips',
             onTap: () => context.pushTaxi(),
           ),
           _TransportTile(
@@ -96,14 +101,32 @@ class _TransportTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      color: AppColors.cardSurface,
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: ListTile(
-        leading: Icon(icon, color: onTap == null ? Colors.grey : null),
-        title: Text(title),
-        subtitle: Text(subtitle),
+        leading: Icon(
+          icon,
+          color: onTap == null ? AppColors.disabledText : AppColors.navy,
+        ),
+        title: Text(
+          title,
+          style: AppTextStyles.body.copyWith(
+            color: AppColors.textNavy,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        subtitle: Text(subtitle, style: AppTextStyles.bodyMuted),
         trailing: onTap == null
-            ? const Icon(Icons.remove_circle_outline)
-            : const Icon(Icons.chevron_right),
+            ? const Icon(
+                Icons.remove_circle_outline,
+                color: AppColors.disabledText,
+              )
+            : const Icon(Icons.chevron_right, color: AppColors.champagne700),
         onTap: onTap,
       ),
     );

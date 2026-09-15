@@ -3,11 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
 
 import '../../data/translation_service.dart';
 import '../../domain/translation_models.dart';
 import '../providers/translator_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TranslatorPage extends ConsumerStatefulWidget {
   const TranslatorPage({
@@ -56,8 +61,8 @@ class _TranslatorPageState extends ConsumerState<TranslatorPage> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Translator'),
-          bottom: const TabBar(
+          title: Text(context.ui('translator')),
+          bottom: TabBar(
             isScrollable: true,
             tabs: [
               Tab(icon: Icon(Icons.translate_outlined), text: 'Translate'),
@@ -83,7 +88,7 @@ class _TranslatorPageState extends ConsumerState<TranslatorPage> {
           },
           error: (error, _) => Center(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Text(UserFacingError.message(
                 error,
                 fallback: 'Translation is unavailable right now.',
@@ -155,10 +160,10 @@ class _TranslateTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final response = state.lastResponse;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         _ContextBanner(contextInfo: state.context),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _LanguageRow(
           sourceCode: state.sourceLanguageCode,
           targetCode: state.targetLanguageCode,
@@ -169,7 +174,7 @@ class _TranslateTab extends ConsumerWidget {
               ref.read(translatorControllerProvider.notifier).setTargetLanguage,
           onSwap: ref.read(translatorControllerProvider.notifier).swapLanguages,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -179,8 +184,8 @@ class _TranslateTab extends ConsumerWidget {
                 minLines: 4,
                 maxLines: 7,
                 textInputAction: TextInputAction.newline,
-                decoration: const InputDecoration(
-                  labelText: 'Text to translate',
+                decoration: InputDecoration(
+                  labelText: context.ui('textToTranslate'),
                   hintText:
                       'Type a phrase for a hotel desk, restaurant or taxi...',
                   border: OutlineInputBorder(),
@@ -190,7 +195,7 @@ class _TranslateTab extends ConsumerWidget {
                     .setInputText,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             IconButton.filled(
               tooltip:
                   state.isListening ? 'Stop listening' : 'Speak source text',
@@ -209,10 +214,10 @@ class _TranslateTab extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
           children: [
             FilledButton.icon(
               onPressed: busy
@@ -232,7 +237,7 @@ class _TranslateTab extends ConsumerWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.translate),
-              label: const Text('Translate'),
+              label: Text(context.ui('translate')),
             ),
             OutlinedButton.icon(
               onPressed: response == null
@@ -241,7 +246,7 @@ class _TranslateTab extends ConsumerWidget {
                       .read(translatorControllerProvider.notifier)
                       .favouriteLatest(),
               icon: const Icon(Icons.favorite_border),
-              label: const Text('Favourite'),
+              label: Text(context.ui('favourite')),
             ),
             OutlinedButton.icon(
               onPressed: response == null
@@ -252,11 +257,11 @@ class _TranslateTab extends ConsumerWidget {
                       );
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Translation copied.')),
+                        SnackBar(content: Text(context.ui('translationCopied'))),
                       );
                     },
               icon: const Icon(Icons.copy),
-              label: const Text('Copy'),
+              label: Text(context.ui('copy')),
             ),
             OutlinedButton.icon(
               onPressed: () {
@@ -264,7 +269,7 @@ class _TranslateTab extends ConsumerWidget {
                 ref.read(translatorControllerProvider.notifier).clearText();
               },
               icon: const Icon(Icons.clear),
-              label: const Text('Clear'),
+              label: Text(context.ui('clear')),
             ),
           ],
         ),
@@ -272,9 +277,9 @@ class _TranslateTab extends ConsumerWidget {
           const SizedBox(height: 12),
           _ErrorPanel(message: state.errorMessage!),
         ],
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         if (state.speechError != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           _ErrorPanel(message: state.speechError!),
         ],
         _TranslationResultCard(
@@ -308,10 +313,10 @@ class _ConversationTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(translatorControllerProvider.notifier);
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         _ConversationLanguageCard(state: state),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _ConversationInput(
           title: 'Traveller',
           languageCode: state.travellerLanguageCode,
@@ -332,7 +337,7 @@ class _ConversationTab extends ConsumerWidget {
                 ),
           isListening: state.isListening,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _ConversationInput(
           title: 'Local',
           languageCode: state.localLanguageCode,
@@ -353,7 +358,7 @@ class _ConversationTab extends ConsumerWidget {
                 ),
           isListening: state.isListening,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         if (state.conversation.isEmpty)
           const _EmptyPanel(
             icon: Icons.forum_outlined,
@@ -385,21 +390,25 @@ class _PhrasebookTab extends ConsumerWidget {
         .toSet()
         .toList(growable: false);
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         _ContextBanner(contextInfo: state.context),
-        const SizedBox(height: 12),
-        Text(
-          'Phrasebook',
+        const SizedBox(height: AppSpacing.md),
+        Text(context.ui('phrasebook'),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           'Tap a phrase to translate it to ${languageNameFor(state.targetLanguageCode)}.',
+          style: AppTextStyles.bodyMuted,
         ),
-        const SizedBox(height: 12),
+        if (state.lastResponse != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          _LatestPhraseTranslationCard(response: state.lastResponse!),
+        ],
+        const SizedBox(height: AppSpacing.md),
         for (final category in categories) ...[
           Text(
             category,
@@ -407,10 +416,10 @@ class _PhrasebookTab extends ConsumerWidget {
                   fontWeight: FontWeight.w800,
                 ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           for (final phrase
               in phrasebookPhrases.where((item) => item.category == category))
-            Card(
+            _TranslatorCard(
               child: ListTile(
                 title: Text(phrase.text),
                 trailing: busy
@@ -427,7 +436,7 @@ class _PhrasebookTab extends ConsumerWidget {
                         .translatePhrase(phrase),
               ),
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
         ],
       ],
     );
@@ -443,7 +452,7 @@ class _HistoryTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favourites = state.favourites;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         Row(
           children: [
@@ -462,11 +471,11 @@ class _HistoryTab extends ConsumerWidget {
                       .read(translatorControllerProvider.notifier)
                       .clearHistory,
               icon: const Icon(Icons.delete_outline),
-              label: const Text('Clear recents'),
+              label: Text(context.ui('clearRecents')),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         if (favourites.isEmpty)
           const _EmptyPanel(
             icon: Icons.favorite_border,
@@ -475,14 +484,14 @@ class _HistoryTab extends ConsumerWidget {
           )
         else
           for (final item in favourites) _SavedTranslationTile(item: item),
-        const SizedBox(height: 18),
+        const SizedBox(height: AppSpacing.xl),
         Text(
           'Recent translations',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         if (state.history.isEmpty)
           const _EmptyPanel(
             icon: Icons.history,
@@ -524,20 +533,20 @@ class _LanguageRow extends StatelessWidget {
       children: [
         Expanded(
           child: _LanguageDropdown(
-            label: 'From',
+            label: context.ui('from'),
             value: sourceCode,
             languages: sourceLanguages,
             onChanged: onSourceChanged,
           ),
         ),
         IconButton(
-          tooltip: 'Swap languages',
+          tooltip: context.ui('swapLanguages'),
           onPressed: onSwap,
           icon: const Icon(Icons.swap_horiz),
         ),
         Expanded(
           child: _LanguageDropdown(
-            label: 'To',
+            label: context.ui('to'),
             value: targetCode == 'auto' ? 'en' : targetCode,
             languages: targetLanguages,
             onChanged: onTargetChanged,
@@ -608,9 +617,9 @@ class _TranslationResultCard extends StatelessWidget {
       );
     }
 
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -622,14 +631,7 @@ class _TranslationResultCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
-                Chip(
-                  visualDensity: VisualDensity.compact,
-                  label: Text(
-                    response!.source == TranslationSource.backend
-                        ? 'Live'
-                        : 'Demo fallback',
-                  ),
-                ),
+                _TranslationStatusChip(source: response!.source),
                 FilledButton.icon(
                   onPressed: isSpeaking ? onStop : onPlay,
                   icon: Icon(isSpeaking ? Icons.stop : Icons.volume_up),
@@ -637,17 +639,19 @@ class _TranslationResultCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             SelectableText(
               response!.translatedText,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textNavy,
                     fontWeight: FontWeight.w900,
                   ),
             ),
             if (response!.detectedLanguageCode != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 'Detected: ${languageNameFor(response!.detectedLanguageCode!)}',
+                style: AppTextStyles.bodyMuted,
               ),
             ],
           ],
@@ -665,9 +669,9 @@ class _ConversationLanguageCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(translatorControllerProvider.notifier);
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           children: [
             _LanguageRow(
@@ -678,7 +682,7 @@ class _ConversationLanguageCard extends ConsumerWidget {
               onTargetChanged: notifier.setLocalLanguage,
               onSwap: notifier.swapConversationLanguages,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             if (state.speechError != null)
               _ErrorPanel(message: state.speechError!),
           ],
@@ -709,9 +713,9 @@ class _ConversationInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -721,25 +725,25 @@ class _ConversationInput extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                   ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: controller,
               minLines: 2,
               maxLines: 4,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Type message...',
+                hintText: context.ui('typeMessage'),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 FilledButton.icon(
                   onPressed: busy ? null : onSend,
                   icon: const Icon(Icons.send),
-                  label: const Text('Translate Card'),
+                  label: Text(context.ui('translateCard')),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 IconButton.filledTonal(
                   tooltip: isListening ? 'Stop listening' : 'Speak message',
                   onPressed: busy ? null : onListen,
@@ -761,29 +765,37 @@ class _ConversationTurnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '${turn.speakerLabel} · ${languageNameFor(turn.sourceLanguageCode)} to ${languageNameFor(turn.targetLanguageCode)}',
-              style: Theme.of(context).textTheme.bodySmall,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${turn.speakerLabel} · ${languageNameFor(turn.sourceLanguageCode)} to ${languageNameFor(turn.targetLanguageCode)}',
+                    style: AppTextStyles.label,
+                  ),
+                ),
+                _TranslationStatusChip(source: turn.source),
+              ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(turn.sourceText),
-            const Divider(height: 22),
+            const Divider(height: AppSpacing.xl),
             SelectableText(
               turn.translatedText,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textNavy,
                     fontWeight: FontWeight.w900,
                   ),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: IconButton.filledTonal(
-                tooltip: 'Play translation',
+                tooltip: context.ui('playTranslation'),
                 onPressed: () => ref
                     .read(translatorControllerProvider.notifier)
                     .speakTranslation(
@@ -807,7 +819,7 @@ class _SavedTranslationTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
+    return _TranslatorCard(
       child: ListTile(
         title: Text(item.translatedText),
         subtitle: Text(
@@ -826,6 +838,47 @@ class _SavedTranslationTile extends ConsumerWidget {
   }
 }
 
+class _LatestPhraseTranslationCard extends StatelessWidget {
+  const _LatestPhraseTranslationCard({required this.response});
+
+  final TranslationResponse response;
+
+  @override
+  Widget build(BuildContext context) {
+    return _TranslatorCard(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Latest phrase translation',
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.textNavy,
+                    ),
+                  ),
+                ),
+                _TranslationStatusChip(source: response.source),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              response.translatedText,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textNavy,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ContextBanner extends StatelessWidget {
   const _ContextBanner({required this.contextInfo});
 
@@ -838,13 +891,13 @@ class _ContextBanner extends StatelessWidget {
     }
     final destination = contextInfo!.destination;
     final label = contextInfo!.contextLabel;
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
           children: [
-            const Icon(Icons.luggage_outlined),
-            const SizedBox(width: 10),
+            const Icon(Icons.luggage_outlined, color: AppColors.navy),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 [
@@ -860,6 +913,49 @@ class _ContextBanner extends StatelessWidget {
   }
 }
 
+class _TranslationStatusChip extends StatelessWidget {
+  const _TranslationStatusChip({required this.source});
+
+  final TranslationSource source;
+
+  @override
+  Widget build(BuildContext context) {
+    final isLive = source == TranslationSource.backend;
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      backgroundColor: isLive ? AppColors.navy100 : AppColors.champagne100,
+      side: BorderSide(
+        color: isLive ? AppColors.navy600 : AppColors.champagne,
+      ),
+      label: Text(
+        isLive ? 'Live translation' : 'Demo fallback',
+        style: AppTextStyles.label.copyWith(
+          color: isLive ? AppColors.navy : AppColors.champagne700,
+        ),
+      ),
+    );
+  }
+}
+
+class _TranslatorCard extends StatelessWidget {
+  const _TranslatorCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: child,
+    );
+  }
+}
+
 class _ErrorPanel extends StatelessWidget {
   const _ErrorPanel({required this.message});
 
@@ -868,10 +964,18 @@ class _ErrorPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.errorContainer,
+      color: AppColors.error.withValues(alpha: 0.08),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: BorderSide(color: AppColors.error.withValues(alpha: 0.28)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Text(message),
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Text(
+          message,
+          style: AppTextStyles.body.copyWith(color: AppColors.error),
+        ),
       ),
     );
   }
@@ -890,21 +994,26 @@ class _EmptyPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return _TranslatorCard(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           children: [
-            Icon(icon, size: 42),
-            const SizedBox(height: 10),
+            Icon(icon, size: 42, color: AppColors.navy),
+            const SizedBox(height: AppSpacing.md),
             Text(
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textNavy,
                     fontWeight: FontWeight.w800,
                   ),
             ),
-            const SizedBox(height: 6),
-            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyMuted,
+            ),
           ],
         ),
       ),

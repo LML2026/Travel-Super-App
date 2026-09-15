@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_routes.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/entities/taxi_ride_request.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TaxiSearchPage extends StatefulWidget {
   const TaxiSearchPage({super.key});
@@ -73,7 +78,7 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
 
   void _useCurrentLocation() {
     setState(() {
-      _pickupController.text = 'Current location (detected)';
+      _pickupController.text = 'Sample pickup - central London';
       _pickupLatitude = 51.5074;
       _pickupLongitude = -0.1278;
     });
@@ -103,11 +108,11 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Taxi Hub'),
+        title: Text(context.ui('taxiHub')),
         actions: [
           TextButton(
             onPressed: () => context.pushSavedRides(),
-            child: const Text('Saved rides'),
+            child: Text(context.ui('savedRides')),
           ),
         ],
       ),
@@ -115,12 +120,12 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               TextFormField(
                 controller: _pickupController,
-                decoration: const InputDecoration(
-                  labelText: 'Pickup',
+                decoration: InputDecoration(
+                  labelText: context.ui('pickup'),
                   prefixIcon: Icon(Icons.my_location),
                 ),
                 validator: (value) {
@@ -130,20 +135,20 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Align(
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
                   onPressed: _useCurrentLocation,
                   icon: const Icon(Icons.gps_fixed),
-                  label: const Text('Use current location'),
+                  label: Text(context.ui('useSamplePickup')),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _destinationController,
-                decoration: const InputDecoration(
-                  labelText: 'Destination',
+                decoration: InputDecoration(
+                  labelText: context.ui('destination'),
                   prefixIcon: Icon(Icons.place_outlined),
                 ),
                 validator: (value) {
@@ -153,14 +158,12 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Pickup date and time'),
+                title: Text(context.ui('pickupDateTime')),
                 subtitle: Text(
-                  _pickupTime == null
-                      ? 'ASAP'
-                      : _pickupTime.toString(),
+                  _pickupTime == null ? 'ASAP' : _pickupTime.toString(),
                 ),
                 trailing: IconButton(
                   onPressed: _pickDateTime,
@@ -181,7 +184,7 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: _StepperField(
                       label: 'Luggage',
@@ -195,11 +198,11 @@ class _TaxiSearchPageState extends State<TaxiSearchPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
               FilledButton.icon(
                 onPressed: _searchRides,
                 icon: const Icon(Icons.local_taxi),
-                label: const Text('Compare providers'),
+                label: Text(context.ui('compareRideOptions')),
               ),
             ],
           ),
@@ -223,12 +226,18 @@ class _StepperField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.cardSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           children: [
-            Text(label),
-            const SizedBox(height: 6),
+            Text(label, style: AppTextStyles.label),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -236,7 +245,13 @@ class _StepperField extends StatelessWidget {
                   onPressed: () => onChanged(value - 1),
                   icon: const Icon(Icons.remove_circle_outline),
                 ),
-                Text('$value'),
+                Text(
+                  '$value',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.textNavy,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
                 IconButton(
                   onPressed: () => onChanged(value + 1),
                   icon: const Icon(Icons.add_circle_outline),

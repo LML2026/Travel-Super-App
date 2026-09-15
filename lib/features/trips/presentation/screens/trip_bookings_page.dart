@@ -3,8 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../providers/trip_bookings_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripBookingsPage extends ConsumerWidget {
   final String tripId;
@@ -21,7 +26,7 @@ class TripBookingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Confirmed Bookings'),
+        title: Text(context.ui('confirmedBookings')),
       ),
       body: bookingsAsync.when(
         data: (bookings) {
@@ -30,7 +35,7 @@ class TripBookingsPage extends ConsumerWidget {
           }
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
               if (groupedBookings.containsKey(BookingType.flight))
                 _BookingSection(
@@ -85,14 +90,14 @@ class _BookingSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: Colors.grey[700]),
-              const SizedBox(width: 8),
+              Icon(icon, size: 20, color: AppColors.navy),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 title.toUpperCase(),
-                style: const TextStyle(
+                style: AppTextStyles.label.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
-                  color: Colors.grey,
+                  color: AppColors.textMuted,
                 ),
               ),
             ],
@@ -116,23 +121,36 @@ class _BookingCard extends StatelessWidget {
     final dateFormat = DateFormat('dd MMM yyyy, HH:mm');
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      elevation: 0,
+      color: AppColors.cardSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
         onTap: () => context.pushConfirmedBookingDetails(booking),
         title: Text(
           _getTitle(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: AppTextStyles.body.copyWith(
+            color: AppColors.textNavy,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 4),
-            Text(_getSubtitle()),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
+            Text(_getSubtitle(), style: AppTextStyles.bodyMuted),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Booked on ${dateFormat.format(booking.createdAt)}',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: AppTextStyles.label,
             ),
           ],
         ),
@@ -142,13 +160,13 @@ class _BookingCard extends StatelessWidget {
           children: [
             Text(
               currencyFormat.format(booking.amount),
-              style: const TextStyle(
+              style: AppTextStyles.price.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors.green,
+                color: AppColors.success,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             _StatusChip(status: booking.status),
           ],
         ),
@@ -189,17 +207,17 @@ class _StatusChip extends StatelessWidget {
     Color color;
     switch (status) {
       case BookingStatus.confirmed:
-        color = Colors.green;
+        color = AppColors.success;
         break;
       case BookingStatus.pending:
-        color = Colors.orange;
+        color = AppColors.warning;
         break;
       case BookingStatus.cancelled:
       case BookingStatus.failed:
-        color = Colors.red;
+        color = AppColors.error;
         break;
       case BookingStatus.completed:
-        color = Colors.blue;
+        color = AppColors.info;
         break;
     }
 
@@ -207,7 +225,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadii.sm),
         border: Border.all(color: color, width: 0.5),
       ),
       child: Text(
@@ -233,17 +251,21 @@ class _EmptyBookingsView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.book_online_outlined, size: 80, color: Colors.grey),
-            const SizedBox(height: 24),
+            const Icon(Icons.book_online_outlined,
+                size: 80, color: AppColors.navy),
+            const SizedBox(height: AppSpacing.xl),
             Text(
               'No bookings confirmed',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.grey),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textNavy,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               'Once you confirm a flight, hotel, or transport, it will appear here.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: AppTextStyles.bodyMuted,
             ),
           ],
         ),

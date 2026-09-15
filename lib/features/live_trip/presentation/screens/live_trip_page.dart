@@ -5,6 +5,10 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/utils/user_facing_error.dart';
 import '../../../../core/models/booking.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radii.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_styles.dart';
 import '../../../expenses/domain/entities/expense.dart';
 import '../../../expenses/presentation/providers/expense_provider.dart';
 import '../../../expenses/presentation/screens/add_expense_page.dart';
@@ -30,6 +34,7 @@ import '../../../trips/presentation/providers/trip_document_provider.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../../trips/presentation/widgets/weather_card.dart';
 import '../../domain/live_trip_models.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class LiveTripPage extends ConsumerWidget {
   const LiveTripPage({
@@ -52,7 +57,7 @@ class LiveTripPage extends ConsumerWidget {
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => Scaffold(
-        appBar: AppBar(title: const Text('Live Trip')),
+        appBar: AppBar(title: Text(context.ui('liveTrip'))),
         body: Center(
           child: Text(UserFacingError.message(
             error,
@@ -150,10 +155,10 @@ class _LiveTripContent extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Trip'),
+        title: Text(context.ui('liveTrip')),
         actions: [
           IconButton(
-            tooltip: 'Trip Dashboard',
+            tooltip: context.ui('tripDashboard'),
             onPressed: () => context.pushTripDetails(trip),
             icon: const Icon(Icons.dashboard_outlined),
           ),
@@ -403,8 +408,15 @@ class _LiveTripHero extends StatelessWidget {
         ? 'Before trip'
         : 'Day ${state.dayNumber} of ${state.totalDays}';
     return Card(
+      elevation: 0,
+      color: AppColors.cardSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        side: const BorderSide(color: AppColors.border),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -412,9 +424,10 @@ class _LiveTripHero extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 26,
-                  child: Icon(Icons.explore_outlined),
+                  backgroundColor: AppColors.navy50,
+                  child: Icon(Icons.explore_outlined, color: AppColors.navy),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,31 +436,39 @@ class _LiveTripHero extends StatelessWidget {
                         state.trip.destination,
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.textNavy,
+                                  fontWeight: FontWeight.w700,
                                 ),
                       ),
-                      Text('${state.statusLabel} · $dayText'),
+                      Text('${state.statusLabel} · $dayText',
+                          style: AppTextStyles.bodyMuted),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.md),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: [
                 Chip(
                   avatar: const Icon(Icons.schedule, size: 18),
+                  backgroundColor: AppColors.navy50,
+                  side: const BorderSide(color: AppColors.border),
                   label: Text(dateFormat.format(state.now)),
                 ),
                 Chip(
                   avatar: const Icon(Icons.people_outline, size: 18),
-                  label: Text('${state.trip.travellers} travellers'),
+                  backgroundColor: AppColors.navy50,
+                  side: const BorderSide(color: AppColors.border),
+                  label: Text('${state.trip.travellers} ${context.ui('travellers').toLowerCase()}'),
                 ),
                 Chip(
                   avatar: const Icon(Icons.event_available, size: 18),
-                  label: Text('${state.todayEvents.length} events today'),
+                  backgroundColor: AppColors.navy50,
+                  side: const BorderSide(color: AppColors.border),
+                  label: Text('${state.todayEvents.length} ${context.ui('eventsToday')}'),
                 ),
               ],
             ),
@@ -540,9 +561,9 @@ class _NextEventCard extends StatelessWidget {
                       if (event.location?.isNotEmpty == true)
                         Text(event.location!),
                       if (event.status?.isNotEmpty == true)
-                        Text('Status: ${event.status}'),
+                        Text('${context.ui('status')}: ${event.status}'),
                       if (event.provider?.isNotEmpty == true)
-                        Text('Provider: ${event.provider}'),
+                        Text('${context.ui('provider')}: ${event.provider}'),
                     ],
                   ),
                 ),
@@ -556,38 +577,38 @@ class _NextEventCard extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => onNavigate(event),
                   icon: const Icon(Icons.navigation_outlined),
-                  label: const Text('Navigate'),
+                  label: Text(context.ui('navigate')),
                 ),
                 if (event.booking != null)
                   OutlinedButton.icon(
                     onPressed: () => onViewBooking(event.booking!),
                     icon: const Icon(Icons.confirmation_num_outlined),
-                    label: const Text('Booking'),
+                    label: Text(context.ui('booking')),
                   ),
                 OutlinedButton.icon(
                   onPressed: onOpenDocuments,
                   icon: const Icon(Icons.description_outlined),
-                  label: const Text('Ticket'),
+                  label: Text(context.ui('ticket')),
                 ),
                 OutlinedButton.icon(
                   onPressed: onTranslate,
                   icon: const Icon(Icons.translate_outlined),
-                  label: const Text('Translate'),
+                  label: Text(context.ui('translate')),
                 ),
                 OutlinedButton.icon(
                   onPressed: onAskAi,
                   icon: const Icon(Icons.auto_awesome),
-                  label: const Text('Ask AI'),
+                  label: Text(context.ui('askAi')),
                 ),
                 OutlinedButton.icon(
                   onPressed: onAddExpense,
                   icon: const Icon(Icons.add_card_outlined),
-                  label: const Text('Expense'),
+                  label: Text(context.ui('expense')),
                 ),
                 OutlinedButton.icon(
                   onPressed: onNearby,
                   icon: const Icon(Icons.place_outlined),
-                  label: const Text('Nearby'),
+                  label: Text(context.ui('nearby')),
                 ),
               ],
             ),
@@ -647,7 +668,7 @@ class _TodayTimelineCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (events.isEmpty)
-              const Text('No saved bookings or activities for today.')
+              Text(context.ui('noTodayBookingsActivities'))
             else
               for (final event in events) _TimelineRow(event: event),
           ],
@@ -709,17 +730,17 @@ class _ActionGrid extends StatelessWidget {
                 ),
                 _ActionButton(
                   icon: Icons.translate_outlined,
-                  label: 'Translate',
+                  label: context.ui('translate'),
                   onTap: onTranslate,
                 ),
                 _ActionButton(
                   icon: Icons.auto_awesome,
-                  label: 'Ask AI',
+                  label: context.ui('askAi'),
                   onTap: onAskAi,
                 ),
                 _ActionButton(
                   icon: Icons.add_card_outlined,
-                  label: 'Add Expense',
+                  label: context.ui('addExpense'),
                   onTap: onAddExpense,
                 ),
                 _ActionButton(
@@ -729,7 +750,7 @@ class _ActionGrid extends StatelessWidget {
                 ),
                 _ActionButton(
                   icon: Icons.place_outlined,
-                  label: 'Nearby',
+                  label: context.ui('nearby'),
                   onTap: onNearby,
                 ),
               ],
@@ -772,13 +793,13 @@ class _DocumentCard extends StatelessWidget {
                         ),
                   ),
                 ),
-                TextButton(onPressed: onOpenAll, child: const Text('All')),
+                TextButton(onPressed: onOpenAll, child: Text(context.ui('all'))),
               ],
             ),
             if (isLoading)
               const LinearProgressIndicator()
             else if (documents.isEmpty)
-              const Text('No relevant documents found for the next event.')
+              Text(context.ui('noRelevantDocuments'))
             else
               for (final document in documents)
                 ListTile(
@@ -840,7 +861,7 @@ class _MoneyCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _MoneyMetric(
-                    label: 'Budget',
+                    label: context.ui('budget'),
                     value: _money(money.currency, money.budget),
                   ),
                 ),
@@ -862,7 +883,7 @@ class _MoneyCard extends StatelessWidget {
             FilledButton.icon(
               onPressed: onAddExpense,
               icon: const Icon(Icons.add),
-              label: const Text('Add Expense'),
+              label: Text(context.ui('addExpense')),
             ),
           ],
         ),
@@ -942,7 +963,7 @@ class _WeatherSuggestionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Weather-aware plan',
+            Text(context.ui('weatherAwarePlan'),
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
             Text(wet
@@ -955,12 +976,12 @@ class _WeatherSuggestionCard extends StatelessWidget {
                 if (wet)
                   ActionChip(
                     avatar: const Icon(Icons.auto_awesome),
-                    label: const Text('Rainy-day plan'),
+                    label: Text(context.ui('rainyDayPlan')),
                     onPressed: onRainyPlan,
                   ),
                 ActionChip(
                   avatar: const Icon(Icons.place_outlined),
-                  label: const Text('Find nearby'),
+                  label: Text(context.ui('findNearby')),
                   onPressed: onNearby,
                 ),
               ],
@@ -1060,19 +1081,19 @@ class _PersistentReadinessSummary extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            Chip(label: Text('${summary.remainingCount} pending')),
-            Chip(label: Text('${summary.completedCount} complete')),
+            Chip(label: Text('${summary.remainingCount} ${context.ui('pending')}')),
+            Chip(label: Text('${summary.completedCount} ${context.ui('complete')}')),
             if (overdueCount > 0)
               Chip(
-                label: Text('$overdueCount overdue'),
+                label: Text('$overdueCount ${context.ui('overdue')}'),
                 avatar: Icon(
                   Icons.warning_amber_outlined,
                   color: Theme.of(context).colorScheme.error,
                 ),
               ),
             if (dueTodayCount > 0)
-              Chip(label: Text('$dueTodayCount due today')),
-            if (upcomingCount > 0) Chip(label: Text('$upcomingCount upcoming')),
+              Chip(label: Text('$dueTodayCount ${context.ui('dueToday')}')),
+            if (upcomingCount > 0) Chip(label: Text('$upcomingCount ${context.ui('upcoming')}')),
           ],
         ),
         if (summary.nextTask != null) ...[
@@ -1090,7 +1111,7 @@ class _PersistentReadinessSummary extends StatelessWidget {
         FilledButton.icon(
           onPressed: onOpenReadiness,
           icon: const Icon(Icons.checklist_outlined),
-          label: const Text('Manage readiness'),
+          label: Text(context.ui('manageReadiness')),
         ),
       ],
     );
@@ -1112,7 +1133,7 @@ class _DerivedReminderList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (reminders.isEmpty)
-          const Text('No readiness reminders for the next few hours.')
+          Text(context.ui('noReadinessReminders'))
         else
           for (final reminder in reminders)
             ListTile(
@@ -1125,7 +1146,7 @@ class _DerivedReminderList extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onOpenReadiness,
           icon: const Icon(Icons.add_task_outlined),
-          label: const Text('Create checklist'),
+          label: Text(context.ui('createChecklist')),
         ),
       ],
     );
@@ -1186,17 +1207,17 @@ class _EssentialsCard extends StatelessWidget {
                 ),
                 _ActionButton(
                   icon: Icons.map_outlined,
-                  label: 'Maps',
+                  label: context.ui('maps'),
                   onTap: onMaps,
                 ),
                 _ActionButton(
                   icon: Icons.translate_outlined,
-                  label: 'Translator',
+                  label: context.ui('translator'),
                   onTap: onTranslate,
                 ),
                 _ActionButton(
                   icon: Icons.place_outlined,
-                  label: 'Nearby',
+                  label: context.ui('nearby'),
                   onTap: onNearby,
                 ),
               ],
@@ -1242,7 +1263,7 @@ class _ChooseTripState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Live Trip')),
+      appBar: AppBar(title: Text(context.ui('liveTrip'))),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
@@ -1282,7 +1303,7 @@ class _ChooseTripState extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: () => context.pushCreateTrip(),
                     icon: const Icon(Icons.add),
-                    label: const Text('Create Trip'),
+                    label: Text(context.ui('createTrip')),
                   ),
               ],
             ),

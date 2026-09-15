@@ -36,6 +36,53 @@ class TranslationRequest {
 
 enum TranslationSource { demo, backend }
 
+const int translationMaxTextLength = 5000;
+
+const supportedTranslationLanguageCodes = <String>{
+  'auto',
+  'en',
+  'fr',
+  'es',
+  'it',
+  'de',
+  'pt',
+  'ja',
+  'ar',
+  'bg',
+  'cs',
+  'da',
+  'el',
+  'nl',
+  'pl',
+  'ro',
+  'ru',
+  'sv',
+  'tr',
+  'zh',
+};
+
+const supportedTranslationTargetLanguageCodes = <String>{
+  'en',
+  'fr',
+  'es',
+  'it',
+  'de',
+  'pt',
+  'ja',
+  'ar',
+  'bg',
+  'cs',
+  'da',
+  'el',
+  'nl',
+  'pl',
+  'ro',
+  'ru',
+  'sv',
+  'tr',
+  'zh',
+};
+
 class TranslationResponse {
   const TranslationResponse({
     required this.originalText,
@@ -135,6 +182,7 @@ class ConversationTurn {
     required this.sourceLanguageCode,
     required this.targetLanguageCode,
     required this.createdAt,
+    this.source = TranslationSource.demo,
   });
 
   final String id;
@@ -144,6 +192,7 @@ class ConversationTurn {
   final String sourceLanguageCode;
   final String targetLanguageCode;
   final DateTime createdAt;
+  final TranslationSource source;
 }
 
 class PhrasebookPhrase {
@@ -165,6 +214,18 @@ const travelLanguages = <TravelLanguage>[
   TravelLanguage(code: 'de', name: 'German'),
   TravelLanguage(code: 'pt', name: 'Portuguese'),
   TravelLanguage(code: 'ja', name: 'Japanese'),
+  TravelLanguage(code: 'ar', name: 'Arabic'),
+  TravelLanguage(code: 'bg', name: 'Bulgarian'),
+  TravelLanguage(code: 'cs', name: 'Czech'),
+  TravelLanguage(code: 'da', name: 'Danish'),
+  TravelLanguage(code: 'el', name: 'Greek'),
+  TravelLanguage(code: 'nl', name: 'Dutch'),
+  TravelLanguage(code: 'pl', name: 'Polish'),
+  TravelLanguage(code: 'ro', name: 'Romanian'),
+  TravelLanguage(code: 'ru', name: 'Russian'),
+  TravelLanguage(code: 'sv', name: 'Swedish'),
+  TravelLanguage(code: 'tr', name: 'Turkish'),
+  TravelLanguage(code: 'zh', name: 'Chinese'),
 ];
 
 String languageNameFor(String code) {

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radii.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/flight_formatter.dart';
 import '../models/saved_flight.dart';
 import '../providers/flight_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class SavedFlightDetailsPage extends ConsumerWidget {
   const SavedFlightDetailsPage({
@@ -36,15 +41,15 @@ class SavedFlightDetailsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Flight Details'),
+        title: Text(context.ui('savedFlightDetails')),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              color: const Color(0xFF1976D2).withValues(alpha: 0.1),
-              padding: const EdgeInsets.all(20),
+              color: AppColors.navy50,
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 children: [
                   Row(
@@ -59,53 +64,49 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                         )
                       else
                         const Icon(Icons.flight, size: 60),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: AppSpacing.lg),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               flight.airline,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                             Text(
                               'Flight ${flight.flightNumber}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: AppColors.textMuted),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.md,
+                    ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1976D2),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.navy,
+                      borderRadius: BorderRadius.circular(AppRadii.md),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Saved Price',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: AppColors.champagne100),
                         ),
                         Text(
                           '${flight.currency} ${flight.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: AppTextStyles.price.copyWith(
+                            color: AppColors.warmWhite,
                             fontSize: 28,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -115,7 +116,7 @@ class SavedFlightDetailsPage extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -129,22 +130,29 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                           label: 'Departure',
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.xl,
+                          ),
                           child: Column(
                             children: [
-                              const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: AppColors.border,
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
                               Text(
                                 formattedDuration,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context).textTheme.labelMedium,
                               ),
-                              const SizedBox(height: 8),
-                              Container(width: 2, height: 40, color: Colors.grey.shade300),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
+                              Container(
+                                width: 2,
+                                height: 40,
+                                color: AppColors.border,
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
                             ],
                           ),
                         ),
@@ -156,36 +164,41 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   _DetailSection(
                     title: 'Flight Details',
                     child: Column(
                       children: [
-                        _DetailsRow(label: 'Duration', value: formattedDuration),
+                        _DetailsRow(
+                            label: 'Duration', value: formattedDuration),
                         _DetailsRow(label: 'Stops', value: _getStopsText()),
-                        _DetailsRow(label: 'Cabin Class', value: flight.cabinClass),
+                        _DetailsRow(
+                            label: context.ui('cabinClass'), value: flight.cabinClass),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.xxl),
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            await ref.read(removeSavedFlightProvider(flight.id).future);
+                            await ref.read(
+                                removeSavedFlightProvider(flight.id).future);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${flight.flightNumber} removed from saved flights')),
+                                SnackBar(
+                                    content: Text(
+                                        '${flight.flightNumber} removed from saved flights')),
                               );
                               Navigator.pop(context);
                             }
                           },
                           icon: const Icon(Icons.delete_outline),
-                          label: const Text('Remove'),
+                          label: Text(context.ui('remove')),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
@@ -198,7 +211,7 @@ class SavedFlightDetailsPage extends ConsumerWidget {
                             );
                           },
                           icon: const Icon(Icons.flight_takeoff),
-                          label: const Text('Save Flight Plan'),
+                          label: Text(context.ui('saveFlightPlan')),
                         ),
                       ),
                     ],
@@ -226,12 +239,9 @@ class _DetailSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         child,
       ],
     );
@@ -252,7 +262,10 @@ class _TimelineItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.xl,
+      ),
       child: Row(
         children: [
           Container(
@@ -260,38 +273,28 @@ class _TimelineItem extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF1976D2),
-              border: Border.all(color: Colors.white, width: 3),
+              color: AppColors.champagne,
+              border: Border.all(color: AppColors.warmWhite, width: 3),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.label,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   airport,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   time,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -311,23 +314,19 @@ class _DetailsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textMuted,
+                ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ],
       ),

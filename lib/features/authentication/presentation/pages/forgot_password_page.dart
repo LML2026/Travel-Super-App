@@ -6,6 +6,7 @@ import '../../../../core/widgets/widgets.dart';
 import '../../../../shared/widgets/loading_overlay.dart';
 import '../../../auth/presentation/utils/auth_error_mapper.dart';
 import '../providers/auth_providers.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AuthenticationForgotPasswordPage extends ConsumerStatefulWidget {
   const AuthenticationForgotPasswordPage({super.key});
@@ -53,7 +54,7 @@ class _AuthenticationForgotPasswordPageState
     return LoadingOverlay(
       isLoading: _loading,
       child: AppScaffold(
-        appBar: AppBar(title: const Text('Reset Password')),
+        appBar: AppBar(title: Text(context.ui('resetPassword'))),
         maxContentWidth: 520,
         body: Form(
           key: _formKey,
@@ -77,8 +78,8 @@ class _AuthenticationForgotPasswordPageState
                 keyboardType: TextInputType.emailAddress,
                 enabled: !_emailSent,
                 validator: AuthValidators.validateEmail,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                decoration: InputDecoration(
+                  labelText: context.ui('email'),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -88,9 +89,9 @@ class _AuthenticationForgotPasswordPageState
                 child: Text(_emailSent ? 'Email Sent' : 'Send Reset Link'),
               ),
               if (_emailSent)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 12),
-                  child: Text('Check your inbox for reset instructions.'),
+                  child: Text(context.ui('checkInboxResetInstructions')),
                 ),
             ],
           ),

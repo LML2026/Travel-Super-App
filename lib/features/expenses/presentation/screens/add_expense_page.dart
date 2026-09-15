@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/expense.dart';
 import '../providers/expense_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class AddExpensePage extends ConsumerStatefulWidget {
   const AddExpensePage({
@@ -87,14 +88,14 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
 
     if (_date == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Date is required.')),
+        SnackBar(content: Text(context.ui('dateRequired'))),
       );
       return;
     }
 
     if (_category == null || _category!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category must be selected.')),
+        SnackBar(content: Text(context.ui('categoryMustBeSelected'))),
       );
       return;
     }
@@ -158,8 +159,8 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Expense Name',
+              decoration: InputDecoration(
+                labelText: context.ui('expenseName'),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -173,7 +174,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
-                labelText: 'Amount (£)',
+                labelText: context.ui('amountGbp'),
                 hintText: _currency,
               ),
               validator: (value) {
@@ -190,8 +191,8 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _currency,
-              decoration: const InputDecoration(labelText: 'Currency'),
-              items: const [
+              decoration: InputDecoration(labelText: context.ui('currency')),
+              items: [
                 DropdownMenuItem(value: 'GBP', child: Text('GBP')),
                 DropdownMenuItem(value: 'EUR', child: Text('EUR')),
                 DropdownMenuItem(value: 'USD', child: Text('USD')),
@@ -206,7 +207,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _category,
-              decoration: const InputDecoration(labelText: 'Category'),
+              decoration: InputDecoration(labelText: context.ui('category')),
               items: _categories
                   .map(
                     (category) => DropdownMenuItem<String>(
@@ -230,7 +231,7 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             const SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Date'),
+              title: Text(context.ui('date')),
               subtitle: Text(
                 _date == null
                     ? 'Select date'
@@ -244,12 +245,12 @@ class _AddExpensePageState extends ConsumerState<AddExpensePage> {
             TextFormField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Notes'),
+              decoration: InputDecoration(labelText: context.ui('notes')),
             ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: _saveExpense,
-              child: const Text('Save Expense'),
+              child: Text(context.ui('saveExpense')),
             ),
           ],
         ),

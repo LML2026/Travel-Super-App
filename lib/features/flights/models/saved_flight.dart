@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class SavedFlight {
   final String id;
   final String flightId;
@@ -36,9 +38,10 @@ class SavedFlight {
   });
 
   factory SavedFlight.fromJson(Map<String, dynamic> json) {
+    final id = json['id'] as String? ?? '';
     return SavedFlight(
-      id: json['id'] as String? ?? '',
-      flightId: json['flightId'] as String? ?? '',
+      id: id,
+      flightId: json['flightId'] as String? ?? id,
       airline: json['airline'] as String? ?? '',
       airlineLogo: json['airlineLogo'] as String? ?? '',
       flightNumber: json['flightNumber'] as String? ?? '',
@@ -52,10 +55,21 @@ class SavedFlight {
       currency: json['currency'] as String? ?? 'GBP',
       cabinClass: json['cabinClass'] as String? ?? 'economy',
       source: json['source'] as String? ?? 'unknown',
-      savedAt: json['savedAt'] != null
-          ? DateTime.parse(json['savedAt'] as String)
-          : DateTime.now(),
+      savedAt: _parseSavedAt(json['savedAt']),
     );
+  }
+
+  static DateTime _parseSavedAt(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is String) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    }
+    return DateTime.now();
   }
 
   Map<String, dynamic> toJson() => {

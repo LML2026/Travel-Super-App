@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_routes.dart';
 import '../../../../core/models/booking.dart';
 import '../providers/my_bookings_provider.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class MyBookingsPage extends ConsumerWidget {
   const MyBookingsPage({super.key});
@@ -13,15 +14,15 @@ class MyBookingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookings = ref.watch(myBookingsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Bookings')),
+      appBar: AppBar(title: Text(context.ui('myBookings'))),
       body: bookings.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Center(
-          child: Text('Bookings are unavailable right now. Please try again.'),
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (_, __) => Center(
+          child: Text(context.ui('bookingsUnavailable')),
         ),
         data: (items) {
           if (items.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(

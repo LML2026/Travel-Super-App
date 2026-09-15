@@ -57,6 +57,8 @@ bool _isProtectedPath(String path) {
 /// Public discovery and search routes intentionally remain accessible.
 bool isProtectedPath(String path) => _isProtectedPath(path);
 
+bool isSignedInAppUser(AuthUser? user) => user != null && !user.isAnonymous;
+
 GoRouter createAppRouter(Ref ref) {
   final authRefresh = _AuthRefreshListenable(
     ref.watch(watchAuthStateProvider).call(),
@@ -73,7 +75,7 @@ GoRouter createAppRouter(Ref ref) {
       }
 
       final user = authRefresh.currentUser;
-      final isAuthenticated = user != null;
+      final isAuthenticated = isSignedInAppUser(user);
       final needsVerification = user != null && requiresEmailVerification(user);
 
       if (!isAuthenticated && _isProtectedPath(path)) {

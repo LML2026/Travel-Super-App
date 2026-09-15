@@ -1,13 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dio/dio.dart';
+import 'package:travel_super_app/core/api/backend_auth.dart';
 import 'package:travel_super_app/features/translator/data/translation_history_repository.dart';
 import 'package:travel_super_app/features/translator/data/speech_service.dart';
 import 'package:travel_super_app/features/translator/data/translation_service.dart';
 import 'package:travel_super_app/features/translator/domain/translation_models.dart';
 import 'package:travel_super_app/features/translator/presentation/providers/translator_provider.dart';
 
+class _FakeBackendAuth implements BackendAuth {
+  const _FakeBackendAuth(this.token);
+
+  final String token;
+
+  @override
+  Future<String?> idToken() async => token;
+}
+
 void main() {
   group('BackendTranslationService', () {
+    test(
+        'default provider configures a backend live service from shared API URL',
+        () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final service = container.read(translationServiceProvider);
+
+      expect(service, isA<FallbackTranslationService>());
+      expect(
+        (service as FallbackTranslationService).liveService,
+        isA<BackendTranslationService>(),
+      );
+    });
+
     test('maps a backend response and marks it as live', () async {
       TranslationRequest? sentRequest;
       final service = BackendTranslationService(
@@ -35,6 +61,42 @@ void main() {
       expect(response.source, TranslationSource.backend);
       expect(response.isDemo, isFalse);
       expect(response.sourceLanguageCode, 'en');
+    });
+
+    test('adds Firebase bearer token to backend requests', () async {
+      final capturedHeaders = <String, dynamic>{};
+      final dio = Dio();
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            capturedHeaders.addAll(options.headers);
+            handler.resolve(
+              Response<Map<String, dynamic>>(
+                requestOptions: options,
+                statusCode: 200,
+                data: const <String, dynamic>{
+                  'translatedText': 'Bonjour',
+                },
+              ),
+            );
+          },
+        ),
+      );
+      final service = BackendTranslationService(
+        endpoint: 'https://translation.example.test/api/translate',
+        client: dio,
+        backendAuth: const _FakeBackendAuth('translation-token'),
+      );
+
+      await service.translate(
+        const TranslationRequest(
+          text: 'Hello',
+          sourceLanguageCode: 'en',
+          targetLanguageCode: 'fr',
+        ),
+      );
+
+      expect(capturedHeaders['Authorization'], 'Bearer translation-token');
     });
 
     test('falls back to deterministic demo translation when backend fails',
@@ -156,6 +218,49 @@ void main() {
         state.conversation.single.translatedText,
         'Bonjour, pouvez-vous m aider ?',
       );
+      expect(state.conversation.single.source, TranslationSource.demo);
+    });
+
+    test('preserves live source on conversation turns', () async {
+      final repository = MemoryTranslationHistoryRepository();
+      final container = _container(
+        repository,
+        translationService: _LiveTranslationService(),
+      );
+      addTearDown(container.dispose);
+
+      await container.read(translatorControllerProvider.future);
+      final controller = container.read(translatorControllerProvider.notifier);
+      controller.setLocalLanguage('fr');
+
+      await controller.addConversationTurn(
+        text: 'Hello, can you help me?',
+        travellerSpeaking: true,
+      );
+
+      final state = container.read(translatorControllerProvider).requireValue;
+      expect(state.conversation.single.source, TranslationSource.backend);
+    });
+
+    test('rejects oversized text before calling translation service', () async {
+      final service = _CountingTranslationService();
+      final container = _container(
+        MemoryTranslationHistoryRepository(),
+        translationService: service,
+      );
+      addTearDown(container.dispose);
+
+      await container.read(translatorControllerProvider.future);
+      final controller = container.read(translatorControllerProvider.notifier);
+      controller.setInputText(
+        List.filled(translationMaxTextLength + 1, 'a').join(),
+      );
+      final response = await controller.translate();
+
+      final state = container.read(translatorControllerProvider).requireValue;
+      expect(response, isNull);
+      expect(service.calls, 0);
+      expect(state.errorMessage, contains('$translationMaxTextLength'));
     });
 
     test('turns final speech input into a translated response', () async {
@@ -320,5 +425,36 @@ class _ThrowingTranslationService implements TranslationService {
   @override
   Future<TranslationResponse> translate(TranslationRequest request) {
     throw StateError('provider.internal details must stay private');
+  }
+}
+
+class _LiveTranslationService implements TranslationService {
+  @override
+  Future<TranslationResponse> translate(TranslationRequest request) async {
+    return TranslationResponse(
+      originalText: request.text,
+      translatedText: 'Bonjour',
+      sourceLanguageCode: request.sourceLanguageCode,
+      targetLanguageCode: request.targetLanguageCode,
+      isDemo: false,
+      source: TranslationSource.backend,
+    );
+  }
+}
+
+class _CountingTranslationService implements TranslationService {
+  int calls = 0;
+
+  @override
+  Future<TranslationResponse> translate(TranslationRequest request) async {
+    calls++;
+    return TranslationResponse(
+      originalText: request.text,
+      translatedText: request.text,
+      sourceLanguageCode: request.sourceLanguageCode,
+      targetLanguageCode: request.targetLanguageCode,
+      isDemo: false,
+      source: TranslationSource.backend,
+    );
   }
 }

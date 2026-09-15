@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import '../../../../core/utils/user_facing_error.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class TripNotesPage extends ConsumerStatefulWidget {
   const TripNotesPage({
@@ -70,7 +71,7 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trip notes saved.')),
+        SnackBar(content: Text(context.ui('tripNotesSaved'))),
       );
       Navigator.of(context).pop();
     } catch (error) {
@@ -104,13 +105,13 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
 
     if (_trip == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Trip Notes')),
-        body: const Center(child: Text('Trip not found.')),
+        appBar: AppBar(title: Text(context.ui('tripNotes'))),
+        body: Center(child: Text(context.ui('tripNotFoundPeriod'))),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip Notes')),
+      appBar: AppBar(title: Text(context.ui('tripNotes'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -121,8 +122,8 @@ class _TripNotesPageState extends ConsumerState<TripNotesPage> {
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: const InputDecoration(
-                  hintText: 'Add trip notes, ideas, reminders, and links...',
+                decoration: InputDecoration(
+                  hintText: context.ui('tripNotesHint'),
                   border: OutlineInputBorder(),
                 ),
               ),

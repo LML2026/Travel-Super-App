@@ -125,8 +125,8 @@ class HotelFirestoreService {
   }
 
   /// Get saved hotels for current user
-  Stream<List<SavedHotel>> getSavedHotels() {
-    final userId = _userId;
+  Stream<List<SavedHotel>> getSavedHotels({String? userId}) {
+    userId ??= _userId;
     if (userId == null) return Stream.value([]);
 
     return _firestore

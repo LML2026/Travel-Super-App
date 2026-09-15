@@ -7,6 +7,7 @@ import 'presentation/utils/auth_error_mapper.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/app_text_field.dart';
 import '../../shared/widgets/loading_overlay.dart';
+import 'package:travel_super_app/l10n/l10n_extensions.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -35,7 +36,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
+          SnackBar(content: Text(context.ui('registrationSuccessful'))),
         );
         Navigator.pop(context);
       }
@@ -58,7 +59,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       isLoading: _loading,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Account'),
+          title: Text(context.ui('createAccount')),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -84,8 +85,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   child: Column(
                     children: [
                       AppTextField(
-                        label: 'Email',
-                        hintText: 'your@email.com',
+                        label: context.ui('email'),
+                        hintText: context.ui('yourEmailExample'),
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.email,
@@ -95,7 +96,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       const SizedBox(height: 16),
                       AppTextField(
                         label: 'Password',
-                        hintText: 'At least 6 characters',
+                        hintText: context.ui('atLeastSixCharacters'),
                         controller: _passwordController,
                         obscureText: true,
                         prefixIcon: Icons.lock,
@@ -104,8 +105,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
                       AppTextField(
-                        label: 'Confirm Password',
-                        hintText: 'Re-enter your password',
+                        label: context.ui('confirmPassword'),
+                        hintText: context.ui('reenterPassword'),
                         controller: _confirmPasswordController,
                         obscureText: true,
                         prefixIcon: Icons.lock,
@@ -121,7 +122,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 ),
                 const SizedBox(height: 32),
                 AppButton(
-                  label: 'Create Account',
+                  label: context.ui('createAccount'),
                   isLoading: _loading,
                   onPressed: _loading ? null : _register,
                 ),
@@ -129,7 +130,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 Center(
                   child: TextButton(
                     onPressed: _loading ? null : () => Navigator.pop(context),
-                    child: const Text('Already have an account? Sign in'),
+                    child: Text(context.ui('alreadyHaveAccountSignIn')),
                   ),
                 ),
               ],

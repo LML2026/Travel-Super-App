@@ -120,8 +120,8 @@ class FlightFirestoreService {
   }
 
   /// Get saved flights for current user
-  Stream<List<SavedFlight>> getSavedFlights() {
-    final userId = _userId;
+  Stream<List<SavedFlight>> getSavedFlights({String? userId}) {
+    userId ??= _userId;
     if (userId == null) return Stream.value([]);
 
     return _firestore
