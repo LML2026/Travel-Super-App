@@ -47,6 +47,10 @@ dev_dependencies:
   json_serializable: ^6.7.1
   mocktail: ^1.0.5
 
+dependency_overrides:
+  geolocator_apple:
+    path: third_party/geolocator_apple
+
 flutter:
   generate: true
   uses-material-design: true
