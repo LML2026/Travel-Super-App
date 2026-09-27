@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "9US94GKL29.com.itarevo.finance"
+        ],
+        "components": [
+          {
+            "/": "/plaid/oauth",
+            "comment": "ITAREVO Finance Plaid OAuth return"
+          }
+        ]
+      }
+    ]
+  }
+}
